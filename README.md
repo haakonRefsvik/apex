@@ -4,3 +4,4 @@ Gruppemedlemmer:
 
     Magnus Kleven
     Håkon Refsvik
+    Nasteeho Abdullahi Elmi
