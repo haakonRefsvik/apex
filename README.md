@@ -6,3 +6,5 @@ Gruppemedlemmer:
     Håkon Refsvik
     Nasteeho Abdullahi Elmi
     Suad Raage
+    Julian Rubilar
+   
