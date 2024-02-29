@@ -5,6 +5,7 @@
 ## Gruppemedlemmer:
     
     Magnus Kleven
+    Julian Rubilar
 >>>>>>> origin/main
 
     Jostein Jensen
