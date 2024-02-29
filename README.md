@@ -1,2 +1,9 @@
 # team-25
-# Jostein Jensen
+<<<<<<< HEAD
+=======
+
+## Gruppemedlemmer:
+    
+    Magnus Kleven
+>>>>>>> origin/main
+
