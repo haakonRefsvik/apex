@@ -1,2 +1,2 @@
 # team-25
-# Jostein
+# Jostein Jensen
