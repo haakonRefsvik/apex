@@ -7,3 +7,4 @@
     Magnus Kleven
 >>>>>>> origin/main
 
+    Jostein Jensen
