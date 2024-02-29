@@ -6,6 +6,5 @@
     
     Magnus Kleven
     Julian Rubilar
->>>>>>> origin/main
-
+    Nasteeho Abdullahi Elmi
     Jostein Jensen
