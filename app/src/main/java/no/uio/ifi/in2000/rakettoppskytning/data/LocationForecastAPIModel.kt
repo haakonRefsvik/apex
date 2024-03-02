@@ -2,10 +2,14 @@ package no.uio.ifi.in2000.rakettoppskytning.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** Our Nordic forecasts are updated once every hour.
- For medium range forecasts (2–10 days) the 51 member ensemble forecast from ECMWF is used.
-It it updated twice pr day. Horizontal resolution is approximately 18 km.
-Air temperature, precipitation and wind speed are further post-processed to better represent local geographical features.*/
+/**
+ *
+ * Our Nordic forecasts are updated once every hour.
+ * For medium range forecasts (2–10 days) the 51 member ensemble forecast from ECMWF is used.
+ * It it updated twice pr day. Horizontal resolution is approximately 18 km.
+ * Air temperature, precipitation and wind speed are further post-processed to better represent local geographical features.
+ *
+ * */
 
 @Serializable
 data class LocationForecastComplete(
@@ -17,7 +21,8 @@ data class LocationForecastComplete(
 @Serializable
 data class Summary(
     /**see WeatherIcon product*/
-    val symbol_code: String?,
+    @SerialName("symbol_code")
+    val symbolCode: String?,
 )
 @Serializable
 data class TimeSerie(
@@ -100,7 +105,6 @@ data class InstantDetails(
 
 /** Next_1_hours is only available in the short range forecast*/
 @Serializable
-@SerialName("Next_1_Hours")
 data class Next1Hour(
     val summary: Summary,
     @SerialName("details")
@@ -110,7 +114,6 @@ data class Next1Hour(
 /**These are aggregations or minima/maxima for a given time period, either the next 1, 6 or 12 hours.
  * Not that next_1_hours is only available in the short range forecast.*/
 @Serializable
-@SerialName("Next_6_Hours")
 data class Next6Hours(
     val summary: Summary,
     @SerialName("details")
@@ -120,7 +123,6 @@ data class Next6Hours(
 /**These are aggregations or minima/maxima for a given time period, either the next 1, 6 or 12 hours.
  * Not that next_1_hours is only available in the short range forecast.*/
 @Serializable
-@SerialName("Next_12_Hours")
 data class Next12Hours(
     val summary: Summary,
     @SerialName("details")
@@ -170,10 +172,12 @@ data class Instant(
 data class Data(
     /** Weather data for a specific point in time */
     val instant: Instant,
-
-    val next_1_hours: Next1Hour? = null,
-    val next_6_hours: Next6Hours? = null,
-    val next_12_hours: Next12Hours? = null,
+    @SerialName("Next_1_Hours")
+    val next1Hour: Next1Hour? = null,
+    @SerialName("next_6_hours")
+    val next6Hours: Next6Hours? = null,
+    @SerialName("next_12_hours")
+    val next12Hours: Next12Hours? = null,
 )
 @Serializable
 data class Geometry(

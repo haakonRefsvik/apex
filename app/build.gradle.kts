@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
+
 }
 
 android {
@@ -50,7 +52,30 @@ android {
 }
 
 dependencies {
+    implementation("androidx.media3:media3-common:1.2.1")
+    val ktorVersion = "2.3.8"
+    val navVersion = "2.7.6"
+    val kotlinVersion = "1.9.22"
 
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-xml:$ktorVersion")
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+
+    implementation ("androidx.compose.material3:material3:1.2.0-alpha02")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
+    implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha05")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha02")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+
+    implementation ("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")

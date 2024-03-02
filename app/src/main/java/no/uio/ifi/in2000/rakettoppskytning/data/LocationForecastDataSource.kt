@@ -11,7 +11,7 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-suspend fun receiveData(): LocationForecastComplete{
+suspend fun getLocationForecast(): LocationForecastComplete{
     val client = HttpClient(CIO){
 
         defaultRequest {

@@ -10,7 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import no.uio.ifi.in2000.rakettoppskytning.data.getGrib
+import no.uio.ifi.in2000.rakettoppskytning.data.getLocationForecast
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +28,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Greeting("Android")
+                    testVm()
                 }
             }
         }
@@ -35,6 +41,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         text = "Hello $name!",
         modifier = modifier
     )
+}
+
+class testVm(): ViewModel(){
+    init {
+        viewModelScope.launch { getLocationForecast() }
+    }
 }
 
 @Preview(showBackground = true)
