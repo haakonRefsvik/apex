@@ -56,7 +56,12 @@ dependencies {
     val ktorVersion = "2.3.8"
     val navVersion = "2.7.6"
     val kotlinVersion = "1.9.22"
+    val material3Version = "3:1.2.0"
 
+    implementation ("io.insert-koin:koin-android:3.0.1")
+
+    implementation ("io.insert-koin:koin-android:3.0.1")
+    implementation ("io.insert-koin:koin-core:3.0.1")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
@@ -67,8 +72,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
-    implementation ("androidx.compose.material3:material3:1.2.0-alpha02")
-    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation ("androidx.compose.material3:material$material3Version")
+    implementation("androidx.compose.material3:material$material3Version")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha05")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha02")
