@@ -6,11 +6,10 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-val client = HttpClient(CIO) {
+val Client = HttpClient(CIO) {
     install(ContentNegotiation) {
         json(Json {
             ignoreUnknownKeys = true
@@ -20,12 +19,11 @@ val client = HttpClient(CIO) {
 }
 
 
-suspend fun hentFly() {
-    val httpResponse: HttpResponse = client.get("https://api.opensky-network.org/api/states/all?lamin=58.0274&lomin=5.0328&lamax=70.66336&lomax=29.74943")
-
-
-    val stringBody: String = httpResponse.body()
-    Log.d("SKyJANNE",stringBody)
+suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
+    Log.d("APICALL","PÅ locationForecast")
+    Log.d("wtf","https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
+    return Client.get("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
+        .body<LocationForecast>()
 
 
 }

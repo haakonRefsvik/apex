@@ -1,15 +1,24 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     kotlin("plugin.serialization") version "1.9.0"
 }
 
+
 android {
     namespace = "no.uio.ifi.in2000.rakettoppskytning"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "no.uio.ifi.in2000.rakettoppskytning"
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+        val apiKey = properties.getProperty("MAPS_API_KEY") ?: ""
+        manifestPlaceholders["GOOGLE_KEY"] = apiKey
+
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -64,6 +73,9 @@ dependencies {
 
     val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
+
+    //GOOGLE MAPS:
+    implementation("com.google.maps.android:maps-compose:4.3.3")
 
 
     implementation("androidx.core:core-ktx:1.12.0")
