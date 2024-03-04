@@ -12,11 +12,13 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 suspend fun getLocationForecast(): LocationForecastComplete{
+    val apiKey = API_KEY().getKey()
+
     val client = HttpClient(CIO){
 
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
-            header("X-Gravitee-API-Key", "df0249c5-183e-442e-833b-7d255d26521d")
+            header("X-Gravitee-API-Key", apiKey)
         }
 
         install(ContentNegotiation){
