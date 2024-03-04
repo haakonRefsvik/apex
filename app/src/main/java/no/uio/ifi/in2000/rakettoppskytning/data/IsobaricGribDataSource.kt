@@ -11,11 +11,9 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import org.koin.android.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.util.Properties
 
 @Serializable
 data class LatestUri(
@@ -30,7 +28,6 @@ suspend fun getGrib(){
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
             header("X-Gravitee-API-Key", apiKey)
-
         }
 
         install(ContentNegotiation){
@@ -52,7 +49,4 @@ suspend fun getGrib(){
     }
 
     Log.d("API", file.readBytes().size.toString())  // leser størrelse på .bin-filene (som er grib-filene) er på rundt 1,3 mill bytes som tilsvarer 1,3 mb
-
-
-
 }
