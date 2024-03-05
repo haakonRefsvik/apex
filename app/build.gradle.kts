@@ -12,12 +12,6 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        val keystoreFile = project.rootProject.file("local.properties")
-        val properties = Properties()
-        properties.load(keystoreFile.inputStream())
-        val apiKey = properties.getProperty("API_KEY") ?: ""
-        buildConfigField("String", "API_KEY", apiKey)
-
         applicationId = "no.uio.ifi.in2000.rakettoppskytning"
         minSdk = 24
         targetSdk = 34
@@ -48,7 +42,6 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -62,6 +55,7 @@ android {
 
 dependencies {
     implementation("androidx.media3:media3-common:1.2.1")
+    implementation(files("libs/GRIB2Tools.jar"))
     val ktorVersion = "2.3.8"
     val navVersion = "2.7.6"
     val kotlinVersion = "1.9.22"
