@@ -8,59 +8,62 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
-import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import java.time.LocalDateTime
-import androidx.compose.material3.Text
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import java.time.format.DateTimeFormatter
+import com.mapbox.geojson.Point
+import com.mapbox.maps.MapDebugOptions
+import com.mapbox.maps.MapInitOptions
+import com.mapbox.maps.MapboxExperimental
+import com.mapbox.maps.dsl.cameraOptions
+import com.mapbox.maps.extension.compose.MapEffect
+import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.MapboxMapScope
+import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
+import com.mapbox.maps.plugin.annotation.AnnotationManagerImpl
+import com.mapbox.maps.plugin.attribution.generated.AttributionSettings
+import com.mapbox.maps.plugin.compass.generated.CompassSettings
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
+import com.mapbox.maps.plugin.scalebar.generated.ScaleBarSettings
+import kotlinx.coroutines.delay
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
 fun HomeScreen(
     homeScreenViewModel: HomeScreenViewModel = viewModel()
     ) {
-    val customFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
     var lat by remember { mutableDoubleStateOf(59.9434927) }
     var lon by remember { mutableDoubleStateOf(10.71181022) }
-    val ifi = LatLng(lat, lon)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(ifi, 12f)
-    }
 
-    val currentDateTime = LocalDateTime.now()
-    val newDateTime = currentDateTime.plusHours(1)
-    val formattedDateTime = newDateTime.format(customFormatter)
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -88,12 +91,7 @@ fun HomeScreen(
 
                 },
                 navigationIcon = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Gå til hjemskjerm"
-                        )
-                    }
+
                 },
             )
         },
@@ -106,17 +104,10 @@ fun HomeScreen(
                 forecast.foreCast.forEach{
                         input ->
                     Column {
-                        input.properties.timeseries.forEach {
-                                tider ->
-                            if (formattedDateTime.toString() > tider.time && currentDateTime.toString() < tider.time){
-                                Log.d("asd",tider.time)
-                                Text(" ${tider.data.instant.details.airTemperature}°C" )
-                                tider.data.next1Hours?.summary?.let { Text(it.symbolCode) }
-                                return@forEach
-                            }
+                        val tider = input.properties.timeseries[0]
+                        Text(" ${tider.data.instant.details.airTemperature}°C" )
+                        tider.data.next1Hours?.summary?.let { Text(it.symbolCode) }
 
-
-                        }
 
                     }
 
@@ -135,21 +126,70 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            GoogleMap(
+            val mapViewportState = rememberMapViewportState {
+            setCameraOptions {
+                center(Point.fromLngLat(lon, lat))
+                zoom(5.0)
+                pitch(0.0)
+            }
+        }
+
+            val mapBoxUiSettings: GesturesSettings by remember {
+                mutableStateOf(GesturesSettings {
+                    rotateEnabled = false
+                    pinchToZoomEnabled = true
+                    pitchEnabled = false
+                })
+            }
+
+            val compassSettings: CompassSettings by remember {
+                mutableStateOf(CompassSettings { enabled = true })
+            }
+
+            val scaleBarSetting: ScaleBarSettings by remember {
+                mutableStateOf(ScaleBarSettings { enabled = false })
+            }
+
+            MapboxMap(
                 modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                onMapClick = {homeScreenViewModel.getForecastByCord(it.latitude, it.longitude)
-                lat = it.latitude
-                lon = it.longitude}
+                mapInitOptionsFactory = { context ->
+                    MapInitOptions(
+                        context = context,
+
+                    )
+                },
+                mapViewportState = mapViewportState,
+                compassSettings = compassSettings,
+                scaleBarSettings = scaleBarSetting,
+                gesturesSettings = mapBoxUiSettings,
+                attributionSettings = AttributionSettings {
+                    enabled = false
+                },
             ) {
 
+                LaunchedEffect(Unit) {
+                    delay(200)
+                    mapViewportState.flyTo(
+                        cameraOptions = cameraOptions {
+                            center(Point.fromLngLat(lon, lat))
+                            zoom(10.0)
+                        },
+                        animationOptions = MapAnimationOptions.mapAnimationOptions { duration(2000) },
+                    )
+                }
+                MapEffect(Unit) { mapView ->
+                    // Use mapView to access all the Mapbox Maps APIs including plugins etc.
+                    // For example, to enable debug mode:
+                    mapView.mapboxMap.addOnMapClickListener {
+                        Log.d("s", "${it.latitude()},${it.longitude()}")
+                        homeScreenViewModel.getForecastByCord(it.latitude(),it.longitude())
+                        false
+                    }
 
-                Marker(
-                    state = MarkerState(position = ifi),
-                    title = "Ole-Johan Dahls hus ",
-                    snippet = "Marker på IFI"
-                )
+
+                }
             }
+
         }
 
     }

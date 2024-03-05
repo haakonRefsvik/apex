@@ -12,13 +12,6 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        //load the values from .properties file
-        val keystoreFile = project.rootProject.file("local.properties")
-        val properties = Properties()
-        properties.load(keystoreFile.inputStream())
-        val apiKey = properties.getProperty("MAPS_API_KEY") ?: ""
-        manifestPlaceholders["GOOGLE_KEY"] = apiKey
-
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -74,8 +67,12 @@ dependencies {
     val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
 
-    //GOOGLE MAPS:
-    implementation("com.google.maps.android:maps-compose:4.3.3")
+    val CONSTANTS ="11.0.0"
+    //MapBox
+    implementation("com.mapbox.maps:android:$CONSTANTS")
+    // If you're using compose also add the compose extension
+    implementation("com.mapbox.extension:maps-compose:$CONSTANTS")
+
 
 
     implementation("androidx.core:core-ktx:1.12.0")
