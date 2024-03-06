@@ -4,7 +4,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
-
 }
 
 android {
@@ -47,10 +46,14 @@ android {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
+
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
         }
     }
+
+
 }
 
 dependencies {
@@ -60,8 +63,10 @@ dependencies {
     val navVersion = "2.7.6"
     val kotlinVersion = "1.9.22"
     val material3Version = "3:1.2.0"
+    val netcdfJavaVersion = "5.5.2"
 
-    implementation ("io.insert-koin:koin-android:3.0.1")
+    implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
+    implementation("edu.ucar:grib:${netcdfJavaVersion}")
 
     implementation ("io.insert-koin:koin-android:3.0.1")
     implementation ("io.insert-koin:koin-core:3.0.1")

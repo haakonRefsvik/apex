@@ -1,8 +1,10 @@
+
 pluginManagement {
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/") }
     }
 }
 
@@ -11,6 +13,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/") }
+
     }
 }
 

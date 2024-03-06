@@ -3,8 +3,6 @@ package no.uio.ifi.in2000.rakettoppskytning.data
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.ph.grib2tools.grib2file.GribFile
-import com.ph.grib2tools.grib2file.RandomAccessGribFile
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -15,16 +13,11 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import ucar.nc2.grib.grib2.Grib2RecordScanner
+import ucar.unidata.io.RandomAccessFile
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.InputStream
-import java.nio.file.Files
-import java.nio.file.Paths
-
 
 @Serializable
 data class LatestUri(
@@ -60,25 +53,24 @@ suspend fun getGrib(){
         inputStream.copyTo(outputStream)
     }
 
-    Log.d("API", file.readBytes().size.toString())  // leser størrelse på .bin-filene (som er grib-filene) er på rundt 1,3 mill bytes som tilsvarer 1,3 mb
+    /*
+    val gribFile = StreamedGribFile("testdata", "test")
+    gribFile.prepareImportFromStream(inputStream, 0);
+    val s7 = gribFile.section4
 
-    val gribFile = RandomAccessGribFile("testdata", file.name) // Replace with actual typeid and source parameters
+    Log.d("Date: " , s7.sectionlength.toString())
+     */
 
-    try {
-        FileInputStream(file).use { inputStream ->
-            gribFile.importFromStream(inputStream, 0) // Assuming you want to import from beginning of the stream
-            // The 0 parameter indicates the number of GRIB files to skip (in this case, 0 means no skip)
-            // You can modify the parameters based on your requirements
-        }
-    } catch (e: IOException) {
-        // Handle IO exception
-        e.printStackTrace()
-    } finally {
-        file.delete() // Delete the temporary file after use (optional)
-    }
-
-    Log.d("ADSG", latestUri.first().uri)
-    //val gridDefinition = gribFile.gridDefinitionTemplate as GridDefinitionTemplate30
+    parseMedNetCdf(file)
 }
 
+fun parseMedNetCdf(file: File){
 
+    val raf: RandomAccessFile = RandomAccessFile(file.absolutePath, "r")
+    val scan = Grib2RecordScanner(raf)
+    while (scan.hasNext()) {
+        val gr2 = scan.next()
+        Log.d("Grib", gr2.id.toString())
+    }
+    raf.close()
+}
