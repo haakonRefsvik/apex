@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -14,24 +13,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,39 +41,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
-import java.time.format.DateTimeFormatter
 import com.mapbox.geojson.Point
-import com.mapbox.maps.MapDebugOptions
 import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapboxExperimental
-import com.mapbox.maps.Style
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
-import com.mapbox.maps.extension.compose.MapboxMapScope
-import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
-import com.mapbox.maps.plugin.annotation.AnnotationManagerImpl
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.attribution.generated.AttributionSettings
 import com.mapbox.maps.plugin.compass.generated.CompassSettings
-import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.plugin.scalebar.generated.ScaleBarSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
@@ -88,11 +78,13 @@ fun HomeScreen(
     ) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
-    var lat by remember { mutableDoubleStateOf(59.9434927) }
-    var lon by remember { mutableDoubleStateOf(10.71181022) }
+    val lat by homeScreenViewModel.lat
+    val lon by homeScreenViewModel.lon
+    var latText = lat.toString()
+    var lonText = lon.toString()
 
     //val scaffoldState = rememberBottomSheetScaffoldState()
-    val scaffoldState = homeScreenViewModel.bottomSheetScaffoldState.value
+    val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
 
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!!***/
@@ -100,7 +92,6 @@ fun HomeScreen(
 
     val scope = rememberCoroutineScope()
 
-    //scope.launch { scaffoldState.bottomSheetState.expand() }
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
     val mapViewportState = rememberMapViewportState {
         setCameraOptions {
@@ -195,19 +186,21 @@ fun HomeScreen(
 
                             val formattedInstantAfter = formatter.format(newInstant)
                             Row {
-                                TextField(value = lat.toString(), onValueChange ={}, Modifier.width(160.dp), textStyle = TextStyle(fontSize = 12.sp))
+                                TextField(value = lat.toString(), onValueChange ={value -> homeScreenViewModel.lat.value = value.toDouble()}, Modifier.width(160.dp), textStyle = TextStyle(fontSize = 12.sp))
                                 Spacer(modifier = Modifier.width(20.dp))
-                                TextField(value = lon.toString(), onValueChange ={}, Modifier.width(160.dp) , textStyle = TextStyle(fontSize = 12.sp))
+                                TextField(value = lon.toString(), onValueChange ={value -> homeScreenViewModel.lon.value = value.toDouble()}, Modifier.width(160.dp) , textStyle = TextStyle(fontSize = 12.sp))
 
                             }
                             Spacer(modifier = Modifier.height(5.dp))
-                            Button(onClick = { scope.launch{scaffoldState.bottomSheetState.expand()
+                            Button(onClick = {
                                 homeScreenViewModel.getForecastByCord(lat,lon)
                                     mapViewportState.flyTo(
                                         cameraOptions = cameraOptions {
                                         center(Point.fromLngLat(lon, lat))
 
-                                    },)} }) {
+                                    },)
+                                scope.launch{
+                                    scaffoldState.bottomSheetState.expand()} }) {
                                 Text("Hent værdata")
 
                             }
@@ -302,11 +295,18 @@ fun HomeScreen(
                         mapView.mapboxMap.addOnMapClickListener {
                             Log.d("s", "${it.latitude()},${it.longitude()}")
 
-                            lat = it.latitude()
-                            lon = it.longitude()
+
+                            homeScreenViewModel.lat.value = it.latitude()
+                            homeScreenViewModel.lon.value = it.longitude()
+                            val annotationApi = mapView.annotations
+                            val pointAnnotationManager = annotationApi.createPointAnnotationManager()
+                            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                                .withPoint(Point.fromLngLat(lon, lat))
+                                .withIconImage("https://docs.mapbox.com/android/maps/examples/red_marker.png")
+                            pointAnnotationManager.create(pointAnnotationOptions)
                             false
                         }
-                        mapView.mapboxMap.loadStyle(Style.DARK)
+
 
 
                     }
