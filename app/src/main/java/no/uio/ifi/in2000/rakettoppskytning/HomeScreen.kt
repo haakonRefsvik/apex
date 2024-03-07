@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -56,6 +57,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.MapDebugOptions
 import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapboxExperimental
+import com.mapbox.maps.Style
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
@@ -76,6 +78,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
@@ -88,9 +91,17 @@ fun HomeScreen(
     var lat by remember { mutableDoubleStateOf(59.9434927) }
     var lon by remember { mutableDoubleStateOf(10.71181022) }
 
+    //val scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = homeScreenViewModel.bottomSheetScaffoldState.value
+
+
+    /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!!***/
+
 
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+
+    //scope.launch { scaffoldState.bottomSheetState.expand() }
+    val snackbarHostState = remember { scaffoldState.snackbarHostState }
     val mapViewportState = rememberMapViewportState {
         setCameraOptions {
             center(Point.fromLngLat(lon, lat))
@@ -161,7 +172,7 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            val scaffoldState = rememberBottomSheetScaffoldState()
+
             BottomSheetScaffold(scaffoldState  = scaffoldState, sheetPeekHeight = 160.dp, sheetContent ={
                 Box{
                     Column(
@@ -218,7 +229,6 @@ fun HomeScreen(
                                                     .width(340.dp),
                                                 onClick ={
                                                     val json = Uri.encode(Gson().toJson(tider.data.instant.details))
-                                                    Log.d("asdf",json)
                                                     navController.navigate("DetailsScreen/${json}")})
                                             {
 
@@ -286,6 +296,7 @@ fun HomeScreen(
                             },
                             animationOptions = MapAnimationOptions.mapAnimationOptions { duration(2000) },
                         )
+
                     }
                     MapEffect(Unit) { mapView ->
                         mapView.mapboxMap.addOnMapClickListener {
@@ -295,6 +306,7 @@ fun HomeScreen(
                             lon = it.longitude()
                             false
                         }
+                        mapView.mapboxMap.loadStyle(Style.DARK)
 
 
                     }
@@ -302,11 +314,6 @@ fun HomeScreen(
 
 
             }
-
-
-
-
-
         }
 
     }
