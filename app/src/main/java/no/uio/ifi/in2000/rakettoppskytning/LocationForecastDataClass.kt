@@ -3,6 +3,7 @@ package no.uio.ifi.in2000.rakettoppskytning
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+
 @Serializable
 data class LocationForecast(
     val type: String,
@@ -97,7 +98,7 @@ data class Instant(
     val details: Details,
 )
 @Serializable
-data class Details(
+data class Details (
     @SerialName("air_pressure_at_sea_level")
     val airPressureAtSeaLevel: Double,
     @SerialName("air_temperature")
@@ -132,7 +133,15 @@ data class Details(
     val windSpeedPercentile10: Double,
     @SerialName("wind_speed_percentile_90")
     val windSpeedPercentile90: Double,
-)
+
+):Iterable<Any?>{
+     override fun iterator(): Iterator<Any?> {
+        return listOf(airPressureAtSeaLevel, airTemperature, airTemperaturePercentile10,airTemperaturePercentile90,
+            cloudAreaFraction,cloudAreaFractionHigh,cloudAreaFractionLow,cloudAreaFractionMedium,dewPointTemperature,fogAreaFraction,relativeHumidity,
+            ultravioletIndexClearSky,windFromDirection,windSpeed,windSpeedOfGust,windSpeedPercentile10,windSpeedPercentile90).iterator()
+    }
+
+}
 @Serializable
 data class Next12Hours(
     val summary: Summary,
