@@ -67,11 +67,13 @@ dependencies {
     val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
 
-    val CONSTANTS ="11.2.0"
+
+    val constants ="11.2.0"
+
     //MapBox
-    implementation("com.mapbox.maps:android:$CONSTANTS")
+    implementation("com.mapbox.maps:android:$constants")
     // If you're using compose also add the compose extension
-    implementation("com.mapbox.extension:maps-compose:$CONSTANTS")
+    implementation("com.mapbox.extension:maps-compose:$constants")
 
 
 
