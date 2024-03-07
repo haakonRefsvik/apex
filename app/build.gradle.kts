@@ -1,3 +1,4 @@
+import groovy.util.logging.Slf4j
 import java.util.Properties
 
 plugins {
@@ -49,7 +50,7 @@ android {
 
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/DEPENDENCIES"
         }
     }
 
@@ -58,15 +59,17 @@ android {
 
 dependencies {
     implementation("androidx.media3:media3-common:1.2.1")
-    implementation(files("libs/GRIB2Tools.jar"))
     val ktorVersion = "2.3.8"
     val navVersion = "2.7.6"
     val kotlinVersion = "1.9.22"
     val material3Version = "3:1.2.0"
     val netcdfJavaVersion = "5.5.2"
+    val slf4jVersion = "1.7.30"
 
+    //implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
+    runtimeOnly ("org.slf4j:slf4j-jdk14:${slf4jVersion}")
 
     implementation ("io.insert-koin:koin-android:3.0.1")
     implementation ("io.insert-koin:koin-core:3.0.1")
@@ -97,7 +100,6 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation(files("libs/GRIB2Tools.jar"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
