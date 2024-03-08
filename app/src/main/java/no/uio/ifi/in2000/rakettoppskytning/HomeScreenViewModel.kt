@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,6 +25,17 @@ class HomeScreenViewModel : ViewModel(){
             foreCastRep.loadForecast(lat,lon)}
 
     }
+    private val searchHistory: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+
+    fun getSearchHistory(): StateFlow<List<String>> {
+        return searchHistory
+    }
+
+    // Function to add a new search query to the search history
+    fun addToSearchHistory(query: String) {
+        searchHistory.value = (searchHistory.value + query).takeLast(10) // Limit the history to 10 items
+    }
+
 //    init {
 //        viewModelScope.launch {
 //            foreCastRep.loadForecast(59.84,10.78)}
