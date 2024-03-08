@@ -29,11 +29,9 @@ data class Params(
     val time: String
 )
 
-suspend fun getGrib(): File{
+var lastUsedDate = ""
 
-    if(ApiKeyHolder.in2000ProxyKey == ""){
-        throw Exception("Fant ikke api-nøkkel")
-    }
+suspend fun getGrib(): File{
 
     val client = HttpClient(CIO){
 
@@ -54,17 +52,22 @@ suspend fun getGrib(): File{
     val urlAvailable: String = "weatherapi/isobaricgrib/1.0/available.json?type=grib2"
     val latestUri: List<LatestUri> = client.get(urlAvailable).body()?: throw Exception("Could not find the latest uri for the grib files")
     val chosenFile = latestUri.first()
-    val inputStream: InputStream = client.get(chosenFile.uri).body()?: throw Exception("Could not access the grib file")
 
-    val file = File.createTempFile("temp", ".grib2") // Creates a temporary file
+    if(chosenFile.params.time == lastUsedDate){
+        Log.d("GRIB", "GETS FILE FROM CACHE")
+        return File(chosenFile.params.time)
+    }
+
+    Log.d("GRIB", "MAKES NEW FILE")
+    lastUsedDate = chosenFile.params.time
+    val file = File.createTempFile(lastUsedDate, ".grib2") // Creates a temporary file
+
+
+    val inputStream: InputStream = client.get(chosenFile.uri).body()?: throw Exception("Could not access the latest grib file")
+
     FileOutputStream(file).use { outputStream ->
         inputStream.copyTo(outputStream)
     }
-
-    val r = VerticalProfile(59.90, 10.7, file)
-
-    Log.d("GRIB", r.toString())
-    Log.d("GRIB", r.getMaxSheerWind().toString())
 
     return file
 }

@@ -17,10 +17,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
 
     if(ApiKeyHolder.in2000ProxyKey == ""){
-        throw Exception("Fant ikke api-nøkkel")
+        throw Exception("Api-key not found")
     }
 
-    val Client = HttpClient(CIO) {
+    val client = HttpClient(CIO) {
 
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
@@ -40,7 +40,7 @@ suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
         "LINK",
         "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
     )
-    return Client.get("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
+    return client.get("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
         .body<LocationForecast>()
 
 

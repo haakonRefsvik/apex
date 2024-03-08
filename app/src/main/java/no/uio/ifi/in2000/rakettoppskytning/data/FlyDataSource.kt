@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 val client = HttpClient(CIO) {
 
     if(ApiKeyHolder.in2000ProxyKey == ""){
-        throw Exception("Fant ikke api-nøkkel")
+        throw Exception("Api-key not found")
     }
 
     defaultRequest {

@@ -47,7 +47,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
-
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme

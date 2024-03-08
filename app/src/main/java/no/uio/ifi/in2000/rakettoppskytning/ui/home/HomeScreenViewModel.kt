@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.getGrib
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
 data class ForeCastUiState(val foreCast: List<LocationForecast> = listOf())
@@ -59,6 +60,7 @@ class HomeScreenViewModel : ViewModel() {
         Log.d("getForecastByCord", "apicall")
         viewModelScope.launch {
             foreCastRep.loadForecast(lat, lon)
+            getGrib()
         }
 
     }
