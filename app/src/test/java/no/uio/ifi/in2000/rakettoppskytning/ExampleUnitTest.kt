@@ -1,8 +1,15 @@
 package no.uio.ifi.in2000.rakettoppskytning
+import android.util.Log
+import no.uio.ifi.in2000.rakettoppskytning.data.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.data.getShearWind
+import org.junit.Assert
 import org.junit.Test
 
 import org.junit.Assert.*
+import kotlin.math.abs
 import kotlin.math.ln
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -15,23 +22,33 @@ class ExampleUnitTest {
         assertTrue(true)
     }
 
+    @Test
     fun altitudeTest(){
-        val temperature = -1
-        val pressure = 85000
-        val referencePressure = 101325
-        val R = 8.31432 // Universal gas constant in N⋅m/(mol⋅K)
-        val M = 0.0289644 // Molar mass of Earth's air in kg/mol
-        val g = 9.80665 // Acceleration due to gravity in m/s^2
 
-        val ratio = pressure / referencePressure
-        val t1 = (R * (temperature + 273.15))
-        val t2 = ((g * M)) * ln(ratio.toDouble())
-        val altitude = t1 / t2
-        val referenceAltitude = 0.0 // Assuming reference level is sea level
-        val h =  referenceAltitude + altitude
-        val exp = 1399.513
+        val level = LevelData(10000.0)
+        level.tempValueKelvin = (-1.4 + 273.15)
 
-        assertSame("Samme?", exp, t2)
+        val h = level.getLevelHeightInMeters()
+        val expected = 18420.54
+
+        assertEquals(expected, h, 0.1)
+    }
+
+    @Test
+    fun testShearWind(){
+
+        val expected = 19.9483
+
+        val lowerLevel = LevelData(85000.0)
+        val upperLevel = LevelData(75000.0)
+        lowerLevel.uComponentValue = -10.0188
+        lowerLevel.vComponentValue = 2.61442
+        upperLevel.uComponentValue = -8.97321
+        upperLevel.vComponentValue = 3.48796
+
+        val result = getShearWind(upperLevel, lowerLevel)
+
+        assertEquals(expected, result, 0.1)
     }
 
 }
