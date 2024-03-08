@@ -129,8 +129,7 @@ obj/
 
 # API KEY
 
-data/api/API_KEY.kt
-
+API_KEY.kt
 
 # Mobile Tools for Java (J2ME)
 
