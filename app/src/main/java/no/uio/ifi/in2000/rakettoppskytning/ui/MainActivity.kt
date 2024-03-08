@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ApiKeyHolder.metApiKey = resources.getString(R.string.met_api_key)
+        ApiKeyHolder.metApiKey = resources.getString(R.string.in2000ProxyKey)
 
         setContent {
             RakettoppskytningTheme {
