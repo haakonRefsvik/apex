@@ -5,14 +5,12 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
-}
 
 android {
     namespace = "no.uio.ifi.in2000.rakettoppskytning"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "no.uio.ifi.in2000.rakettoppskytning"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -66,7 +64,6 @@ dependencies {
     val netcdfJavaVersion = "5.5.2"
     val slf4jVersion = "1.7.30"
 
-    //implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
     runtimeOnly ("org.slf4j:slf4j-jdk14:${slf4jVersion}")
@@ -90,6 +87,17 @@ dependencies {
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha02")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:$navVersion")
+
+    val navVersion = "2.7.7"
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+
+
+    val constants ="11.2.0"
+
+    //MapBox
+    implementation("com.mapbox.maps:android:$constants")
+    // If you're using compose also add the compose extension
+    implementation("com.mapbox.extension:maps-compose:$constants")
 
     implementation ("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("androidx.core:core-ktx:1.12.0")
