@@ -16,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
+import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
@@ -44,6 +46,8 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ApiKeyHolder.metApiKey = resources.getString(R.string.in2000ProxyKey)
+
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
@@ -63,9 +67,6 @@ class MainActivity : ComponentActivity() {
                             backStackEntry.arguments?.let { DetailsScreen(navController, details) }
                         }
                     }
-
-
-
                 }
             }
         }

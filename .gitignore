@@ -129,7 +129,7 @@ obj/
 
 # API KEY
 
-app/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/
+app/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/api/
 
 # Mobile Tools for Java (J2ME)
 

@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.grib
 
+import android.R
 import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,7 +12,7 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import no.uio.ifi.in2000.rakettoppskytning.data.api.API_KEY
+import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
 import java.io.FileOutputStream
@@ -29,13 +30,16 @@ data class Params(
 )
 
 suspend fun getGrib(): File{
-    val apiKey = API_KEY().getKey()
+
+    if(ApiKeyHolder.metApiKey == ""){
+        throw Exception("Fant ikke api-nøkkel")
+    }
 
     val client = HttpClient(CIO){
 
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
-            header("X-Gravitee-API-Key", apiKey)
+            header("X-Gravitee-API-Key", ApiKeyHolder.metApiKey)
         }
 
         install(ContentNegotiation){
