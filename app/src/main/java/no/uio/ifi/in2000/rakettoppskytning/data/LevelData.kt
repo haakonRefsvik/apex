@@ -1,0 +1,60 @@
+package no.uio.ifi.in2000.rakettoppskytning.data
+
+import kotlin.math.atan2
+import kotlin.math.ln
+import kotlin.math.pow
+import kotlin.math.sqrt
+
+
+/** Values for each isobaric layer, takes in a pressureLevel*/
+class LevelData(val pressurePascal: Double){
+
+    var tempValueKelvin: Double = Double.NEGATIVE_INFINITY
+    var uComponentValue: Double = Double.NEGATIVE_INFINITY
+    var vComponentValue: Double = Double.NEGATIVE_INFINITY
+
+    fun convertKelvinToCelsius(kelvin: Double): Double {
+        return kelvin - 273.15
+    }
+
+    fun getLevelHeightInMeters(seaPressurePa: Double = 101325.0): Double{
+        val m = 0.0289644
+        val r = 8.31432
+        val g = 9.8066
+
+        val c = (r * tempValueKelvin) / (m * g)
+        val a = ln((seaPressurePa / pressurePascal))
+        return c * a
+    }
+    fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {
+        return sqrt(uComponent.pow(2) + vComponent.pow(2))
+    }
+
+    fun calculateWindDirection(uComponent: Double, vComponent: Double): Double {
+        var windDirInDegrees = Math.toDegrees(atan2(uComponent, vComponent))
+        if (windDirInDegrees < 0) {
+            windDirInDegrees += 360  // Ensure the direction is in the range [0, 360)
+        }
+        return windDirInDegrees
+    }
+
+    fun getTemperatureCelsius(): Double {
+        return convertKelvinToCelsius(tempValueKelvin)
+    }
+    /** Returns wind-speed in m/s for the isobaric layer*/
+    fun getWindSpeed(): Double {
+        return calculateWindSpeed(uComponentValue, vComponentValue)
+    }
+    /** Returns wind-direction in degrees (0 is north) for the isobaric layer*/
+    fun getWindDir(): Double {
+        return calculateWindDirection(uComponentValue, vComponentValue)
+    }
+
+    fun addValue(parameterNumber: Int, value: Double){
+        when (parameterNumber) {
+            0 -> tempValueKelvin = value
+            2 -> uComponentValue = value
+            3 -> vComponentValue = value
+        }
+    }
+}

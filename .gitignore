@@ -35,6 +35,7 @@ replay_pid*
 *.ap_
 *.aab
 
+
 # Files for the ART/Dalvik VM
 *.dex
 
@@ -125,6 +126,10 @@ obj/
 .project
 .cproject
 .settings/
+
+# API KEY
+
+app/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/API_KEY.kt
 
 # Mobile Tools for Java (J2ME)
 

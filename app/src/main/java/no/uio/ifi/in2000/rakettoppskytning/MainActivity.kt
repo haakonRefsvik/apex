@@ -9,6 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import no.uio.ifi.in2000.rakettoppskytning.data.getGrib
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +22,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
+
+
 abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
     abstract fun fromJsonParse(value: String): T
     abstract fun T.getJsonParse(): String
@@ -66,4 +74,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
