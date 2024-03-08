@@ -20,8 +20,11 @@ val Client = HttpClient(CIO) {
 
 
 suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
-    Log.d("APICALL","PÅ locationForecast")
-    Log.d("wtf","https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
+    Log.d("APICALL", "PÅ locationForecast")
+    Log.d(
+        "LINK",
+        "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
+    )
     return Client.get("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
         .body<LocationForecast>()
 

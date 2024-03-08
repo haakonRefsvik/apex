@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -101,6 +102,7 @@ fun HomeScreen(
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     //val scaffoldState = rememberBottomSheetScaffoldState()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
@@ -236,7 +238,10 @@ fun HomeScreen(
                                             keyboardType = KeyboardType.Number
                                         ),
                                         keyboardActions = KeyboardActions(
-                                            onDone = { controller?.hide() }
+                                            onDone = {
+                                                controller?.hide()
+                                                focusManager.clearFocus()
+                                            }
                                         ),
                                         label = { Text("Longitude") },
                                         singleLine = true,
@@ -260,7 +265,10 @@ fun HomeScreen(
                                             keyboardType = KeyboardType.Number
                                         ),
                                         keyboardActions = KeyboardActions(
-                                            onDone = { controller?.hide() }
+                                            onDone = {
+                                                controller?.hide()
+                                                focusManager.clearFocus()
+                                            }
                                         ),
                                         label = { Text("Latitude") },
                                         singleLine = true
@@ -270,6 +278,7 @@ fun HomeScreen(
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Row {
                                     OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
+                                        controller?.hide()
                                         homeScreenViewModel.getForecastByCord(lat, lon)
                                         mapViewportState.flyTo(
                                             cameraOptions = cameraOptions {
@@ -286,6 +295,7 @@ fun HomeScreen(
                                     }
                                     Spacer(modifier = Modifier.width(25.dp))
                                     Button(modifier = Modifier.width(155.dp), onClick = {
+                                        controller?.hide()
                                         homeScreenViewModel.getForecastByCord(lat, lon)
                                         mapViewportState.flyTo(
                                             cameraOptions = cameraOptions {

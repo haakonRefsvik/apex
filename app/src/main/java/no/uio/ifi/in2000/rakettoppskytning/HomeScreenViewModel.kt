@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning
 
+import android.util.Log
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -18,11 +19,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data class ForeCastUiState(val foreCast: List<LocationForecast> = listOf())
-class HomeScreenViewModel : ViewModel(){
+class HomeScreenViewModel : ViewModel() {
     @OptIn(ExperimentalMaterial3Api::class)
-    val scaffold = BottomSheetScaffoldState(bottomSheetState = SheetState(false, initialValue = SheetValue.PartiallyExpanded,skipHiddenState=true),snackbarHostState = SnackbarHostState())
+    val scaffold = BottomSheetScaffoldState(
+        bottomSheetState = SheetState(
+            false,
+            initialValue = SheetValue.PartiallyExpanded,
+            skipHiddenState = true
+        ), snackbarHostState = SnackbarHostState()
+    )
+
     @OptIn(ExperimentalMaterial3Api::class)
-    private val _bottomSheetScaffoldState = mutableStateOf(BottomSheetScaffoldState(bottomSheetState = scaffold.bottomSheetState, snackbarHostState = SnackbarHostState()))
+    private val _bottomSheetScaffoldState = mutableStateOf(
+        BottomSheetScaffoldState(
+            bottomSheetState = scaffold.bottomSheetState,
+            snackbarHostState = SnackbarHostState()
+        )
+    )
 
     @OptIn(ExperimentalMaterial3Api::class)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
@@ -30,18 +43,22 @@ class HomeScreenViewModel : ViewModel(){
     private val _lon = mutableDoubleStateOf(10.71181022)
 
 
-    val lat : MutableState<Double> = _lat
-    val lon :MutableState<Double> = _lon
+    val lat: MutableState<Double> = _lat
+    val lon: MutableState<Double> = _lon
     private val foreCastRep: WeatherForeCastLocationRepo = WeatherForeCastLocationRepo()
 
-    val foreCastUiState: StateFlow<ForeCastUiState> = foreCastRep.observeForecast().map{ForeCastUiState(foreCast = it)}.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = ForeCastUiState()
-    )
-    fun getForecastByCord(lat: Double, lon:Double){
+    val foreCastUiState: StateFlow<ForeCastUiState> =
+        foreCastRep.observeForecast().map { ForeCastUiState(foreCast = it) }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ForeCastUiState()
+        )
+
+    fun getForecastByCord(lat: Double, lon: Double) {
+        Log.d("getForecastByCord", "apicall")
         viewModelScope.launch {
-            foreCastRep.loadForecast(lat,lon)}
+            foreCastRep.loadForecast(lat, lon)
+        }
 
     }
 //    init {
