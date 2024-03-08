@@ -1,4 +1,3 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">pk.eyJ1IjoibHVza2VybiIsImEiOiJjbHQ3am4xdXQwZGhkMmxtNzJ4YXVkNDByIn0.rfn-xw2XnBvWohfmFwbGAA</string>
+<resources>
     <string name="app_name">rakettoppskytning</string>
 </resources>
