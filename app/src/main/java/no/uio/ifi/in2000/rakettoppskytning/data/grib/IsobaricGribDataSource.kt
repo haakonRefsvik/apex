@@ -11,7 +11,6 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import no.uio.ifi.in2000.rakettoppskytning.data.api.API_KEY
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
 import java.io.FileOutputStream
