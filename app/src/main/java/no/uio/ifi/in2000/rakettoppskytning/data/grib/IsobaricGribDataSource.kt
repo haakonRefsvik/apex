@@ -35,7 +35,6 @@ suspend fun getGrib(): File{
         throw Exception("Fant ikke api-nøkkel")
     }
 
-
     val client = HttpClient(CIO){
 
         defaultRequest {
