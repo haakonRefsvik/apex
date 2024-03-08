@@ -129,7 +129,7 @@ obj/
 
 # API KEY
 
-app/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/API_KEY.kt
+app/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/
 
 # Mobile Tools for Java (J2ME)
 
@@ -159,5 +159,4 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,kotlin
-/app/src/main/res/values/
 /app/src/main/res/values/
