@@ -39,7 +39,9 @@ fun DetailsScreen(
 
 ){
 
-
+    val detailsNavn = listOf<String>("airPressureAtSeaLevel", "airTemperature", "airTemperaturePercentile10","airTemperaturePercentile90",
+        "cloudAreaFraction","cloudAreaFractionHigh","cloudAreaFractionLow","cloudAreaFractionMedium","dewPointTemperature","fogAreaFraction","relativeHumidity",
+        "ultravioletIndexClearSky","windFromDirection","windSpeed","windSpeedOfGust","windSpeedPercentile10","windSpeedPercentile90")
     val details:List<Details> = if (backStackEntry != null) {
         listOf(backStackEntry)
 
@@ -47,8 +49,7 @@ fun DetailsScreen(
     else{
         listOf()
     }
-    Log.d("JANNE",details.size.toString())
-
+    var index: Int
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -89,21 +90,23 @@ fun DetailsScreen(
         }
     ) { innerPadding ->
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 128.dp),
+            columns = GridCells.Adaptive(minSize = 120.dp),
             modifier = Modifier.padding(innerPadding),
             contentPadding = PaddingValues(),
 
 
 
-        ) {
-             details.forEach{jepp ->
-                 jepp.forEach {
+
+        ) {index = 0
+             details.forEach{
+                 it.forEach {
                      item {
                          ElevatedCard(
                              modifier = Modifier
                                  .height(100.dp)
                                  .width(340.dp))
                          {
+                             Text(detailsNavn[index++])
                              Text(it.toString())
 
 
@@ -116,7 +119,7 @@ fun DetailsScreen(
                  }
 
              }
-
+            index = 0
 
 
             }

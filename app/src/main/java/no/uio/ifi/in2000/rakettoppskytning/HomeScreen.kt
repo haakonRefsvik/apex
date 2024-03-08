@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -37,10 +39,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,10 +73,17 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-
+fun String.isDouble(): Boolean {
+    return try {
+        this.toDouble()
+        true
+    } catch (e: NumberFormatException) {
+        false
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
+@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class, ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -80,8 +93,7 @@ fun HomeScreen(
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
-    var latText = lat.toString()
-    var lonText = lon.toString()
+    val controller = LocalSoftwareKeyboardController.current
 
     //val scaffoldState = rememberBottomSheetScaffoldState()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
@@ -96,7 +108,7 @@ fun HomeScreen(
     val mapViewportState = rememberMapViewportState {
         setCameraOptions {
             center(Point.fromLngLat(lon, lat))
-            zoom(11.0)
+            zoom(10.5)
             pitch(0.0)
         }
     }
@@ -186,24 +198,51 @@ fun HomeScreen(
 
                             val formattedInstantAfter = formatter.format(newInstant)
                             Row {
-                                TextField(value = lat.toString(), onValueChange ={value -> homeScreenViewModel.lat.value = value.toDouble()}, Modifier.width(160.dp), textStyle = TextStyle(fontSize = 12.sp))
+                                TextField(value = lat.toString(), onValueChange ={value -> if(value.isDouble()){homeScreenViewModel.lat.value = value.toDouble().coerceIn(-90.0, 90.0)}
+                                }, Modifier.width(160.dp), textStyle = TextStyle(fontSize = 12.sp),
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {controller?.hide()}
+                                    ))
                                 Spacer(modifier = Modifier.width(20.dp))
-                                TextField(value = lon.toString(), onValueChange ={value -> homeScreenViewModel.lon.value = value.toDouble()}, Modifier.width(160.dp) , textStyle = TextStyle(fontSize = 12.sp))
+                                TextField(value = lon.toString(), onValueChange ={value -> if (value.isDouble()){homeScreenViewModel.lon.value = if(value.toDouble().isInfinite()) 0.0 else value.toDouble()}}, Modifier.width(160.dp) , textStyle = TextStyle(fontSize = 12.sp),
+                                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
+                                    keyboardActions = KeyboardActions(
+                                        onDone = {controller?.hide()}
+                                    )
+                                )
 
                             }
                             Spacer(modifier = Modifier.height(5.dp))
-                            Button(onClick = {
-                                homeScreenViewModel.getForecastByCord(lat,lon)
+                            Row {
+                                Button(modifier = Modifier.width(145.dp),onClick = {
+                                    homeScreenViewModel.getForecastByCord(lat,lon)
                                     mapViewportState.flyTo(
                                         cameraOptions = cameraOptions {
-                                        center(Point.fromLngLat(lon, lat))
+                                            center(Point.fromLngLat(lon, lat))
 
-                                    },)
-                                scope.launch{
-                                    scaffoldState.bottomSheetState.expand()} }) {
-                                Text("Hent værdata")
+                                        },)
+                                    scope.launch{
+                                        scaffoldState.bottomSheetState.expand()} }) {
+                                    Text("Legg  favoritter")
+
+                                }
+                                Spacer(modifier = Modifier.width(35.dp))
+                                Button(modifier = Modifier.width(145.dp),onClick = {
+                                    homeScreenViewModel.getForecastByCord(lat,lon)
+                                    mapViewportState.flyTo(
+                                        cameraOptions = cameraOptions {
+                                            center(Point.fromLngLat(lon, lat))
+
+                                        },)
+                                    scope.launch{
+                                        scaffoldState.bottomSheetState.expand()} }) {
+                                    Text("Hent værdata")
+
+                                }
 
                             }
+
                             Spacer(modifier = Modifier.height(5.dp))
                             LazyColumn(content = { item {
                                 forecast.foreCast.forEach breaking@{
@@ -281,14 +320,6 @@ fun HomeScreen(
                 ) {
 
                     LaunchedEffect(Unit) {
-                        delay(200)
-                        mapViewportState.flyTo(
-                            cameraOptions = cameraOptions {
-                                center(Point.fromLngLat(lon, lat))
-                                zoom(10.0)
-                            },
-                            animationOptions = MapAnimationOptions.mapAnimationOptions { duration(2000) },
-                        )
 
                     }
                     MapEffect(Unit) { mapView ->
