@@ -118,7 +118,7 @@ fun HomeScreen(
     )
 
 
-    /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!!***/
+    /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
 
     val scope = rememberCoroutineScope()
