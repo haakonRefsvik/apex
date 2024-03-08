@@ -16,7 +16,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
 suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
 
-    if(ApiKeyHolder.metApiKey == ""){
+    if(ApiKeyHolder.in2000ProxyKey == ""){
         throw Exception("Fant ikke api-nøkkel")
     }
 
@@ -24,7 +24,7 @@ suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
 
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
-            header("X-Gravitee-API-Key", ApiKeyHolder.metApiKey)
+            header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
         }
 
         install(ContentNegotiation) {

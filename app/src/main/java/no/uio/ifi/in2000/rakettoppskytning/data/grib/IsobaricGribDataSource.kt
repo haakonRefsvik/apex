@@ -31,7 +31,7 @@ data class Params(
 
 suspend fun getGrib(): File{
 
-    if(ApiKeyHolder.metApiKey == ""){
+    if(ApiKeyHolder.in2000ProxyKey == ""){
         throw Exception("Fant ikke api-nøkkel")
     }
 
@@ -39,7 +39,7 @@ suspend fun getGrib(): File{
 
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
-            header("X-Gravitee-API-Key", ApiKeyHolder.metApiKey)
+            header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
         }
 
         install(ContentNegotiation){

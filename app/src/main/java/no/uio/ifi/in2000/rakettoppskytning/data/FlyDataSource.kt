@@ -14,13 +14,13 @@ import kotlinx.serialization.json.Json
 
 val client = HttpClient(CIO) {
 
-    if(ApiKeyHolder.metApiKey == ""){
+    if(ApiKeyHolder.in2000ProxyKey == ""){
         throw Exception("Fant ikke api-nøkkel")
     }
 
     defaultRequest {
         url("https://gw-uio.intark.uh-it.no/in2000/")
-        header("X-Gravitee-API-Key", ApiKeyHolder.metApiKey)
+        header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
     }
 
     install(ContentNegotiation) {
