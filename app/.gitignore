@@ -1,5 +1,5 @@
 /build
 /src/main/res/values/
-# API KEY
 
-API_KEY.kt
+# API KEY
+/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/api/API_KEY.kt
