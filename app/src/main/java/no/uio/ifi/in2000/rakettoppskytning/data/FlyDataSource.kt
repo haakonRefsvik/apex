@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning
+package no.uio.ifi.in2000.rakettoppskytning.data
 
 import android.util.Log
 import io.ktor.client.HttpClient

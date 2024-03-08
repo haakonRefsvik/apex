@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning
+package no.uio.ifi.in2000.rakettoppskytning.model
 
 import kotlinx.serialization.Serializable
 

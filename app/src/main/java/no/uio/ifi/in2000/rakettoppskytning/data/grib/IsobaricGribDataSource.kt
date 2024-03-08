@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.data
+package no.uio.ifi.in2000.rakettoppskytning.data.grib
 
 import android.util.Log
 import io.ktor.client.HttpClient
@@ -11,18 +11,11 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import ucar.nc2.grib.grib2.Grib2Gds
-import ucar.nc2.grib.grib2.Grib2Record
-import ucar.nc2.grib.grib2.Grib2RecordScanner
-import ucar.unidata.io.RandomAccessFile
+import no.uio.ifi.in2000.rakettoppskytning.data.api.API_KEY
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import kotlin.math.atan2
-import kotlin.math.ln
-import kotlin.math.pow
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 
 @Serializable

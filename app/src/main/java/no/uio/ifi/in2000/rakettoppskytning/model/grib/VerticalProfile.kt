@@ -1,15 +1,11 @@
-package no.uio.ifi.in2000.rakettoppskytning.data
+package no.uio.ifi.in2000.rakettoppskytning.model.grib
 
-import android.util.Log
 import ucar.nc2.grib.grib2.Grib2Gds
 import ucar.nc2.grib.grib2.Grib2Record
 import ucar.nc2.grib.grib2.Grib2RecordScanner
 import ucar.unidata.io.RandomAccessFile
 import java.io.File
-import kotlin.math.abs
-import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/

@@ -1,8 +1,16 @@
-package no.uio.ifi.in2000.rakettoppskytning
+package no.uio.ifi.in2000.rakettoppskytning.model.forecast
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ *
+ * Our Nordic forecasts are updated once every hour.
+ * For medium range forecasts (2–10 days) the 51 member ensemble forecast from ECMWF is used.
+ * It it updated twice pr day. Horizontal resolution is approximately 18 km.
+ * Air temperature, precipitation and wind speed are further post-processed to better represent local geographical features.
+ *
+ * */
 
 @Serializable
 data class LocationForecast(
@@ -80,7 +88,9 @@ data class Units(
 
 @Serializable
 data class Series(
+    /** Dato i ISO 8601-format; år-måned-dag(T)klokkeslett:tidssone(Z) */
     val time: String,
+    /** Værdata for det gitte tidspunktet */
     val data: Data,
 )
 @Serializable
@@ -99,38 +109,71 @@ data class Instant(
 )
 @Serializable
 data class Details (
+    /**air pressure at sea level in hectoPascal */
     @SerialName("air_pressure_at_sea_level")
     val airPressureAtSeaLevel: Double,
+
+    /**air temperature at 2m above the ground in celcius*/
     @SerialName("air_temperature")
     val airTemperature: Double,
+
+    /** 10% of the time, the temperature is x or higher*/
     @SerialName("air_temperature_percentile_10")
     val airTemperaturePercentile10: Double,
+
+    /** 90% of the time, the temperature is x or lower*/
     @SerialName("air_temperature_percentile_90")
     val airTemperaturePercentile90: Double,
+
+    /** total cloud cover for all heights in %*/
     @SerialName("cloud_area_fraction")
     val cloudAreaFraction: Double,
+
+    /**cloud cover higher than 5000m above the ground in %*/
     @SerialName("cloud_area_fraction_high")
     val cloudAreaFractionHigh: Double,
+
+    /**cloud cover lower than 2000m above the ground in %*/
     @SerialName("cloud_area_fraction_low")
     val cloudAreaFractionLow: Double,
+
+    /**cloud cover between 2000 and 5000m above the ground in %*/
     @SerialName("cloud_area_fraction_medium")
     val cloudAreaFractionMedium: Double,
+
+    /** Temperatur det begynner å dugge */
     @SerialName("dew_point_temperature")
     val dewPointTemperature: Double,
+
+    /**amount of surrounding area covered in fog (horizontal view under a 1000 meters) in %*/
     @SerialName("fog_area_fraction")
     val fogAreaFraction: Double?=null,
+
+    /**relative humidity at 2m above the ground in %*/
     @SerialName("relative_humidity")
     val relativeHumidity: Double,
+
+    /**ultraviolet index for cloud free conditions, 0 (low) to 11+ (extreme)*/
     @SerialName("ultraviolet_index_clear_sky")
     val ultravioletIndexClearSky: Double?=null,
+
+    /**direction the wind is coming from (0° is north, 90° east, etc.)*/
     @SerialName("wind_from_direction")
     val windFromDirection: Double,
+
+    /**wind speed at 10m above the ground (10 min average) in m/s*/
     @SerialName("wind_speed")
     val windSpeed: Double,
+
+    /** Vindkast max m/s. Vindkastene er målt over 3s*/
     @SerialName("wind_speed_of_gust")
     val windSpeedOfGust: Double?=null,
+
+    /** 10% of the time, the wind is x or lower*/
     @SerialName("wind_speed_percentile_10")
     val windSpeedPercentile10: Double,
+
+    /** 90% of the time, the wind is x or lower*/
     @SerialName("wind_speed_percentile_90")
     val windSpeedPercentile90: Double,
 
@@ -149,6 +192,7 @@ data class Next12Hours(
 )
 @Serializable
 data class Summary(
+    /**see WeatherIcon product*/
     @SerialName("symbol_code")
     val symbolCode: String,
     @SerialName("symbol_confidence")

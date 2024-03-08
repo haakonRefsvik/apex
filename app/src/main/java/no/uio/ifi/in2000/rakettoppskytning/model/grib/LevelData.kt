@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.data
+package no.uio.ifi.in2000.rakettoppskytning.model.grib
 
 import kotlin.math.atan2
 import kotlin.math.ln

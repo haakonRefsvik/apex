@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.data
+package no.uio.ifi.in2000.rakettoppskytning.data.api
 
 class API_KEY{
 

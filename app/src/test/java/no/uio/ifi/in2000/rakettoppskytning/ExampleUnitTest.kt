@@ -1,15 +1,9 @@
 package no.uio.ifi.in2000.rakettoppskytning
-import android.util.Log
-import no.uio.ifi.in2000.rakettoppskytning.data.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.data.getShearWind
-import org.junit.Assert
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import org.junit.Test
 
 import org.junit.Assert.*
-import kotlin.math.abs
-import kotlin.math.ln
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 /**
  * Example local unit test, which will execute on the development machine (host).

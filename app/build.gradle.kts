@@ -64,6 +64,8 @@ dependencies {
     val netcdfJavaVersion = "5.5.2"
     val slf4jVersion = "1.7.30"
 
+    implementation ("com.google.code.gson:gson:2.8.7")
+
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
     runtimeOnly("org.slf4j:slf4j-jdk14:${slf4jVersion}")
@@ -77,7 +79,6 @@ dependencies {
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.coil-kt:coil-compose:2.5.0")
-
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
     implementation("androidx.compose.material3:material$material3Version")
@@ -112,4 +113,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+
 }

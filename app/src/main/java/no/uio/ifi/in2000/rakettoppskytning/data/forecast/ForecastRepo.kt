@@ -1,9 +1,10 @@
-package no.uio.ifi.in2000.rakettoppskytning
+package no.uio.ifi.in2000.rakettoppskytning.data.forecast
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
 class WeatherForeCastLocationRepo(){
 

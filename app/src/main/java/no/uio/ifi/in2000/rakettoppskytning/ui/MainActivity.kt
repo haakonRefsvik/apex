@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning
+package no.uio.ifi.in2000.rakettoppskytning.ui
 
 import android.os.Build
 import android.os.Bundle
@@ -9,19 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.rakettoppskytning.data.getGrib
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 
 
 abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
