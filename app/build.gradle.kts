@@ -1,4 +1,5 @@
 import groovy.util.logging.Slf4j
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import java.util.Properties
 
 plugins {
@@ -17,8 +18,6 @@ android {
         versionName = "1.0"
 
         // Please ensure you have a valid API KEY for themoviedb.org↵
-        buildConfigField("String", "MET_API_KEY", )
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
