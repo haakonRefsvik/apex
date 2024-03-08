@@ -20,6 +20,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Please ensure you have a valid API KEY for themoviedb.org↵
+        buildConfigField("String", "MET_API_KEY", MET_API_KEY)
     }
 
     buildTypes {
@@ -31,6 +34,8 @@ android {
             )
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
