@@ -4,8 +4,8 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
-
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+}
 android {
     namespace = "no.uio.ifi.in2000.rakettoppskytning"
     compileSdk = 34
@@ -58,7 +58,7 @@ android {
 dependencies {
     implementation("androidx.media3:media3-common:1.2.1")
     val ktorVersion = "2.3.8"
-    val navVersion = "2.7.6"
+    val navVersion = "2.7.7"
     val kotlinVersion = "1.9.22"
     val material3Version = "3:1.2.0"
     val netcdfJavaVersion = "5.5.2"
@@ -66,10 +66,10 @@ dependencies {
 
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
-    runtimeOnly ("org.slf4j:slf4j-jdk14:${slf4jVersion}")
+    runtimeOnly("org.slf4j:slf4j-jdk14:${slf4jVersion}")
 
-    implementation ("io.insert-koin:koin-android:3.0.1")
-    implementation ("io.insert-koin:koin-core:3.0.1")
+    implementation("io.insert-koin:koin-android:3.0.1")
+    implementation("io.insert-koin:koin-core:3.0.1")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
@@ -80,7 +80,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
-    implementation ("androidx.compose.material3:material$material3Version")
+    implementation("androidx.compose.material3:material$material3Version")
     implementation("androidx.compose.material3:material$material3Version")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha05")
@@ -88,18 +88,15 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:$navVersion")
 
-    val navVersion = "2.7.7"
-    implementation("androidx.navigation:navigation-compose:$navVersion")
 
-
-    val constants ="11.2.0"
+    val constants = "11.2.0"
 
     //MapBox
     implementation("com.mapbox.maps:android:$constants")
     // If you're using compose also add the compose extension
     implementation("com.mapbox.extension:maps-compose:$constants")
 
-    implementation ("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
