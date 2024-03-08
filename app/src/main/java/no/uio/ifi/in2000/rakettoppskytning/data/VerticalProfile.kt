@@ -82,11 +82,20 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
             val temp = value.getTemperatureCelsius()
             val h = value.getLevelHeightInMeters()
 
+            /*
             r += "\n$key Pressure(Pa):"
             r += "\n    - Height (meters):  $h"
             r += "\n    - Temperature:      $temp"
             r += "\n    - WindSpeed:        $windSpeed"
             r += "\n    - WindDirection:    $windDir"
+
+
+             */
+            r += "\n$key Pressure(Pa):"
+            r += "\n    - u:    ${value.uComponentValue}"
+            r += "\n    - v:    ${value.vComponentValue}"
+            r += "\n    - t:    ${value.tempValueKelvin}"
+
         }
 
         return r

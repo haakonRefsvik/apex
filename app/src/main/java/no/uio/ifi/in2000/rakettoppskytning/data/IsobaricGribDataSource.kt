@@ -67,7 +67,7 @@ suspend fun getGrib(): File{
     val r = VerticalProfile(59.90, 10.7, file)
 
     Log.d("GRIB", r.toString())
-    Log.d("GRIB", r.getMaxSheerWind().toString())
+    Log.d("GRIB", chosenFile.params.time)
 
     return file
 }
