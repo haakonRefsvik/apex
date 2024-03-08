@@ -16,13 +16,14 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Please ensure you have a valid API KEY for themoviedb.org↵
+        buildConfigField("String", "MET_API_KEY", )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
 
-        // Please ensure you have a valid API KEY for themoviedb.org↵
-        buildConfigField("String", "MET_API_KEY", MET_API_KEY)
     }
 
     buildTypes {
