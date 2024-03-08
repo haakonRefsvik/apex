@@ -35,71 +35,71 @@ data class TimeSerie(
 data class InstantDetails(
     /**air pressure at sea level in hectoPascal */
     @SerialName("air_pressure_at_sea_level")
-    val pressureSeaLevel: Double,
+    val pressureSeaLevel: Double? = null,
 
     /**air temperature at 2m above the ground in celcius*/
     @SerialName("air_temperature")
-    val airTemperature: Double,
+    val airTemperature: Double? = null,
 
     @SerialName("air_temperature_percentile_10")
     /** 10% of the time, the temperature is x or higher*/
-    val airTemp10Percentile: Double,
+    val airTemp10Percentile: Double? = null,
 
     @SerialName("air_temperature_percentile_90")
     /** 90% of the time, the temperature is x or lower*/
-    val airTemp90Percentile: Double,
+    val airTemp90Percentile: Double? = null,
 
     /** total cloud cover for all heights in %*/
     @SerialName("cloud_area_fraction")
-    val cloudinessPercent:  Double,
+    val cloudinessPercent: Double? = null,
 
     /**cloud cover higher than 5000m above the ground in %*/
     @SerialName("cloud_area_fraction_high")
-    val cloudinessPercentHigh:  Double,
+    val cloudinessPercentHigh: Double? = null,
 
     @SerialName("cloud_area_fraction_low")
     /**cloud cover lower than 2000m above the ground in %*/
-    val cloudinessPercentLow:  Double,
+    val cloudinessPercentLow: Double? = null,
 
     @SerialName("cloud_area_fraction_medium")
     /**cloud cover between 2000 and 5000m above the ground in %*/
-    val cloudinessPercentMedium:  Double,
+    val cloudinessPercentMedium: Double? = null,
 
     @SerialName("dew_point_temperature")
     /** Temperatur det begynner å dugge */
-    val dewPointTemperature: Double,
+    val dewPointTemperature: Double? = null,
 
     @SerialName("fog_area_fraction")
     /**amount of surrounding area covered in fog (horizontal view under a 1000 meters) in %*/
-    val fogPercent:  Double ?= null,
+    val fogPercent: Double? = null,
 
     @SerialName("relative_humidity")
     /**relative humidity at 2m above the ground in %*/
-    val relativeHumidity:  Double,
+    val relativeHumidity: Double? = null,
 
     @SerialName("ultraviolet_index_clear_sky")
     /**ultraviolet index for cloud free conditions, 0 (low) to 11+ (extreme)*/
-    val uvIndexClearSky:  Double ?= null,
+    val uvIndexClearSky: Double? = null,
 
     @SerialName("wind_from_direction")
     /**direction the wind is coming from (0° is north, 90° east, etc.)*/
-    val windFromDirection:  Double,
+    val windFromDirection: Double? = null,
 
     @SerialName("wind_speed")
     /**wind speed at 10m above the ground (10 min average) in m/s*/
-    val windSpeed:  Double,
+    val windSpeed: Double? = null,
 
     @SerialName("wind_speed_of_gust")
     /** Vindkast max m/s. Vindkastene er målt over 3s*/
-    val windGustSpeed:  Double ?= null,
+    val windGustSpeed: Double? = null,
 
     @SerialName("wind_speed_percentile_10")
     /** 10% of the time, the wind is x or lower*/
-    val windSpeed10Percentile:  Double,
+    val windSpeed10Percentile: Double? = null,
 
     @SerialName("wind_speed_percentile_90")
     /** 90% of the time, the wind is x or lower*/
-    val windSpeed90Percentile:  Double
+    val windSpeed90Percentile: Double? = null,
 
 )
 
