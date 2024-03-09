@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.grib
 
+import android.util.Log
 import ucar.nc2.grib.grib2.Grib2Gds
 import ucar.nc2.grib.grib2.Grib2Record
 import ucar.nc2.grib.grib2.Grib2RecordScanner
@@ -114,6 +115,8 @@ fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double,
         val parameterNumber = gr2.pds.parameterNumber
         val drs = gr2.dataRepresentationSection
         val data = gr2.readData(raf, drs.startingPosition)
+        Log.d("index", "i: ${drs.startingPosition}")
+
         val index: Int = getDataIndexFromLatLon(lat, lon, gr2.gds?: throw Exception("Grib Definition Section not found"))
         val value = data[index].toDouble()
         addLevelToMap(verticalMap, value, levelPa, parameterNumber)
@@ -156,7 +159,8 @@ fun getDataIndexFromLatLon(lat: Double, lon: Double, gds: Grib2Gds): Int {
         throw IndexOutOfBoundsException("You have to be inside of $startX, $startY and ${gridDef.endX}, ${gridDef.endY}")
     }
 
-    return ix + (iy * nx) // returns the correct index
+
+    return index// returns the correct index
 }
 
 fun getStandardDate(day: Int, month: Int, year: Int): String {
