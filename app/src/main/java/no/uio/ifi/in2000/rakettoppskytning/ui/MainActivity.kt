@@ -1,14 +1,36 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +39,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.R.*
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
@@ -42,11 +65,12 @@ class DetailsArgType : JsonNavType<Details>() {
 
     override fun Details.getJsonParse(): String = Gson().toJson(this)
 }
+
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
+        ApiKeyHolder.in2000ProxyKey = resources.getString(string.in2000ProxyKey)
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
@@ -57,12 +81,18 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
 
                     NavHost(navController = navController, startDestination = "HomeScreen") {
-                        composable("HomeScreen") { HomeScreen(navController) }
+                        composable("HomeScreen") {
+                            HomeScreen(
+                                navController,
+                                context = application
+                            )
+                        }
                         composable(
                             "DetailsScreen/{details}",
                             arguments = listOf(navArgument("details") { type = DetailsArgType() })
                         ) { backStackEntry ->
-                            val details = backStackEntry.arguments?.getString("details")?.let { Gson().fromJson(it, Details::class.java) }
+                            val details = backStackEntry.arguments?.getString("details")
+                                ?.let { Gson().fromJson(it, Details::class.java) }
                             backStackEntry.arguments?.let { DetailsScreen(navController, details) }
                         }
                     }
