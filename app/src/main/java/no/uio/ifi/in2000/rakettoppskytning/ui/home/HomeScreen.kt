@@ -363,90 +363,90 @@ fun HomeScreen(
                 }) {
 
 
-                MapboxMap(
-                    Modifier.fillMaxSize(),
-                    gesturesSettings = mapBoxUiSettings,
-                    mapViewportState = MapViewportState().apply {
-                        setCameraOptions {
-                            zoom(10.0)
-                            center(Point.fromLngLat(lon, lat))
-                            pitch(0.0)
-
-                        }
-                    }
-
-                ) {
-                    var s by remember {
-                        mutableStateOf((viewAnnotationOptions {
-                            geometry(Point.fromLngLat(lon, lat))
-                            annotationAnchors(
-                                {
-                                    anchor(ViewAnnotationAnchor.CENTER)
-                                }
-                            )
-                            height(60.0)
-                            visible(false)
-
-
-                            allowOverlap(false)
-
-                        }))
-                    }
-
-
-                    MapEffect(Unit) { mapView ->
-
-                        mapView.mapboxMap.styleDataLoadedEvents
-
-
-                        mapView.mapboxMap.addOnMapClickListener {
-                            Log.d("s", "${it.latitude()},${it.longitude()}")
-                            homeScreenViewModel.lat.value = it.latitude()
-                            homeScreenViewModel.lon.value = it.longitude()
-
-
-                            s = viewAnnotationOptions {
-                                geometry(Point.fromLngLat(lon, lat))
-                                annotationAnchors(
-                                    {
-                                        anchor(ViewAnnotationAnchor.CENTER)
-                                    }
-                                )
-                                height(100.0)
-                                visible(true)
-
-
-                                allowOverlap(false)
-
-                            }
-
-
-
-                            true
-                        }
-
-                        // mapView.mapboxMap.addOnScaleListener (listener = )
-                    }
-
-
-
-
-
-
-
-
-                    ViewAnnotation(
-                        options = s
-                    ) {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Image(painterResource(id = R.drawable.rakkettpin), "RakketPin")
-
-
-                        }
-                    }
-
-                }
-
+//                MapboxMap(
+//                    Modifier.fillMaxSize(),
+//                    gesturesSettings = mapBoxUiSettings,
+//                    mapViewportState = MapViewportState().apply {
+//                        setCameraOptions {
+//                            zoom(10.0)
+//                            center(Point.fromLngLat(lon, lat))
+//                            pitch(0.0)
+//
+//                        }
+//                    }
+//
+//                ) {
+//                    var s by remember {
+//                        mutableStateOf((viewAnnotationOptions {
+//                            geometry(Point.fromLngLat(lon, lat))
+//                            annotationAnchors(
+//                                {
+//                                    anchor(ViewAnnotationAnchor.CENTER)
+//                                }
+//                            )
+//                            height(60.0)
+//                            visible(false)
+//
+//
+//                            allowOverlap(false)
+//
+//                        }))
+//                    }
+//
+//
+//                    MapEffect(Unit) { mapView ->
+//
+//                        mapView.mapboxMap.styleDataLoadedEvents
+//
+//
+//                        mapView.mapboxMap.addOnMapClickListener {
+//                            Log.d("s", "${it.latitude()},${it.longitude()}")
+//                            homeScreenViewModel.lat.value = it.latitude()
+//                            homeScreenViewModel.lon.value = it.longitude()
+//
+//
+//                            s = viewAnnotationOptions {
+//                                geometry(Point.fromLngLat(lon, lat))
+//                                annotationAnchors(
+//                                    {
+//                                        anchor(ViewAnnotationAnchor.CENTER)
+//                                    }
+//                                )
+//                                height(100.0)
+//                                visible(true)
+//
+//
+//                                allowOverlap(false)
+//
+//                            }
+//
+//
+//
+//                            true
+//                        }
+//
+//                        // mapView.mapboxMap.addOnScaleListener (listener = )
+//                    }
+//
+//
+//
+//
+//
+//
+//
+//
+//                    ViewAnnotation(
+//                        options = s
+//                    ) {
+//                        IconButton(onClick = { /*TODO*/ }) {
+//                            Image(painterResource(id = R.drawable.rakkettpin), "RakketPin")
+//
+//
+//                        }
+//                    }
+//
+//                }
+//
 
             }
 

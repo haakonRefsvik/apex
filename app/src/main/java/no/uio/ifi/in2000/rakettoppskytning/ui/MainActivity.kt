@@ -17,7 +17,7 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.R.string
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
+import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
@@ -37,10 +37,11 @@ abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
     }
 }
 
-class DataArgType : JsonNavType<Data>() {
-    override fun fromJsonParse(value: String): Data = Gson().fromJson(value, Data::class.java)
+class DataArgType : JsonNavType<WeatherDetails>() {
+    override fun fromJsonParse(value: String): WeatherDetails =
+        Gson().fromJson(value, WeatherDetails::class.java)
 
-    override fun Data.getJsonParse(): String = Gson().toJson(this)
+    override fun WeatherDetails.getJsonParse(): String = Gson().toJson(this)
 }
 
 class MainActivity : ComponentActivity() {
@@ -64,12 +65,17 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(
-                            "DetailsScreen/{data}",
-                            arguments = listOf(navArgument("data") { type = DataArgType() })
+                            "DetailsScreen/{weatherdata}",
+                            arguments = listOf(navArgument("weatherdata") { type = DataArgType() })
                         ) { backStackEntry ->
-                            val data = backStackEntry.arguments?.getString("data")
-                                ?.let { Gson().fromJson(it, Data::class.java) }
-                            backStackEntry.arguments?.let { DetailsScreen(navController, data) }
+                            val weatherdata = backStackEntry.arguments?.getString("weatherdata")
+                                ?.let { Gson().fromJson(it, WeatherDetails::class.java) }
+                            backStackEntry.arguments?.let {
+                                DetailsScreen(
+                                    navController,
+                                    weatherdata
+                                )
+                            }
                         }
                     }
                 }

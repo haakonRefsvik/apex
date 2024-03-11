@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -44,6 +46,7 @@ import java.time.temporal.ChronoUnit
 fun WeatherColumn(navController: NavHostController, homeScreenViewModel: HomeScreenViewModel) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
+    val verticalProfile by homeScreenViewModel.verticalProfileUiState.collectAsState()
 
     val currentInstant = Instant.now()
     val formatter = DateTimeFormatter.ISO_INSTANT
@@ -69,8 +72,14 @@ fun WeatherColumn(navController: NavHostController, homeScreenViewModel: HomeScr
                                 .height(80.dp)
                                 .width(340.dp),
                             onClick = {
+
+                                val profile = verticalProfile.verticalProfiles.find {
+                                    it.time == tider.time
+                                }
+
+                                val s = profile?.let { WeatherDetails(tider.data, it) }
                                 val json =
-                                    Uri.encode(Gson().toJson(tider.data))
+                                    Uri.encode(Gson().toJson(s))
                                 navController.navigate("DetailsScreen/${json}")
                             }
                         )
