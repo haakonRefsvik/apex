@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
                         composable("HomeScreen") {
                             HomeScreen(
                                 navController,
-                                context = application
                             )
                         }
                         composable(
