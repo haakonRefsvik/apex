@@ -29,6 +29,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
@@ -58,6 +60,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
@@ -274,13 +277,13 @@ fun HomeScreen(
                             {
 
 
-                                val currentInstant = Instant.now().plus(1, ChronoUnit.HOURS)
+                                val currentInstant = Instant.now()
                                 val formatter = DateTimeFormatter.ISO_INSTANT
 
 
                                 val formattedInstant = formatter.format(currentInstant)
 
-                                val newInstant = currentInstant.plus(6, ChronoUnit.HOURS)
+                                val newInstant = currentInstant.plus(7, ChronoUnit.HOURS)
 
                                 val formattedInstantAfter = formatter.format(newInstant)
                                 Row {
@@ -383,10 +386,15 @@ fun HomeScreen(
                                     content = {
                                         favoritter.forEach {
                                             item {
-                                                ElevatedCard(modifier = Modifier.height(50.dp)) {
+                                                ElevatedCard(
+                                                    modifier = Modifier
+                                                        .height(80.dp)
+                                                        .width(120.dp)
+                                                ) {
                                                     Text(it)
 
                                                 }
+                                                Spacer(modifier = Modifier.width(20.dp))
                                             }
                                         }
                                     })
@@ -424,7 +432,13 @@ fun HomeScreen(
                                                                 fontSize = 20.sp,
                                                                 fontWeight = FontWeight.Bold
                                                             )
-                                                            Spacer(modifier = Modifier.width(55.dp))
+                                                            Spacer(modifier = Modifier.width(27.5.dp))
+                                                            Icon(
+                                                                modifier = Modifier.rotate((tider.data.instant.details.windFromDirection + 90.0).toFloat()),
+                                                                imageVector = Icons.Outlined.ArrowForward,
+                                                                contentDescription = "windFromDirection"
+                                                            )
+                                                            Spacer(modifier = Modifier.width(15.dp))
                                                             tider.data.next1Hours?.summary?.let {
                                                                 Image(
                                                                     modifier = Modifier.size(55.dp),
@@ -437,10 +451,12 @@ fun HomeScreen(
                                                                     contentDescription = it.symbolCode
                                                                 )
                                                             }
-                                                            Spacer(modifier = Modifier.width(10.dp))
+
+
+
                                                             Icon(
-                                                                modifier = Modifier.size(35.dp),
-                                                                imageVector = Icons.Default.KeyboardArrowRight,
+                                                                modifier = Modifier.size(20.dp),
+                                                                imageVector = Icons.Outlined.KeyboardArrowRight,
                                                                 contentDescription = "Arrow"
                                                             )
 

@@ -2,16 +2,21 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.ClickableText
@@ -36,9 +41,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -54,32 +61,32 @@ fun DetailsScreen(
 
     ) {
 
-    val detailsNavn = listOf<String>(
-        "airPressureAtSeaLevel",
-        "airTemperature",
-        "airTemperaturePercentile10",
-        "airTemperaturePercentile90",
-        "cloudAreaFraction",
-        "cloudAreaFractionHigh",
-        "cloudAreaFractionLow",
-        "cloudAreaFractionMedium",
-        "dewPointTemperature",
-        "fogAreaFraction",
-        "relativeHumidity",
-        "ultravioletIndexClearSky",
-        "windFromDirection",
-        "windSpeed",
-        "windSpeedOfGust",
-        "windSpeedPercentile10",
-        "windSpeedPercentile90"
-    )
+//    val detailsNavn = listOf<String>(
+//        "airPressureAtSeaLevel",
+//        "airTemperature",
+//        "airTemperaturePercentile10",
+//        "airTemperaturePercentile90",
+//        "cloudAreaFraction",
+//        "cloudAreaFractionHigh",
+//        "cloudAreaFractionLow",
+//        "cloudAreaFractionMedium",
+//        "dewPointTemperature",
+//        "fogAreaFraction",
+//        "relativeHumidity",
+//        "ultravioletIndexClearSky",
+//        "windFromDirection",
+//        "windSpeed",
+//        "windSpeedOfGust",
+//        "windSpeedPercentile10",
+//        "windSpeedPercentile90"
+//    )
     val details: List<Details> = if (backStackEntry != null) {
         listOf(backStackEntry)
 
     } else {
         listOf()
     }
-    var index: Int
+
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -88,6 +95,7 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
+
                 actions = {
                     IconButton(onClick = { }) {
                         Icon(
@@ -162,35 +170,267 @@ fun DetailsScreen(
             }
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 120.dp),
-            modifier = Modifier.padding(innerPadding),
-            contentPadding = PaddingValues(),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (details.isEmpty()) {
+                Text("Her var det tomt")
+            }
+            details.forEach { details ->
+
+                Spacer(modifier = Modifier.height(20.dp))
+                ElevatedCard(
+
+                    modifier = Modifier
+                        .height(140.dp)
+                        .width(340.dp)
+                ) {
+                    Row {
+                        Column {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(10.dp)
+                            )
+                        }
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(30.dp),
+                                    painter = painterResource(R.drawable.vind2),
+                                    contentDescription = "VindSymbol"
+                                )
 
 
-            ) {
-            index = 0
-            details.forEach {
-                it.forEach {
-                    item {
-                        ElevatedCard(
-                            modifier = Modifier
-                                .height(100.dp)
-                                .width(340.dp)
-                        )
-                        {
-                            Text(detailsNavn[index++])
-                            Text(it.toString())
+                            }
+                            Spacer(
+                                modifier = Modifier
+                                    .height(21.dp)
+                                    .width(200.dp)
+                            )
+                            Text(text = "${details.windSpeed} m/s vind")
 
+                            Spacer(
+                                modifier = Modifier
+                                    .height(0.3.dp)
+                                    .width(200.dp)
+                                    .background(MaterialTheme.colorScheme.onBackground)
+
+                            )
+                            Text(text = "${details.windSpeedOfGust} m/s vindkast")
+
+                        }
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(text = "N", modifier = Modifier.padding(bottom = 60.dp))
+                                Text(text = "S", modifier = Modifier.padding(top = 60.dp))
+
+                                Text(text = "V", modifier = Modifier.padding(end = 60.dp))
+                                Text(text = "Ø", modifier = Modifier.padding(start = 60.dp))
+                                Icon(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .rotate(270.0F + details.windFromDirection.toFloat()),
+                                    painter = painterResource(R.drawable.kompasspil),
+                                    contentDescription = "kompasspil"
+                                )
+
+                                Icon(
+                                    painter = painterResource(R.drawable.kompass),
+                                    contentDescription = "Kompass",
+                                    modifier = Modifier.size(100.dp)
+                                )
+                                Icon(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .rotate(270.0F + details.windFromDirection.toFloat()),
+                                    painter = painterResource(R.drawable.kompasspil),
+                                    contentDescription = "kompasspil"
+                                )
+
+
+                            }
 
                         }
 
+
                     }
 
-                }
 
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+                Row {
+                    LazyColumn(modifier = Modifier.height(437.dp), content = {
+                        item {
+
+
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(125.dp)
+                                    .width(150.dp)
+                            ) {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(35.dp),
+                                        painter = painterResource(R.drawable.temp),
+                                        contentDescription = "Temperatursymbol"
+                                    )
+                                    Text(
+                                        text = "${details.airTemperature} ℃",
+                                        modifier = Modifier.padding(start = 10.dp, top = 15.dp),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(125.dp)
+                                    .width(150.dp)
+                            ) {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(30.dp),
+                                        painter = painterResource(R.drawable.trykk),
+                                        contentDescription = "Trykk"
+                                    )
+                                    Text(
+                                        text = "${details.airPressureAtSeaLevel} hPa",
+                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(125.dp)
+                                    .width(150.dp)
+                            ) {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(30.dp),
+                                        painter = painterResource(R.drawable.eye),
+                                        contentDescription = "Øye/sikt"
+                                    )
+                                    Text(
+                                        text = "${details.fogAreaFraction} %",
+                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+
+                            }
+
+
+                        }
+                    })
+                    Spacer(modifier = Modifier.width(40.dp))
+
+
+                    LazyColumn(modifier = Modifier.height(437.dp), content = {
+                        item {
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(125.dp)
+                                    .width(150.dp)
+                            ) {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(30.dp),
+                                        painter = painterResource(R.drawable.luftfuktighet),
+                                        contentDescription = "Luftfuktighet"
+                                    )
+                                    Text(
+                                        text = "${details.relativeHumidity}%",
+                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(125.dp)
+                                    .width(150.dp)
+                            ) {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(30.dp),
+                                        painter = painterResource(R.drawable.fogsymbol),
+                                        contentDescription = "Tåke"
+                                    )
+                                    Text(
+                                        text = "${details.cloudAreaFraction}%",
+                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(125.dp)
+                                    .width(150.dp)
+                            ) {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(30.dp),
+                                        painter = painterResource(R.drawable.vann),
+                                        contentDescription = "Vann"
+                                    )
+                                    Text(
+                                        text = "N/A mm",
+                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                }
+
+
+                            }
+
+                        }
+                    })
+
+
+                }
             }
-            index = 0
 
 
         }
