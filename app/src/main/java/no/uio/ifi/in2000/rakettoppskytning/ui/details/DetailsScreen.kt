@@ -1,14 +1,10 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
-import android.graphics.drawable.Icon
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,12 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
@@ -50,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +51,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 fun DetailsScreen(
     navController: NavHostController,
 
-    backStackEntry: Details?,
+    backStackEntry: Data?,
 
     ) {
 
@@ -80,7 +74,7 @@ fun DetailsScreen(
 //        "windSpeedPercentile10",
 //        "windSpeedPercentile90"
 //    )
-    val details: List<Details> = if (backStackEntry != null) {
+    val data: List<Data> = if (backStackEntry != null) {
         listOf(backStackEntry)
 
     } else {
@@ -176,10 +170,10 @@ fun DetailsScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (details.isEmpty()) {
+            if (data.isEmpty()) {
                 Text("Her var det tomt")
             }
-            details.forEach { details ->
+            data.forEach { data ->
 
                 Spacer(modifier = Modifier.height(20.dp))
                 ElevatedCard(
@@ -212,7 +206,7 @@ fun DetailsScreen(
                                     .height(21.dp)
                                     .width(200.dp)
                             )
-                            Text(text = "${details.windSpeed} m/s vind")
+                            Text(text = "${data.instant.details.windSpeed} m/s vind")
 
                             Spacer(
                                 modifier = Modifier
@@ -221,7 +215,7 @@ fun DetailsScreen(
                                     .background(MaterialTheme.colorScheme.onBackground)
 
                             )
-                            Text(text = "${details.windSpeedOfGust} m/s vindkast")
+                            Text(text = "${data.instant.details.windSpeedOfGust} m/s vindkast")
 
                         }
                         Column(
@@ -238,7 +232,7 @@ fun DetailsScreen(
                                 Icon(
                                     modifier = Modifier
                                         .width(50.dp)
-                                        .rotate(270.0F + details.windFromDirection.toFloat()),
+                                        .rotate(270.0F + data.instant.details.windFromDirection.toFloat()),
                                     painter = painterResource(R.drawable.kompasspil),
                                     contentDescription = "kompasspil"
                                 )
@@ -251,7 +245,7 @@ fun DetailsScreen(
                                 Icon(
                                     modifier = Modifier
                                         .width(50.dp)
-                                        .rotate(270.0F + details.windFromDirection.toFloat()),
+                                        .rotate(270.0F + data.instant.details.windFromDirection.toFloat()),
                                     painter = painterResource(R.drawable.kompasspil),
                                     contentDescription = "kompasspil"
                                 )
@@ -285,7 +279,7 @@ fun DetailsScreen(
                                         contentDescription = "Temperatursymbol"
                                     )
                                     Text(
-                                        text = "${details.airTemperature} ℃",
+                                        text = "${data.instant.details.airTemperature} ℃",
                                         modifier = Modifier.padding(start = 10.dp, top = 15.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -310,7 +304,7 @@ fun DetailsScreen(
                                         contentDescription = "Trykk"
                                     )
                                     Text(
-                                        text = "${details.airPressureAtSeaLevel} hPa",
+                                        text = "${data.instant.details.airPressureAtSeaLevel} hPa",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -334,7 +328,7 @@ fun DetailsScreen(
                                         contentDescription = "Øye/sikt"
                                     )
                                     Text(
-                                        text = "${details.fogAreaFraction} %",
+                                        text = "${data.instant.details.fogAreaFraction} %",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -366,7 +360,7 @@ fun DetailsScreen(
                                         contentDescription = "Luftfuktighet"
                                     )
                                     Text(
-                                        text = "${details.relativeHumidity}%",
+                                        text = "${data.instant.details.relativeHumidity}%",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -390,7 +384,7 @@ fun DetailsScreen(
                                         contentDescription = "Tåke"
                                     )
                                     Text(
-                                        text = "${details.cloudAreaFraction}%",
+                                        text = "${data.instant.details.cloudAreaFraction}%",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -414,7 +408,7 @@ fun DetailsScreen(
                                         contentDescription = "Vann"
                                     )
                                     Text(
-                                        text = "N/A mm",
+                                        text = "${data.next6Hours?.details?.precipitationAmount} mm",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
