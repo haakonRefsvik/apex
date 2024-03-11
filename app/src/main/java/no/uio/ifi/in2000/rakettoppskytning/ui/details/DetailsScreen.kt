@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -105,7 +106,6 @@ fun DetailsScreen(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "ArrowBack"
                         )
-
                     }
                 },
                 title = {
@@ -182,7 +182,7 @@ fun DetailsScreen(
                     .width(340.dp)
             ) {
                 data.forEach {
-                    val profile = it.verticalProfile.getMaxSheerWind()
+                    Log.d("DetailScreen", it.verticalProfile.size.toString())
 
                     Row {
                         Column {
@@ -208,7 +208,7 @@ fun DetailsScreen(
                                     .height(21.dp)
                                     .width(200.dp)
                             )
-                            Text(text = "Max Shearwind = $profile")
+                            Text(text = "Max Shearwind")
 
                             Spacer(
                                 modifier = Modifier

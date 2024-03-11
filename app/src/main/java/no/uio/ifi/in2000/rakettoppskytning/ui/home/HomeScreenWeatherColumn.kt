@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
@@ -72,14 +74,11 @@ fun WeatherColumn(navController: NavHostController, homeScreenViewModel: HomeScr
                                 .height(80.dp)
                                 .width(340.dp),
                             onClick = {
+                                val s =  WeatherDetails(tider.data, verticalProfile.verticalProfiles)
 
-                                val profile = verticalProfile.verticalProfiles.find {
-                                    it.time == tider.time
-                                }
+                                //Log.d("WD", s.verticalProfile.toString())
 
-                                val s = profile?.let { WeatherDetails(tider.data, it) }
-                                val json =
-                                    Uri.encode(Gson().toJson(s))
+                                val json = Uri.encode(GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(s))
                                 navController.navigate("DetailsScreen/${json}")
                             }
                         )

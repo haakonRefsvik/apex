@@ -34,11 +34,13 @@ class WeatherForeCastLocationRepo(){
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
         } catch (e: Exception) {
+            Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
 
         val allProfiles = mutableListOf<VerticalProfile>()
-        val groundLevel = _forecast.value.first()
+        val groundLevel = _forecast.value.firstOrNull()?: getForecast(lat, lon)
+
         val timeSeriesMap = groundLevel.properties.timeseries.associateBy { it.time }
 
         // Adds ground-level data to the vertical profile
@@ -64,5 +66,6 @@ class WeatherForeCastLocationRepo(){
         }
 
         _verticalProfiles.update { allProfiles }
+        Log.d("Verticalprofile", "Shearwind: ${allProfiles.first().getMaxSheerWind()}")
     }
 }

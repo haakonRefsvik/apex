@@ -229,12 +229,8 @@ fun HomeScreen(
 
                         content =
                         {
-
-
                             val currentInstant = Instant.now()
                             val formatter = DateTimeFormatter.ISO_INSTANT
-
-
                             val formattedInstant = formatter.format(currentInstant)
 
                             val newInstant = currentInstant.plus(7, ChronoUnit.HOURS)
@@ -299,7 +295,7 @@ fun HomeScreen(
                             Row {
                                 OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
                                     controller?.hide()
-                                    homeScreenViewModel.getForecastByCord(lat, lon)
+                                    homeScreenViewModel.getVerticalProfileByCord(lat, lon)
                                     mapViewportState.flyTo(
                                         cameraOptions = cameraOptions {
                                             center(Point.fromLngLat(lon, lat))
@@ -317,6 +313,7 @@ fun HomeScreen(
                                 Button(modifier = Modifier.width(155.dp), onClick = {
                                     controller?.hide()
                                     homeScreenViewModel.getForecastByCord(lat, lon)
+                                    homeScreenViewModel.getVerticalProfileByCord(lat, lon)
                                     mapViewportState.flyTo(
                                         cameraOptions = cameraOptions {
                                             center(Point.fromLngLat(lon, lat))

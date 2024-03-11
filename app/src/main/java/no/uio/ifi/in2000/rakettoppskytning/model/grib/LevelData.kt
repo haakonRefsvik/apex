@@ -9,10 +9,10 @@ import kotlin.math.sqrt
 /** Values for each isobaric layer, takes in a pressureLevel*/
 class LevelData(val pressurePascal: Double){
 
-    var tempValueKelvin: Double = Double.NEGATIVE_INFINITY
-    var uComponentValue: Double = Double.NEGATIVE_INFINITY
-    var vComponentValue: Double = Double.NEGATIVE_INFINITY
-    var seaPressurePa: Double = Double.NEGATIVE_INFINITY
+    var tempValueKelvin: Double = 0.0
+    var uComponentValue: Double = 0.0
+    var vComponentValue: Double = 0.0
+    var seaPressurePa: Double = 0.0
     fun convertKelvinToCelsius(kelvin: Double): Double {
         return kelvin - 273.15
     }
