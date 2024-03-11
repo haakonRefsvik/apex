@@ -2,10 +2,8 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.ArrowForward
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,26 +22,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherColumn(navController: NavHostController, homeScreenViewModel: HomeScreenViewModel) {
+fun WeatherList(navController: NavHostController, homeScreenViewModel: HomeScreenViewModel) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
     val verticalProfile by homeScreenViewModel.verticalProfileUiState.collectAsState()

@@ -6,5 +6,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 
 data class WeatherDetails(
-    @Expose val forecastData: Data,
-    @Expose(serialize = false)  val verticalProfile: List<VerticalProfile>)
+    val forecastData: Data,
+    val verticalProfile: List<VerticalProfile>
+)

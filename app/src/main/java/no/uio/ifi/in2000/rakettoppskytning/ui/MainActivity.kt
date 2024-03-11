@@ -23,27 +23,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 
-abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
-    abstract fun fromJsonParse(value: String): T
-    abstract fun T.getJsonParse(): String
-
-    override fun get(bundle: Bundle, key: String): T? =
-        bundle.getString(key)?.let { parseValue(it) }
-
-    override fun parseValue(value: String): T = fromJsonParse(value)
-
-    override fun put(bundle: Bundle, key: String, value: T) {
-        bundle.putString(key, value.getJsonParse())
-    }
-}
-
-class DataArgType : JsonNavType<WeatherDetails>() {
-    override fun fromJsonParse(value: String): WeatherDetails =
-        Gson().fromJson(value, WeatherDetails::class.java)
-
-    override fun WeatherDetails.getJsonParse(): String = Gson().toJson(this)
-}
-
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,28 +35,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-
-                    NavHost(navController = navController, startDestination = "HomeScreen") {
-                        composable("HomeScreen") {
-                            HomeScreen(
-                                navController,
-                            )
-                        }
-                        composable(
-                            "DetailsScreen/{weatherdata}",
-                            arguments = listOf(navArgument("weatherdata") { type = DataArgType() })
-                        ) { backStackEntry ->
-                            val weatherdata = backStackEntry.arguments?.getString("weatherdata")
-                                ?.let { Gson().fromJson(it, WeatherDetails::class.java) }
-                            backStackEntry.arguments?.let {
-                                DetailsScreen(
-                                    navController,
-                                    weatherdata
-                                )
-                            }
-                        }
-                    }
+                    Navigation()
                 }
             }
         }
