@@ -91,6 +91,7 @@ fun HomeScreen(
 ) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
+    val verticalProfile by homeScreenViewModel.verticalProfileUiState.collectAsState()
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
@@ -198,20 +199,14 @@ fun HomeScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.SpaceBetween,
 
-
                             content =
                             {
-
-
                                 val currentInstant = Instant.now().plus(1, ChronoUnit.HOURS)
                                 val formatter = DateTimeFormatter.ISO_INSTANT
-
-
                                 val formattedInstant = formatter.format(currentInstant)
-
                                 val newInstant = currentInstant.plus(6, ChronoUnit.HOURS)
-
                                 val formattedInstantAfter = formatter.format(newInstant)
+
                                 Row {
                                     TextField(
                                         value = lat.toString(),
@@ -319,6 +314,7 @@ fun HomeScreen(
                                             }
                                         }
                                     })
+
                                 LazyColumn(content = {
                                     item {
                                         forecast.foreCast.forEach breaking@{ input ->
@@ -348,29 +344,18 @@ fun HomeScreen(
                                                                 it.symbolCode
                                                             )
                                                         }
-
-
                                                     }
 
                                                     Spacer(modifier = Modifier.height(7.5.dp))
-
-
                                                 } else {
                                                     return@breaking
                                                 }
-
                                             }
-
                                         }
-
                                     }
                                 })
-
-
                             })
-
                     }
-
 
                 }) {
 
@@ -411,8 +396,6 @@ fun HomeScreen(
                             pointAnnotationManager.create(pointAnnotationOptions)
                             false
                         }
-
-
                     }
                 }
 

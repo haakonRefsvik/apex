@@ -17,10 +17,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.getGrib
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 
 data class ForeCastUiState(val foreCast: List<LocationForecast> = listOf())
+data class VerticalProfileUiState(val verticalProfiles: List<VerticalProfile> = listOf())
+
+
 class HomeScreenViewModel : ViewModel() {
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -60,15 +65,30 @@ class HomeScreenViewModel : ViewModel() {
         Log.d("getForecastByCord", "apicall")
         viewModelScope.launch {
             foreCastRep.loadForecast(lat, lon)
-            getGrib()
         }
-
     }
-//    init {
-//        viewModelScope.launch {
-//            foreCastRep.loadForecast(59.84,10.78)}
-//
-//
-//    }
+
+    private val gribRepo: GribRepository = GribRepository()
+
+    fun getVerticalProfileByCord(lat: Double, lon: Double) {
+        Log.d("getVerticalProfileByCord", "apicall")
+        viewModelScope.launch {
+            foreCastRep.loadVerticalProfiles(lat, lon)
+        }
+    }
+
+    val verticalProfileUiState: StateFlow<VerticalProfileUiState> =
+        foreCastRep.observeVerticalProfiles().map { VerticalProfileUiState(verticalProfiles = it) }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = VerticalProfileUiState()
+        )
+
+    init {
+        viewModelScope.launch {
+            gribRepo.loadGribFiles()
+        }
+    }
+
 
 }

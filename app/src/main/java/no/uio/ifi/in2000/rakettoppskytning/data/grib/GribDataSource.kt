@@ -1,8 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.grib
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -17,7 +15,8 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.time.Instant
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 @Serializable
@@ -32,7 +31,6 @@ data class Params(
 
 val cachedFiles = LinkedHashMap<String, File>()
 
-@RequiresApi(Build.VERSION_CODES.O)
 suspend fun getGrib(): List<File>{
 
     val client = HttpClient(CIO){
@@ -53,16 +51,11 @@ suspend fun getGrib(): List<File>{
 
     val urlAvailable = "weatherapi/isobaricgrib/1.0/available.json?type=grib2"
     val latestGribs: List<Grib> = client.get(urlAvailable).body()?: throw Exception("Could not find the latest uri for the grib files")
+    Log.d("Grib", "Updating ${latestGribs.size} grib-files...")
     updateGribCache(client, latestGribs)
 
     return cachedFiles.values.toList()
 }
-
-
-/** This function makes sure that there is a upper limit of how many
- *  Grib-files can be stored in the cache.
- *  If a new grib-file is added, the oldest one will be deleted from cache
- * */
 
 suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String): File{
     val inputStream: InputStream = client.get(grib.uri).body()?: throw Exception("Could not access the latest grib file")
@@ -74,35 +67,51 @@ suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String): File{
 
     return file
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
+/** This function makes sure that there is a upper limit of how many
+ *  Grib-files can be stored in the cache.
+ *  If a new grib-file is added, the oldest one will be deleted from cache
+ * */
 suspend fun updateGribCache(client: HttpClient, latestGribs: List<Grib>){
     latestGribs.forEach {grib ->
         val fileName = grib.params.time
 
         // Skips the file if it exists in the cache
         if (cachedFiles.containsKey(fileName)){
-            Log.d("Grib", "$fileName.grib2 already in cache")
+            Log.d("Grib", "'$fileName.grib2' already in cache")
             return@forEach
         }
 
         // Deletes the oldest grib file if the cache is full and the new grib-file have to be added
-        if (cachedFiles.size > latestGribs.size){
-            val oldestFileName = findOldestFile(cachedFiles.keys.toList())
+        if (cachedFiles.size >= latestGribs.size){
+            val oldestFileName = getOldestDate(cachedFiles.keys.toList())
             val oldestFile: File? = cachedFiles[oldestFileName]
+            Log.d("Grib", "Trying to delete '$oldestFileName.grib2'...")
             if (oldestFile?.delete() == true){
-                Log.d("Grib", "Deleted old grib-file: $oldestFileName.grib2")
+                Log.d("Grib", "Deleted old grib-file: '$oldestFileName.grib2'")
                 // Gets the oldest grib file and deletes it
             }
         }
 
-        Log.d("Grib", "Added $fileName.grib2 to cache")
+        Log.d("Grib", "Added '$fileName.grib2' to cache")
         cachedFiles[fileName] = makeFile(client, grib, fileName)
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun findOldestFile(dates: List<String>): String{
+fun getOldestDate(dates: List<String>): String{
+    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+    var oldestDate = format.parse(dates[0])
 
-    val d = dates.map { Instant.parse(it) }
-    return d.minOrNull().toString()
+    for (i in 1 until dates.size) {
+        val currentDate = format.parse(dates[i])
+        if (currentDate != null) {
+            if (currentDate.before(oldestDate)) {
+                oldestDate = currentDate
+            }
+        }
+    }
+
+    if(oldestDate == null){ throw Exception("No oldest date found")}
+
+    return format.format(oldestDate)
 }
