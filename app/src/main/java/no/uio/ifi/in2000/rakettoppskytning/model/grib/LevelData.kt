@@ -12,18 +12,24 @@ class LevelData(val pressurePascal: Double){
     var tempValueKelvin: Double = Double.NEGATIVE_INFINITY
     var uComponentValue: Double = Double.NEGATIVE_INFINITY
     var vComponentValue: Double = Double.NEGATIVE_INFINITY
-
+    var seaPressurePa: Double = Double.NEGATIVE_INFINITY
     fun convertKelvinToCelsius(kelvin: Double): Double {
         return kelvin - 273.15
     }
 
-    fun getLevelHeightInMeters(seaPressurePa: Double = 101325.0): Double{
+    fun getLevelHeightInMeters(): Double{
+        var standrardSeaPressure = 101325.5
+
+        if(seaPressurePa > 0){
+            standrardSeaPressure = seaPressurePa
+        }
+
         val m = 0.0289644
         val r = 8.31432
         val g = 9.8066
 
         val c = (r * tempValueKelvin) / (m * g)
-        val a = ln((seaPressurePa / pressurePascal))
+        val a = ln((standrardSeaPressure / pressurePascal))
         return c * a
     }
     fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {

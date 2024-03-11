@@ -9,18 +9,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
-import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.R.string
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 
 abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
@@ -37,16 +37,17 @@ abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
     }
 }
 
-class DetailsArgType : JsonNavType<Details>() {
-    override fun fromJsonParse(value: String): Details = Gson().fromJson(value, Details::class.java)
+class DataArgType : JsonNavType<Data>() {
+    override fun fromJsonParse(value: String): Data = Gson().fromJson(value, Data::class.java)
 
-    override fun Details.getJsonParse(): String = Gson().toJson(this)
+    override fun Data.getJsonParse(): String = Gson().toJson(this)
 }
+
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
+        ApiKeyHolder.in2000ProxyKey = resources.getString(string.in2000ProxyKey)
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
@@ -57,13 +58,18 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
 
                     NavHost(navController = navController, startDestination = "HomeScreen") {
-                        composable("HomeScreen") { HomeScreen(navController) }
+                        composable("HomeScreen") {
+                            HomeScreen(
+                                navController,
+                            )
+                        }
                         composable(
-                            "DetailsScreen/{details}",
-                            arguments = listOf(navArgument("details") { type = DetailsArgType() })
+                            "DetailsScreen/{data}",
+                            arguments = listOf(navArgument("data") { type = DataArgType() })
                         ) { backStackEntry ->
-                            val details = backStackEntry.arguments?.getString("details")?.let { Gson().fromJson(it, Details::class.java) }
-                            backStackEntry.arguments?.let { DetailsScreen(navController, details) }
+                            val data = backStackEntry.arguments?.getString("data")
+                                ?.let { Gson().fromJson(it, Data::class.java) }
+                            backStackEntry.arguments?.let { DetailsScreen(navController, data) }
                         }
                     }
                 }

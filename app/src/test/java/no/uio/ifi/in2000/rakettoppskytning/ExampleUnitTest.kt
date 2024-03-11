@@ -1,4 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.getOldestDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import org.junit.Test
@@ -43,6 +44,16 @@ class ExampleUnitTest {
         val result = getShearWind(upperLevel, lowerLevel)
 
         assertEquals(expected, result, 0.1)
+    }
+
+    @Test
+    fun testDates(){
+        val dates = listOf("2024-03-09T15:00:00Z", "2024-03-10T03:00:00Z", "2024-03-10T00:00:00Z")
+
+        val expected = "2024-03-09T15:00:00Z"
+        val result = getOldestDate(dates)
+
+        assertEquals(expected, result)
     }
 
 }
