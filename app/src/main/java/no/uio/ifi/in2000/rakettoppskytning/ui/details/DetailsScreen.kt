@@ -59,8 +59,8 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): VerticalProfile? {
-
     var r: VerticalProfile? = null
+    Log.d("Ds", "BAIS")
 
     allVp.forEach breaking@{ vp ->
         if (vp.time <= time) {
@@ -86,10 +86,9 @@ fun DetailsScreen(
     val foreCastUiState by detailsScreenViewModel.foreCastUiState.collectAsState()
     var data: List<Data> = listOf()
     val time: String = backStackEntry ?: ""
+    Log.d("jannefaen",verticalProfileUiState.verticalProfiles.size.toString())
     val verticalProfile =
         getVerticalProfileNearestHour(verticalProfileUiState.verticalProfiles, time)
-
-
 
     foreCastUiState.foreCast.forEach {
         it.properties.timeseries.forEach {
@@ -98,7 +97,7 @@ fun DetailsScreen(
             }
         }
     }
-
+    data.forEach { it.instant }
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -357,16 +356,16 @@ fun DetailsScreen(
                             Row {
                                 AddWeatherCard(
                                     unit = "℃",
-                                    iconId = R.drawable.trykk,
+                                    iconId = R.drawable.temp,
                                     desc = "Temperatur",
                                     value = it.instant.details.airTemperature
                                 )
                                 Spacer(modifier = Modifier.width(40.dp))
                                 AddWeatherCard(
-                                    unit = "hPa",
-                                    iconId = R.drawable.trykk,
-                                    desc = "Trykk",
-                                    value = it.instant.details.airPressureAtSeaLevel
+                                    unit = "mm",
+                                    iconId = R.drawable.vann,
+                                    desc = "nedbør",
+                                    value = it.next6Hours?.details?.precipitationAmount
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -388,6 +387,7 @@ fun DetailsScreen(
                                     value = it.instant.details.relativeHumidity
                                 )
                             }
+                            Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
                             Row {
@@ -400,13 +400,12 @@ fun DetailsScreen(
 
                                 Spacer(modifier = Modifier.width(40.dp))
                                 AddWeatherCard(
-                                    unit = "mm",
-                                    iconId = R.drawable.vann,
-                                    desc = "nedbør",
-                                    value = it.next6Hours?.details?.precipitationAmount
+                                    unit = "℃",
+                                    iconId = R.drawable.rakkettpin,
+                                    desc = "Duggpunkt",
+                                    value = it.instant.details.dewPointTemperature
                                 )
                             }
-                            Spacer(modifier = Modifier.height(30.dp))
                         }
                     }
                 }

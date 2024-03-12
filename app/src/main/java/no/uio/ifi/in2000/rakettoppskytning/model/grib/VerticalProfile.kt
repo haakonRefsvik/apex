@@ -13,15 +13,20 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 
+fun getTime(file: File): String{
+    val raf = RandomAccessFile(file.absolutePath, "r")
+    val scan = Grib2RecordScanner(raf)
+    val record: Grib2Record = scan.next()
+    val referenceDate = record.id.referenceDate
+    val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
+    return referenceDate.add(hourOffset).toString()
+}
+
+
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
 class VerticalProfile(val lat: Double, val lon: Double, file: File) {
     private val verticalProfileMap = getVerticalProfileMap(lat, lon, file)
-    private val raf = RandomAccessFile(file.absolutePath, "r")
-    private val scan = Grib2RecordScanner(raf)
-    private val record: Grib2Record = scan.next()
-    private val referenceDate = record.id.referenceDate
-    private val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
-    var time = referenceDate.add(hourOffset).toString()
+    var time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
 

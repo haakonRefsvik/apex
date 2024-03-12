@@ -15,7 +15,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
 
 suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
-
     if(ApiKeyHolder.in2000ProxyKey == ""){
         throw Exception("Api-key not found")
     }
