@@ -21,7 +21,7 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File) {
     private val record: Grib2Record = scan.next()
     private val referenceDate = record.id.referenceDate
     private val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
-    val time = referenceDate.add(hourOffset).toString()
+    var time = referenceDate.add(hourOffset).toString()
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
 

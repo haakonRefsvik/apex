@@ -106,7 +106,7 @@ fun String.isDouble(): Boolean {
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    homeScreenViewModel: HomeScreenViewModel = viewModel(),
+    homeScreenViewModel: HomeScreenViewModel,
 ) {
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon

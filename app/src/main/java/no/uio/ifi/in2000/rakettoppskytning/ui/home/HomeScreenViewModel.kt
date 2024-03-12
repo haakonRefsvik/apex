@@ -19,6 +19,7 @@ import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,8 +43,9 @@ data class MapUIState @OptIn(MapboxExperimental::class) constructor(
     val mapViewportState: MapViewportState = MapViewportState()
 )
 
-class HomeScreenViewModel : ViewModel() {
 
+class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
+    private val foreCastRep = repo
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -70,7 +72,7 @@ class HomeScreenViewModel : ViewModel() {
 
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
-    private val foreCastRep: WeatherForeCastLocationRepo = WeatherForeCastLocationRepo()
+
 
     val foreCastUiState: StateFlow<ForeCastUiState> =
         foreCastRep.observeForecast().map { ForeCastUiState(foreCast = it) }.stateIn(
@@ -81,7 +83,7 @@ class HomeScreenViewModel : ViewModel() {
 
     fun getForecastByCord(lat: Double, lon: Double) {
         Log.d("getForecastByCord", "apicall")
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadForecast(lat, lon)
         }
     }
@@ -90,17 +92,18 @@ class HomeScreenViewModel : ViewModel() {
 
     fun getVerticalProfileByCord(lat: Double, lon: Double) {
         Log.d("getVerticalProfileByCord", "apicall")
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadVerticalProfiles(lat, lon)
         }
     }
 
     val verticalProfileUiState: StateFlow<VerticalProfileUiState> =
-        foreCastRep.observeVerticalProfiles().map { VerticalProfileUiState(verticalProfiles = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = VerticalProfileUiState()
-        )
+        foreCastRep.observeVerticalProfiles().map { VerticalProfileUiState(verticalProfiles = it) }
+            .stateIn(
+                viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = VerticalProfileUiState()
+            )
 
 
     init {
