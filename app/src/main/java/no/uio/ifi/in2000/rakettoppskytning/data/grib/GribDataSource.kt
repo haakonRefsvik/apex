@@ -9,6 +9,11 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
@@ -57,7 +62,7 @@ suspend fun getGrib(): List<File>{
     return cachedFiles.values.toList()
 }
 
-suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String): File{
+suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
     val inputStream: InputStream = client.get(grib.uri).body()?: throw Exception("Could not access the latest grib file")
     val file = File.createTempFile(fileName, ".grib2")
 
@@ -65,23 +70,21 @@ suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String): File{
         inputStream.copyTo(outputStream)
     }
 
-    return file
+    cachedFiles[fileName] = file
 }
-
-
 
 /** This function makes sure that there is a upper limit of how many
  *  Grib-files can be stored in the cache.
  *  If a new grib-file is added, the oldest one will be deleted from cache
  * */
-suspend fun updateGribCache(client: HttpClient, latestGribs: List<Grib>){
-    latestGribs.forEach {grib ->
+suspend fun updateGribCache(client: HttpClient, latestGribs: List<Grib>)= coroutineScope{
+    val asyncTasks = latestGribs.map {grib ->
         val fileName = grib.params.time
 
         // Skips the file if it exists in the cache
         if (cachedFiles.containsKey(fileName)){
             Log.d("Grib", "'$fileName.grib2' already in cache")
-            return@forEach
+            return@map null // Skip this task
         }
 
         // Deletes the oldest grib file if the cache is full and the new grib-file have to be added
@@ -96,8 +99,11 @@ suspend fun updateGribCache(client: HttpClient, latestGribs: List<Grib>){
         }
 
         Log.d("Grib", "Added '$fileName.grib2' to cache")
-        cachedFiles[fileName] = makeFile(client, grib, fileName)
+        async(Dispatchers.IO) {
+            makeFile(client, grib, fileName)
+        }
     }
+    asyncTasks.filterNotNull().map { it.await() }
 }
 
 fun getOldestDate(dates: List<String>): String{

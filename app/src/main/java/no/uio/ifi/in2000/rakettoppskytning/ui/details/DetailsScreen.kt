@@ -60,7 +60,6 @@ import java.time.temporal.ChronoUnit
 
 fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): VerticalProfile? {
     var r: VerticalProfile? = null
-    Log.d("Ds", "BAIS")
 
     allVp.forEach breaking@{ vp ->
         if (vp.time <= time) {
@@ -68,7 +67,6 @@ fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): V
             return@breaking
         }
     }
-
     return r
 }
 
@@ -80,23 +78,22 @@ fun DetailsScreen(
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel
 ) {
-
-
     val verticalProfileUiState by detailsScreenViewModel.verticalProfileUiState.collectAsState()
     val foreCastUiState by detailsScreenViewModel.foreCastUiState.collectAsState()
     var data: List<Data> = listOf()
     val time: String = backStackEntry ?: ""
-    Log.d("jannefaen", verticalProfileUiState.verticalProfiles.size.toString())
     val verticalProfile =
         getVerticalProfileNearestHour(verticalProfileUiState.verticalProfiles, time)
 
     foreCastUiState.foreCast.forEach {
-        it.properties.timeseries.forEach {
-            if (time == it.time) {
-                data = listOf(it.data)
+        it.properties.timeseries.forEach {series ->
+            if (time == series.time) {
+                data = listOf(series.data)
+                verticalProfile?.addGroundInfo(series)
             }
         }
     }
+
     data.forEach { it.instant }
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -220,51 +217,15 @@ fun DetailsScreen(
                                     .height(0.3.dp)
                                     .width(200.dp)
                                     .background(MaterialTheme.colorScheme.onBackground)
-
                             )
+                            val maxSheerWind: String = String.format("%.2f", verticalProfile?.getMaxSheerWind()?.windSpeed)
+                            val lowerLayerHeight = verticalProfile?.getMaxSheerWind()?.lowerLayer?.getLevelHeightInMeters()?.toInt()
+                            val upperLayerHeight = verticalProfile?.getMaxSheerWind()?.upperLayer?.getLevelHeightInMeters()?.toInt()
 
-                            Text(text = "${verticalProfile?.getMaxSheerWind()?.windSpeed} m/s")
-
-
-                        }
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(text = "N", modifier = Modifier.padding(bottom = 60.dp))
-                                Text(text = "S", modifier = Modifier.padding(top = 60.dp))
-
-                                Text(text = "V", modifier = Modifier.padding(end = 60.dp))
-                                Text(text = "Ø", modifier = Modifier.padding(start = 60.dp))
-                                Icon(
-                                    modifier = Modifier
-                                        .width(50.dp)
-                                        .rotate(270.0F),
-                                    painter = painterResource(R.drawable.kompasspil),
-                                    contentDescription = "kompasspil"
-                                )
-
-                                Icon(
-                                    painter = painterResource(R.drawable.kompass),
-                                    contentDescription = "Kompass",
-                                    modifier = Modifier.size(100.dp)
-                                )
-                                Icon(
-                                    modifier = Modifier
-                                        .width(50.dp)
-                                        .rotate(270.0F),
-                                    painter = painterResource(R.drawable.kompasspil),
-                                    contentDescription = "kompasspil"
-                                )
-
-
-                            }
+                            Text(text = "$maxSheerWind m/s")
+                            Text(text = "$lowerLayerHeight - $upperLayerHeight meters høyde")
 
                         }
-
-
                     }
 
 
@@ -356,17 +317,15 @@ fun DetailsScreen(
                         item {
                             Row {
                                 AddWeatherCard(
-                                    unit = "℃",
                                     iconId = R.drawable.temp,
                                     desc = "Temperatur",
-                                    value = it.instant.details.airTemperature
+                                    text = "${it.instant.details.airTemperature} ℃"
                                 )
                                 Spacer(modifier = Modifier.width(40.dp))
                                 AddWeatherCard(
-                                    unit = "mm",
                                     iconId = R.drawable.vann,
                                     desc = "nedbør",
-                                    value = it.next6Hours?.details?.precipitationAmount
+                                    text = "${it.next6Hours?.details?.precipitationAmount} mm"
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -375,17 +334,15 @@ fun DetailsScreen(
                         item {
                             Row {
                                 AddWeatherCard(
-                                    unit = "%",
                                     iconId = R.drawable.eye,
                                     desc = "Sikt",
-                                    value = it.instant.details.fogAreaFraction
+                                    text = "${it.instant.details.fogAreaFraction} %"
                                 )
                                 Spacer(modifier = Modifier.width(40.dp))
                                 AddWeatherCard(
-                                    unit = "%",
                                     iconId = R.drawable.luftfuktighet,
                                     desc = "Luftfuktighet",
-                                    value = it.instant.details.relativeHumidity
+                                    text = "${it.instant.details.relativeHumidity} %"
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -393,18 +350,16 @@ fun DetailsScreen(
                         item {
                             Row {
                                 AddWeatherCard(
-                                    unit = "%",
                                     iconId = R.drawable.fogsymbol,
                                     desc = "Skydekke",
-                                    value = it.instant.details.cloudAreaFraction
+                                    text = "${it.instant.details.cloudAreaFraction} %"
                                 )
 
                                 Spacer(modifier = Modifier.width(40.dp))
                                 AddWeatherCard(
-                                    unit = "℃",
-                                    iconId = R.drawable.rakkettpin,
+                                    iconId = R.drawable.vann,
                                     desc = "Duggpunkt",
-                                    value = it.instant.details.dewPointTemperature
+                                    text = "Dewpoint\n ${it.instant.details.dewPointTemperature} ℃"
                                 )
                             }
                         }
@@ -417,7 +372,7 @@ fun DetailsScreen(
 }
 
 @Composable
-fun AddWeatherCard(unit: String, iconId: Int, desc: String, value: Double?) {
+fun AddWeatherCard(text: String, iconId: Int, desc: String, ) {
     ElevatedCard(
         modifier = Modifier
             .height(125.dp)
@@ -431,7 +386,7 @@ fun AddWeatherCard(unit: String, iconId: Int, desc: String, value: Double?) {
                 contentDescription = desc
             )
             Text(
-                text = "$value $unit",
+                text = text,
                 modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold

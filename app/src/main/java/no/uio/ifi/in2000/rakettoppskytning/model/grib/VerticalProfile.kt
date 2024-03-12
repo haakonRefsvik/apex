@@ -1,6 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.grib
 
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
+import android.util.Log
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
 import ucar.nc2.grib.grib2.Grib2Gds
 import ucar.nc2.grib.grib2.Grib2Record
@@ -13,22 +13,22 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 
-fun getTime(file: File): String{
+fun getTime(file: File): String {
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
     val record: Grib2Record = scan.next()
     val referenceDate = record.id.referenceDate
     val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
-    return referenceDate.add(hourOffset).toString()
+    return referenceDate.add(hourOffset).toString() // leverer riktig forecast tid
 }
 
-
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
-class VerticalProfile(val lat: Double, val lon: Double, file: File) {
-    private val verticalProfileMap = getVerticalProfileMap(lat, lon, file)
+class VerticalProfile(heightLimitMeters: Int = Int.MAX_VALUE, val lat: Double, val lon: Double, file: File) {
+    private val verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimitMeters)
     var time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
+    val heightLimit = heightLimitMeters
 
     /** Gets all the levels of the profile in Pascal */
     private fun getAllLevels(): DoubleArray {
@@ -86,16 +86,6 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File) {
         return getAllSheerWinds().maxBy { it.windSpeed }
     }
 
-    /** Returns the map of the vertical profile */
-    fun getMap(): HashMap<Double, LevelData> {
-        return verticalProfileMap
-    }
-
-    /** Returns the position (lat, lon) of where the vertical profile is from*/
-    fun getPosition(): Pair<Double, Double> {
-        return Pair(lat, lon)
-    }
-
     override fun toString(): String {
 
         var r = "---    Vertical profile for lat: $lat, lon: $lon     ---\n"
@@ -131,20 +121,20 @@ fun addLevelToMap(
     verticalMap: HashMap<Double, LevelData>,
     value: Double,
     level: Double,
-    parameterNumber: Int
+    parameterNumber: Int,
 ) {
     if (verticalMap.containsKey(level)) {
         verticalMap[level]?.addValue(parameterNumber, value)
         return
     }
-
     val levelData = LevelData(level)
+
     levelData.addValue(parameterNumber, value)
     verticalMap[level] = levelData
 }
 
 /** Makes a hashmap with key: Isobaric layer (in Pascal), and a LevelData-object based on lon and lat*/
-fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double, LevelData> {
+fun getVerticalProfileMap(lat: Double, lon: Double, file: File, maxHeight: Int): HashMap<Double, LevelData> {
 
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
@@ -153,6 +143,9 @@ fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double,
     while (scan.hasNext()) {
         val gr2 = scan.next()
         val levelPa = (gr2.pds.levelValue1)
+        if(getApproximateHeight(levelPa) >= maxHeight){
+            continue
+        }
         val parameterNumber = gr2.pds.parameterNumber
         val drs = gr2.dataRepresentationSection
         val data = gr2.readData(raf, drs.startingPosition)
