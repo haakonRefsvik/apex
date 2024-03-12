@@ -86,7 +86,7 @@ fun DetailsScreen(
     val foreCastUiState by detailsScreenViewModel.foreCastUiState.collectAsState()
     var data: List<Data> = listOf()
     val time: String = backStackEntry ?: ""
-    Log.d("jannefaen",verticalProfileUiState.verticalProfiles.size.toString())
+    Log.d("jannefaen", verticalProfileUiState.verticalProfiles.size.toString())
     val verticalProfile =
         getVerticalProfileNearestHour(verticalProfileUiState.verticalProfiles, time)
 
@@ -132,9 +132,9 @@ fun DetailsScreen(
                             )
                         ),
                         onClick = { navController.navigateUp() },
-                        )
+                    )
                 },
-                )
+            )
         },
         bottomBar = {
             BottomAppBar() {
@@ -343,7 +343,8 @@ fun DetailsScreen(
                                         .width(50.dp)
                                         .rotate(270.0F + it.instant.details.windFromDirection.toFloat()),
                                     painter = painterResource(R.drawable.kompasspil),
-                                    contentDescription = "kompasspil")
+                                    contentDescription = "kompasspil"
+                                )
 
                             }
                         }
@@ -377,7 +378,7 @@ fun DetailsScreen(
                                     unit = "%",
                                     iconId = R.drawable.eye,
                                     desc = "Sikt",
-                                    value = it.instant.details.cloudAreaFraction
+                                    value = it.instant.details.fogAreaFraction
                                 )
                                 Spacer(modifier = Modifier.width(40.dp))
                                 AddWeatherCard(
@@ -414,8 +415,9 @@ fun DetailsScreen(
     }
 
 }
+
 @Composable
-fun AddWeatherCard(unit: String, iconId: Int, desc: String, value: Double?){
+fun AddWeatherCard(unit: String, iconId: Int, desc: String, value: Double?) {
     ElevatedCard(
         modifier = Modifier
             .height(125.dp)
