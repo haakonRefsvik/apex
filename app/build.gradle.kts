@@ -62,6 +62,7 @@ android {
 
 dependencies {
     implementation("androidx.media3:media3-common:1.2.1")
+    implementation(files("libs/GRIB2Tools.jar"))
     val ktorVersion = "2.3.8"
     val navVersion = "2.7.7"
     val kotlinVersion = "1.9.22"
