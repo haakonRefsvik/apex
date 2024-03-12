@@ -11,17 +11,18 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
 
 
-class WeatherForeCastLocationRepo(){
+class WeatherForeCastLocationRepo() {
 
     private val _forecast = MutableStateFlow<List<LocationForecast>>(listOf())
     private val _verticalProfiles = MutableStateFlow<List<VerticalProfile>>(listOf())
-    fun observeForecast() : StateFlow<List<LocationForecast>> = _forecast.asStateFlow()
-    fun observeVerticalProfiles() : StateFlow<List<VerticalProfile>> = _verticalProfiles.asStateFlow()
+    fun observeForecast(): StateFlow<List<LocationForecast>> = _forecast.asStateFlow()
+    fun observeVerticalProfiles(): StateFlow<List<VerticalProfile>> =
+        _verticalProfiles.asStateFlow()
 
     private val gribRepository = GribRepository()
-    suspend fun loadForecast(lat:Double, lon:Double){
+    suspend fun loadForecast(lat: Double, lon: Double) {
         val foreCast: List<LocationForecast> = try {
-            listOf( getForecast(lat,lon))
+            listOf(getForecast(lat, lon))
 
 
         } catch (exception: Exception) {
@@ -34,11 +35,13 @@ class WeatherForeCastLocationRepo(){
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
         } catch (e: Exception) {
+            Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
 
         val allProfiles = mutableListOf<VerticalProfile>()
-        val groundLevel = _forecast.value.first()
+        val groundLevel = _forecast.value.firstOrNull() ?: getForecast(lat, lon)
+
         val timeSeriesMap = groundLevel.properties.timeseries.associateBy { it.time }
 
         // Adds ground-level data to the vertical profile
@@ -64,5 +67,7 @@ class WeatherForeCastLocationRepo(){
         }
 
         _verticalProfiles.update { allProfiles }
+        Log.d("Verticalprofile", "Shearwind: ${allProfiles.first().getMaxSheerWind()}")
     }
+
 }

@@ -14,16 +14,15 @@ import kotlin.math.sin
 
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
-
-class VerticalProfile(val lat: Double, val lon: Double, file: File){
+class VerticalProfile(val lat: Double, val lon: Double, file: File) {
     private val verticalProfileMap = getVerticalProfileMap(lat, lon, file)
     private val raf = RandomAccessFile(file.absolutePath, "r")
     private val scan = Grib2RecordScanner(raf)
     private val record: Grib2Record = scan.next()
     private val referenceDate = record.id.referenceDate
     private val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
-    val time = referenceDate.add(hourOffset).toString()
-    var groundLevel: LevelData ?= null
+    var time = referenceDate.add(hourOffset).toString()
+    var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
 
     /** Gets all the levels of the profile in Pascal */
@@ -32,12 +31,13 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
     }
 
     private fun findLevel(level: Double): LevelData {
-        return verticalProfileMap[level]?: throw Exception ("Level not found")
+        return verticalProfileMap[level] ?: throw Exception("Level not found")
     }
 
-    fun addGroundInfo(series: Series){
+    fun addGroundInfo(series: Series) {
         val data = series.data.instant.details
-        val pressurePascal = data.airPressureAtSeaLevel * 100 // forecast-pressure is in hecto-pascal
+        val pressurePascal =
+            data.airPressureAtSeaLevel * 100 // forecast-pressure is in hecto-pascal
         val tempKelvin = data.airTemperature + 273.15
         val uCom = data.windSpeed * cos(Math.toRadians(data.windFromDirection))
         val vCom = data.windSpeed * sin(Math.toRadians(data.windFromDirection))
@@ -50,7 +50,7 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
 
         verticalProfileMap[pressurePascal] = gl
 
-        for(value in verticalProfileMap.values){
+        for (value in verticalProfileMap.values) {
             value.seaPressurePa = pressurePascal
         }
 
@@ -61,7 +61,7 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
      * Returns shear-wind (in m/s) from all isobaric layers.
      * index 0 is the shear-wind from the bottom two layers
      * */
-    fun getAllSheerWinds(): List<ShearWind>{
+    fun getAllSheerWinds(): List<ShearWind> {
         val levelList = getAllLevels()
         val shearWindList = mutableListOf<ShearWind>()
 
@@ -80,13 +80,14 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
     fun getMaxSheerWind(): ShearWind {
         return getAllSheerWinds().maxBy { it.windSpeed }
     }
+
     /** Returns the map of the vertical profile */
     fun getMap(): HashMap<Double, LevelData> {
         return verticalProfileMap
     }
 
     /** Returns the position (lat, lon) of where the vertical profile is from*/
-    fun getPosition(): Pair<Double, Double>{
+    fun getPosition(): Pair<Double, Double> {
         return Pair(lat, lon)
     }
 
@@ -97,7 +98,7 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
 
         val sortedEntries = verticalProfileMap.entries.sortedByDescending { it.key }
 
-        for((key, value) in sortedEntries){
+        for ((key, value) in sortedEntries) {
             val windDir = value.getWindDir()
             val windSpeed = value.getWindSpeed()
             val temp = value.getTemperatureCelsius()
@@ -121,8 +122,13 @@ class VerticalProfile(val lat: Double, val lon: Double, file: File){
  * 2 -> uComponentValue
  * 3 -> vComponentValue
  * */
-fun addLevelToMap(verticalMap: HashMap<Double, LevelData>, value: Double, level: Double, parameterNumber: Int){
-    if(verticalMap.containsKey(level)) {
+fun addLevelToMap(
+    verticalMap: HashMap<Double, LevelData>,
+    value: Double,
+    level: Double,
+    parameterNumber: Int
+) {
+    if (verticalMap.containsKey(level)) {
         verticalMap[level]?.addValue(parameterNumber, value)
         return
     }
@@ -133,7 +139,7 @@ fun addLevelToMap(verticalMap: HashMap<Double, LevelData>, value: Double, level:
 }
 
 /** Makes a hashmap with key: Isobaric layer (in Pascal), and a LevelData-object based on lon and lat*/
-fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double, LevelData>{
+fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double, LevelData> {
 
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
@@ -146,7 +152,11 @@ fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double,
         val drs = gr2.dataRepresentationSection
         val data = gr2.readData(raf, drs.startingPosition)
 
-        val index: Int = getDataIndexFromLatLon(lat, lon, gr2.gds?: throw Exception("Grib Definition Section not found"))
+        val index: Int = getDataIndexFromLatLon(
+            lat,
+            lon,
+            gr2.gds ?: throw Exception("Grib Definition Section not found")
+        )
         val value = data[index].toDouble()
         addLevelToMap(verticalMap, value, levelPa, parameterNumber)
     }
@@ -154,15 +164,23 @@ fun getVerticalProfileMap(lat: Double, lon: Double, file: File): HashMap<Double,
     return verticalMap
 }
 
-fun normalizeLon(lon: Double): Double{
-    if (lon > 180) { return lon - 360 }
-    if (lon < -180) { return lon + 360 }
+fun normalizeLon(lon: Double): Double {
+    if (lon > 180) {
+        return lon - 360
+    }
+    if (lon < -180) {
+        return lon + 360
+    }
     return lon
 }
 
-fun normalizeLat(lat: Double): Double{
-    if (lat > 90) { return lat - 180 }
-    if (lat < -90) { return lat + 180 }
+fun normalizeLat(lat: Double): Double {
+    if (lat > 90) {
+        return lat - 180
+    }
+    if (lat < -90) {
+        return lat + 180
+    }
     return lat
 }
 
@@ -189,7 +207,7 @@ fun getDataIndexFromLatLon(lat: Double, lon: Double, gds: Grib2Gds): Int {
 
     val index = ix + (iy * nx)
 
-    if(index >= numGridPoints){
+    if (index >= numGridPoints) {
         throw IndexOutOfBoundsException("You have to be inside of $startX, $startY and ${gridDef.endX}, ${gridDef.endY}")
     }
 

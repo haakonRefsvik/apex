@@ -17,7 +17,9 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.R.string
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
+import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
@@ -38,7 +40,8 @@ abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
 }
 
 class DataArgType : JsonNavType<Data>() {
-    override fun fromJsonParse(value: String): Data = Gson().fromJson(value, Data::class.java)
+    override fun fromJsonParse(value: String): Data =
+        Gson().fromJson(value, Data::class.java)
 
     override fun Data.getJsonParse(): String = Gson().toJson(this)
 }
@@ -55,23 +58,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
+                    Navigation()
 
-                    NavHost(navController = navController, startDestination = "HomeScreen") {
-                        composable("HomeScreen") {
-                            HomeScreen(
-                                navController,
-                            )
-                        }
-                        composable(
-                            "DetailsScreen/{data}",
-                            arguments = listOf(navArgument("data") { type = DataArgType() })
-                        ) { backStackEntry ->
-                            val data = backStackEntry.arguments?.getString("data")
-                                ?.let { Gson().fromJson(it, Data::class.java) }
-                            backStackEntry.arguments?.let { DetailsScreen(navController, data) }
-                        }
-                    }
                 }
             }
         }

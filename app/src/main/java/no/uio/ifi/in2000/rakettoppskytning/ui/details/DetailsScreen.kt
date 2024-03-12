@@ -1,5 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +34,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,44 +46,56 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
+fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): VerticalProfile? {
+
+    var r: VerticalProfile? = null
+
+    allVp.forEach breaking@{ vp ->
+        if (vp.time <= time) {
+            r = vp
+            return@breaking
+        }
+    }
+
+    return r
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     navController: NavHostController,
+    backStackEntry: String?,
+    detailsScreenViewModel: DetailsScreenViewModel
+) {
 
-    backStackEntry: Data?,
 
-    ) {
+    val verticalProfileUiState by detailsScreenViewModel.verticalProfileUiState.collectAsState()
+    val foreCastUiState by detailsScreenViewModel.foreCastUiState.collectAsState()
 
-//    val detailsNavn = listOf<String>(
-//        "airPressureAtSeaLevel",
-//        "airTemperature",
-//        "airTemperaturePercentile10",
-//        "airTemperaturePercentile90",
-//        "cloudAreaFraction",
-//        "cloudAreaFractionHigh",
-//        "cloudAreaFractionLow",
-//        "cloudAreaFractionMedium",
-//        "dewPointTemperature",
-//        "fogAreaFraction",
-//        "relativeHumidity",
-//        "ultravioletIndexClearSky",
-//        "windFromDirection",
-//        "windSpeed",
-//        "windSpeedOfGust",
-//        "windSpeedPercentile10",
-//        "windSpeedPercentile90"
-//    )
-    val data: List<Data> = if (backStackEntry != null) {
-        listOf(backStackEntry)
+    var data: List<Data> = listOf()
+    val time: String = backStackEntry ?: ""
+    val verticalProfile =
+        getVerticalProfileNearestHour(verticalProfileUiState.verticalProfiles, time)
 
-    } else {
-        listOf()
+
+    foreCastUiState.foreCast.forEach {
+        it.properties.timeseries.forEach {
+            if (time == it.time) {
+                data = listOf(it.data)
+            }
+        }
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -105,7 +122,6 @@ fun DetailsScreen(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "ArrowBack"
                         )
-
                     }
                 },
                 title = {
@@ -170,18 +186,18 @@ fun DetailsScreen(
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
             if (data.isEmpty()) {
                 Text("Her var det tomt")
             }
-            data.forEach { data ->
 
-                Spacer(modifier = Modifier.height(20.dp))
-                ElevatedCard(
+            ElevatedCard(
 
-                    modifier = Modifier
-                        .height(140.dp)
-                        .width(340.dp)
-                ) {
+                modifier = Modifier
+                    .height(140.dp)
+                    .width(340.dp)
+            ) {
+                data.forEach {
                     Row {
                         Column {
                             Spacer(
@@ -206,7 +222,7 @@ fun DetailsScreen(
                                     .height(21.dp)
                                     .width(200.dp)
                             )
-                            Text(text = "${data.instant.details.windSpeed} m/s vind")
+                            Text(text = "Max Shearwind")
 
                             Spacer(
                                 modifier = Modifier
@@ -215,7 +231,9 @@ fun DetailsScreen(
                                     .background(MaterialTheme.colorScheme.onBackground)
 
                             )
-                            Text(text = "${data.instant.details.windSpeedOfGust} m/s vindkast")
+
+                            Text(text = "${verticalProfile?.getMaxSheerWind()?.windSpeed} m/s")
+
 
                         }
                         Column(
@@ -232,7 +250,7 @@ fun DetailsScreen(
                                 Icon(
                                     modifier = Modifier
                                         .width(50.dp)
-                                        .rotate(270.0F + data.instant.details.windFromDirection.toFloat()),
+                                        .rotate(270.0F),
                                     painter = painterResource(R.drawable.kompasspil),
                                     contentDescription = "kompasspil"
                                 )
@@ -245,7 +263,98 @@ fun DetailsScreen(
                                 Icon(
                                     modifier = Modifier
                                         .width(50.dp)
-                                        .rotate(270.0F + data.instant.details.windFromDirection.toFloat()),
+                                        .rotate(270.0F),
+                                    painter = painterResource(R.drawable.kompasspil),
+                                    contentDescription = "kompasspil"
+                                )
+
+
+                            }
+
+                        }
+
+
+                    }
+
+
+                }
+
+
+            }
+            data.forEach {
+
+                Spacer(modifier = Modifier.height(20.dp))
+                ElevatedCard(
+
+                    modifier = Modifier
+                        .height(140.dp)
+                        .width(340.dp)
+                ) {
+
+                    Row {
+                        Column {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(10.dp)
+                            )
+                        }
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(30.dp),
+                                    painter = painterResource(R.drawable.vind2),
+                                    contentDescription = "VindSymbol"
+                                )
+
+
+                            }
+                            Spacer(
+                                modifier = Modifier
+                                    .height(21.dp)
+                                    .width(200.dp)
+                            )
+                            Text(text = "${it.instant.details.windSpeed} m/s vind")
+
+                            Spacer(
+                                modifier = Modifier
+                                    .height(0.3.dp)
+                                    .width(200.dp)
+                                    .background(MaterialTheme.colorScheme.onBackground)
+
+                            )
+                            Text(text = "${it.instant.details.windSpeedOfGust} m/s vindkast")
+
+                        }
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(text = "N", modifier = Modifier.padding(bottom = 60.dp))
+                                Text(text = "S", modifier = Modifier.padding(top = 60.dp))
+
+                                Text(text = "V", modifier = Modifier.padding(end = 60.dp))
+                                Text(text = "Ø", modifier = Modifier.padding(start = 60.dp))
+                                Icon(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .rotate(270.0F + it.instant.details.windFromDirection.toFloat()),
+                                    painter = painterResource(R.drawable.kompasspil),
+                                    contentDescription = "kompasspil"
+                                )
+
+                                Icon(
+                                    painter = painterResource(R.drawable.kompass),
+                                    contentDescription = "Kompass",
+                                    modifier = Modifier.size(100.dp)
+                                )
+                                Icon(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .rotate(270.0F + it.instant.details.windFromDirection.toFloat()),
                                     painter = painterResource(R.drawable.kompasspil),
                                     contentDescription = "kompasspil"
                                 )
@@ -279,7 +388,7 @@ fun DetailsScreen(
                                         contentDescription = "Temperatursymbol"
                                     )
                                     Text(
-                                        text = "${data.instant.details.airTemperature} ℃",
+                                        text = "${it.instant.details.airTemperature} ℃",
                                         modifier = Modifier.padding(start = 10.dp, top = 15.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -304,7 +413,7 @@ fun DetailsScreen(
                                         contentDescription = "Trykk"
                                     )
                                     Text(
-                                        text = "${data.instant.details.airPressureAtSeaLevel} hPa",
+                                        text = "${it.instant.details.airPressureAtSeaLevel} hPa",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -328,7 +437,7 @@ fun DetailsScreen(
                                         contentDescription = "Øye/sikt"
                                     )
                                     Text(
-                                        text = "${data.instant.details.fogAreaFraction} %",
+                                        text = "${it.instant.details.fogAreaFraction} %",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -360,7 +469,7 @@ fun DetailsScreen(
                                         contentDescription = "Luftfuktighet"
                                     )
                                     Text(
-                                        text = "${data.instant.details.relativeHumidity}%",
+                                        text = "${it.instant.details.relativeHumidity}%",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -384,7 +493,7 @@ fun DetailsScreen(
                                         contentDescription = "Tåke"
                                     )
                                     Text(
-                                        text = "${data.instant.details.cloudAreaFraction}%",
+                                        text = "${it.instant.details.cloudAreaFraction}%",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
@@ -408,7 +517,7 @@ fun DetailsScreen(
                                         contentDescription = "Vann"
                                     )
                                     Text(
-                                        text = "${data.next6Hours?.details?.precipitationAmount} mm",
+                                        text = "${it.next6Hours?.details?.precipitationAmount} mm",
                                         modifier = Modifier.padding(start = 10.dp, top = 20.dp),
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
