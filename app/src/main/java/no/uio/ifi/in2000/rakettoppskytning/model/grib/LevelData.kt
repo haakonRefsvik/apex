@@ -5,14 +5,17 @@ import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/** Gets height approximate height at a temperature of -60 c and referencePressure of 101325.5 Pa */
+/**
+ * Gets height approximate height at a temperature of 30 degrees celsius
+ * (Higher temp = higher altitude)
+ * and referencePressure of 101325.5 Pa */
 fun getApproximateHeight(pressure: Double): Double{
     val standrardSeaPressure = 101325.5
     val m = 0.0289644
     val r = 8.31432
     val g = 9.8066
 
-    val c = (r * (-60 + 273.15)) / (m * g)
+    val c = (r * (30 + 273.15)) / (m * g)
     val a = ln((standrardSeaPressure / pressure))
     return c * a
 }
