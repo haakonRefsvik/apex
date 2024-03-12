@@ -45,9 +45,7 @@ class WeatherForeCastLocationRepo() {
             Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
-        Log.d("drit", "Kaller")
         val allProfiles = createAllProfiles(gribFiles, lat, lon)
-        Log.d("drit", "Ferdig")
 
         _verticalProfiles.update { allProfiles }
     }
