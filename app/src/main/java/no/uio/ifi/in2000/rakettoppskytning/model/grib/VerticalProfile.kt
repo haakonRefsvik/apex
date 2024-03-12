@@ -16,19 +16,25 @@ import kotlin.math.sin
 fun getTime(file: File): String {
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
-    val record: Grib2Record = scan.next()
+    val record: Grib2Record = try{
+        scan.next()
+    }catch (e: Exception){
+        return ""
+    }
     val referenceDate = record.id.referenceDate
     val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
     return referenceDate.add(hourOffset).toString() // leverer riktig forecast tid
 }
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
-class VerticalProfile(heightLimitMeters: Int = Int.MAX_VALUE, val lat: Double, val lon: Double, file: File) {
+class VerticalProfile(heightLimitMeters: Int = Int.MAX_VALUE, val lat: Double, val lon: Double, val file: File) {
     private val verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimitMeters)
-    var time = getTime(file)
+    val time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
     val heightLimit = heightLimitMeters
+    /** Shows the the max altitude the VerticalProfile can reach (in meters) */
+    val actualHeight = findLevel(getAllLevels().last()).getLevelHeightInMeters()
 
     /** Gets all the levels of the profile in Pascal */
     private fun getAllLevels(): DoubleArray {

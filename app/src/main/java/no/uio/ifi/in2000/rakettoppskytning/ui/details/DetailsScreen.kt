@@ -60,9 +60,9 @@ import java.time.temporal.ChronoUnit
 
 fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): VerticalProfile? {
     var r: VerticalProfile? = null
-
     allVp.forEach breaking@{ vp ->
         if (vp.time <= time) {
+            Log.d("maxReach", r?.actualHeight.toString())
             r = vp
             return@breaking
         }
