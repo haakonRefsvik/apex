@@ -12,13 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -41,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -232,44 +225,93 @@ fun DetailsScreen(
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 Row(modifier = Modifier.padding(20.dp)) {
-                    LazyVerticalGrid(columns = GridCells.Fixed(2)){
-                            addItem(unit = "℃", iconId = R.drawable.trykk, desc = "Temperatur", value = ground.instant.details.airTemperature)
-                            addItem(unit = "hPa", iconId = R.drawable.trykk, desc = "Trykk", value = ground.instant.details.airPressureAtSeaLevel)
-                            addItem(unit = "%", iconId = R.drawable.eye, desc = "Sikt", value = ground.instant.details.fogAreaFraction)
-                            addItem(unit = "%", iconId = R.drawable.luftfuktighet, desc = "Luftfuktighet", value = ground.instant.details.relativeHumidity)
-                            addItem(unit = "%", iconId = R.drawable.fogsymbol, desc = "Tåke", value = ground.instant.details.cloudAreaFraction)
-                            addItem(unit = "mm", iconId = R.drawable.vann, desc = "Vann", value = ground.next6Hours?.details?.precipitationAmount)
+                    LazyColumn {
+                        item {
+                            Row {
+                                AddWeatherCard(
+                                    unit = "℃",
+                                    iconId = R.drawable.trykk,
+                                    desc = "Temperatur",
+                                    value = ground.instant.details.airTemperature
+                                )
+                                Spacer(modifier = Modifier.width(40.dp))
+                                AddWeatherCard(
+                                    unit = "hPa",
+                                    iconId = R.drawable.trykk,
+                                    desc = "Trykk",
+                                    value = ground.instant.details.airPressureAtSeaLevel
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+
                         }
+
+                        item {
+                            Row {
+                                AddWeatherCard(
+                                    unit = "%",
+                                    iconId = R.drawable.eye,
+                                    desc = "Sikt",
+                                    value = ground.instant.details.cloudAreaFraction
+                                )
+                                Spacer(modifier = Modifier.width(40.dp))
+                                AddWeatherCard(
+                                    unit = "%",
+                                    iconId = R.drawable.luftfuktighet,
+                                    desc = "Luftfuktighet",
+                                    value = ground.instant.details.relativeHumidity
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+
+                        }
+                        item {
+                            Row {
+                                AddWeatherCard(
+                                    unit = "%",
+                                    iconId = R.drawable.fogsymbol,
+                                    desc = "Skydekke",
+                                    value = ground.instant.details.cloudAreaFraction
+                                )
+
+                                Spacer(modifier = Modifier.width(40.dp))
+                                AddWeatherCard(
+                                    unit = "mm",
+                                    iconId = R.drawable.vann,
+                                    desc = "nedbør",
+                                    value = ground.next6Hours?.details?.precipitationAmount
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+                    }
                 }
             }
         }
     }
 
 }
-fun LazyGridScope.addItem(unit: String, iconId: Int, desc: String, value: Double?){
-    item {
-        Spacer(modifier = Modifier.height(30.dp))
-        ElevatedCard(
-            modifier = Modifier
-                .height(125.dp)
-                .width(150.dp)
-                .padding(10.dp)
-                .widthIn(max = (2f / 4f).dp)
-        ) {
-            Column {
-                Icon(
-                    modifier = Modifier
-                        .width(30.dp),
-                    painter = painterResource(iconId),
-                    contentDescription = desc
-                )
-                Text(
-                    text = "$value $unit",
-                    modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+@Composable
+fun AddWeatherCard(unit: String, iconId: Int, desc: String, value: Double?){
+    ElevatedCard(
+        modifier = Modifier
+            .height(125.dp)
+            .width(150.dp)
+    ) {
+        Column {
+            Icon(
+                modifier = Modifier
+                    .width(30.dp),
+                painter = painterResource(iconId),
+                contentDescription = desc
+            )
+            Text(
+                text = "$value $unit",
+                modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
+
 }

@@ -41,13 +41,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
     val lon by homeScreenViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val mapViewportState = rememberMapViewportState {
-        setCameraOptions {
-            center(Point.fromLngLat(lon, lat))
-            zoom(10.5)
-            pitch(0.0)
-        }
-    }
+
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
@@ -111,12 +105,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
             homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-            mapViewportState.flyTo(
-                cameraOptions = cameraOptions {
-                    center(Point.fromLngLat(lon, lat))
-
-                },
-            )
+            //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
             scope.launch {
                 scaffoldState.bottomSheetState.expand()
             }
@@ -129,12 +118,8 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
             controller?.hide()
             homeScreenViewModel.getForecastByCord(lat, lon)
             homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-            mapViewportState.flyTo(
-                cameraOptions = cameraOptions {
-                    center(Point.fromLngLat(lon, lat))
+            //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
 
-                },
-            )
             scope.launch {
                 scaffoldState.bottomSheetState.expand()
             }

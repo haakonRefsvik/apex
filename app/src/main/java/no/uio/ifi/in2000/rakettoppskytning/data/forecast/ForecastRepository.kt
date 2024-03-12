@@ -65,7 +65,5 @@ class WeatherForeCastLocationRepo(){
             allProfiles.add(verticalProfile)
         }
 
-        _verticalProfiles.update { allProfiles }
-        Log.d("Verticalprofile", "Shearwind: ${allProfiles.first().getMaxSheerWind()}")
     }
 }

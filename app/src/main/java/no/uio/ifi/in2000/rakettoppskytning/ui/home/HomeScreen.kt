@@ -102,12 +102,15 @@ fun String.isDouble(): Boolean {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel = viewModel(),
 ) {
+    val lat by homeScreenViewModel.lat
+    val lon by homeScreenViewModel.lon
+
 
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
     val favoritter = listOf<String>(
@@ -160,6 +163,7 @@ fun HomeScreen(
                             InputField(homeScreenViewModel = homeScreenViewModel)
 
                             Spacer(modifier = Modifier.height(5.dp))
+                            
                             LazyRow(
                                 modifier = Modifier.width(340.dp),
 

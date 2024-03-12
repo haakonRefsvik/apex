@@ -15,10 +15,14 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
+import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
+import com.mapbox.maps.extension.style.expressions.dsl.generated.pitch
+import com.mapbox.maps.extension.style.expressions.dsl.generated.zoom
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
 import com.mapbox.maps.viewannotation.annotationAnchors
@@ -28,7 +32,9 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 
 @OptIn(MapboxExperimental::class)
 @Composable
-fun Map(homeScreenViewModel: HomeScreenViewModel){
+fun Map(
+    homeScreenViewModel: HomeScreenViewModel,
+){
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
 
@@ -38,6 +44,16 @@ fun Map(homeScreenViewModel: HomeScreenViewModel){
             pinchToZoomEnabled = true
             pitchEnabled = true
         })
+    }
+
+    val mapViewportState = MapViewportState ()
+
+    fun updateMapPosition(newLat: Double, newLon: Double) {
+        mapViewportState.flyTo(
+            cameraOptions {
+                center(Point.fromLngLat(lat, lon))
+            }
+        )
     }
 
     MapboxMap(
@@ -100,3 +116,4 @@ fun Map(homeScreenViewModel: HomeScreenViewModel){
         }
     }
 }
+

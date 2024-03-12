@@ -67,8 +67,6 @@ fun WeatherList(navController: NavHostController, homeScreenViewModel: HomeScree
                             onClick = {
                                 val s =  WeatherDetails(tider.data, verticalProfile.verticalProfiles)
 
-                                //Log.d("WD", s.verticalProfile.toString())
-
                                 val json = Uri.encode(GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(s))
                                 navController.navigate("DetailsScreen/${json}")
                             }
@@ -108,11 +106,7 @@ fun WeatherList(navController: NavHostController, homeScreenViewModel: HomeScree
                                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                     contentDescription = "Arrow"
                                 )
-
-
                             }
-
-
                         }
 
                         Spacer(modifier = Modifier.height(7.5.dp))
