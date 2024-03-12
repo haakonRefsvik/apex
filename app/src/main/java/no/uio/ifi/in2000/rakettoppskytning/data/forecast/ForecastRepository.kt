@@ -14,9 +14,7 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class WeatherForeCastLocationRepo() {
 
@@ -38,26 +36,31 @@ class WeatherForeCastLocationRepo() {
         _forecast.update { foreCast }
     }
 
-    suspend fun loadVerticalProfiles(lat: Double, lon: Double) = runBlocking {
+    suspend fun loadVerticalProfiles(lat: Double, lon: Double) = coroutineScope {
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
         } catch (e: Exception) {
             Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
-        val allProfiles = createAllProfiles(gribFiles, lat, lon)
 
+        val deferredList = mutableListOf<Deferred<VerticalProfile>>()
+
+        for (file in gribFiles) {
+            Log.d("gribThread", "Making verticalProfile on new thread")
+            val deferred = async(Dispatchers.IO) {
+                VerticalProfile(heightLimitMeters = 3000, lat = lat, lon = lon, file = file)
+            }
+            deferredList.add(deferred)
+            Log.d("gribThread", "Thread done")
+        }
+
+
+
+        val allProfiles = deferredList.awaitAll()
+        Log.d("gribThread", "All threads done!")
         _verticalProfiles.update { allProfiles }
     }
 
-    suspend fun createAllProfiles(files: List<File>, lat: Double, lon: Double): List<VerticalProfile> = coroutineScope {
-        files.map { file ->
-            async(Dispatchers.IO) {
-                VerticalProfile(lat = lat, lon = lon, file = file)
-            }
-        }.map { deferredProfile ->
-            deferredProfile.await()
-        }
-    }
 
 }
