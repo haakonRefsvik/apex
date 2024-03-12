@@ -48,7 +48,6 @@ import java.time.temporal.ChronoUnit
 fun WeatherColumn(navController: NavHostController, homeScreenViewModel: HomeScreenViewModel) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
-    val verticalProfile by homeScreenViewModel.verticalProfileUiState.collectAsState()
 
     val currentInstant = Instant.now()
     val formatter = DateTimeFormatter.ISO_INSTANT
@@ -74,12 +73,9 @@ fun WeatherColumn(navController: NavHostController, homeScreenViewModel: HomeScr
                                 .height(80.dp)
                                 .width(340.dp),
                             onClick = {
-                                val s =  WeatherDetails(tider.data, verticalProfile.verticalProfiles)
 
-                                //Log.d("WD", s.verticalProfile.toString())
 
-                                val json = Uri.encode(GsonBuilder().serializeSpecialFloatingPointValues().create().toJson(s))
-                                navController.navigate("DetailsScreen/${json}")
+                                navController.navigate("DetailsScreen/${tider.time}")
                             }
                         )
                         {

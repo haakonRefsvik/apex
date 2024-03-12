@@ -104,7 +104,7 @@ fun String.isDouble(): Boolean {
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    homeScreenViewModel: HomeScreenViewModel = viewModel(),
+    homeScreenViewModel: HomeScreenViewModel,
 ) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
@@ -295,7 +295,6 @@ fun HomeScreen(
                             Row {
                                 OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
                                     controller?.hide()
-                                    homeScreenViewModel.getVerticalProfileByCord(lat, lon)
                                     mapViewportState.flyTo(
                                         cameraOptions = cameraOptions {
                                             center(Point.fromLngLat(lon, lat))
