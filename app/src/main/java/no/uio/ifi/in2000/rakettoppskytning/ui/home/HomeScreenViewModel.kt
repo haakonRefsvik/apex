@@ -7,13 +7,22 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mapbox.geojson.Point
+import com.mapbox.maps.MapboxExperimental
+import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
+import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
+import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -23,8 +32,16 @@ import no.uio.ifi.in2000.rakettoppskytning.data.grib.getGrib
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 
-data class ForeCastUiState(val foreCast: List<LocationForecast> = listOf())
-data class VerticalProfileUiState(val verticalProfiles: List<VerticalProfile> = listOf())
+data class ForeCastUiState(
+    val foreCast: List<LocationForecast> = listOf()
+)
+data class VerticalProfileUiState(
+    val verticalProfiles: List<VerticalProfile> = listOf()
+)
+
+data class MapUIState @OptIn(MapboxExperimental::class) constructor(
+    val mapViewportState: MapViewportState = MapViewportState()
+)
 
 
 class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
@@ -87,6 +104,7 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = VerticalProfileUiState()
             )
+
 
     init {
         viewModelScope.launch {

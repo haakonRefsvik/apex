@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.forecast
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -9,7 +10,13 @@ import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
-
+import java.util.stream.Collectors
+import java.util.stream.Stream
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class WeatherForeCastLocationRepo() {
 
@@ -31,43 +38,28 @@ class WeatherForeCastLocationRepo() {
         _forecast.update { foreCast }
     }
 
-    suspend fun loadVerticalProfiles(lat: Double, lon: Double) {
+    suspend fun loadVerticalProfiles(lat: Double, lon: Double) = runBlocking {
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
         } catch (e: Exception) {
             Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
-
-        val allProfiles = mutableListOf<VerticalProfile>()
-        val groundLevel = _forecast.value.firstOrNull() ?: getForecast(lat, lon)
-
-        val timeSeriesMap = groundLevel.properties.timeseries.associateBy { it.time }
-
-        // Adds ground-level data to the vertical profile
-        gribFiles.forEach { file ->
-            val verticalProfile = VerticalProfile(lat = lat, lon = lon, file = file)
-
-            val matchingInstant = timeSeriesMap[verticalProfile.time]
-
-            matchingInstant?.let { instant ->
-                Log.d(
-                    "VerticalProfile",
-                    "Added ground-level data from forecast '${instant.time}' to vertical-profile '${verticalProfile.time}'"
-                )
-                verticalProfile.addGroundInfo(instant)
-            } ?: run {
-                Log.d(
-                    "VerticalProfile",
-                    "Could not find any forecast for '${verticalProfile.time}'"
-                )
-            }
-
-            allProfiles.add(verticalProfile)
-        }
+        Log.d("drit", "Kaller")
+        val allProfiles = createAllProfiles(gribFiles, lat, lon)
+        Log.d("drit", "Ferdig")
 
         _verticalProfiles.update { allProfiles }
-        Log.d("Verticalprofile", "Shearwind: ${allProfiles.first().getMaxSheerWind()}")
+    }
+
+    suspend fun createAllProfiles(files: List<File>, lat: Double, lon: Double): List<VerticalProfile> = coroutineScope {
+        files.map { file ->
+            async(Dispatchers.IO) {
+                VerticalProfile(lat = lat, lon = lon, file = file)
+            }
+        }.map { deferredProfile ->
+            deferredProfile.await()
+        }
     }
 
 }

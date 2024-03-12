@@ -8,13 +8,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,5 +45,4 @@ fun Navigation() {
             }
         }
     }
-
 }

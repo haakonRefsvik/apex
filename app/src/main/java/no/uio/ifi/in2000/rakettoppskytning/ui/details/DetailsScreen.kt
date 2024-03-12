@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
@@ -58,8 +59,8 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): VerticalProfile? {
-
     var r: VerticalProfile? = null
+    Log.d("Ds", "BAIS")
 
     allVp.forEach breaking@{ vp ->
         if (vp.time <= time) {
@@ -83,12 +84,11 @@ fun DetailsScreen(
 
     val verticalProfileUiState by detailsScreenViewModel.verticalProfileUiState.collectAsState()
     val foreCastUiState by detailsScreenViewModel.foreCastUiState.collectAsState()
-
     var data: List<Data> = listOf()
     val time: String = backStackEntry ?: ""
+    Log.d("jannefaen", verticalProfileUiState.verticalProfiles.size.toString())
     val verticalProfile =
         getVerticalProfileNearestHour(verticalProfileUiState.verticalProfiles, time)
-
 
     foreCastUiState.foreCast.forEach {
         it.properties.timeseries.forEach {
@@ -97,7 +97,7 @@ fun DetailsScreen(
             }
         }
     }
-
+    data.forEach { it.instant }
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -106,14 +106,12 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
-
                 actions = {
                     IconButton(onClick = { }) {
                         Icon(
                             imageVector = Icons.Sharp.Menu,
                             contentDescription = "ArrowBack"
                         )
-
                     }
                 },
                 navigationIcon = {
@@ -125,10 +123,7 @@ fun DetailsScreen(
                     }
                 },
                 title = {
-
                     ClickableText(
-
-
                         text = AnnotatedString(
                             text = "",
                             spanStyle = SpanStyle(
@@ -137,12 +132,9 @@ fun DetailsScreen(
                             )
                         ),
                         onClick = { navController.navigateUp() },
-
-                        )
-
+                    )
                 },
-
-                )
+            )
         },
         bottomBar = {
             BottomAppBar() {
@@ -175,10 +167,9 @@ fun DetailsScreen(
                         )
                     }
                 }
-
-
             }
         }
+
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -282,7 +273,6 @@ fun DetailsScreen(
 
             }
             data.forEach {
-
                 Spacer(modifier = Modifier.height(20.dp))
                 ElevatedCard(
 
@@ -307,8 +297,6 @@ fun DetailsScreen(
                                     painter = painterResource(R.drawable.vind2),
                                     contentDescription = "VindSymbol"
                                 )
-
-
                             }
                             Spacer(
                                 modifier = Modifier
@@ -322,7 +310,6 @@ fun DetailsScreen(
                                     .height(0.3.dp)
                                     .width(200.dp)
                                     .background(MaterialTheme.colorScheme.onBackground)
-
                             )
                             Text(text = "${it.instant.details.windSpeedOfGust} m/s vindkast")
 
@@ -359,183 +346,96 @@ fun DetailsScreen(
                                     contentDescription = "kompasspil"
                                 )
 
-
                             }
-
                         }
-
-
                     }
-
-
                 }
                 Spacer(modifier = Modifier.height(30.dp))
-                Row {
-                    LazyColumn(modifier = Modifier.height(437.dp), content = {
+                Row(modifier = Modifier.padding(20.dp)) {
+                    LazyColumn {
                         item {
-
-
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(125.dp)
-                                    .width(150.dp)
-                            ) {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier
-                                            .width(35.dp),
-                                        painter = painterResource(R.drawable.temp),
-                                        contentDescription = "Temperatursymbol"
-                                    )
-                                    Text(
-                                        text = "${it.instant.details.airTemperature} ℃",
-                                        modifier = Modifier.padding(start = 10.dp, top = 15.dp),
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                }
-
-
+                            Row {
+                                AddWeatherCard(
+                                    unit = "℃",
+                                    iconId = R.drawable.temp,
+                                    desc = "Temperatur",
+                                    value = it.instant.details.airTemperature
+                                )
+                                Spacer(modifier = Modifier.width(40.dp))
+                                AddWeatherCard(
+                                    unit = "mm",
+                                    iconId = R.drawable.vann,
+                                    desc = "nedbør",
+                                    value = it.next6Hours?.details?.precipitationAmount
+                                )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
-
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(125.dp)
-                                    .width(150.dp)
-                            ) {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier
-                                            .width(30.dp),
-                                        painter = painterResource(R.drawable.trykk),
-                                        contentDescription = "Trykk"
-                                    )
-                                    Text(
-                                        text = "${it.instant.details.airPressureAtSeaLevel} hPa",
-                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                }
-
-
-                            }
-                            Spacer(modifier = Modifier.height(30.dp))
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(125.dp)
-                                    .width(150.dp)
-                            ) {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier
-                                            .width(30.dp),
-                                        painter = painterResource(R.drawable.eye),
-                                        contentDescription = "Øye/sikt"
-                                    )
-                                    Text(
-                                        text = "${it.instant.details.fogAreaFraction} %",
-                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                }
-
-
-                            }
-
 
                         }
-                    })
-                    Spacer(modifier = Modifier.width(40.dp))
-
-
-                    LazyColumn(modifier = Modifier.height(437.dp), content = {
                         item {
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(125.dp)
-                                    .width(150.dp)
-                            ) {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier
-                                            .width(30.dp),
-                                        painter = painterResource(R.drawable.luftfuktighet),
-                                        contentDescription = "Luftfuktighet"
-                                    )
-                                    Text(
-                                        text = "${it.instant.details.relativeHumidity}%",
-                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                }
-
-
+                            Row {
+                                AddWeatherCard(
+                                    unit = "%",
+                                    iconId = R.drawable.eye,
+                                    desc = "Sikt",
+                                    value = it.instant.details.fogAreaFraction
+                                )
+                                Spacer(modifier = Modifier.width(40.dp))
+                                AddWeatherCard(
+                                    unit = "%",
+                                    iconId = R.drawable.luftfuktighet,
+                                    desc = "Luftfuktighet",
+                                    value = it.instant.details.relativeHumidity
+                                )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(125.dp)
-                                    .width(150.dp)
-                            ) {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier
-                                            .width(30.dp),
-                                        painter = painterResource(R.drawable.fogsymbol),
-                                        contentDescription = "Tåke"
-                                    )
-                                    Text(
-                                        text = "${it.instant.details.cloudAreaFraction}%",
-                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                }
-
-
-                            }
-                            Spacer(modifier = Modifier.height(30.dp))
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(125.dp)
-                                    .width(150.dp)
-                            ) {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier
-                                            .width(30.dp),
-                                        painter = painterResource(R.drawable.vann),
-                                        contentDescription = "Vann"
-                                    )
-                                    Text(
-                                        text = "${it.next6Hours?.details?.precipitationAmount} mm",
-                                        modifier = Modifier.padding(start = 10.dp, top = 20.dp),
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                }
-
-
-                            }
-
                         }
-                    })
+                        item {
+                            Row {
+                                AddWeatherCard(
+                                    unit = "%",
+                                    iconId = R.drawable.fogsymbol,
+                                    desc = "Skydekke",
+                                    value = it.instant.details.cloudAreaFraction
+                                )
 
-
+                                Spacer(modifier = Modifier.width(40.dp))
+                                AddWeatherCard(
+                                    unit = "℃",
+                                    iconId = R.drawable.rakkettpin,
+                                    desc = "Duggpunkt",
+                                    value = it.instant.details.dewPointTemperature
+                                )
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
 
+}
 
+@Composable
+fun AddWeatherCard(unit: String, iconId: Int, desc: String, value: Double?) {
+    ElevatedCard(
+        modifier = Modifier
+            .height(125.dp)
+            .width(150.dp)
+    ) {
+        Column {
+            Icon(
+                modifier = Modifier
+                    .width(30.dp),
+                painter = painterResource(iconId),
+                contentDescription = desc
+            )
+            Text(
+                text = "$value $unit",
+                modifier = Modifier.padding(start = 10.dp, top = 20.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 

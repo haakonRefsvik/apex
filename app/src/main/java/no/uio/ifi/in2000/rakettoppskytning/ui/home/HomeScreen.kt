@@ -86,6 +86,8 @@ import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.ui.bottomAppBar
+import no.uio.ifi.in2000.rakettoppskytning.ui.topAppBar
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -100,20 +102,16 @@ fun String.isDouble(): Boolean {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
 ) {
-
-    val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
-    val controller = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
 
-    //val scaffoldState = rememberBottomSheetScaffoldState()
+
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
     val favoritter = listOf<String>(
         "Lokasjon1",
@@ -128,37 +126,9 @@ fun HomeScreen(
         "Lokasjon10",
     )
 
-
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
-
-    val scope = rememberCoroutineScope()
-
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
-    val mapViewportState = rememberMapViewportState {
-        setCameraOptions {
-            center(Point.fromLngLat(lon, lat))
-            zoom(10.5)
-            pitch(0.0)
-        }
-    }
-
-    val mapBoxUiSettings: GesturesSettings by remember {
-        mutableStateOf(GesturesSettings {
-            rotateEnabled = false
-            pinchToZoomEnabled = true
-            pitchEnabled = true
-        })
-    }
-
-    val compassSettings: CompassSettings by remember {
-        mutableStateOf(CompassSettings { enabled = true })
-    }
-
-    val scaleBarSetting: ScaleBarSettings by remember {
-        mutableStateOf(ScaleBarSettings { enabled = false })
-    }
-
 
     Scaffold(
         snackbarHost = {
@@ -166,49 +136,10 @@ fun HomeScreen(
         },
 
         topBar = {
-            TopAppBar(
-                title = {}, modifier = Modifier
-                    .background(Color.Transparent)
-                    .height(0.dp)
-
-            )
+            topAppBar()
         },
         bottomBar = {
-            BottomAppBar {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-
-                            Icons.Sharp.LocationOn,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Location"
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Image(
-                            painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket"
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            Icons.Sharp.Settings,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Settings"
-                        )
-                    }
-                }
-
-
-            }
-
-
+            bottomAppBar()
         }
     ) { innerPadding ->
         Box(
@@ -229,107 +160,10 @@ fun HomeScreen(
 
                         content =
                         {
-                            val currentInstant = Instant.now()
-                            val formatter = DateTimeFormatter.ISO_INSTANT
-                            val formattedInstant = formatter.format(currentInstant)
-
-                            val newInstant = currentInstant.plus(7, ChronoUnit.HOURS)
-
-                            val formattedInstantAfter = formatter.format(newInstant)
-                            Row {
-                                OutlinedTextField(
-                                    value = lat.toString(),
-                                    onValueChange = { value ->
-                                        if (value.isDouble()) {
-                                            homeScreenViewModel.lat.value =
-                                                value.toDouble().coerceIn(-90.0, 90.0)
-                                        }
-                                    },
-                                    Modifier
-                                        .width(170.dp)
-                                        .height(52.dp),
-                                    textStyle = TextStyle(fontSize = 12.sp),
-                                    keyboardOptions = KeyboardOptions(
-                                        imeAction = ImeAction.Done,
-                                        keyboardType = KeyboardType.Number
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            controller?.hide()
-                                            focusManager.clearFocus()
-                                        }
-                                    ),
-                                    label = { Text("Longitude") },
-                                    singleLine = true,
-                                )
-                                Spacer(modifier = Modifier.width(20.dp))
-                                OutlinedTextField(value = lon.toString(),
-                                    onValueChange = { value ->
-                                        if (value.isDouble()) {
-                                            homeScreenViewModel.lon.value = if (value.toDouble()
-                                                    .isInfinite()
-                                            ) 0.0 else value.toDouble()
-                                        }
-                                    },
-
-                                    Modifier
-                                        .width(160.dp)
-                                        .height(52.dp),
-                                    textStyle = TextStyle(fontSize = 12.sp),
-                                    keyboardOptions = KeyboardOptions(
-                                        imeAction = ImeAction.Done,
-                                        keyboardType = KeyboardType.Number
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onDone = {
-                                            controller?.hide()
-                                            focusManager.clearFocus()
-                                        }
-                                    ),
-                                    label = { Text("Latitude") },
-                                    singleLine = true
-                                )
-
-                            }
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Row {
-                                OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
-                                    controller?.hide()
-                                    mapViewportState.flyTo(
-                                        cameraOptions = cameraOptions {
-                                            center(Point.fromLngLat(lon, lat))
-
-                                        },
-                                    )
-                                    scope.launch {
-                                        scaffoldState.bottomSheetState.expand()
-                                    }
-                                }) {
-                                    Text("Legg til favoritter")
-
-                                }
-                                Spacer(modifier = Modifier.width(25.dp))
-                                Button(modifier = Modifier.width(155.dp), onClick = {
-                                    controller?.hide()
-                                    homeScreenViewModel.getForecastByCord(lat, lon)
-                                    homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-                                    mapViewportState.flyTo(
-                                        cameraOptions = cameraOptions {
-                                            center(Point.fromLngLat(lon, lat))
-
-                                        },
-                                    )
-                                    scope.launch {
-                                        scaffoldState.bottomSheetState.expand()
-                                    }
-                                }) {
-                                    Text("Hent værdata")
-
-                                }
-
-                            }
+                            InputField(homeScreenViewModel = homeScreenViewModel)
 
                             Spacer(modifier = Modifier.height(5.dp))
+                            
                             LazyRow(
                                 modifier = Modifier.width(340.dp),
 
@@ -349,105 +183,18 @@ fun HomeScreen(
                                     }
                                 })
                             Spacer(modifier = Modifier.height(10.dp))
-                            WeatherColumn(
+
+                            WeatherList(
                                 homeScreenViewModel = homeScreenViewModel,
                                 navController = navController
                             )
                         })
-
-
                 }) {
 
-
-//                MapboxMap(
-//                    Modifier.fillMaxSize(),
-//                    gesturesSettings = mapBoxUiSettings,
-//                    mapViewportState = MapViewportState().apply {
-//                        setCameraOptions {
-//                            zoom(10.0)
-//                            center(Point.fromLngLat(lon, lat))
-//                            pitch(0.0)
-//
-//                        }
-//                    }
-//
-//                ) {
-//                    var s by remember {
-//                        mutableStateOf((viewAnnotationOptions {
-//                            geometry(Point.fromLngLat(lon, lat))
-//                            annotationAnchors(
-//                                {
-//                                    anchor(ViewAnnotationAnchor.CENTER)
-//                                }
-//                            )
-//                            height(60.0)
-//                            visible(false)
-//
-//
-//                            allowOverlap(false)
-//
-//                        }))
-//                    }
-//
-//
-//                    MapEffect(Unit) { mapView ->
-//
-//                        mapView.mapboxMap.styleDataLoadedEvents
-//
-//
-//                        mapView.mapboxMap.addOnMapClickListener {
-//                            Log.d("s", "${it.latitude()},${it.longitude()}")
-//                            homeScreenViewModel.lat.value = it.latitude()
-//                            homeScreenViewModel.lon.value = it.longitude()
-//
-//
-//                            s = viewAnnotationOptions {
-//                                geometry(Point.fromLngLat(lon, lat))
-//                                annotationAnchors(
-//                                    {
-//                                        anchor(ViewAnnotationAnchor.CENTER)
-//                                    }
-//                                )
-//                                height(100.0)
-//                                visible(true)
-//
-//
-//                                allowOverlap(false)
-//
-//                            }
-//
-//
-//
-//                            true
-//                        }
-//
-//                        // mapView.mapboxMap.addOnScaleListener (listener = )
-//                    }
-//
-//
-//
-//
-//
-//
-//
-//
-//                    ViewAnnotation(
-//                        options = s
-//                    ) {
-//                        IconButton(onClick = { /*TODO*/ }) {
-//                            Image(painterResource(id = R.drawable.rakkettpin), "RakketPin")
-//
-//
-//                        }
-//                    }
-//
-//                }
-//
+                Map(homeScreenViewModel)
 
             }
 
         }
-
-
     }
 }

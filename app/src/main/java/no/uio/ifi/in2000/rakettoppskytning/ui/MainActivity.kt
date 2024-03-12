@@ -24,28 +24,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
-
-abstract class JsonNavType<T> : NavType<T>(isNullableAllowed = false) {
-    abstract fun fromJsonParse(value: String): T
-    abstract fun T.getJsonParse(): String
-
-    override fun get(bundle: Bundle, key: String): T? =
-        bundle.getString(key)?.let { parseValue(it) }
-
-    override fun parseValue(value: String): T = fromJsonParse(value)
-
-    override fun put(bundle: Bundle, key: String, value: T) {
-        bundle.putString(key, value.getJsonParse())
-    }
-}
-
-class DataArgType : JsonNavType<Data>() {
-    override fun fromJsonParse(value: String): Data =
-        Gson().fromJson(value, Data::class.java)
-
-    override fun Data.getJsonParse(): String = Gson().toJson(this)
-}
-
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +37,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Navigation()
-
                 }
             }
         }
