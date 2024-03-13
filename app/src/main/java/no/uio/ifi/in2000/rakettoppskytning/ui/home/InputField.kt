@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InputField(homeScreenViewModel: HomeScreenViewModel){
+    val showDecimals = 5
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
@@ -47,7 +49,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
 
     Row {
         OutlinedTextField(
-            value = lat.toString(),
+            value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
             onValueChange = { value ->
                 if (value.isDouble()) {
                     homeScreenViewModel.lat.value =
@@ -55,9 +57,9 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
                 }
             },
             Modifier
-                .width(170.dp)
-                .height(52.dp),
-            textStyle = TextStyle(fontSize = 12.sp),
+                .width(130.dp)
+                .height(58.dp),
+            textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Number
@@ -71,8 +73,9 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
             label = { Text("Longitude") },
             singleLine = true,
         )
-        Spacer(modifier = Modifier.width(20.dp))
-        OutlinedTextField(value = lon.toString(),
+        Spacer(modifier = Modifier.width(50.dp))
+        OutlinedTextField(
+            value = String.format("%.${showDecimals}f", lon), // viser lat, verdien som maks 5 desimaler
             onValueChange = { value ->
                 if (value.isDouble()) {
                     homeScreenViewModel.lon.value = if (value.toDouble()
@@ -82,9 +85,10 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
             },
 
             Modifier
-                .width(160.dp)
-                .height(52.dp),
-            textStyle = TextStyle(fontSize = 12.sp),
+                .width(130.dp)
+                .height(58.dp),
+
+            textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Number
@@ -100,7 +104,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         )
 
     }
-    Spacer(modifier = Modifier.height(5.dp))
+    Spacer(modifier = Modifier.height(20.dp))
     Row {
         OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
@@ -111,7 +115,6 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
             }
         }) {
             Text("Legg til favoritter")
-
         }
         Spacer(modifier = Modifier.width(25.dp))
         Button(modifier = Modifier.width(155.dp), onClick = {
@@ -126,5 +129,8 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         }) {
             Text("Hent værdata")
         }
+        Spacer(modifier = Modifier.height(70.dp))
+
     }
+
 }

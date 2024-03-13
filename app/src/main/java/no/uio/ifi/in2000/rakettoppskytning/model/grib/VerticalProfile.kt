@@ -39,7 +39,7 @@ class VerticalProfile(
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
     val heightLimit = heightLimitMeters
     /** Shows the the max altitude the VerticalProfile can reach (in meters) */
-    // val actualHeight = findLevel(getAllLevels().last()).getLevelHeightInMeters()
+    val actualHeight = getAllLevels().lastOrNull()?.let { findLevel(it).getLevelHeightInMeters() }
 
     /** Gets all the levels of the profile in Pascal */
     private fun getAllLevels(): DoubleArray {
@@ -155,11 +155,15 @@ fun getVerticalProfileMap(
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
     val verticalMap = HashMap<Double, LevelData>()
+    var lastHeight = 0
 
     while (scan.hasNext()) {
         val gr2 = scan.next()
         val levelPa = (gr2.pds.levelValue1)
-        if (getApproximateHeight(levelPa) >= maxHeight) {
+        val height = getApproximateHeight(levelPa).roundToInt()
+
+        if (lastHeight > maxHeight && height > maxHeight) {
+            lastHeight = height
             continue
         }
         val parameterNumber = gr2.pds.parameterNumber
@@ -173,7 +177,10 @@ fun getVerticalProfileMap(
         )
         val value = data[index].toDouble()
         addLevelToMap(verticalMap, value, levelPa, parameterNumber)
+
+        lastHeight = height
     }
+
     raf.close()
     return verticalMap
 }
