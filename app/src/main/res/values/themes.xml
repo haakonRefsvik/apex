@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.Rakettoppskytning" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.RakettoppskytningStyle2" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <color name="colorPrimary">#0E131F</color>
+    
 </resources>

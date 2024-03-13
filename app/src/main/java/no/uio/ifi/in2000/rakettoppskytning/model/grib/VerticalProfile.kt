@@ -16,9 +16,9 @@ import kotlin.math.sin
 fun getTime(file: File): String {
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
-    val record: Grib2Record = try{
+    val record: Grib2Record = try {
         scan.next()
-    }catch (e: Exception){
+    } catch (e: Exception) {
         return ""
     }
     val referenceDate = record.id.referenceDate
@@ -27,14 +27,19 @@ fun getTime(file: File): String {
 }
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
-class VerticalProfile(heightLimitMeters: Int = Int.MAX_VALUE, val lat: Double, val lon: Double, val file: File) {
+class VerticalProfile(
+    heightLimitMeters: Int = Int.MAX_VALUE,
+    val lat: Double,
+    val lon: Double,
+    val file: File
+) {
     private val verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimitMeters)
     val time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
     val heightLimit = heightLimitMeters
     /** Shows the the max altitude the VerticalProfile can reach (in meters) */
-    val actualHeight = findLevel(getAllLevels().last()).getLevelHeightInMeters()
+    // val actualHeight = findLevel(getAllLevels().last()).getLevelHeightInMeters()
 
     /** Gets all the levels of the profile in Pascal */
     private fun getAllLevels(): DoubleArray {
@@ -140,7 +145,12 @@ fun addLevelToMap(
 }
 
 /** Makes a hashmap with key: Isobaric layer (in Pascal), and a LevelData-object based on lon and lat*/
-fun getVerticalProfileMap(lat: Double, lon: Double, file: File, maxHeight: Int): HashMap<Double, LevelData> {
+fun getVerticalProfileMap(
+    lat: Double,
+    lon: Double,
+    file: File,
+    maxHeight: Int
+): HashMap<Double, LevelData> {
 
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
@@ -149,7 +159,7 @@ fun getVerticalProfileMap(lat: Double, lon: Double, file: File, maxHeight: Int):
     while (scan.hasNext()) {
         val gr2 = scan.next()
         val levelPa = (gr2.pds.levelValue1)
-        if(getApproximateHeight(levelPa) >= maxHeight){
+        if (getApproximateHeight(levelPa) >= maxHeight) {
             continue
         }
         val parameterNumber = gr2.pds.parameterNumber

@@ -62,7 +62,7 @@ fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): V
     var r: VerticalProfile? = null
     allVp.forEach breaking@{ vp ->
         if (vp.time <= time) {
-            Log.d("maxReach", r?.actualHeight.toString())
+            // Log.d("maxReach", r?.actualHeight.toString())
             r = vp
             return@breaking
         }
@@ -86,7 +86,7 @@ fun DetailsScreen(
         getVerticalProfileNearestHour(verticalProfileUiState.verticalProfiles, time)
 
     foreCastUiState.foreCast.forEach {
-        it.properties.timeseries.forEach {series ->
+        it.properties.timeseries.forEach { series ->
             if (time == series.time) {
                 data = listOf(series.data)
                 verticalProfile?.addGroundInfo(series)
@@ -218,9 +218,14 @@ fun DetailsScreen(
                                     .width(200.dp)
                                     .background(MaterialTheme.colorScheme.onBackground)
                             )
-                            val maxSheerWind: String = String.format("%.2f", verticalProfile?.getMaxSheerWind()?.windSpeed)
-                            val lowerLayerHeight = verticalProfile?.getMaxSheerWind()?.lowerLayer?.getLevelHeightInMeters()?.toInt()
-                            val upperLayerHeight = verticalProfile?.getMaxSheerWind()?.upperLayer?.getLevelHeightInMeters()?.toInt()
+                            val maxSheerWind: String =
+                                String.format("%.2f", verticalProfile?.getMaxSheerWind()?.windSpeed)
+                            val lowerLayerHeight =
+                                verticalProfile?.getMaxSheerWind()?.lowerLayer?.getLevelHeightInMeters()
+                                    ?.toInt()
+                            val upperLayerHeight =
+                                verticalProfile?.getMaxSheerWind()?.upperLayer?.getLevelHeightInMeters()
+                                    ?.toInt()
 
                             Text(text = "$maxSheerWind m/s")
                             Text(text = "$lowerLayerHeight - $upperLayerHeight meters høyde")
@@ -372,7 +377,7 @@ fun DetailsScreen(
 }
 
 @Composable
-fun AddWeatherCard(text: String, iconId: Int, desc: String, ) {
+fun AddWeatherCard(text: String, iconId: Int, desc: String) {
     ElevatedCard(
         modifier = Modifier
             .height(125.dp)
