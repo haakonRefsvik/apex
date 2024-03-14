@@ -127,9 +127,10 @@ obj/
 .cproject
 .settings/
 
-# API KEY
+# API KEYS
 
 app/src/main/java/no/uio/ifi/in2000/rakettoppskytning/data/api/
+app/src/main/res/values/strings.xml
 
 # Mobile Tools for Java (J2ME)
 
