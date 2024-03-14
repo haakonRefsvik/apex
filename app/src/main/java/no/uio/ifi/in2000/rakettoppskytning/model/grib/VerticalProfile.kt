@@ -33,7 +33,13 @@ class VerticalProfile(
     val lon: Double,
     val file: File
 ) {
-    private val verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimitMeters)
+
+    private val verticalProfileMap = try{
+        getVerticalProfileMap(lat, lon, file, heightLimitMeters)
+    }catch (e: Exception){
+        hashMapOf()
+    }
+
     val time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
@@ -51,6 +57,7 @@ class VerticalProfile(
     }
 
     fun addGroundInfo(series: Series) {
+        if(verticalProfileMap.isEmpty()){return}
         val data = series.data.instant.details
         val pressurePascal =
             data.airPressureAtSeaLevel * 100 // forecast-pressure is in hecto-pascal
@@ -152,7 +159,11 @@ fun getVerticalProfileMap(
     maxHeight: Int
 ): HashMap<Double, LevelData> {
 
-    val raf = RandomAccessFile(file.absolutePath, "r")
+    val raf = try {
+        RandomAccessFile(file.absolutePath, "r")
+    }catch (e: Exception){
+        throw Exception(e.stackTraceToString())
+    }
     val scan = Grib2RecordScanner(raf)
     val verticalMap = HashMap<Double, LevelData>()
     var lastHeight = 0
@@ -175,7 +186,14 @@ fun getVerticalProfileMap(
             lon,
             gr2.gds ?: throw Exception("Grib Definition Section not found")
         )
-        val value = data[index].toDouble()
+
+        val value= try {
+            data[index].toDouble()
+        }
+        catch (e: Exception){
+            0.0
+        }
+
         addLevelToMap(verticalMap, value, levelPa, parameterNumber)
 
         lastHeight = height

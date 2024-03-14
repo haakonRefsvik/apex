@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -26,11 +26,30 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
-import com.mapbox.maps.dsl.cameraOptions
-import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import kotlinx.coroutines.launch
+
+fun formatNewValue(input: String): Double {
+    val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
+
+    val decimalParts = onlyDigitsAndDot.split(".")
+    val integerPart = decimalParts.getOrNull(0) ?: ""
+
+    var formattedIntegerValue = integerPart
+
+    while (formattedIntegerValue.length > 2){
+        formattedIntegerValue = formattedIntegerValue.dropLast(1)
+    }
+
+    val decimalPart = if (decimalParts.size > 1) {
+        "." + decimalParts[1]  // Reconstruct the decimal part, if present
+    } else {
+        ""
+    }
+
+    val r = (formattedIntegerValue + decimalPart)
+    return (r).toDouble()
+}
 
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
@@ -50,44 +69,12 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
     Row {
         OutlinedTextField(
             value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
-            onValueChange = { value ->
-                if (value.isDouble()) {
-                    homeScreenViewModel.lat.value =
-                        value.toDouble().coerceIn(-90.0, 90.0)
-                }
+            onValueChange = {input ->
+                homeScreenViewModel.lat.value = formatNewValue(input)
             },
             Modifier
                 .width(130.dp)
                 .height(58.dp),
-            textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    controller?.hide()
-                    focusManager.clearFocus()
-                }
-            ),
-            label = { Text("Longitude") },
-            singleLine = true,
-        )
-        Spacer(modifier = Modifier.width(50.dp))
-        OutlinedTextField(
-            value = String.format("%.${showDecimals}f", lon), // viser lat, verdien som maks 5 desimaler
-            onValueChange = { value ->
-                if (value.isDouble()) {
-                    homeScreenViewModel.lon.value = if (value.toDouble()
-                            .isInfinite()
-                    ) 0.0 else value.toDouble()
-                }
-            },
-
-            Modifier
-                .width(130.dp)
-                .height(58.dp),
-
             textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
@@ -100,6 +87,31 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
                 }
             ),
             label = { Text("Latitude") },
+            singleLine = true,
+        )
+        Spacer(modifier = Modifier.width(50.dp))
+        OutlinedTextField(
+            value = String.format("%.${showDecimals}f", lon), // viser lat, verdien som maks 5 desimaler
+            onValueChange = { input ->
+                homeScreenViewModel.lon.value = formatNewValue(input)
+            },
+
+            Modifier
+                .width(130.dp)
+                .height(58.dp),
+
+            textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    controller?.hide()
+                    focusManager.clearFocus()
+                }
+            ),
+            label = { Text("Longitude") },
             singleLine = true
         )
 
