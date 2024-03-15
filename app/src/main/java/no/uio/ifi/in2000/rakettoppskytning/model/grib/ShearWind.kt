@@ -22,9 +22,10 @@ class ShearWind(
  * The lowerLayer is layer n and upperLayer is n+1
  * */
 fun getShearWind(upperLayer: LevelData, lowerLayer: LevelData): Double{
-    val shearU = upperLayer.uComponentValue + lowerLayer.uComponentValue
-    val shearV = upperLayer.vComponentValue + lowerLayer.vComponentValue
+    val shearU = upperLayer.uComponentValue - lowerLayer.uComponentValue    // TODO: DENNE VERDIEN BLE PLUSSA FØR
+    val shearV = upperLayer.vComponentValue - lowerLayer.vComponentValue
 
     val windSpeed = sqrt(shearU.pow(2) + shearV.pow(2))
+
     return abs(windSpeed)
 }

@@ -150,7 +150,7 @@ fun HomeScreen(
 
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
-                sheetPeekHeight = 156.dp,
+                sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
                 sheetContent = {
                     Column(
                         modifier = Modifier
