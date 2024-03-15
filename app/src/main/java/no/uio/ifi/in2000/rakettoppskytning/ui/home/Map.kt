@@ -35,6 +35,7 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 fun Map(
     homeScreenViewModel: HomeScreenViewModel,
 ){
+    /*
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
 
@@ -115,5 +116,7 @@ fun Map(
             }
         }
     }
+
+     */
 }
 

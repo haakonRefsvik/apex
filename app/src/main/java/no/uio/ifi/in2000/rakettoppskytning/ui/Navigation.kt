@@ -13,6 +13,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -23,12 +24,14 @@ fun Navigation() {
     val forecastRepo = WeatherForeCastLocationRepo()
     val detailsScreenViewModel = DetailsScreenViewModel(forecastRepo)
     val homeScreenViewModel = HomeScreenViewModel(forecastRepo)
+    val mapViewModel = MapViewModel()
 
     NavHost(navController = navController, startDestination = "HomeScreen") {
         composable("HomeScreen") {
             HomeScreen(
                 navController,
-                homeScreenViewModel = homeScreenViewModel
+                homeScreenViewModel = homeScreenViewModel,
+                mapViewModel
             )
         }
         composable(

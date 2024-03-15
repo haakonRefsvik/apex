@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 fun formatNewValue(input: String): Double {
@@ -56,10 +56,10 @@ fun formatNewValue(input: String): Double {
 @OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InputField(homeScreenViewModel: HomeScreenViewModel){
+fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewModel){
     val showDecimals = 5
-    val lat by homeScreenViewModel.lat
-    val lon by homeScreenViewModel.lon
+    val lat by mapViewModel.lat
+    val lon by mapViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -70,7 +70,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         OutlinedTextField(
             value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
             onValueChange = {input ->
-                homeScreenViewModel.lat.value = formatNewValue(input)
+                mapViewModel.lat.value = formatNewValue(input)
             },
             Modifier
                 .width(130.dp)
@@ -93,7 +93,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         OutlinedTextField(
             value = String.format("%.${showDecimals}f", lon), // viser lat, verdien som maks 5 desimaler
             onValueChange = { input ->
-                homeScreenViewModel.lon.value = formatNewValue(input)
+                mapViewModel.lon.value = formatNewValue(input)
             },
 
             Modifier
@@ -133,9 +133,10 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
             controller?.hide()
             homeScreenViewModel.getForecastByCord(lat, lon)
             homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-            //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
+            mapViewModel.moveMapCamera(lat, lon)
 
             scope.launch {
+                delay(1000)
                 scaffoldState.bottomSheetState.expand()
             }
         }) {
