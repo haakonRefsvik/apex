@@ -46,6 +46,7 @@ class MapViewModel() : ViewModel() {
         .zoom(10.0)
         .build()
 
+
     private val _cam = mutableStateOf(cam)
 
     val cameraOptions: MutableState<CameraOptions> = _cam

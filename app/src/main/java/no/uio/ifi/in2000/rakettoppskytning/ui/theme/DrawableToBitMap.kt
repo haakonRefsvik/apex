@@ -1,11 +1,11 @@
-package no.uio.ifi.in2000.rakettoppskytning.ui
+package no.uio.ifi.in2000.rakettoppskytning.ui.theme
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 
-fun drawableToBitmap(drawable: Drawable): Bitmap? {
+fun drawableToBitmap(drawable: Drawable): Bitmap {
     if (drawable is BitmapDrawable) {
         return drawable.bitmap
     }
