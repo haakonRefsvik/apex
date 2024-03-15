@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
@@ -17,7 +19,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation() {
+fun Navigation(
+    state: FavoriteState,
+    onEvent: (FavoriteEvent) -> Unit
+) {
 
     val navController = rememberNavController()
     val forecastRepo = WeatherForeCastLocationRepo()
@@ -28,7 +33,9 @@ fun Navigation() {
         composable("HomeScreen") {
             HomeScreen(
                 navController,
-                homeScreenViewModel = homeScreenViewModel
+                homeScreenViewModel = homeScreenViewModel,
+                state,
+                onEvent
             )
         }
         composable(

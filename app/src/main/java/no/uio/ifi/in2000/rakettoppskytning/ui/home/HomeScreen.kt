@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.sharp.LocationOn
@@ -86,6 +88,8 @@ import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.bottomAppBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.topAppBar
 import java.time.Instant
@@ -107,13 +111,16 @@ fun String.isDouble(): Boolean {
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
+    state: FavoriteState,
+    onEvent: (FavoriteEvent) -> Unit
 ) {
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
 
 
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
-    val favoritter = listOf<String>(
+
+   /* val favoritter = listOf<String>(
         "Lokasjon1",
         "Lokasjon2",
         "Lokasjon3",
@@ -126,6 +133,8 @@ fun HomeScreen(
         "Lokasjon10",
     )
 
+
+    */
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
@@ -160,28 +169,44 @@ fun HomeScreen(
 
                         content =
                         {
-                            InputField(homeScreenViewModel = homeScreenViewModel)
+                            InputField(homeScreenViewModel = homeScreenViewModel, state, onEvent)
 
                             Spacer(modifier = Modifier.height(5.dp))
                             
                             LazyRow(
-                                modifier = Modifier.width(340.dp),
+                                modifier = Modifier.width(340.dp) )
+                            {
 
-                                content = {
-                                    favoritter.forEach {
-                                        item {
+                                    items(state.favorites) { favorite ->
                                             ElevatedCard(
                                                 modifier = Modifier
                                                     .height(80.dp)
-                                                    .width(120.dp)
+                                                    .width(120.dp),
+                                                onClick = {
+                                                    //getFavorite = true
+                                                }
                                             ) {
-                                                Text(it)
+                                                Row(
+                                                    verticalAlignment = Alignment.Top,
+                                                    horizontalArrangement = Arrangement.Start
+                                                ) {
+                                                    IconButton(onClick = {
+                                                        onEvent(FavoriteEvent.DeleteFavorite(favorite))
+                                                    }) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Close,
+                                                            contentDescription = "Delete favorite"
+                                                        )
+                                                    }
+                                                    Text(favorite.name, modifier = Modifier.padding(top = 32.dp))
+                                                }
 
                                             }
+
+
                                             Spacer(modifier = Modifier.width(20.dp))
-                                        }
                                     }
-                                })
+                                }
                             Spacer(modifier = Modifier.height(10.dp))
 
                             WeatherList(

@@ -30,13 +30,18 @@ import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import kotlinx.coroutines.launch
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
 @OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InputField(homeScreenViewModel: HomeScreenViewModel){
+fun InputField(homeScreenViewModel: HomeScreenViewModel,
+               state: FavoriteState,
+               onEvent: (FavoriteEvent) -> Unit){
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
@@ -105,11 +110,15 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
             homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+            onEvent(FavoriteEvent.ShowDialog)
             //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
             scope.launch {
                 scaffoldState.bottomSheetState.expand()
             }
         }) {
+            if (state.isAddingFavorite) {
+                AddFavoriteDialog(state = state, onEvent = onEvent, lat = lat, lon = lon)
+            }
             Text("Legg til favoritter")
 
         }
