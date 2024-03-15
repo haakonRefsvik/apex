@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 
 //oppdater databasen hver time eller hvor mange timer som met oppdaterer
 //inject data fra apiet på databasen
-
+//Legg til slik at bruker for beskjed om han prøver å favorite samme lokasjon flere ganger
+//Legge til slik at når bruker trykker på knappen så blir det automatisk hentet data
 @Entity
 data class Favorite(
     val name: String,

@@ -30,6 +30,7 @@ import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import kotlinx.coroutines.launch
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
@@ -41,9 +42,18 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 @Composable
 fun InputField(homeScreenViewModel: HomeScreenViewModel,
                state: FavoriteState,
-               onEvent: (FavoriteEvent) -> Unit){
-    val lat by homeScreenViewModel.lat
+               onEvent: (FavoriteEvent) -> Unit,
+               tappedFavorite: Boolean = false,
+               favorite: Favorite){
+
     val lon by homeScreenViewModel.lon
+    val lat by homeScreenViewModel.lat
+
+    if (tappedFavorite) {
+        homeScreenViewModel.lat.value = favorite.lat.toDouble()
+        homeScreenViewModel.lat.value = favorite.lon.toDouble()
+    }
+
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 

@@ -88,6 +88,7 @@ import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.bottomAppBar
@@ -116,25 +117,12 @@ fun HomeScreen(
 ) {
     val lat by homeScreenViewModel.lat
     val lon by homeScreenViewModel.lon
+    var chosenFavorite by remember { mutableStateOf(Favorite("", "", "")) }
+    var isChosen by remember { mutableStateOf(false)}
 
 
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
-   /* val favoritter = listOf<String>(
-        "Lokasjon1",
-        "Lokasjon2",
-        "Lokasjon3",
-        "Lokasjon4",
-        "Lokasjon5",
-        "Lokasjon6",
-        "Lokasjon7",
-        "Lokasjon8",
-        "Lokasjon9",
-        "Lokasjon10",
-    )
-
-
-    */
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
@@ -169,7 +157,7 @@ fun HomeScreen(
 
                         content =
                         {
-                            InputField(homeScreenViewModel = homeScreenViewModel, state, onEvent)
+                            InputField(homeScreenViewModel = homeScreenViewModel, state, onEvent, isChosen, chosenFavorite)
 
                             Spacer(modifier = Modifier.height(5.dp))
                             
@@ -192,6 +180,9 @@ fun HomeScreen(
                                                 ) {
                                                     IconButton(onClick = {
                                                         onEvent(FavoriteEvent.DeleteFavorite(favorite))
+                                                        chosenFavorite = favorite
+                                                        isChosen = true
+
                                                     }) {
                                                         Icon(
                                                             imageVector = Icons.Default.Close,
