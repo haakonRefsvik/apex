@@ -39,11 +39,6 @@ data class VerticalProfileUiState(
     val verticalProfiles: List<VerticalProfile> = listOf()
 )
 
-data class MapUIState @OptIn(MapboxExperimental::class) constructor(
-    val mapViewportState: MapViewportState = MapViewportState()
-)
-
-
 class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
     private val foreCastRep = repo
 

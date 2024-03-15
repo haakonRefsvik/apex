@@ -46,20 +46,29 @@ class WeatherForeCastLocationRepo() {
 
         val deferredList = mutableListOf<Deferred<VerticalProfile>>()
 
-        for (file in gribFiles) {
-            Log.d("gribThread", "Making verticalProfile on new thread")
-            val deferred = async(Dispatchers.IO) {
-                VerticalProfile(heightLimitMeters = 3000, lat = lat, lon = lon, file = file)
+        try {
+            for (file in gribFiles) {
+                Log.d("gribThread", "Making verticalProfile on new thread")
+                val deferred = async(Dispatchers.IO) {
+                    VerticalProfile(heightLimitMeters = 3000, lat = lat, lon = lon, file = file)
+                }
+                deferredList.add(deferred)
+                Log.d("gribThread", "Thread done")
             }
-            deferredList.add(deferred)
-            Log.d("gribThread", "Thread done")
+
+            val allProfiles = deferredList.awaitAll()
+            Log.d("gribThread", "All threads done!")
+            _verticalProfiles.update { allProfiles }
+
+        }catch (e: Exception){
+            Log.e("GribToVerticalProfile", "Error occurred while processing vertical profiles: ${e.message}", e)
+        }finally {
+            for (deferred in deferredList) {
+                if (!deferred.isCompleted) {
+                    deferred.cancel()
+                }
+            }
         }
-
-
-
-        val allProfiles = deferredList.awaitAll()
-        Log.d("gribThread", "All threads done!")
-        _verticalProfiles.update { allProfiles }
     }
 
 

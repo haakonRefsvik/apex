@@ -16,9 +16,9 @@ import kotlin.math.sin
 fun getTime(file: File): String {
     val raf = RandomAccessFile(file.absolutePath, "r")
     val scan = Grib2RecordScanner(raf)
-    val record: Grib2Record = try{
+    val record: Grib2Record = try {
         scan.next()
-    }catch (e: Exception){
+    } catch (e: Exception) {
         return ""
     }
     val referenceDate = record.id.referenceDate
@@ -27,14 +27,25 @@ fun getTime(file: File): String {
 }
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
-class VerticalProfile(heightLimitMeters: Int = Int.MAX_VALUE, val lat: Double, val lon: Double, val file: File) {
-    private val verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimitMeters)
+class VerticalProfile(
+    heightLimitMeters: Int = Int.MAX_VALUE,
+    val lat: Double,
+    val lon: Double,
+    val file: File
+) {
+
+    private val verticalProfileMap = try{
+        getVerticalProfileMap(lat, lon, file, heightLimitMeters)
+    }catch (e: Exception){
+        hashMapOf()
+    }
+
     val time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
     val heightLimit = heightLimitMeters
     /** Shows the the max altitude the VerticalProfile can reach (in meters) */
-    val actualHeight = findLevel(getAllLevels().last()).getLevelHeightInMeters()
+    val actualHeight = getAllLevels().lastOrNull()?.let { findLevel(it).getLevelHeightInMeters() }
 
     /** Gets all the levels of the profile in Pascal */
     private fun getAllLevels(): DoubleArray {
@@ -46,6 +57,7 @@ class VerticalProfile(heightLimitMeters: Int = Int.MAX_VALUE, val lat: Double, v
     }
 
     fun addGroundInfo(series: Series) {
+        if(verticalProfileMap.isEmpty()){return}
         val data = series.data.instant.details
         val pressurePascal =
             data.airPressureAtSeaLevel * 100 // forecast-pressure is in hecto-pascal
@@ -140,16 +152,29 @@ fun addLevelToMap(
 }
 
 /** Makes a hashmap with key: Isobaric layer (in Pascal), and a LevelData-object based on lon and lat*/
-fun getVerticalProfileMap(lat: Double, lon: Double, file: File, maxHeight: Int): HashMap<Double, LevelData> {
+fun getVerticalProfileMap(
+    lat: Double,
+    lon: Double,
+    file: File,
+    maxHeight: Int
+): HashMap<Double, LevelData> {
 
-    val raf = RandomAccessFile(file.absolutePath, "r")
+    val raf = try {
+        RandomAccessFile(file.absolutePath, "r")
+    }catch (e: Exception){
+        throw Exception(e.stackTraceToString())
+    }
     val scan = Grib2RecordScanner(raf)
     val verticalMap = HashMap<Double, LevelData>()
+    var lastHeight = 0
 
     while (scan.hasNext()) {
         val gr2 = scan.next()
         val levelPa = (gr2.pds.levelValue1)
-        if(getApproximateHeight(levelPa) >= maxHeight){
+        val height = getApproximateHeight(levelPa).roundToInt()
+
+        if (lastHeight > maxHeight && height > maxHeight) {
+            lastHeight = height
             continue
         }
         val parameterNumber = gr2.pds.parameterNumber
@@ -161,9 +186,19 @@ fun getVerticalProfileMap(lat: Double, lon: Double, file: File, maxHeight: Int):
             lon,
             gr2.gds ?: throw Exception("Grib Definition Section not found")
         )
-        val value = data[index].toDouble()
+
+        val value= try {
+            data[index].toDouble()
+        }
+        catch (e: Exception){
+            0.0
+        }
+
         addLevelToMap(verticalMap, value, levelPa, parameterNumber)
+
+        lastHeight = height
     }
+
     raf.close()
     return verticalMap
 }
