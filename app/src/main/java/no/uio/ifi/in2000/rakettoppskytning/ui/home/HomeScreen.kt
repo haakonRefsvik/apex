@@ -26,8 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
-import no.uio.ifi.in2000.rakettoppskytning.ui.bottomAppBar
-import no.uio.ifi.in2000.rakettoppskytning.ui.topAppBar
 
 fun String.isDouble(): Boolean {
     return try {
@@ -70,10 +68,10 @@ fun HomeScreen(
         },
 
         topBar = {
-            topAppBar()
+            TopAppBar(navController)
         },
         bottomBar = {
-            bottomAppBar()
+            BottomAppBar(navController)
         }
     ) { innerPadding ->
         Box(

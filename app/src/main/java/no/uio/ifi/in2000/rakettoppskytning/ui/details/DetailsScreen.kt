@@ -70,6 +70,8 @@ fun getVerticalProfileNearestHour(allVp: List<VerticalProfile>, time: String): V
     return r
 }
 
+
+
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,7 +168,6 @@ fun DetailsScreen(
                 }
             }
         }
-
     ) { innerPadding ->
         Column(
             modifier = Modifier

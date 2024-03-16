@@ -93,17 +93,11 @@ fun Map2(
     val lon by mapViewModel.lon
     val cameraOptions by mapViewModel.cameraOptions
     val mapViewportState = mapViewModel.mapViewportState
+    mapViewportState.setCameraOptions(cameraOptions)
 
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
         mapViewportState = mapViewModel.mapViewportState,
-        mapInitOptionsFactory = {
-            MapInitOptions(
-                context = it,
-                styleUri = Style.DARK,
-                cameraOptions = mapViewModel.cameraOptions.value
-            )
-        }
     ) {
 
         NewPointAnnotation(
@@ -115,4 +109,5 @@ fun Map2(
         )
 
     }
+
 }

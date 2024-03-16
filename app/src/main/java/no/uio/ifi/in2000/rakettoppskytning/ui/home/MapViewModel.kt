@@ -46,13 +46,12 @@ class MapViewModel() : ViewModel() {
         .zoom(10.0)
         .build()
 
-
     private val _cam = mutableStateOf(cam)
 
     val cameraOptions: MutableState<CameraOptions> = _cam
 
     @OptIn(MapboxExperimental::class)
-    val mapViewportState: MapViewportState = MapViewportState().apply { cam }
+    val mapViewportState: MapViewportState = MapViewportState()
 
     @OptIn(MapboxExperimental::class)
     fun moveMapCamera(lat: Double, lon: Double){
