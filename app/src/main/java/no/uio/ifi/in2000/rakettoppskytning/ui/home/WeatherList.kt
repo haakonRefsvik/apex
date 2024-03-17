@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
-import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -27,18 +26,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.google.gson.GsonBuilder
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
-import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeatherList(navController: NavHostController, homeScreenViewModel: HomeScreenViewModel) {
+fun WeatherList(
+    navController: NavHostController,
+    homeScreenViewModel: HomeScreenViewModel,
+    thresholdViewModel: ThresholdViewModel
+) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
+    val maxPrecipitation by thresholdViewModel.maxPrecipitation
+    val maxWind by thresholdViewModel.maxWind
+    val maxShearWind by thresholdViewModel.maxShearWind
+    val maxHumidity by thresholdViewModel.maxHumidity
+    val maxDewPoint by thresholdViewModel.minDewPoint
 
     val currentInstant = Instant.now()
     val formatter = DateTimeFormatter.ISO_INSTANT
@@ -52,19 +59,19 @@ fun WeatherList(navController: NavHostController, homeScreenViewModel: HomeScree
     LazyColumn(content = {
         item {
             forecast.foreCast.forEach breaking@{ input ->
-                input.properties.timeseries.forEach lit@{ tider ->
-                    if (tider.time < formattedInstant) {
+                input.properties.timeseries.forEach lit@{ series ->
+                    if (series.time < formattedInstant) {
                         return@lit
                     }
-                    if (formattedInstant < tider.time && tider.time < formattedInstantAfter) {
-                        val klokkeslett = tider.time.substring(11, 16)
+                    if (formattedInstant < series.time && series.time < formattedInstantAfter) {
+                        val klokkeslett = series.time.substring(11, 16)
                         Spacer(modifier = Modifier.height(7.5.dp))
                         ElevatedCard(
                             modifier = Modifier
                                 .height(80.dp)
                                 .width(340.dp),
                             onClick = {
-                                navController.navigate("DetailsScreen/${tider.time}")
+                                navController.navigate("DetailsScreen/${series.time}")
                             }
                         )
                         {
@@ -77,14 +84,14 @@ fun WeatherList(navController: NavHostController, homeScreenViewModel: HomeScree
                                 Text(klokkeslett, fontSize = 20.sp)
                                 Spacer(modifier = Modifier.width(55.dp))
                                 Text(
-                                    "${tider.data.next1Hours?.details?.precipitationAmount} mm",
+                                    "${series.data.next1Hours?.details?.precipitationAmount} mm",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(modifier = Modifier.width(27.5.dp))
 
                                 Spacer(modifier = Modifier.width(15.dp))
-                                tider.data.next1Hours?.summary?.let {
+                                series.data.next1Hours?.summary?.let {
                                     Image(
                                         modifier = Modifier.size(55.dp),
 

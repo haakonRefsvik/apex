@@ -37,7 +37,8 @@ fun Navigation() {
             HomeScreen(
                 navController,
                 homeScreenViewModel = homeScreenViewModel,
-                mapViewModel
+                mapViewModel,
+                thresholdViewModel
             )
         }
         composable(

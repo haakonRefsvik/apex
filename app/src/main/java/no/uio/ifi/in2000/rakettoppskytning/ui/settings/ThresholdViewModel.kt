@@ -1,19 +1,12 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.settings.ThresholdValues
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.ForeCastUiState
+import kotlin.math.abs
 
 
 data class ThresholdsUiState(
@@ -26,13 +19,41 @@ class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
     private val _maxHumidity = mutableDoubleStateOf(0.0)
     private val _maxWind = mutableDoubleStateOf(0.0)
     private val _maxShearWind = mutableDoubleStateOf(0.0)
-    private val _maxDewPoint = mutableDoubleStateOf(0.0)
+    private val _minDewPoint = mutableDoubleStateOf(0.0)
 
     val maxPrecipitation: MutableState<Double> = _maxPrecipitation
     val maxHumidity: MutableState<Double> = _maxHumidity
     val maxWind: MutableState<Double> = _maxWind
     val maxShearWind: MutableState<Double> = _maxShearWind
-    val maxDewPoint: MutableState<Double> = _maxDewPoint
+    val minDewPoint: MutableState<Double> = _minDewPoint
+
+    fun getCloseness(limit: Double, value: Double, max: Boolean = true): Double{
+        if(max){
+            if(value >= limit){
+                return 1.0
+            }
+            val d = limit - value
+            return 1 - (d / limit)
+        }else{
+            if(value <= limit){
+                return 1.0
+            }
+            val d = value - limit
+            return 1 - (d / limit)
+        }
+    }
+    fun getValueStatusColor(aggregatedClosenessValues: Double): Color{
+
+        if(aggregatedClosenessValues == 1.0){
+            return Color.Red
+        }
+
+        if(aggregatedClosenessValues < 1 && aggregatedClosenessValues > 0.5){
+            return Color.Yellow
+        }
+
+        return Color.Green
+    }
 
     /*
     val thresholdsUiState: StateFlow<ThresholdsUiState> =

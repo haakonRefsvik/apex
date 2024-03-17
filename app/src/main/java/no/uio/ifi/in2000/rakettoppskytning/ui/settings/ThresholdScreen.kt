@@ -17,12 +17,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,21 +30,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -57,15 +48,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.settings.ThresholdValues
 
 @Preview(showBackground = true)
 @Composable
@@ -91,7 +79,7 @@ fun ThresholdScreen(
     val maxWind by thresholdViewModel.maxWind
     val maxShearWind by thresholdViewModel.maxShearWind
     val maxHumidity by thresholdViewModel.maxHumidity
-    val maxDewPoint by thresholdViewModel.maxDewPoint
+    val minDewPoint by thresholdViewModel.minDewPoint
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -210,7 +198,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxDewPoint,
+                        mutableValue = thresholdViewModel.minDewPoint,
                         title = "Minimalt duggpunkt",
                         desc = "Juster nedre grense for duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
@@ -231,11 +219,11 @@ fun ThresholdCard(mutableValue: MutableState<Double>, title: String, desc: Strin
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .padding(horizontal = 10.dp)
-        ,
-    ) {
+    )
+    {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             Arrangement.Center,
             Alignment.CenterVertically
         ) {
@@ -246,8 +234,9 @@ fun ThresholdCard(mutableValue: MutableState<Double>, title: String, desc: Strin
                 contentDescription = "id: $drawableId"
             )
             Spacer(modifier = Modifier.width(20.dp))
+
             Column(
-                modifier = Modifier.width(180.dp)
+                modifier = Modifier.width(160.dp)
             ) {
                 Text(title, fontSize = 17.sp)
                 Spacer(modifier = Modifier.height(5.dp))
@@ -259,9 +248,10 @@ fun ThresholdCard(mutableValue: MutableState<Double>, title: String, desc: Strin
             }
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedTextField(
+                label = { Text(suffix)},
                 modifier = Modifier
-                    .width(60.dp)
-                    .height(50.dp),
+                    .width(80.dp)
+                    .height(60.dp),
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 value = mutableValue.value.toString(),
                 onValueChange = { input ->
@@ -278,11 +268,6 @@ fun ThresholdCard(mutableValue: MutableState<Double>, title: String, desc: Strin
                     }
                 )
             )
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                modifier = Modifier.width(30.dp),
-                text = suffix,
-                fontSize = 14.sp)
         }
     }
     Spacer(modifier = Modifier.height(10.dp))

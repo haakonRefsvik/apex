@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 
 fun String.isDouble(): Boolean {
     return try {
@@ -42,7 +43,8 @@ fun String.isDouble(): Boolean {
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    thresholdViewModel: ThresholdViewModel
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
     val favoritter = listOf<String>(
@@ -118,7 +120,8 @@ fun HomeScreen(
 
                             WeatherList(
                                 homeScreenViewModel = homeScreenViewModel,
-                                navController = navController
+                                navController = navController,
+                                thresholdViewModel = thresholdViewModel
                             )
                         })
                 }) {
