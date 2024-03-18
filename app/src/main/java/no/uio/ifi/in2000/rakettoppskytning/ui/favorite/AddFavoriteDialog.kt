@@ -11,12 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 
+//Lag funksjonen slik at den ikke leser inn mer enn 1 gang per lokasjon
 @Composable
 fun AddFavoriteDialog(
     state: FavoriteState,
     onEvent: (FavoriteEvent) -> Unit,
-    modifier: Modifier = Modifier,
     lat: Double,
     lon: Double
 ) {
@@ -47,8 +48,14 @@ fun AddFavoriteDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEvent(FavoriteEvent.SaveFavorite)
+                    state.favorites.forEach() {
+                        if ((it.lat.toDouble() != lat) && (it.lon.toDouble() != lon)) {
+                            onEvent(FavoriteEvent.SaveFavorite)
+                        }
+
+                    }
                 }
+
             ) {
                 Text("Confirm")
             }

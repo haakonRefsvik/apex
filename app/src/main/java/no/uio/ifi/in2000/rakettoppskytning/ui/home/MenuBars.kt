@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.ui
+package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,10 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 
 @Composable
-fun bottomAppBar(){
+fun BottomAppBar(navController: NavController){
     BottomAppBar {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -42,7 +43,7 @@ fun bottomAppBar(){
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {navController.navigate("ThresholdScreen")}) {
                 Image(
                     painter = painterResource(R.drawable.rakket),
                     contentDescription = "Rakket"
@@ -62,7 +63,7 @@ fun bottomAppBar(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun topAppBar(){
+fun TopAppBar(navController: NavController){
     TopAppBar(
         title = {}, modifier = Modifier
             .background(Color.Transparent)

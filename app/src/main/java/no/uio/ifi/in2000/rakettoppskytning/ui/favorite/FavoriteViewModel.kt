@@ -34,7 +34,10 @@ class FavoriteViewModel(
             }
             FavoriteEvent.HideDialog -> {
                 _state.update { it.copy(
-                    isAddingFavorite = false
+                    isAddingFavorite = false,
+                    name = "",
+                    lat = "",
+                    lon = ""
                 ) }
             }
             FavoriteEvent.SaveFavorite -> {
