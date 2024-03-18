@@ -15,35 +15,45 @@ import java.util.stream.Stream
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.*
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
+
+data class WeatherAtPos(
+    val weatherList: List<WeatherAtPosHour> = listOf()
+)
+
+data class WeatherAtPosHour(
+    val time: String,
+    val lat: Double,
+    val lon: Double,
+    val series: Series,
+    val verticalProfile: VerticalProfile,
+    val statusScore: Double
+)
+
 
 class WeatherForeCastLocationRepo() {
-
+    private val _weatherAtPos = MutableStateFlow<WeatherAtPos>(WeatherAtPos())
     private val _forecast = MutableStateFlow<List<LocationForecast>>(listOf())
     private val _verticalProfiles = MutableStateFlow<List<VerticalProfile>>(listOf())
+
+    fun observeWeather(): StateFlow<WeatherAtPos> = _weatherAtPos.asStateFlow()
     fun observeForecast(): StateFlow<List<LocationForecast>> = _forecast.asStateFlow()
     fun observeVerticalProfiles(): StateFlow<List<VerticalProfile>> =
         _verticalProfiles.asStateFlow()
 
     private val gribRepository = GribRepository()
+
+    suspend fun loadWeather(lat: Double, lon: Double) {
+        val foreCast = loadForecastFromDataSource(lat, lon)
+        val gribFiles = loadGribFromDataSource(lat, lon)
+    }
     suspend fun loadForecast(lat: Double, lon: Double) {
-        val foreCast: List<LocationForecast> = try {
-            listOf(getForecast(lat, lon))
-
-
-        } catch (exception: Exception) {
-            listOf()
-        }
+        val foreCast = loadForecastFromDataSource(lat, lon)
         _forecast.update { foreCast }
     }
 
     suspend fun loadVerticalProfiles(lat: Double, lon: Double) = coroutineScope {
-        val gribFiles: List<File> = try {
-            gribRepository.getGribFiles()
-        } catch (e: Exception) {
-            Log.w("VerticalProfile", "Could not load grib-files")
-            listOf()
-        }
-
+        val gribFiles = loadGribFromDataSource(lat, lon)
         val deferredList = mutableListOf<Deferred<VerticalProfile>>()
 
         try {
@@ -69,6 +79,25 @@ class WeatherForeCastLocationRepo() {
                 }
             }
         }
+    }
+
+    private suspend fun loadGribFromDataSource(lat: Double, lon: Double): List<File> {
+        val gribFiles: List<File> = try {
+            gribRepository.getGribFiles()
+        } catch (e: Exception) {
+            Log.w("VerticalProfile", "Could not load grib-files")
+            listOf()
+        }
+
+        return gribFiles
+    }
+    private suspend fun loadForecastFromDataSource(lat: Double, lon: Double): List<LocationForecast> {
+        val forecast: List<LocationForecast> = try {
+            listOf(getForecast(lat, lon))
+        } catch (exception: Exception) {
+            listOf()
+        }
+        return forecast
     }
 
 
