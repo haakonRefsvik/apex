@@ -61,12 +61,15 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
+
+    /*
     private val _lat = mutableDoubleStateOf(59.9434927)
     private val _lon = mutableDoubleStateOf(10.71181022)
 
-
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
+
+     */
 
 
     val foreCastUiState: StateFlow<ForeCastUiState> =

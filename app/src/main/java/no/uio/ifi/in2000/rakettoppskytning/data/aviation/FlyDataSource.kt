@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.data
+package no.uio.ifi.in2000.rakettoppskytning.data.aviation
 
 import android.util.Log
 import io.ktor.client.HttpClient
@@ -11,6 +11,7 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 
 val client = HttpClient(CIO) {
 

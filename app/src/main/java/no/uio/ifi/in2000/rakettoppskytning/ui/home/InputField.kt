@@ -16,18 +16,24 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
@@ -48,18 +54,18 @@ fun formatNewValue(input: String): Double {
     }
 
     val r = (formattedIntegerValue + decimalPart)
+
     return (r).toDouble()
 }
-
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
 @OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InputField(homeScreenViewModel: HomeScreenViewModel){
+fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewModel){
     val showDecimals = 5
-    val lat by homeScreenViewModel.lat
-    val lon by homeScreenViewModel.lon
+    val lat by mapViewModel.lat
+    val lon by mapViewModel.lon
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -69,13 +75,13 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
     Row {
         OutlinedTextField(
             value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
-            onValueChange = {input ->
-                homeScreenViewModel.lat.value = formatNewValue(input)
+            onValueChange = { input ->
+                mapViewModel.lat.value = formatNewValue(input)
             },
             Modifier
                 .width(130.dp)
                 .height(58.dp),
-            textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+            textStyle = TextStyle(fontSize = 18.sp),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Number
@@ -93,14 +99,13 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
         OutlinedTextField(
             value = String.format("%.${showDecimals}f", lon), // viser lat, verdien som maks 5 desimaler
             onValueChange = { input ->
-                homeScreenViewModel.lon.value = formatNewValue(input)
+                mapViewModel.lon.value = formatNewValue(input)
             },
-
             Modifier
                 .width(130.dp)
                 .height(58.dp),
 
-            textStyle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+            textStyle = TextStyle(fontSize = 18.sp),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Number
@@ -133,9 +138,10 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel){
             controller?.hide()
             homeScreenViewModel.getForecastByCord(lat, lon)
             homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-            //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
+            mapViewModel.moveMapCamera(lat, lon)
 
             scope.launch {
+                delay(1000)
                 scaffoldState.bottomSheetState.expand()
             }
         }) {
