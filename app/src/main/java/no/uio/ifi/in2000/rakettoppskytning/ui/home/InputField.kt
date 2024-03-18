@@ -138,6 +138,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
             controller?.hide()
             homeScreenViewModel.getForecastByCord(lat, lon)
             homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+            homeScreenViewModel.getWeatherByCord(lat, lon)
             mapViewModel.moveMapCamera(lat, lon)
 
             scope.launch {

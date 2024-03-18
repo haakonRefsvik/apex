@@ -44,11 +44,6 @@ fun WeatherList(
 ) {
 
     val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
-    val maxPrecipitation by thresholdViewModel.maxPrecipitation
-    val maxWind by thresholdViewModel.maxWind
-    val maxShearWind by thresholdViewModel.maxShearWind
-    val maxHumidity by thresholdViewModel.maxHumidity
-    val maxDewPoint by thresholdViewModel.minDewPoint
 
     val currentInstant = Instant.now()
     val formatter = DateTimeFormatter.ISO_INSTANT

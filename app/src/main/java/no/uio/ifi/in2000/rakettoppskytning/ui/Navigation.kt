@@ -24,8 +24,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 fun Navigation() {
 
     val navController = rememberNavController()
-    val forecastRepo = WeatherForeCastLocationRepo()
     val thresholdRepository = ThresholdRepository()
+    val forecastRepo = WeatherForeCastLocationRepo(thresholdRepository)
 
     val detailsScreenViewModel = DetailsScreenViewModel(forecastRepo)
     val homeScreenViewModel = HomeScreenViewModel(forecastRepo)

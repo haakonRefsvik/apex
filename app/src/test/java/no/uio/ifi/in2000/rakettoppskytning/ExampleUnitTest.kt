@@ -1,7 +1,9 @@
 package no.uio.ifi.in2000.rakettoppskytning
+import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.getOldestDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -55,5 +57,39 @@ class ExampleUnitTest {
 
         assertEquals(expected, result)
     }
+    @Test
+    fun testHoursBetweenDates(){
+        val repo = WeatherForeCastLocationRepo(ThresholdRepository())
+        val d1 = "2024-03-19T00:00:00Z"
+        val d2 = "2024-03-20T00:00:00Z"
 
+        val expected = 24
+
+        val result = repo.calculateHoursBetweenDates(d1, d2)
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun testClosenessMinLimit(){
+        val repo = WeatherForeCastLocationRepo(ThresholdRepository())
+        val v = -1.4
+        val l = -2.0
+
+        val result = repo.getCloseness(v, l, false)
+        val expected = 0.7
+
+        assertEquals(expected, result, 0.01)
+    }
+    @Test
+    fun testClosenessMaxLimit(){
+        val repo = WeatherForeCastLocationRepo(ThresholdRepository())
+        val v = -0.2
+        val l = 2.0
+
+        val result = repo.getCloseness(v, l)
+        val expected = 0.1
+
+        assertEquals(expected, result, 0.01)
+    }
 }

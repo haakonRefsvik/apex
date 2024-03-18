@@ -1,6 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -92,6 +94,14 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
         Log.d("getVerticalProfileByCord", "apicall")
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadVerticalProfiles(lat, lon)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getWeatherByCord(lat: Double, lon: Double) {
+        Log.d("getWeather", "apicall")
+        viewModelScope.launch(Dispatchers.IO) {
+            foreCastRep.loadWeather(lat, lon)
         }
     }
 

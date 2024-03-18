@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
@@ -61,10 +62,12 @@ import kotlin.math.roundToInt
 @Composable
 fun DetailsScreenPreview() {
     val navController = rememberNavController()
-    DetailsScreen(navController = navController, backStackEntry = "1", detailsScreenViewModel = DetailsScreenViewModel(WeatherForeCastLocationRepo()))
+    DetailsScreen(
+        navController = navController,
+        backStackEntry = "1",
+        detailsScreenViewModel = DetailsScreenViewModel(WeatherForeCastLocationRepo(ThresholdRepository()))
+    )
 }
-
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
