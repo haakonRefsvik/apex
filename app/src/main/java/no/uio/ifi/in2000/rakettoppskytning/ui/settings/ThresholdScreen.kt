@@ -57,7 +57,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 
 @Preview(showBackground = true)
 @Composable
-fun ThresholdPreview(){
+fun ThresholdPreview() {
     val navController = rememberNavController()
     ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()))
 }
@@ -68,7 +68,7 @@ fun ThresholdPreview(){
 fun ThresholdScreen(
     navController: NavHostController,
     thresholdViewModel: ThresholdViewModel
-    ) {
+) {
     //nedbør 0
     //vind & shearwind
     //luftfuktighet
@@ -157,7 +157,9 @@ fun ThresholdScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
             LazyColumn {
                 item {
@@ -211,13 +213,19 @@ fun ThresholdScreen(
 }
 
 @Composable
-fun ThresholdCard(mutableValue: MutableState<Double>, title: String, desc: String, suffix: String, drawableId: Int){
+fun ThresholdCard(
+    mutableValue: MutableState<Double>,
+    title: String,
+    desc: String,
+    suffix: String,
+    drawableId: Int
+) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
     ElevatedCard(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(340.dp)
             .height(100.dp)
     )
     {
@@ -248,7 +256,7 @@ fun ThresholdCard(mutableValue: MutableState<Double>, title: String, desc: Strin
             }
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedTextField(
-                label = { Text(suffix)},
+                label = { Text(suffix) },
                 modifier = Modifier
                     .width(80.dp)
                     .height(60.dp),
