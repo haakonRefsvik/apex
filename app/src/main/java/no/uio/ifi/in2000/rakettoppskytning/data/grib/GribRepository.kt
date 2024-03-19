@@ -13,26 +13,19 @@ import kotlinx.coroutines.flow.update
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 class GribRepository {
     private val dataSource = GribDataSource()
-    private var files = HashMap<String, File>()
-    private var loaded = false
-
     suspend fun loadGribFiles(){
-        files = dataSource.getGrib()
-        Log.d("Grib", "Loading grib files from repo. DataSourceSize = ${dataSource.cachedFiles.size}")
-        loaded = true
+        dataSource.getGrib()
+        Log.d("Grib", "Loading grib files from repo. Cached files in datasource = ${dataSource.cachedFiles.size}")
     }
 
     suspend fun getGribFiles(): List<File> {
-        Log.d("Grib", "Getting gribfiles from repo. DataSourceSize = ${files.size}")
+        dataSource.getGrib()
 
-        while (!loaded){
-            delay(100)
-        }
-
-        return files.values.toList()
+        return dataSource.cachedFiles.values.toList()
     }
 
 }

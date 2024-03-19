@@ -36,7 +36,7 @@ data class WeatherAtPosHour(
     val closeToLimitScore: Double
 )
 
-class WeatherAtPosRepo(private val thresholdRepository: ThresholdRepository, private val gribRepository: GribRepository) {
+class WeatherAtPosRepo(private val thresholdRepository: ThresholdRepository, val gribRepository: GribRepository) {
     private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
     private val _forecast = MutableStateFlow<List<LocationForecast>>(listOf())
     private val _verticalProfiles = MutableStateFlow<List<VerticalProfile>>(listOf())
@@ -190,6 +190,7 @@ class WeatherAtPosRepo(private val thresholdRepository: ThresholdRepository, pri
         return ZonedDateTime.parse(date).hour
     }
 
+    /*
     suspend fun loadForecast(lat: Double, lon: Double) {
         val foreCast = loadForecastFromDataSource(lat, lon)
         _forecast.update { foreCast }
@@ -204,6 +205,8 @@ class WeatherAtPosRepo(private val thresholdRepository: ThresholdRepository, pri
 
         _verticalProfiles.update { allVp }
     }
+
+     */
 
     private suspend fun makeVerticalProfilesFromGrib(gribFiles: List<File>, lat: Double, lon: Double): List<VerticalProfile> = coroutineScope {
         val deferredList = mutableListOf<Deferred<VerticalProfile>>()

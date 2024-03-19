@@ -38,7 +38,7 @@ data class WeatherUiState(
 
 class HomeScreenViewModel(repo: WeatherAtPosRepo) : ViewModel() {
     private val foreCastRep = repo
-    private val gribRepo: GribRepository = GribRepository()
+    private val gribRepo = foreCastRep.gribRepository
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(

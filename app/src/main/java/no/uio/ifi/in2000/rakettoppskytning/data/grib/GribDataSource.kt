@@ -22,6 +22,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 
 
 @Serializable
@@ -34,10 +35,10 @@ data class Params(
     val time: String
 )
 
-
 class GribDataSource{
+
     val cachedFiles = LinkedHashMap<String, File>()
-    suspend fun getGrib(): LinkedHashMap<String, File> {
+    suspend fun getGrib(){
 
         val client = HttpClient(CIO){
 
@@ -59,8 +60,6 @@ class GribDataSource{
         val latestGribs: List<Grib> = client.get(urlAvailable).body()?: throw Exception("Could not find the latest uri for the grib files")
         Log.d("Grib", "Updating ${latestGribs.size} grib-files...")
         updateGribCache(client, latestGribs)
-
-        return cachedFiles
     }
 
     suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
