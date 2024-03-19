@@ -1,6 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,6 +59,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ThresholdPreview() {
@@ -64,6 +67,7 @@ fun ThresholdPreview() {
     ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()), WeatherRepository(ThresholdRepository(), GribRepository()))
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,7 +171,6 @@ fun ThresholdScreen(
                         desc = "Juster øvre grense for nedbør",
                         drawableId = R.drawable.vann,
                         suffix = "mm",
-                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -177,7 +180,6 @@ fun ThresholdScreen(
                         desc = "Juster øvre grense for luftfuktighet",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "%",
-                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -187,7 +189,6 @@ fun ThresholdScreen(
                         desc = "Juster øvre grense for vindhastighet på bakken",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
-                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -197,7 +198,6 @@ fun ThresholdScreen(
                         desc = "Juster øvre grense for de vertikale vindskjærene",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
-                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -207,23 +207,21 @@ fun ThresholdScreen(
                         desc = "Juster nedre grense for duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "℃",
-                        thresholdViewModel = thresholdViewModel
                     )
                 }
             }
         }
     }
     DisposableEffect(Unit) {
-        onDispose {
-            thresholdViewModel.saveThresholdValues()
-
+        onDispose {                                     // Things to do after closing screen:
+            thresholdViewModel.saveThresholdValues()    // update values in thresholdRepo
+            weatherRepository.thresholdValuesUpdated()  // update status-colors in the weatherCards
         }
     }
 }
 
 @Composable
 fun ThresholdCard(
-    thresholdViewModel: ThresholdViewModel,
     mutableValue: MutableState<Double>,
     title: String,
     desc: String,

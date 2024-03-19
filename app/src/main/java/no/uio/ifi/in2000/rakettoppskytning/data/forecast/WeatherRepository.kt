@@ -33,7 +33,13 @@ data class WeatherAtPosHour(
     val lon: Double,
     val series: Series,
     val verticalProfile: VerticalProfile?,
-    /** Hashmap of difference between a parameter value, and a parameter limit */
+    /**
+     *     map["maxPrecipitation"]
+     *     map["maxHumidity"]
+     *     map["maxWind"]
+     *     map["maxShearWind"]
+     *     map["maxDewPoint"]
+     * */
     val valuesToLimitMap: HashMap<String, Double>,
     val closeToLimitScore: Double
 )
@@ -42,6 +48,23 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
     private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
     fun observeWeather(): StateFlow<WeatherAtPos> = _weatherAtPos.asStateFlow()
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun thresholdValuesUpdated(){
+        val weatherAtPos = _weatherAtPos.value
+        val list = mutableListOf<WeatherAtPosHour>()
+
+        weatherAtPos.weatherList.forEach {
+            val closenessMap = thresholdRepository.getValueClosenessMap(it.series, it.verticalProfile)
+            val score = thresholdRepository.getReadinessScore(closenessMap)
+
+            val weatherAtPosHour = WeatherAtPosHour(it.date, getHourFromDate(it.date), it.lat, it.lon, it.series, it.verticalProfile, closenessMap, score)
+            list.add(weatherAtPosHour)
+        }
+        val updatedWeatherAtPos = WeatherAtPos(list)
+        _weatherAtPos.update { updatedWeatherAtPos }
+    }
+
+    /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
         val gribFiles = loadGribFromDataSource(lat, lon)
@@ -52,7 +75,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
 
         allForecasts.properties.timeseries.forEach{series ->
             if (hour >= loadHours){
-                return@forEach
+                return@forEach      // stops loading forecast-data when enough hours are loaded
             }
 
             hour++

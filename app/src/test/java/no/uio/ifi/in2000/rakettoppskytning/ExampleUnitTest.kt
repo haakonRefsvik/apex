@@ -1,9 +1,10 @@
 package no.uio.ifi.in2000.rakettoppskytning
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.getOldestDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
+import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -49,30 +50,21 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testDates(){
-        val dates = listOf("2024-03-09T15:00:00Z", "2024-03-10T03:00:00Z", "2024-03-10T00:00:00Z")
-
-        val expected = "2024-03-09T15:00:00Z"
-        val result = getOldestDate(dates)
-
-        assertEquals(expected, result)
-    }
-    @Test
     fun testHoursBetweenDates(){
-        val repo = WeatherRepository(ThresholdRepository())
+        val repo = ThresholdRepository()
         val d1 = "2024-03-19T00:00:00Z"
         val d2 = "2024-03-20T00:00:00Z"
 
         val expected = 24
 
-        val result = repo.calculateHoursBetweenDates(d1, d2)
+        val result = calculateHoursBetweenDates(d1, d2)
 
         assertEquals(expected, result)
     }
 
     @Test
     fun testClosenessMinLimit(){
-        val repo = WeatherRepository(ThresholdRepository())
+        val repo = ThresholdRepository()
         val v = -1.4
         val l = -2.0
 
@@ -83,7 +75,7 @@ class ExampleUnitTest {
     }
     @Test
     fun testClosenessMaxLimit(){
-        val repo = WeatherRepository(ThresholdRepository())
+        val repo = ThresholdRepository()
         val v = 2.2
         val l = 0.0
 
@@ -91,5 +83,13 @@ class ExampleUnitTest {
         val expected = 1.0
 
         assertEquals(expected, result, 0.01)
+    }
+    @Test
+    fun testDaysAHead(){
+
+        val result = getNumberOfDaysAhead("2024-03-20T18:00:00Z")
+        val expected = 1
+
+        assertEquals(result, expected)
     }
 }

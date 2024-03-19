@@ -16,10 +16,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdValues
 
 
-data class ThresholdsUiState(
-    val thresholdValues: List<ThresholdValues> = listOf()
-)
-
 class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
     private val thresholdRepo = repo
     private val map = thresholdRepo.getThresholdsMap()
@@ -29,7 +25,12 @@ class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
     val maxWind: MutableState<Double> = mutableDoubleStateOf(map["maxWind"] ?: 0.0)
     val maxShearWind: MutableState<Double> = mutableDoubleStateOf(map["maxShearWind"] ?: 0.0)
     val maxDewPoint: MutableState<Double> = mutableDoubleStateOf(map["maxDewPoint"] ?: 0.0)
+
+    /**
+     * Takes the values from the mutableStates and saves them in the ThresholdRepository
+     * */
     fun saveThresholdValues(){
+
         val maxPrecipitation: Double = maxPrecipitation.value
         val maxHumidity: Double = maxHumidity.value
         val maxWind: Double = maxWind.value
@@ -44,21 +45,6 @@ class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
         map["maxDewPoint"] = minDewPoint
 
         thresholdRepo.updateThresholdValues(map)
-
     }
-
-    fun getValueStatusColor(aggregatedClosenessValues: Double): Color{
-
-        if(aggregatedClosenessValues == 1.0){
-            return Color.Red
-        }
-
-        if(aggregatedClosenessValues < 1 && aggregatedClosenessValues > 0.5){
-            return Color.Yellow
-        }
-
-        return Color.Green
-    }
-
 
 }
