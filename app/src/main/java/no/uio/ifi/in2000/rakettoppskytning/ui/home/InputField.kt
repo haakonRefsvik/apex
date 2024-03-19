@@ -135,9 +135,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
         Spacer(modifier = Modifier.width(25.dp))
         Button(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
-            //homeScreenViewModel.getForecastByCord(lat, lon)
-            //homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-            homeScreenViewModel.getWeatherByCord(lat, lon)
+            homeScreenViewModel.getWeatherByCord(lat, lon, 24)
             mapViewModel.moveMapCamera(lat, lon)
 
             scope.launch {

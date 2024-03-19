@@ -49,7 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosHour
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosRepo
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
@@ -63,7 +63,7 @@ fun DetailsScreenPreview() {
     DetailsScreen(
         navController = navController,
         backStackEntry = "1",
-        detailsScreenViewModel = DetailsScreenViewModel(WeatherAtPosRepo(ThresholdRepository(), GribRepository()))
+        detailsScreenViewModel = DetailsScreenViewModel(WeatherRepository(ThresholdRepository(), GribRepository()))
     )
 }
 @RequiresApi(Build.VERSION_CODES.O)

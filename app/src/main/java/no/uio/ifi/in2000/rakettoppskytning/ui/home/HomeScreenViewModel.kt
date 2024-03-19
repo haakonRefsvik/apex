@@ -19,8 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosRepo
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 
 /*
 data class ForeCastUiState(
@@ -36,7 +35,7 @@ data class WeatherUiState(
     val weatherAtPos: WeatherAtPos = WeatherAtPos()
 )
 
-class HomeScreenViewModel(repo: WeatherAtPosRepo) : ViewModel() {
+class HomeScreenViewModel(repo: WeatherRepository) : ViewModel() {
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
 
@@ -61,10 +60,10 @@ class HomeScreenViewModel(repo: WeatherAtPosRepo) : ViewModel() {
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getWeatherByCord(lat: Double, lon: Double) {
+    fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
         Log.d("getWeather", "apicall")
         viewModelScope.launch(Dispatchers.IO) {
-            foreCastRep.loadWeather(lat, lon)
+            foreCastRep.loadWeather(lat, lon, loadHours)
         }
     }
 

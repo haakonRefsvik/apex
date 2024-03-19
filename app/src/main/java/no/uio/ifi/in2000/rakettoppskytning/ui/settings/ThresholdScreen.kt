@@ -34,7 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,12 +54,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 
 @Preview(showBackground = true)
 @Composable
 fun ThresholdPreview() {
     val navController = rememberNavController()
-    ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()))
+    ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()), WeatherRepository(ThresholdRepository(), GribRepository()))
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -68,7 +69,8 @@ fun ThresholdPreview() {
 @Composable
 fun ThresholdScreen(
     navController: NavHostController,
-    thresholdViewModel: ThresholdViewModel
+    thresholdViewModel: ThresholdViewModel,
+    weatherRepository: WeatherRepository
 ) {
     //nedbør 0
     //vind & shearwind
@@ -76,11 +78,6 @@ fun ThresholdScreen(
     //dewpoint
     //tåke/sikt 0%
     //sette høyde
-    val maxPrecipitation by thresholdViewModel.maxPrecipitation
-    val maxWind by thresholdViewModel.maxWind
-    val maxShearWind by thresholdViewModel.maxShearWind
-    val maxHumidity by thresholdViewModel.maxHumidity
-    val maxDewPoint by thresholdViewModel.maxDewPoint
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -219,6 +216,7 @@ fun ThresholdScreen(
     DisposableEffect(Unit) {
         onDispose {
             thresholdViewModel.saveThresholdValues()
+
         }
     }
 }

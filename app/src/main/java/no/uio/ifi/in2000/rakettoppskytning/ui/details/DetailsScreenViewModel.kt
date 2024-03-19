@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosRepo
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 
-class DetailsScreenViewModel(repo: WeatherAtPosRepo) : ViewModel() {
+class DetailsScreenViewModel(repo: WeatherRepository) : ViewModel() {
 
     val weatherUiState: StateFlow<WeatherUiState> =
         repo.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(

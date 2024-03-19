@@ -19,7 +19,7 @@ class GribRepository {
     private val dataSource = GribDataSource()
     suspend fun loadGribFiles(){
         dataSource.getGrib()
-        Log.d("Grib", "Loading grib files from repo. Cached files in datasource = ${dataSource.cachedFiles.size}")
+        Log.d("Grib", "Done! Loaded ${dataSource.cachedFiles.size} grib-files")
     }
 
     suspend fun getGribFiles(): List<File> {
