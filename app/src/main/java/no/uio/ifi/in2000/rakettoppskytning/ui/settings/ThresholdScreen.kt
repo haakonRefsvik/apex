@@ -1,6 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,6 +66,7 @@ fun ThresholdPreview() {
     ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()), WeatherRepository(ThresholdRepository(), GribRepository()))
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,7 +219,7 @@ fun ThresholdScreen(
     DisposableEffect(Unit) {
         onDispose {
             thresholdViewModel.saveThresholdValues()
-
+            weatherRepository.thresholdValuesUpdated()
         }
     }
 }

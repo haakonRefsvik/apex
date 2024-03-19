@@ -43,6 +43,22 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
     fun observeWeather(): StateFlow<WeatherAtPos> = _weatherAtPos.asStateFlow()
 
     @RequiresApi(Build.VERSION_CODES.O)
+    fun thresholdValuesUpdated(){
+        val weatherAtPos = _weatherAtPos.value
+        val list = mutableListOf<WeatherAtPosHour>()
+
+        weatherAtPos.weatherList.forEach {
+            val closenessMap = thresholdRepository.getValueClosenessMap(it.series, it.verticalProfile)
+            val score = thresholdRepository.getReadinessScore(closenessMap)
+
+            val weatherAtPosHour = WeatherAtPosHour(it.date, getHourFromDate(it.date), it.lat, it.lon, it.series, it.verticalProfile, closenessMap, score)
+            list.add(weatherAtPosHour)
+        }
+        val updatedWeatherAtPos = WeatherAtPos(list)
+        _weatherAtPos.update { updatedWeatherAtPos }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
         val gribFiles = loadGribFromDataSource(lat, lon)
         val list = mutableListOf<WeatherAtPosHour>()
