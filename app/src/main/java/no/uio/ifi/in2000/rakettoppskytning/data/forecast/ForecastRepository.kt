@@ -19,33 +19,34 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import kotlin.math.abs
 
 data class WeatherAtPos(
     val weatherList: List<WeatherAtPosHour> = listOf()
 )
 
 data class WeatherAtPosHour(
-    val time: String,
+    val date: String,
+    val hour: Int,
     val lat: Double,
     val lon: Double,
     val series: Series,
     val verticalProfile: VerticalProfile?,
-    val awayFromLimitPercentage: Double
+    /** Hashmap of difference between a parameter value, and a parameter limit */
+    val valuesToLimitMap: HashMap<String, Double>,
+    val closeToLimitScore: Double
 )
 
-
-class WeatherForeCastLocationRepo(private val thresholdRepository: ThresholdRepository) {
-    private val _weatherAtPos = MutableStateFlow<WeatherAtPos>(WeatherAtPos())
+class WeatherAtPosRepo(private val thresholdRepository: ThresholdRepository, private val gribRepository: GribRepository) {
+    private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
     private val _forecast = MutableStateFlow<List<LocationForecast>>(listOf())
     private val _verticalProfiles = MutableStateFlow<List<VerticalProfile>>(listOf())
+
 
     fun observeWeather(): StateFlow<WeatherAtPos> = _weatherAtPos.asStateFlow()
     fun observeForecast(): StateFlow<List<LocationForecast>> = _forecast.asStateFlow()
     fun observeVerticalProfiles(): StateFlow<List<VerticalProfile>> =
         _verticalProfiles.asStateFlow()
 
-    private val gribRepository = GribRepository()
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
         val gribFiles = loadGribFromDataSource(lat, lon)
@@ -60,11 +61,15 @@ class WeatherForeCastLocationRepo(private val thresholdRepository: ThresholdRepo
             }
 
             hour++
-            val time = series.time
-            val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, time)
-            val awayFromLimitPercentage = getClosenessFactor(series, vp)
-            Log.d("closeness", "$time, closeness: $awayFromLimitPercentage")
-            val weatherAtPosHour = WeatherAtPosHour(time, lat, lon, series, vp, awayFromLimitPercentage)
+            val date = series.time
+            val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
+            val closenessMap = getValueClosenessMap(series, vp)
+            val score = getReadinessScore(closenessMap)
+            vp?.addGroundInfo(series)
+            //Log.d("closeness", "$time, closeness: $closenessMap")
+            //Log.d("closeness", "Score: $score")
+
+            val weatherAtPosHour = WeatherAtPosHour(date, getHourFromDate(date), lat, lon, series, vp, closenessMap, score)
             list.add(weatherAtPosHour)
         }
 
@@ -72,54 +77,84 @@ class WeatherForeCastLocationRepo(private val thresholdRepository: ThresholdRepo
         _weatherAtPos.update { updatedWeatherAtPos }
     }
 
-    private fun getClosenessFactor(series: Series, verticalProfile: VerticalProfile?): Double {
+
+
+    private fun getReadinessScore(map: HashMap<String, Double>): Double {
+        var sum = 0.0
+
+        map.forEach {
+            if(it.value == 1.0){
+                return 1.0
+            }
+
+            sum += it.value
+        }
+
+        return sum/map.size
+    }
+
+    /**
+     * Returns a hashmap of how close each parameter is to the limit. If a "closeness-value" is negative, its over the limit
+     * */
+
+    private fun getValueClosenessMap(series: Series, verticalProfile: VerticalProfile?): HashMap<String, Double> {
         val thresholds = thresholdRepository.getThresholdsMap()
         val fc = series.data.instant.details
         val fc1 = series.data.next1Hours?.details
-        val closenessList = mutableListOf<Double>()
-        val closenessFactor = 0.0
-        // Pair (Value, Limit)
-        val c1 = getCloseness(verticalProfile?.getMaxSheerWind()?.windSpeed?: 0.0, thresholds["maxShearWind"]?: 0.0)
-        val c2 = getCloseness(fc.relativeHumidity, thresholds["maxHumidity"]?: 0.0)
-        val c3 = getCloseness(fc.windSpeed, thresholds["maxWind"]?: 0.0)
-        val c4 = getCloseness(fc1?.precipitationAmount?: Double.MAX_VALUE ,thresholds["maxPrecipitation"]?: 0.0)
-        val c5 = getCloseness(fc.dewPointTemperature, thresholds["maxDewPoint"]?: 0.0, )
+        val closenessMap = HashMap<String, Double>()
 
-        closenessList.addAll(listOf(c1, c2, c3, c4, c5))
+        val c1 = getCloseness(
+            value = verticalProfile?.getMaxSheerWind()?.windSpeed?: 0.0,
+            limit = thresholds["maxShearWind"]?: 0.0,
+        )
+        val c2 = getCloseness(
+            value = fc.relativeHumidity,
+            limit = thresholds["maxHumidity"]?: 0.0,
+        )
+        val c3 = getCloseness(
+            value = fc.windSpeed,
+            limit = thresholds["maxWind"]?: 0.0,
+        )
+        val c4 = getCloseness(
+            value = fc1?.precipitationAmount?: Double.MAX_VALUE ,
+            limit = thresholds["maxPrecipitation"]?: 0.0,
+        )
 
-        closenessList.forEach{c ->
-            if (c == 1.0){
-                return 1.0  // if one value is over the limit, the function should return 1.0 to indicate status-code red
-            }
+        val c5 = getCloseness(
+            value = fc.dewPointTemperature,
+            limit = thresholds["maxDewPoint"]?: 0.0,
+            lowerLimit = -20.0
+        )
 
-            closenessFactor.plus(c)
-        }
+        closenessMap["maxShearWind"] = c1
+        closenessMap["maxHumidity"] = c2
+        closenessMap["maxWind"] = c3
+        closenessMap["maxPrecipitation"] = c4
+        closenessMap["maxDewPoint"] = c5
 
-        return closenessFactor
+        return closenessMap
     }
 
-    fun getCloseness(value: Double, limit: Double, max: Boolean = true): Double{
-        if(max){
-            if(value >= limit){
-                return 1.0
-            }
-
-            // -0.2, 1
-
-            val d = abs(value - limit)
-                    //Log.d("getCloseness", "val: $value, limit: $limit, d: ${1 - (d / limit)}")
-
-            return abs(1 - (abs(d / limit)))
-        }else{
-            if(value <= limit){
-                return 1.0
-            }
-
-
-            val d = abs(limit - value)
-            //Log.d("getCloseness", "val: $value, limit: $limit, d: ${1 - (d / limit)}")
-            return abs(1 - (abs(d / limit)))
+    fun getCloseness(value: Double, limit: Double, lowerLimit: Double = 0.0, max: Boolean = true): Double{
+        if(!max){
+            //TODO() NOT IMPLEMENTED
+            return 1.0
         }
+
+        val v = value - lowerLimit
+        val d = limit - lowerLimit
+
+        val r = v/d
+
+        if(r > 1){
+            return 1.0
+        }
+
+        if(r.isNaN()){  // tyder på en 0.0/0.0 som ville gitt 0 som score
+            return 0.0
+        }
+
+        return r
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -144,16 +179,22 @@ class WeatherForeCastLocationRepo(private val thresholdRepository: ThresholdRepo
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
-        val dateTime1 = ZonedDateTime.parse(vpDate)
-        val dateTime2 = ZonedDateTime.parse(fcDate)
+        val dateTime1 = ZonedDateTime.parse(vpDate)?: return -1
+        val dateTime2 = ZonedDateTime.parse(fcDate)?: return -1
 
         return ChronoUnit.HOURS.between(dateTime1, dateTime2).toInt()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getHourFromDate(date: String): Int {
+        return ZonedDateTime.parse(date).hour
     }
 
     suspend fun loadForecast(lat: Double, lon: Double) {
         val foreCast = loadForecastFromDataSource(lat, lon)
         _forecast.update { foreCast }
     }
+
 
     suspend fun loadVerticalProfiles(lat: Double, lon: Double) = coroutineScope {
         val gribFiles = loadGribFromDataSource(lat, lon)
@@ -203,7 +244,6 @@ class WeatherForeCastLocationRepo(private val thresholdRepository: ThresholdRepo
             Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
-
         return gribFiles
     }
     private suspend fun loadForecastFromDataSource(lat: Double, lon: Double): List<LocationForecast> {
@@ -214,6 +254,5 @@ class WeatherForeCastLocationRepo(private val thresholdRepository: ThresholdRepo
         }
         return forecast
     }
-
 
 }

@@ -1,15 +1,12 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,8 +48,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosRepo
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import kotlin.math.roundToInt
@@ -65,10 +63,9 @@ fun DetailsScreenPreview() {
     DetailsScreen(
         navController = navController,
         backStackEntry = "1",
-        detailsScreenViewModel = DetailsScreenViewModel(WeatherForeCastLocationRepo(ThresholdRepository()))
+        detailsScreenViewModel = DetailsScreenViewModel(WeatherAtPosRepo(ThresholdRepository(), GribRepository()))
     )
 }
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,23 +74,17 @@ fun DetailsScreen(
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
 ) {
-    val verticalProfileUiState by detailsScreenViewModel.verticalProfileUiState.collectAsState()
-    val foreCastUiState by detailsScreenViewModel.foreCastUiState.collectAsState()
-    var data: List<Data> = listOf()
-    val time: String = backStackEntry ?: ""
-    val allVp: List<VerticalProfile> = verticalProfileUiState.verticalProfiles
-    val verticalProfile = detailsScreenViewModel.getVerticalProfileNearestHour(allVp, time)
 
-    foreCastUiState.foreCast.forEach {
-        it.properties.timeseries.forEach { series ->
-            if (time == series.time) {
-                data = listOf(series.data)
-                verticalProfile?.addGroundInfo(series)
-            }
+    val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
+    val time: String = backStackEntry ?: ""
+    var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
+
+    weatherUiState.weatherAtPos.weatherList.forEach {
+        if(it.date == time){
+            weatherAtPosHour = listOf(it)
         }
     }
 
-    data.forEach { it.instant }
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -173,11 +164,16 @@ fun DetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (data.isEmpty()) {
+            if (weatherAtPosHour.isEmpty()) {
                 Text("Her var det tomt")
+            }else{
+                Text("Værdata for klokken ${weatherAtPosHour.first().hour}")
             }
 
-            data.forEach {
+            weatherAtPosHour.forEach {
+                val fcData = it.series.data
+                val verticalProfile = it.verticalProfile
+
                 Spacer(modifier = Modifier.height(30.dp))
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
@@ -188,7 +184,7 @@ fun DetailsScreen(
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
-                            WindCard(details = it.instant.details)
+                            WindCard(details = fcData.instant.details)
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
@@ -196,15 +192,15 @@ fun DetailsScreen(
                                 AddWeatherCard(
                                     iconId = R.drawable.temp,
                                     desc = "Temperatur",
-                                    value = "${it.instant.details.airTemperature} ℃",
-                                    info = "Temperaturen om 6 timer er minimalt ${it.next6Hours?.details?.airTemperatureMin} ℃"
+                                    value = "${fcData.instant.details.airTemperature} ℃",
+                                    info = "Temperaturen om 6 timer er minimalt ${fcData.next6Hours?.details?.airTemperatureMin} ℃"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
                                 AddWeatherCard(
                                     iconId = R.drawable.vann,
                                     desc = "Nedbør",
-                                    value = "${it.next6Hours?.details?.precipitationAmount?.roundToInt()} mm" ,
-                                    info = "${it.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene"
+                                    value = "${fcData.next1Hours?.details?.precipitationAmount} mm" ,
+                                    info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene"
 
                                 )
                             }
@@ -215,15 +211,15 @@ fun DetailsScreen(
                                 AddWeatherCard(
                                     iconId = R.drawable.fog,
                                     desc = "Tåke",
-                                    value = "${it.instant.details.fogAreaFraction?.roundToInt()} %",
+                                    value = "${fcData.instant.details.fogAreaFraction?.roundToInt()} %",
                                     info = "Tåkedekke på bakken"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
                                 AddWeatherCard(
                                     iconId = R.drawable.luftfuktighet,
                                     desc = "Luftfuktighet",
-                                    value = "${it.instant.details.relativeHumidity.roundToInt()} %",
-                                    info = "Duggpunktet er ${it.instant.details.dewPointTemperature} ℃"
+                                    value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
+                                    info = "Duggpunktet er ${fcData.instant.details.dewPointTemperature} ℃"
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -233,12 +229,12 @@ fun DetailsScreen(
                                 AddWeatherCard(
                                     iconId = R.drawable.cloudy,
                                     desc = "Skydekke",
-                                    value = "${it.instant.details.cloudAreaFraction.roundToInt()} %",
+                                    value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
                                     info = "Total skydekke for alle høyder"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 
-                                val d = it.instant.details
+                                val d = fcData.instant.details
                                 val fog: Double = d.fogAreaFraction ?: 0.0
                                 val visibilityKm = visibilityConverter(
                                     fog,

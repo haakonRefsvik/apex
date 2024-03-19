@@ -34,10 +34,10 @@ class ThresholdRepository(){
 fun exampleDataFromDataBase(): ThresholdValues {
     val map = hashMapOf<String, Double>()
     map["maxPrecipitation"] = 0.0
-    map["maxHumidity"] = 5.0
-    map["maxWind"] = 2.0
-    map["maxShearWind"] = 2.0
-    map["maxDewPoint"] = -2.0
+    map["maxHumidity"] = 90.0
+    map["maxWind"] = 20.0
+    map["maxShearWind"] = 25.0
+    map["maxDewPoint"] = 5.0
 
     return ThresholdValues(map)
 }

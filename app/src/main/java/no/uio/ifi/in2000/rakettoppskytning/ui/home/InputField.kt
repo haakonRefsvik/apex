@@ -125,7 +125,6 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
     Row {
         OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
-            homeScreenViewModel.getVerticalProfileByCord(lat, lon)
             //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
             scope.launch {
                 scaffoldState.bottomSheetState.expand()
@@ -136,8 +135,8 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
         Spacer(modifier = Modifier.width(25.dp))
         Button(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
-            homeScreenViewModel.getForecastByCord(lat, lon)
-            homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+            //homeScreenViewModel.getForecastByCord(lat, lon)
+            //homeScreenViewModel.getVerticalProfileByCord(lat, lon)
             homeScreenViewModel.getWeatherByCord(lat, lon)
             mapViewModel.moveMapCamera(lat, lon)
 

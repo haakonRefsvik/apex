@@ -9,31 +9,20 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mapbox.geojson.Point
-import com.mapbox.maps.MapboxExperimental
-import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
-import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
-import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosRepo
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.getGrib
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 
+/*
 data class ForeCastUiState(
     val foreCast: List<LocationForecast> = listOf()
 )
@@ -41,8 +30,15 @@ data class VerticalProfileUiState(
     val verticalProfiles: List<VerticalProfile> = listOf()
 )
 
-class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
+ */
+
+data class WeatherUiState(
+    val weatherAtPos: WeatherAtPos = WeatherAtPos()
+)
+
+class HomeScreenViewModel(repo: WeatherAtPosRepo) : ViewModel() {
     private val foreCastRep = repo
+    private val gribRepo: GribRepository = GribRepository()
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -64,22 +60,28 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
     @OptIn(ExperimentalMaterial3Api::class)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
 
-    /*
-    private val _lat = mutableDoubleStateOf(59.9434927)
-    private val _lon = mutableDoubleStateOf(10.71181022)
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getWeatherByCord(lat: Double, lon: Double) {
+        Log.d("getWeather", "apicall")
+        viewModelScope.launch(Dispatchers.IO) {
+            foreCastRep.loadWeather(lat, lon)
+        }
+    }
 
-    val lat: MutableState<Double> = _lat
-    val lon: MutableState<Double> = _lon
-
-     */
-
-
-    val foreCastUiState: StateFlow<ForeCastUiState> =
-        foreCastRep.observeForecast().map { ForeCastUiState(foreCast = it) }.stateIn(
+    val weatherUiState: StateFlow<WeatherUiState> =
+        foreCastRep.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ForeCastUiState()
+            initialValue = WeatherUiState()
         )
+
+    init {
+        viewModelScope.launch {
+            gribRepo.loadGribFiles()
+        }
+    }
+
+    /*
 
     fun getForecastByCord(lat: Double, lon: Double) {
         Log.d("getForecastByCord", "apicall")
@@ -88,7 +90,7 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
         }
     }
 
-    private val gribRepo: GribRepository = GribRepository()
+
 
     fun getVerticalProfileByCord(lat: Double, lon: Double) {
         Log.d("getVerticalProfileByCord", "apicall")
@@ -97,13 +99,7 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun getWeatherByCord(lat: Double, lon: Double) {
-        Log.d("getWeather", "apicall")
-        viewModelScope.launch(Dispatchers.IO) {
-            foreCastRep.loadWeather(lat, lon)
-        }
-    }
+
 
     val verticalProfileUiState: StateFlow<VerticalProfileUiState> =
         foreCastRep.observeVerticalProfiles().map { VerticalProfileUiState(verticalProfiles = it) }
@@ -114,11 +110,15 @@ class HomeScreenViewModel(repo: WeatherForeCastLocationRepo) : ViewModel() {
             )
 
 
-    init {
-        viewModelScope.launch {
-            gribRepo.loadGribFiles()
-        }
-    }
+
+    val foreCastUiState: StateFlow<ForeCastUiState> =
+        foreCastRep.observeForecast().map { ForeCastUiState(foreCast = it) }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ForeCastUiState()
+        )
+
+     */
 
 
 }
