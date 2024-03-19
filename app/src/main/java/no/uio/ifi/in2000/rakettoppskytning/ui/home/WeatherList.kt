@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -40,30 +43,13 @@ import java.time.temporal.ChronoUnit
 fun WeatherList(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    thresholdViewModel: ThresholdViewModel
 ) {
-
-    //val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
-
-    val currentInstant = Instant.now()
-    val formatter = DateTimeFormatter.ISO_INSTANT
-
-    val formattedInstant = formatter.format(currentInstant)
-
-    val newInstant = currentInstant.plus(7, ChronoUnit.HOURS)
-
-    val formattedInstantAfter = formatter.format(newInstant)
 
     LazyColumn(content = {
         item {
             forecast.weatherAtPos.weatherList.forEach breaking@{ input ->
-
-                var statusColor = Color.Transparent
-
-                if(input.closeToLimitScore == 1.0){
-                    statusColor = Color.Red
-                }
+                val daysAhead = getNumberOfDaysAhead(input.date)
 
                 Spacer(modifier = Modifier.height(7.5.dp))
                 ElevatedCard(
@@ -78,23 +64,32 @@ fun WeatherList(
                     Row {
                         Spacer(
                             modifier = Modifier
-                                .width(12.dp)
+                                .width(10.dp)
                                 .fillMaxHeight()
-                                .background(statusColor)
+                                .background(getColorFromStatusValue(input.closeToLimitScore))
                         )
                         Row(
                             modifier = Modifier.fillMaxSize(),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Column(modifier = Modifier.width(50.dp),
+                                horizontalAlignment = Alignment.Start,
+                            ){
+                                Text("${input.hour}", fontSize = 20.sp)
+                            }
+                            Spacer(modifier = Modifier.width(50.dp))
+                            Column {
+                                Text(
+                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                if(daysAhead == 1){
+                                    Text(text = "Imorgen", fontSize = 16.sp)
+                                }
+                            }
 
-                            Text("Kl ${input.hour}", fontSize = 20.sp)
-                            Spacer(modifier = Modifier.width(55.dp))
-                            Text(
-                                "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
                             Spacer(modifier = Modifier.width(27.5.dp))
 
                             Spacer(modifier = Modifier.width(15.dp))

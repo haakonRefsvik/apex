@@ -33,7 +33,13 @@ data class WeatherAtPosHour(
     val lon: Double,
     val series: Series,
     val verticalProfile: VerticalProfile?,
-    /** Hashmap of difference between a parameter value, and a parameter limit */
+    /**
+     *     map["maxPrecipitation"]
+     *     map["maxHumidity"]
+     *     map["maxWind"]
+     *     map["maxShearWind"]
+     *     map["maxDewPoint"]
+     * */
     val valuesToLimitMap: HashMap<String, Double>,
     val closeToLimitScore: Double
 )
@@ -58,6 +64,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
         _weatherAtPos.update { updatedWeatherAtPos }
     }
 
+    /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
         val gribFiles = loadGribFromDataSource(lat, lon)
@@ -68,7 +75,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
 
         allForecasts.properties.timeseries.forEach{series ->
             if (hour >= loadHours){
-                return@forEach
+                return@forEach      // stops loading forecast-data when enough hours are loaded
             }
 
             hour++

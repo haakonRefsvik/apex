@@ -16,12 +16,13 @@ data class ThresholdValues(
 class ThresholdRepository(){
 
     private val thresholds: ThresholdValues = exampleDataFromDataBase()
-    /***/ fun updateThresholdValues(map: HashMap<String, Double>){
+    fun updateThresholdValues(map: HashMap<String, Double>){
         thresholds.valueMap = map
         // put data back in database
     }
 
-    /**    map["maxPrecipitation"]
+    /**
+     *     map["maxPrecipitation"]
      *     map["maxHumidity"]
      *     map["maxWind"]
      *     map["maxShearWind"]
@@ -31,11 +32,9 @@ class ThresholdRepository(){
         return thresholds.valueMap
     }
 
-
     /**
      * Returns a hashmap of how close each parameter is to the limit. If a "closeness-value" is negative, its over the limit
      * */
-
     fun getValueClosenessMap(series: Series, verticalProfile: VerticalProfile?): HashMap<String, Double> {
         val thresholds = thresholds.valueMap
         val fc = series.data.instant.details
@@ -103,14 +102,11 @@ class ThresholdRepository(){
             if(it.value == 1.0){
                 return 1.0
             }
-
             sum += it.value
         }
 
         return sum/map.size
     }
-
-
 }
 
 fun exampleDataFromDataBase(): ThresholdValues {

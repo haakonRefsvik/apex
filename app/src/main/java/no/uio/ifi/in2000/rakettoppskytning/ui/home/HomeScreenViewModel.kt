@@ -80,44 +80,5 @@ class HomeScreenViewModel(repo: WeatherRepository) : ViewModel() {
         }
     }
 
-    /*
-
-    fun getForecastByCord(lat: Double, lon: Double) {
-        Log.d("getForecastByCord", "apicall")
-        viewModelScope.launch(Dispatchers.IO) {
-            foreCastRep.loadForecast(lat, lon)
-        }
-    }
-
-
-
-    fun getVerticalProfileByCord(lat: Double, lon: Double) {
-        Log.d("getVerticalProfileByCord", "apicall")
-        viewModelScope.launch(Dispatchers.IO) {
-            foreCastRep.loadVerticalProfiles(lat, lon)
-        }
-    }
-
-
-
-    val verticalProfileUiState: StateFlow<VerticalProfileUiState> =
-        foreCastRep.observeVerticalProfiles().map { VerticalProfileUiState(verticalProfiles = it) }
-            .stateIn(
-                viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = VerticalProfileUiState()
-            )
-
-
-
-    val foreCastUiState: StateFlow<ForeCastUiState> =
-        foreCastRep.observeForecast().map { ForeCastUiState(foreCast = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ForeCastUiState()
-        )
-
-     */
-
 
 }
