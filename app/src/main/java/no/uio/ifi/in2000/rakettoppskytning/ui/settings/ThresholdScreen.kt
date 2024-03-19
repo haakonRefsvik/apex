@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -33,6 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -54,12 +54,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 
 @Preview(showBackground = true)
 @Composable
 fun ThresholdPreview() {
     val navController = rememberNavController()
-    ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()))
+    ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()), WeatherRepository(ThresholdRepository(), GribRepository()))
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -67,7 +69,8 @@ fun ThresholdPreview() {
 @Composable
 fun ThresholdScreen(
     navController: NavHostController,
-    thresholdViewModel: ThresholdViewModel
+    thresholdViewModel: ThresholdViewModel,
+    weatherRepository: WeatherRepository
 ) {
     //nedbør 0
     //vind & shearwind
@@ -75,11 +78,6 @@ fun ThresholdScreen(
     //dewpoint
     //tåke/sikt 0%
     //sette høyde
-    val maxPrecipitation by thresholdViewModel.maxPrecipitation
-    val maxWind by thresholdViewModel.maxWind
-    val maxShearWind by thresholdViewModel.maxShearWind
-    val maxHumidity by thresholdViewModel.maxHumidity
-    val minDewPoint by thresholdViewModel.minDewPoint
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -168,7 +166,8 @@ fun ThresholdScreen(
                         title = "Maks nedbør",
                         desc = "Juster øvre grense for nedbør",
                         drawableId = R.drawable.vann,
-                        suffix = "mm"
+                        suffix = "mm",
+                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -177,7 +176,8 @@ fun ThresholdScreen(
                         title = "Maks luftfuktighet",
                         desc = "Juster øvre grense for luftfuktighet",
                         drawableId = R.drawable.luftfuktighet,
-                        suffix = "%"
+                        suffix = "%",
+                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -186,7 +186,8 @@ fun ThresholdScreen(
                         title = "Maks vind",
                         desc = "Juster øvre grense for vindhastighet på bakken",
                         drawableId = R.drawable.vind2,
-                        suffix = "m/s"
+                        suffix = "m/s",
+                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
@@ -195,25 +196,34 @@ fun ThresholdScreen(
                         title = "Maks vindskjær",
                         desc = "Juster øvre grense for de vertikale vindskjærene",
                         drawableId = R.drawable.vind2,
-                        suffix = "m/s"
+                        suffix = "m/s",
+                        thresholdViewModel = thresholdViewModel
                     )
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.minDewPoint,
+                        mutableValue = thresholdViewModel.maxDewPoint,
                         title = "Minimalt duggpunkt",
                         desc = "Juster nedre grense for duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
-                        suffix = "℃"
+                        suffix = "℃",
+                        thresholdViewModel = thresholdViewModel
                     )
                 }
             }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            thresholdViewModel.saveThresholdValues()
+
         }
     }
 }
 
 @Composable
 fun ThresholdCard(
+    thresholdViewModel: ThresholdViewModel,
     mutableValue: MutableState<Double>,
     title: String,
     desc: String,
@@ -256,7 +266,6 @@ fun ThresholdCard(
             }
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedTextField(
-                label = { Text(suffix) },
                 modifier = Modifier
                     .width(80.dp)
                     .height(60.dp),
@@ -265,6 +274,7 @@ fun ThresholdCard(
                 onValueChange = { input ->
                     mutableValue.value = input.toDouble()
                 },
+                label = { Text(suffix) },
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number

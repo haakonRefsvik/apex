@@ -43,12 +43,8 @@ fun WeatherList(
     thresholdViewModel: ThresholdViewModel
 ) {
 
-    val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
-    val maxPrecipitation by thresholdViewModel.maxPrecipitation
-    val maxWind by thresholdViewModel.maxWind
-    val maxShearWind by thresholdViewModel.maxShearWind
-    val maxHumidity by thresholdViewModel.maxHumidity
-    val maxDewPoint by thresholdViewModel.minDewPoint
+    //val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
+    val forecast by homeScreenViewModel.weatherUiState.collectAsState()
 
     val currentInstant = Instant.now()
     val formatter = DateTimeFormatter.ISO_INSTANT
@@ -61,80 +57,71 @@ fun WeatherList(
 
     LazyColumn(content = {
         item {
-            forecast.foreCast.forEach breaking@{ input ->
-                input.properties.timeseries.forEach lit@{ series ->
-                    if (series.time < formattedInstant) {
-                        return@lit
+            forecast.weatherAtPos.weatherList.forEach breaking@{ input ->
+
+                var statusColor = Color.Transparent
+
+                if(input.closeToLimitScore == 1.0){
+                    statusColor = Color.Red
+                }
+
+                Spacer(modifier = Modifier.height(7.5.dp))
+                ElevatedCard(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(340.dp),
+                    onClick = {
+                        navController.navigate("DetailsScreen/${input.date}")
                     }
-                    if (formattedInstant < series.time && series.time < formattedInstantAfter) {
-                        val klokkeslett = series.time.substring(11, 16)
-                        Spacer(modifier = Modifier.height(7.5.dp))
-                        ElevatedCard(
+                )
+                {
+                    Row {
+                        Spacer(
                             modifier = Modifier
-                                .height(80.dp)
-                                .width(340.dp),
-                            onClick = {
-                                navController.navigate("DetailsScreen/${series.time}")
-                            }
+                                .width(12.dp)
+                                .fillMaxHeight()
+                                .background(statusColor)
                         )
-                        {
-                            Row {
-                                Spacer(
-                                    modifier = Modifier
-                                        .width(12.dp)
-                                        .fillMaxHeight()
-                                        .background(Color(218, 8, 0, 255))
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Text("Kl ${input.hour}", fontSize = 20.sp)
+                            Spacer(modifier = Modifier.width(55.dp))
+                            Text(
+                                "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.width(27.5.dp))
+
+                            Spacer(modifier = Modifier.width(15.dp))
+                            input.series.data.next1Hours?.summary?.let {
+                                Image(
+                                    modifier = Modifier.size(55.dp),
+
+                                    painter = painterResource(
+                                        id = ForeCastSymbols.valueOf(
+                                            it.symbolCode.uppercase()
+                                        ).id
+                                    ),
+                                    contentDescription = it.symbolCode
                                 )
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-
-                                    Text(klokkeslett, fontSize = 20.sp)
-                                    Spacer(modifier = Modifier.width(55.dp))
-                                    Text(
-                                        "${series.data.next1Hours?.details?.precipitationAmount} mm",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.width(27.5.dp))
-
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                    series.data.next1Hours?.summary?.let {
-                                        Image(
-                                            modifier = Modifier.size(55.dp),
-
-                                            painter = painterResource(
-                                                id = ForeCastSymbols.valueOf(
-                                                    it.symbolCode.uppercase()
-                                                ).id
-                                            ),
-                                            contentDescription = it.symbolCode
-                                        )
-                                    }
-
-                                    Icon(
-                                        modifier = Modifier.size(20.dp),
-                                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                        contentDescription = "Arrow"
-                                    )
-                                }
                             }
 
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                contentDescription = "Arrow"
+                            )
                         }
-
-                        Spacer(modifier = Modifier.height(7.5.dp))
-
-
-                    } else {
-                        return@breaking
                     }
 
                 }
-
+                Spacer(modifier = Modifier.height(7.5.dp))
             }
-
         }
     })
 
