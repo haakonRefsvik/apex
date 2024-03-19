@@ -1,13 +1,17 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import co.yml.charts.axis.AxisConfig
 import co.yml.charts.axis.AxisData
 import co.yml.charts.common.model.Point
 import co.yml.charts.ui.linechart.LineChart
@@ -20,44 +24,63 @@ import co.yml.charts.ui.linechart.model.LineStyle
 import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
 import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
-
-
-val yAxisData = listOf(0f, 1435f, 3495f, 5478f, 6989f, 8721f)
-val xAxisData = listOf(12.3f, 14.1f, 7.9f, 19.9f, 25.2f, 18.4f)
-val xLabels = listOf("Tid1", "Tid2", "Tid3", "Tid4", "Tid5", "Tid6")
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 
 
 @Composable
-fun Graf(xData: List<Float>, yData: List<Float>) {
+fun Graf(verticalProfiles: List<VerticalProfile>) {
+    val yData: MutableList<Double> = mutableListOf()
+    val xLabels: MutableList<String> = mutableListOf()
+    yData.add(0.0)
+    xLabels.add("")
+
+    verticalProfiles.forEach {
+        yData.add(it.getMaxSheerWind().windSpeed)
+
+        xLabels.add(it.time.substring(11, 16))
+    }
 
     val pointsData: MutableList<Point> = mutableListOf()
 
-    xData.forEachIndexed { index, fl ->
-        pointsData.add(Point(yData[index], fl))
+
+    val stepSize = 300.dp / (xLabels.size)
+
+
+
+
+    yData.forEachIndexed { index, data ->
+
+        pointsData.add(Point(index.toFloat(), data.toFloat()))
     }
 
-
-    val xLabels = listOf("Tid1", "Tid2", "Tid3", "Tid4", "Tid5")
-
     val xAxisData = AxisData.Builder()
-        .axisStepSize(100.dp)
+        .axisStepSize(stepSize)
         .backgroundColor(Color.Transparent)
         .steps(pointsData.size - 1)
+
+        .shouldDrawAxisLineTillEnd(true)
         .labelData { i ->
-            xLabels.getOrNull(i) ?: ""
+            xLabels[i]
+
         }
-        .labelAndAxisLinePadding(15.dp)
+        .labelAndAxisLinePadding(5.dp).axisLabelFontSize(10.sp)
+
         .build()
 
+
+    val minY = yData.minOrNull() ?: 0.0
+    val maxY = yData.maxOrNull() ?: 0.0
 
     val steps = 5
     val yAxisData = AxisData.Builder()
         .steps(steps)
+
         .backgroundColor(Color.Transparent)
-        .labelAndAxisLinePadding(20.dp)
+        .labelAndAxisLinePadding(20.dp).axisLabelFontSize(10.sp)
         .labelData { i ->
-            val yScale = 100 / steps
-            (i * yScale).toString()
+
+            val yScale = (maxY - minY) / steps
+            "%.2f".format((minY + i * yScale))
         }
         .build()
 
@@ -67,8 +90,8 @@ fun Graf(xData: List<Float>, yData: List<Float>) {
                 Line(
                     dataPoints = pointsData,
                     LineStyle(),
-                    IntersectionPoint(),
-                    SelectionHighlightPoint(),
+                    IntersectionPoint(radius = 4.dp),
+                    SelectionHighlightPoint(radius = 4.dp),
                     ShadowUnderLine(),
                     SelectionHighlightPopUp()
                 )
@@ -76,15 +99,11 @@ fun Graf(xData: List<Float>, yData: List<Float>) {
         ),
         xAxisData = xAxisData,
         yAxisData = yAxisData,
-        gridLines = GridLines(),
-        backgroundColor = Color.White
-    )
+
+        )
 
     LineChart(
-        modifier = Modifier
-            .fillMaxSize(),
-
+        modifier = Modifier.fillMaxSize(),
         lineChartData = lineChartData
     )
-
 }

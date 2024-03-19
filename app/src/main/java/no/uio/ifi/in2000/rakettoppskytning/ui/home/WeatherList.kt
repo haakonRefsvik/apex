@@ -1,10 +1,12 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -49,6 +51,8 @@ fun WeatherList(
     val maxShearWind by thresholdViewModel.maxShearWind
     val maxHumidity by thresholdViewModel.maxHumidity
     val maxDewPoint by thresholdViewModel.minDewPoint
+    val verticalProfiles by homeScreenViewModel.verticalProfileUiState.collectAsState()
+
 
     val currentInstant = Instant.now()
     val formatter = DateTimeFormatter.ISO_INSTANT
@@ -58,8 +62,34 @@ fun WeatherList(
     val newInstant = currentInstant.plus(7, ChronoUnit.HOURS)
 
     val formattedInstantAfter = formatter.format(newInstant)
+    val listen = listOf(verticalProfiles.verticalProfiles)
 
     LazyColumn(content = {
+        item {
+            if (verticalProfiles.verticalProfiles.isEmpty()) {
+
+
+            } else {
+                listen.forEach {
+                    ElevatedCard(
+                        modifier = Modifier
+                            .height(200.dp)
+                            .width(340.dp),
+
+                        )
+                    {
+                        Box {
+                            Graf(verticalProfiles = it)
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+        }
         item {
             forecast.foreCast.forEach breaking@{ input ->
                 input.properties.timeseries.forEach lit@{ series ->

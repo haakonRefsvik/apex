@@ -61,9 +61,12 @@ import kotlin.math.roundToInt
 @Composable
 fun DetailsScreenPreview() {
     val navController = rememberNavController()
-    DetailsScreen(navController = navController, backStackEntry = "1", detailsScreenViewModel = DetailsScreenViewModel(WeatherForeCastLocationRepo()))
+    DetailsScreen(
+        navController = navController,
+        backStackEntry = "1",
+        detailsScreenViewModel = DetailsScreenViewModel(WeatherForeCastLocationRepo())
+    )
 }
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -200,7 +203,7 @@ fun DetailsScreen(
                                 AddWeatherCard(
                                     iconId = R.drawable.vann,
                                     desc = "Nedbør",
-                                    value = "${it.next6Hours?.details?.precipitationAmount?.roundToInt()} mm" ,
+                                    value = "${it.next1Hours?.details?.precipitationAmount} mm",
                                     info = "${it.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene"
 
                                 )
@@ -263,7 +266,12 @@ fun DetailsScreen(
 
 }
 
-fun visibilityConverter(fogGround: Double, cloudLow: Double, cloudMed: Double, cloudHigh: Double): String{
+fun visibilityConverter(
+    fogGround: Double,
+    cloudLow: Double,
+    cloudMed: Double,
+    cloudHigh: Double
+): String {
     // Convert fog percentage to visibility reduction factor
     val fogFactor: Double = fogGround * 0.01
 
@@ -272,20 +280,21 @@ fun visibilityConverter(fogGround: Double, cloudLow: Double, cloudMed: Double, c
     val medCloudFactor: Double = cloudMed * 0.01    // 2000 - 5000
     val highCloudFactor: Double = cloudHigh * 0.01  // 5000 - infinity
 
-    val fogWeight = 1.0                     // sikt blir mer påvirket av tåke på bakken enn langt opp i høyden
+    val fogWeight =
+        1.0                     // sikt blir mer påvirket av tåke på bakken enn langt opp i høyden
     val lowCloudWeight: Double = 0.8
     val medCloudWeight: Double = 0.6
     val highCloudWeight: Double = 0.2
 
     // Calculate the combined impact of fog and cloud cover on visibility
     val visibilityReductionFactor: Double =
-        1- (1 - (fogFactor * fogWeight))* (1 - (lowCloudFactor * lowCloudWeight)) * (1 - (medCloudFactor * medCloudWeight)) * (1 - (highCloudFactor * highCloudWeight))
+        1 - (1 - (fogFactor * fogWeight)) * (1 - (lowCloudFactor * lowCloudWeight)) * (1 - (medCloudFactor * medCloudWeight)) * (1 - (highCloudFactor * highCloudWeight))
 
     //Log.d("visibilityConverter", "\n LowC: $lowCloudFactor \nMedC: $medCloudFactor \nHighC: $highCloudFactor \nvisFactor: $visibilityReductionFactor \n")
 
     val visibility: Double = 8.0 / visibilityReductionFactor
 
-    if(visibility > 50){
+    if (visibility > 50) {
         return ">50"
     }
 
@@ -454,14 +463,20 @@ fun ShearWindCard(verticalProfile: VerticalProfile) {
                         .width(200.dp)
                 )
                 Text(
-                    text = String.format("%.1f", verticalProfile.getMaxSheerWind().windSpeed) + " m/s",
+                    text = String.format(
+                        "%.1f",
+                        verticalProfile.getMaxSheerWind().windSpeed
+                    ) + " m/s",
                     modifier = Modifier.padding(vertical = 5.dp),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = "Vindskjæret er på ca ${verticalProfile.getMaxSheerWind().upperLayer.getLevelHeightInMeters().roundToInt()} meters høyde",
+                    text = "Vindskjæret er på ca ${
+                        verticalProfile.getMaxSheerWind().upperLayer.getLevelHeightInMeters()
+                            .roundToInt()
+                    } meters høyde",
                     fontSize = 14.sp,
                     lineHeight = 16.sp,
                 )
