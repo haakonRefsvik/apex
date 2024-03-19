@@ -12,7 +12,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -69,7 +69,7 @@ dependencies {
     val netcdfJavaVersion = "5.5.2"
     val slf4jVersion = "1.7.30"
 
-    implementation ("com.google.code.gson:gson:2.8.7")
+    implementation("com.google.code.gson:gson:2.8.7")
 
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
@@ -96,6 +96,9 @@ dependencies {
 
 
     val constants = "11.2.0"
+
+    //YCharts
+    implementation("co.yml:ycharts:2.1.0")
 
     //MapBox
     implementation("com.mapbox.maps:android:$constants")
