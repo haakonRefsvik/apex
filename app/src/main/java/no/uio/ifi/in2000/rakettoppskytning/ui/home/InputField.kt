@@ -168,17 +168,19 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
             OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
 
                 controller?.hide()
-                homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+                //homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+                //Log.d("Favorite: ", "$lat og $lon")
                 mapViewModel.lat.value = lat
                 mapViewModel.lon.value = lon
+                Log.d("Favorite2: ", "${mapViewModel.lat.value} og ${mapViewModel.lon.value}")
 
                 onEvent(FavoriteEvent.ShowDialog)
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                 scope.launch {
+                    //delay(1000)
                     scaffoldState.bottomSheetState.expand()
                     currentLat = lat
                     currentLon = lon
-
                 }
 
 
@@ -187,7 +189,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
                     AddFavoriteDialog(
                         state = state,
                         onEvent = onEvent,
-                        currentLat,
+                        lat = currentLat,
                         lon = currentLon
                     )
                 }
@@ -241,7 +243,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
                 ) {
                     Row(
                         verticalAlignment = Alignment.Top,
-                        horizontalArrangement = Arrangement.Start
+                        horizontalArrangement = Arrangement.Absolute.Right
                     ) {
                         IconButton(onClick = {
                             onEvent(FavoriteEvent.DeleteFavorite(favorite))

@@ -31,6 +31,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.FavoriteViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
+
+//fjern det her bort
 class MainActivity : ComponentActivity() {
     private val db by lazy {
         FavoriteDatabase.getInstance(this)
