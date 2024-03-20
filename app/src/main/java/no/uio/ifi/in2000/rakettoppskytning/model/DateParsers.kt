@@ -17,7 +17,7 @@ fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
         val dateTime2 = ZonedDateTime.parse(fcDate)
 
         ChronoUnit.HOURS.between(dateTime1, dateTime2).toInt()
-    }catch (e: Exception){
+    } catch (e: Exception) {
         -1
     }
 }
@@ -26,7 +26,7 @@ fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
 fun getHourFromDate(date: String): Int {
     return try {
         ZonedDateTime.parse(date).hour
-    }catch (e: Exception){
+    } catch (e: Exception) {
         return -1
     }
 }
@@ -39,3 +39,4 @@ fun getNumberOfDaysAhead(dateString: String): Int {
     val period = Period.between(currentDate, givenDate)
     return period.days
 }
+

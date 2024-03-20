@@ -4,9 +4,11 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -55,7 +57,7 @@ fun formatNewValue(input: String): Double {
 
     var formattedIntegerValue = integerPart
 
-    while (formattedIntegerValue.length > 2){
+    while (formattedIntegerValue.length > 2) {
         formattedIntegerValue = formattedIntegerValue.dropLast(1)
     }
 
@@ -75,7 +77,7 @@ fun formatNewValue(input: String): Double {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InputFieldMain(
-){
+) {
 
 
     Row {
@@ -98,7 +100,8 @@ fun InputField(
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
     state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit) {
+    onEvent: (FavoriteEvent) -> Unit
+) {
 
     val showDecimals = 5
     if (mapViewModel.favorite.value != Favorite("", "", "")) {
@@ -244,18 +247,19 @@ fun InputField(
 
                             controller?.hide()
                             homeScreenViewModel.getWeatherByCord(lat, lon, 24)
-                            mapViewModel.moveMapCamera(lat, lon)
+                            mapViewModel.moveMapCamera(favorite.lat.toDouble(), lon)
 
                             scope.launch {
                                 delay(1000)
-                                scaffoldState.bottomSheetState.hide()
                             }
 
                         }
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.Top,
-                            horizontalArrangement = Arrangement.Absolute.Right
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.End
+
+
                         ) {
                             IconButton(onClick = {
                                 onEvent(FavoriteEvent.DeleteFavorite(favorite))
@@ -266,8 +270,18 @@ fun InputField(
                                     contentDescription = "Delete favorite"
                                 )
                             }
-                            Text(favorite.name, modifier = Modifier.padding(top = 32.dp))
+
+
                         }
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(favorite.name)
+
+
+                        }
+
 
                     }
 

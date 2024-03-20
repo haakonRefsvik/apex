@@ -55,11 +55,11 @@ import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun DetailsScreenPreview() {
@@ -67,10 +67,15 @@ fun DetailsScreenPreview() {
     DetailsScreen(
         navController = navController,
         backStackEntry = "1",
-        detailsScreenViewModel = DetailsScreenViewModel(WeatherRepository(ThresholdRepository(), GribRepository()))
+        detailsScreenViewModel = DetailsScreenViewModel(
+            WeatherRepository(
+                ThresholdRepository(),
+                GribRepository()
+            )
+        )
     )
 }
-@RequiresApi(Build.VERSION_CODES.O)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
@@ -84,7 +89,7 @@ fun DetailsScreen(
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
 
     weatherUiState.weatherAtPos.weatherList.forEach {
-        if(it.date == time){
+        if (it.date == time) {
             weatherAtPosHour = listOf(it)
         }
     }
@@ -170,11 +175,33 @@ fun DetailsScreen(
 
             if (weatherAtPosHour.isEmpty()) {
                 Text("Her var det tomt")
-            }else{
-                Text("Værdata for klokken ${weatherAtPosHour.first().hour}")
+            } else {
+                if (getNumberOfDaysAhead(weatherAtPosHour.first().date) == 1) {
+                    Text(
+                        "Værdata for imorgen klokken ${
+                            weatherAtPosHour.first().series.time.substring(
+                                11,
+                                16
+                            )
+                        } "
+                    )
+
+
+                } else {
+                    Text(
+                        "Værdata for klokken ${
+                            weatherAtPosHour.first().series.time.substring(
+                                11,
+                                16
+                            )
+                        } "
+                    )
+
+                }
+
             }
 
-            weatherAtPosHour.forEach {weatherNow ->
+            weatherAtPosHour.forEach { weatherNow ->
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
 
@@ -182,7 +209,7 @@ fun DetailsScreen(
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
                         item {
-                            val statusValue: Double = statusMap["maxShearWind"]?: 0.0
+                            val statusValue: Double = statusMap["maxShearWind"] ?: 0.0
 
                             weatherNow.verticalProfile?.let { ShearWindCard(verticalProfile = it) }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -203,9 +230,9 @@ fun DetailsScreen(
                                 AddWeatherCard(
                                     iconId = R.drawable.vann,
                                     desc = "Nedbør",
-                                    value = "${fcData.next1Hours?.details?.precipitationAmount} mm" ,
+                                    value = "${fcData.next1Hours?.details?.precipitationAmount} mm",
                                     info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene",
-                                    statusCode = statusMap["maxPrecipitation"]?: 0.0
+                                    statusCode = statusMap["maxPrecipitation"] ?: 0.0
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -221,13 +248,13 @@ fun DetailsScreen(
                                 Spacer(modifier = Modifier.width(20.dp))
 
                                 var combinedStatus = 0.0
-                                val d = statusMap["maxDewPoint"]?: 0.0
-                                val h = statusMap["maxHumidity"]?: 0.0
+                                val d = statusMap["maxDewPoint"] ?: 0.0
+                                val h = statusMap["maxHumidity"] ?: 0.0
 
-                                combinedStatus = if(d == 1.0 || h == 1.0){
+                                combinedStatus = if (d == 1.0 || h == 1.0) {
                                     1.0
-                                }else{
-                                    (d + h)/2
+                                } else {
+                                    (d + h) / 2
                                 }
 
                                 AddWeatherCard(
@@ -278,7 +305,12 @@ fun DetailsScreen(
 
 }
 
-fun visibilityConverter(fogGround: Double, cloudLow: Double, cloudMed: Double, cloudHigh: Double): String{
+fun visibilityConverter(
+    fogGround: Double,
+    cloudLow: Double,
+    cloudMed: Double,
+    cloudHigh: Double
+): String {
     // Convert fog percentage to visibility reduction factor
     val fogFactor: Double = fogGround * 0.01
 
@@ -287,20 +319,21 @@ fun visibilityConverter(fogGround: Double, cloudLow: Double, cloudMed: Double, c
     val medCloudFactor: Double = cloudMed * 0.01    // 2000 - 5000
     val highCloudFactor: Double = cloudHigh * 0.01  // 5000 - infinity
 
-    val fogWeight = 1.0                     // sikt blir mer påvirket av tåke på bakken enn langt opp i høyden
+    val fogWeight =
+        1.0                     // sikt blir mer påvirket av tåke på bakken enn langt opp i høyden
     val lowCloudWeight: Double = 0.8
     val medCloudWeight: Double = 0.6
     val highCloudWeight: Double = 0.2
 
     // Calculate the combined impact of fog and cloud cover on visibility
     val visibilityReductionFactor: Double =
-        1- (1 - (fogFactor * fogWeight))* (1 - (lowCloudFactor * lowCloudWeight)) * (1 - (medCloudFactor * medCloudWeight)) * (1 - (highCloudFactor * highCloudWeight))
+        1 - (1 - (fogFactor * fogWeight)) * (1 - (lowCloudFactor * lowCloudWeight)) * (1 - (medCloudFactor * medCloudWeight)) * (1 - (highCloudFactor * highCloudWeight))
 
     //Log.d("visibilityConverter", "\n LowC: $lowCloudFactor \nMedC: $medCloudFactor \nHighC: $highCloudFactor \nvisFactor: $visibilityReductionFactor \n")
 
     val visibility: Double = 8.0 / visibilityReductionFactor
 
-    if(visibility > 50){
+    if (visibility > 50) {
         return ">50"
     }
 
@@ -309,7 +342,13 @@ fun visibilityConverter(fogGround: Double, cloudLow: Double, cloudMed: Double, c
 
 
 @Composable
-fun AddWeatherCard(value: String, iconId: Int, desc: String, info: String = "", statusCode: Double = 0.0) {
+fun AddWeatherCard(
+    value: String,
+    iconId: Int,
+    desc: String,
+    info: String = "",
+    statusCode: Double = 0.0
+) {
     ElevatedCard(
         modifier = Modifier
             .height(125.dp)
@@ -369,15 +408,19 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
             .height(140.dp)
             .width(360.dp)
     ) {
-        Spacer(modifier = Modifier.height(15.dp))
         Row {
+
+
             Spacer(
                 modifier = Modifier
                     .width(5.dp)
                     .fillMaxHeight()
                     .background(getColorFromStatusValue(statusCode))
             )
-            Row {
+
+
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(10.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -449,6 +492,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                 }
             }
         }
+
     }
 }
 
@@ -459,7 +503,8 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
             .height(140.dp)
             .width(360.dp)
     ) {
-        Spacer(modifier = Modifier.height(15.dp))
+
+
         Row {
             Spacer(
                 modifier = Modifier
@@ -467,9 +512,12 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                     .fillMaxHeight()
                     .background(getColorFromStatusValue(statusCode))
             )
+            Spacer(modifier = Modifier.width(10.dp))
             Row {
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             modifier = Modifier
@@ -512,5 +560,6 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                 }
             }
         }
+
     }
 }

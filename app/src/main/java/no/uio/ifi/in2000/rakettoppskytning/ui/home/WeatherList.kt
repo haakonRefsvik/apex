@@ -73,10 +73,14 @@ fun WeatherList(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(modifier = Modifier.width(50.dp),
+                            Column(
+                                modifier = Modifier.width(65.dp),
                                 horizontalAlignment = Alignment.Start,
-                            ){
-                                Text("${input.hour}", fontSize = 20.sp)
+                            ) {
+                                Text(input.series.time.substring(11, 16), fontSize = 20.sp)
+                                if (daysAhead == 1) {
+                                    Text(text = "Imorgen", fontSize = 14.sp)
+                                }
                             }
                             Spacer(modifier = Modifier.width(50.dp))
                             Column {
@@ -85,9 +89,7 @@ fun WeatherList(
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold
                                 )
-                                if(daysAhead == 1){
-                                    Text(text = "Imorgen", fontSize = 16.sp)
-                                }
+
                             }
 
                             Spacer(modifier = Modifier.width(27.5.dp))

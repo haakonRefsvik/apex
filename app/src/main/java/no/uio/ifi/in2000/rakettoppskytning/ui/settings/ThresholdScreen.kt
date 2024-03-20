@@ -64,7 +64,11 @@ import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 @Composable
 fun ThresholdPreview() {
     val navController = rememberNavController()
-    ThresholdScreen(navController = navController, ThresholdViewModel(ThresholdRepository()), WeatherRepository(ThresholdRepository(), GribRepository()))
+    ThresholdScreen(
+        navController = navController,
+        ThresholdViewModel(ThresholdRepository()),
+        WeatherRepository(ThresholdRepository(), GribRepository())
+    )
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -286,7 +290,7 @@ fun ThresholdCard(
             )
         }
     }
-    Spacer(modifier = Modifier.height(10.dp))
+    Spacer(modifier = Modifier.height(15.dp))
 
 }
 
