@@ -72,92 +72,24 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        Row {
-            OutlinedTextField(
-                value = String.format(
-                    "%.${showDecimals}f",
-                    lat
-                ), // viser lat, verdien som maks 5 desimaler
-                onValueChange = { input ->
-                    mapViewModel.lat.value = formatNewValue(input)
-                    Log.d("favorite: ", "lat in tf: ${mapViewModel.lat.value}")
-                },
-
-                Modifier
-                    .width(130.dp)
-                    .height(58.dp),
-                textStyle = TextStyle(fontSize = 18.sp),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Number
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        controller?.hide()
-                        focusManager.clearFocus()
-                    }
-                ),
-                label = { Text("Latitude") },
-                singleLine = true,
-            )
-            Spacer(modifier = Modifier.width(50.dp))
-            OutlinedTextField(
-                value = String.format(
-                    "%.${showDecimals}f",
-                    lon
-                ),// viser lon, verdien som maks 5 desimaler
-                onValueChange = { input ->
-                    mapViewModel.lon.value = formatNewValue(input)
-                    Log.d("favorite: ", "lat in tf: ${mapViewModel.lat.value}")
-                },
-                Modifier
-                    .width(130.dp)
-                    .height(58.dp),
-
-                textStyle = TextStyle(fontSize = 18.sp),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Number
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        controller?.hide()
-                        focusManager.clearFocus()
-                    }
-                ),
-                label = { Text("Longitude") },
-                singleLine = true
-            )
-
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Row {
-            var currentLat: Double by remember { mutableDoubleStateOf(lat) }
-            var currentLon: Double by remember { mutableDoubleStateOf(lon) }
-            OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
-
-                controller?.hide()
-                //homeScreenViewModel.getVerticalProfileByCord(lat, lon)
-                //Log.d("Favorite: ", "$lat og $lon")
-                mapViewModel.lat.value = lat
-                mapViewModel.lon.value = lon
-                Log.d("Favorite2: ", "${mapViewModel.lat.value} og ${mapViewModel.lon.value}")
-
-                onEvent(FavoriteEvent.ShowDialog)
-                //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
-                scope.launch {
-                    //delay(1000)
-                    scaffoldState.bottomSheetState.expand()
-                    currentLat = lat
-                    currentLon = lon
-
+    Row {
+        OutlinedTextField(
+            value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
+            onValueChange = { input ->
+                mapViewModel.lat.value = formatNewValue(input)
+            },
+            Modifier
+                .width(130.dp)
+                .height(58.dp),
+            textStyle = TextStyle(fontSize = 18.sp),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    controller?.hide()
+                    focusManager.clearFocus()
                 }
             ),
             label = { Text("Latitude") },
