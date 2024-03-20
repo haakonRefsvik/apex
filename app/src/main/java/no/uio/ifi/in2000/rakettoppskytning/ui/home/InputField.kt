@@ -95,7 +95,7 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
 
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
-
+//test
     Column(
         modifier = Modifier
             .fillMaxWidth(),
