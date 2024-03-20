@@ -5,6 +5,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id ("kotlin-kapt")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
 }
 android {
@@ -101,6 +102,11 @@ dependencies {
     implementation("com.mapbox.maps:android:$constants")
     // If you're using compose also add the compose extension
     implementation("com.mapbox.extension:maps-compose:$constants")
+
+    // Room
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("androidx.core:core-ktx:1.12.0")
