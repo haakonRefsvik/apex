@@ -9,6 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherForeCastLocationRepo
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
@@ -22,7 +25,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation() {
+fun Navigation(
+    state: FavoriteState,
+    onEvent: (FavoriteEvent) -> Unit
+) {
 
     val navController = rememberNavController()
     val thresholdRepository = ThresholdRepository()
@@ -39,6 +45,8 @@ fun Navigation() {
             HomeScreen(
                 navController,
                 homeScreenViewModel = homeScreenViewModel,
+                state,
+                onEvent,
                 mapViewModel,
                 thresholdViewModel
             )
