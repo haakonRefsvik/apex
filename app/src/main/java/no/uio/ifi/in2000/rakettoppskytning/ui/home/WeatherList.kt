@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -40,101 +43,80 @@ import java.time.temporal.ChronoUnit
 fun WeatherList(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    thresholdViewModel: ThresholdViewModel
 ) {
-
-    val forecast by homeScreenViewModel.foreCastUiState.collectAsState()
-    val maxPrecipitation by thresholdViewModel.maxPrecipitation
-    val maxWind by thresholdViewModel.maxWind
-    val maxShearWind by thresholdViewModel.maxShearWind
-    val maxHumidity by thresholdViewModel.maxHumidity
-    val maxDewPoint by thresholdViewModel.minDewPoint
-
-    val currentInstant = Instant.now()
-    val formatter = DateTimeFormatter.ISO_INSTANT
-
-    val formattedInstant = formatter.format(currentInstant)
-
-    val newInstant = currentInstant.plus(7, ChronoUnit.HOURS)
-
-    val formattedInstantAfter = formatter.format(newInstant)
+    val forecast by homeScreenViewModel.weatherUiState.collectAsState()
 
     LazyColumn(content = {
         item {
-            forecast.foreCast.forEach breaking@{ input ->
-                input.properties.timeseries.forEach lit@{ series ->
-                    if (series.time < formattedInstant) {
-                        return@lit
+            forecast.weatherAtPos.weatherList.forEach breaking@{ input ->
+                val daysAhead = getNumberOfDaysAhead(input.date)
+
+                Spacer(modifier = Modifier.height(7.5.dp))
+                ElevatedCard(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(340.dp),
+                    onClick = {
+                        navController.navigate("DetailsScreen/${input.date}")
                     }
-                    if (formattedInstant < series.time && series.time < formattedInstantAfter) {
-                        val klokkeslett = series.time.substring(11, 16)
-                        Spacer(modifier = Modifier.height(7.5.dp))
-                        ElevatedCard(
+                )
+                {
+                    Row {
+                        Spacer(
                             modifier = Modifier
-                                .height(80.dp)
-                                .width(340.dp),
-                            onClick = {
-                                navController.navigate("DetailsScreen/${series.time}")
-                            }
+                                .width(10.dp)
+                                .fillMaxHeight()
+                                .background(getColorFromStatusValue(input.closeToLimitScore))
                         )
-                        {
-                            Row {
-                                Spacer(
-                                    modifier = Modifier
-                                        .width(12.dp)
-                                        .fillMaxHeight()
-                                        .background(Color(218, 8, 0, 255))
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.width(50.dp),
+                                horizontalAlignment = Alignment.Start,
+                            ){
+                                Text("${input.hour}", fontSize = 20.sp)
+                            }
+                            Spacer(modifier = Modifier.width(50.dp))
+                            Column {
+                                Text(
+                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-
-                                    Text(klokkeslett, fontSize = 20.sp)
-                                    Spacer(modifier = Modifier.width(55.dp))
-                                    Text(
-                                        "${series.data.next1Hours?.details?.precipitationAmount} mm",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Spacer(modifier = Modifier.width(27.5.dp))
-
-                                    Spacer(modifier = Modifier.width(15.dp))
-                                    series.data.next1Hours?.summary?.let {
-                                        Image(
-                                            modifier = Modifier.size(55.dp),
-
-                                            painter = painterResource(
-                                                id = ForeCastSymbols.valueOf(
-                                                    it.symbolCode.uppercase()
-                                                ).id
-                                            ),
-                                            contentDescription = it.symbolCode
-                                        )
-                                    }
-
-                                    Icon(
-                                        modifier = Modifier.size(20.dp),
-                                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                        contentDescription = "Arrow"
-                                    )
+                                if(daysAhead == 1){
+                                    Text(text = "Imorgen", fontSize = 16.sp)
                                 }
                             }
 
+                            Spacer(modifier = Modifier.width(27.5.dp))
+
+                            Spacer(modifier = Modifier.width(15.dp))
+                            input.series.data.next1Hours?.summary?.let {
+                                Image(
+                                    modifier = Modifier.size(55.dp),
+
+                                    painter = painterResource(
+                                        id = ForeCastSymbols.valueOf(
+                                            it.symbolCode.uppercase()
+                                        ).id
+                                    ),
+                                    contentDescription = it.symbolCode
+                                )
+                            }
+
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                contentDescription = "Arrow"
+                            )
                         }
-
-                        Spacer(modifier = Modifier.height(7.5.dp))
-
-
-                    } else {
-                        return@breaking
                     }
 
                 }
-
+                Spacer(modifier = Modifier.height(7.5.dp))
             }
-
         }
     })
 

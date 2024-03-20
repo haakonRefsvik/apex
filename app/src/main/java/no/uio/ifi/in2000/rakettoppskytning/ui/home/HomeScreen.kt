@@ -74,7 +74,6 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
@@ -97,12 +96,11 @@ fun HomeScreen(
                             WeatherList(
                                 homeScreenViewModel = homeScreenViewModel,
                                 navController = navController,
-                                thresholdViewModel = thresholdViewModel
                             )
                         })
                 }) {
 
-                Map2(homeScreenViewModel, mapViewModel)
+                Map(homeScreenViewModel, mapViewModel)
 
             }
 

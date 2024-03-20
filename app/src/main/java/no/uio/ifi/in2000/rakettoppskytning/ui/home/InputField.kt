@@ -195,6 +195,14 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
                 }
 
                 Text("Legg til favoritter")
+    }
+    Spacer(modifier = Modifier.height(20.dp))
+    Row {
+        OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
+            controller?.hide()
+            //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
+            scope.launch {
+                scaffoldState.bottomSheetState.expand()
             }
             Spacer(modifier = Modifier.width(25.dp))
 
@@ -261,6 +269,15 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
 
 
                 Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(25.dp))
+        Button(modifier = Modifier.width(155.dp), onClick = {
+            controller?.hide()
+            homeScreenViewModel.getWeatherByCord(lat, lon, 24)
+            mapViewModel.moveMapCamera(lat, lon)
+
+            scope.launch {
+                delay(1000)
+                scaffoldState.bottomSheetState.expand()
             }
         }
 

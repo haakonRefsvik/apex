@@ -247,7 +247,7 @@ data class Details4(
     @SerialName("air_temperature_min")
     val airTemperatureMin: Double,
     @SerialName("precipitation_amount")
-    /** Expected precipitation (nedbør) amount for period*/
+    /** Expected precipitation (nedbør) amount for period in mm*/
     val precipitationAmount: Double,
     /** Max expected precipitation (nedbør) amount for period*/
     @SerialName("precipitation_amount_max")

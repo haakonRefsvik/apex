@@ -30,10 +30,10 @@ class LevelData(val pressurePascal: Double){
     }
 
     fun getLevelHeightInMeters(): Double{
-        var standrardSeaPressure = 101325.5
+        var standardSeaPressure = 101325.5
 
         if(seaPressurePa > 0){
-            standrardSeaPressure = seaPressurePa
+            standardSeaPressure = seaPressurePa
         }
 
         val m = 0.0289644
@@ -41,7 +41,7 @@ class LevelData(val pressurePascal: Double){
         val g = 9.8066
 
         val c = (r * tempValueKelvin) / (m * g)
-        val a = ln((standrardSeaPressure / pressurePascal))
+        val a = ln((standardSeaPressure / pressurePascal))
         return c * a
     }
     fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {
