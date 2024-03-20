@@ -3,37 +3,53 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
@@ -62,64 +78,123 @@ fun formatNewValue(input: String): Double {
 @OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewModel){
+fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewModel, state: FavoriteState,
+               onEvent: (FavoriteEvent) -> Unit) {
     val showDecimals = 5
+    if (mapViewModel.favorite.value != Favorite("", "", "")) {
+        mapViewModel.lat.value = mapViewModel.favorite.value.lat.toDouble()
+        mapViewModel.lon.value = mapViewModel.favorite.value.lon.toDouble()
+    }
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
+
+    Log.d("favorite: ", "lat: $lat lon: $lon")
+
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
-    Row {
-        OutlinedTextField(
-            value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
-            onValueChange = { input ->
-                mapViewModel.lat.value = formatNewValue(input)
-            },
-            Modifier
-                .width(130.dp)
-                .height(58.dp),
-            textStyle = TextStyle(fontSize = 18.sp),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    controller?.hide()
-                    focusManager.clearFocus()
-                }
-            ),
-            label = { Text("Latitude") },
-            singleLine = true,
-        )
-        Spacer(modifier = Modifier.width(50.dp))
-        OutlinedTextField(
-            value = String.format("%.${showDecimals}f", lon), // viser lat, verdien som maks 5 desimaler
-            onValueChange = { input ->
-                mapViewModel.lon.value = formatNewValue(input)
-            },
-            Modifier
-                .width(130.dp)
-                .height(58.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
 
-            textStyle = TextStyle(fontSize = 18.sp),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    controller?.hide()
-                    focusManager.clearFocus()
-                }
-            ),
-            label = { Text("Longitude") },
-            singleLine = true
-        )
+        Row {
+            OutlinedTextField(
+                value = String.format(
+                    "%.${showDecimals}f",
+                    lat
+                ), // viser lat, verdien som maks 5 desimaler
+                onValueChange = { input ->
+                    mapViewModel.lat.value = formatNewValue(input)
+                    Log.d("favorite: ", "lat in tf: ${mapViewModel.lat.value}")
+                },
 
+                Modifier
+                    .width(130.dp)
+                    .height(58.dp),
+                textStyle = TextStyle(fontSize = 18.sp),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        controller?.hide()
+                        focusManager.clearFocus()
+                    }
+                ),
+                label = { Text("Latitude") },
+                singleLine = true,
+            )
+            Spacer(modifier = Modifier.width(50.dp))
+            OutlinedTextField(
+                value = String.format(
+                    "%.${showDecimals}f",
+                    lon
+                ),// viser lon, verdien som maks 5 desimaler
+                onValueChange = { input ->
+                    mapViewModel.lon.value = formatNewValue(input)
+                    Log.d("favorite: ", "lat in tf: ${mapViewModel.lat.value}")
+                },
+                Modifier
+                    .width(130.dp)
+                    .height(58.dp),
+
+                textStyle = TextStyle(fontSize = 18.sp),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        controller?.hide()
+                        focusManager.clearFocus()
+                    }
+                ),
+                label = { Text("Longitude") },
+                singleLine = true
+            )
+
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        Row {
+            var currentLat: Double by remember { mutableDoubleStateOf(lat) }
+            var currentLon: Double by remember { mutableDoubleStateOf(lon) }
+            OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
+
+                controller?.hide()
+                //homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+                //Log.d("Favorite: ", "$lat og $lon")
+                mapViewModel.lat.value = lat
+                mapViewModel.lon.value = lon
+                Log.d("Favorite2: ", "${mapViewModel.lat.value} og ${mapViewModel.lon.value}")
+
+                onEvent(FavoriteEvent.ShowDialog)
+                //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
+                scope.launch {
+                    //delay(1000)
+                    scaffoldState.bottomSheetState.expand()
+                    currentLat = lat
+                    currentLon = lon
+                }
+
+
+            }) {
+                if (state.isAddingFavorite) {
+                    AddFavoriteDialog(
+                        state = state,
+                        onEvent = onEvent,
+                        lat = currentLat,
+                        lon = currentLon
+                    )
+                }
+
+                Text("Legg til favoritter")
     }
     Spacer(modifier = Modifier.height(20.dp))
     Row {
@@ -129,9 +204,71 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
             scope.launch {
                 scaffoldState.bottomSheetState.expand()
             }
-        }) {
-            Text("Legg til favoritter")
+            Spacer(modifier = Modifier.width(25.dp))
+
+            Button(modifier = Modifier.width(155.dp), onClick = {
+                controller?.hide()
+                homeScreenViewModel.getForecastByCord(lat, lon)
+                homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+                mapViewModel.moveMapCamera(lat, lon)
+
+                scope.launch {
+                    delay(1000)
+                    scaffoldState.bottomSheetState.expand()
+                }
+            }) {
+                Text("Hent værdata")
+            }
+            Spacer(modifier = Modifier.height(70.dp))
+
         }
+        Spacer(modifier = Modifier.height(5.dp))
+
+        LazyRow(
+            modifier = Modifier.width(340.dp)
+        )
+        {
+
+            items(state.favorites) { favorite ->
+                ElevatedCard(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .width(120.dp),
+                    onClick = {
+                        mapViewModel.lat.value = favorite.lat.toDouble()
+                        mapViewModel.lon.value = favorite.lon.toDouble()
+
+                        homeScreenViewModel.getForecastByCord(lat, lon)
+                        homeScreenViewModel.getVerticalProfileByCord(lat, lon)
+                        mapViewModel.moveMapCamera(lat, lon)
+
+                        scope.launch {
+                            delay(1000)
+                            scaffoldState.bottomSheetState.expand()
+                        }
+
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.Absolute.Right
+                    ) {
+                        IconButton(onClick = {
+                            onEvent(FavoriteEvent.DeleteFavorite(favorite))
+
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Delete favorite"
+                            )
+                        }
+                        Text(favorite.name, modifier = Modifier.padding(top = 32.dp))
+                    }
+
+                }
+
+
+                Spacer(modifier = Modifier.width(20.dp))
         Spacer(modifier = Modifier.width(25.dp))
         Button(modifier = Modifier.width(155.dp), onClick = {
             controller?.hide()
@@ -142,11 +279,8 @@ fun InputField(homeScreenViewModel: HomeScreenViewModel, mapViewModel: MapViewMo
                 delay(1000)
                 scaffoldState.bottomSheetState.expand()
             }
-        }) {
-            Text("Hent værdata")
         }
-        Spacer(modifier = Modifier.height(70.dp))
+
 
     }
-
 }
