@@ -27,7 +27,6 @@ import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.flow.asStateFlow
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import kotlin.math.abs
 
 class MapViewModel() : ViewModel() {
@@ -37,11 +36,9 @@ class MapViewModel() : ViewModel() {
 
     private val _lat = mutableDoubleStateOf(initLat)
     private val _lon = mutableDoubleStateOf(initLon)
-    private val _favorite = mutableStateOf(Favorite("","",""))
 
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
-    val favorite = _favorite
 
     private val cam: CameraOptions = CameraOptions.Builder()
         .center(Point.fromLngLat(initLon, initLat))
