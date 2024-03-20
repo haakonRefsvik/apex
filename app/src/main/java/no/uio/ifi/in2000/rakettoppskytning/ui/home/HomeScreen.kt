@@ -1,12 +1,10 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,14 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -33,11 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 
-
+fun String.isDouble(): Boolean {
+    return try {
+        this.toDouble()
+        true
+    } catch (e: NumberFormatException) {
+        false
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
@@ -45,13 +43,22 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
     thresholdViewModel: ThresholdViewModel
-
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
+    val favoritter = listOf<String>(
+        "Lokasjon1",
+        "Lokasjon2",
+        "Lokasjon3",
+        "Lokasjon4",
+        "Lokasjon5",
+        "Lokasjon6",
+        "Lokasjon7",
+        "Lokasjon8",
+        "Lokasjon9",
+        "Lokasjon10",
+    )
 
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
@@ -74,7 +81,6 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
@@ -87,22 +93,38 @@ fun HomeScreen(
 
                         content =
                         {
+                            InputField(homeScreenViewModel = homeScreenViewModel, mapViewModel)
 
-                            //InputField(homeScreenViewModel = homeScreenViewModel, state, onEvent, isChosen, chosenFavorite)
-                            InputField(homeScreenViewModel = homeScreenViewModel, mapViewModel, state, onEvent)
+                            Spacer(modifier = Modifier.height(5.dp))
+                            
+                            LazyRow(
+                                modifier = Modifier.width(340.dp),
 
+                                content = {
+                                    favoritter.forEach {
+                                        item {
+                                            ElevatedCard(
+                                                modifier = Modifier
+                                                    .height(80.dp)
+                                                    .width(120.dp)
+                                            ) {
+                                                Text(it)
 
+                                            }
+                                            Spacer(modifier = Modifier.width(20.dp))
+                                        }
+                                    }
+                                })
                             Spacer(modifier = Modifier.height(10.dp))
 
                             WeatherList(
                                 homeScreenViewModel = homeScreenViewModel,
                                 navController = navController,
-                                thresholdViewModel = thresholdViewModel
                             )
                         })
                 }) {
 
-                Map2(homeScreenViewModel, mapViewModel)
+                Map(homeScreenViewModel, mapViewModel)
 
             }
 

@@ -1,123 +1,123 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
-import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
-import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
-import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
-import com.mapbox.maps.extension.compose.animation.viewport.rememberMapViewportState
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
-import com.mapbox.maps.extension.style.expressions.dsl.generated.pitch
-import com.mapbox.maps.extension.style.expressions.dsl.generated.zoom
+import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
-import com.mapbox.maps.plugin.gestures.generated.GesturesSettings
-import com.mapbox.maps.viewannotation.annotationAnchors
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
+
+
+@OptIn(MapboxExperimental::class)
+@Composable
+fun NewPointAnnotation(
+    text: String,
+    lat: Double,
+    lon: Double,
+    drawableId: Int,
+    onClick: (PointAnnotation) -> Unit)
+{
+    PointAnnotation(
+        point = Point.fromLngLat(lon, lat),
+        textField = text,
+        textAnchor = TextAnchor.BOTTOM,
+        textRadialOffset = 2.0,
+        textColorInt = Color.RED,
+        textEmissiveStrength = 20.0,
+        iconSize = 0.06,
+        iconImageBitmap = idToBitmap(id = drawableId),
+        onClick = {
+            onClick(it)
+            true
+        }
+    )
+}
+
+@Composable
+fun idToBitmap(id: Int): Bitmap {
+    val context = LocalContext.current
+    val myImage: Drawable = ResourcesCompat.getDrawable(context.resources, id, null) ?: throw Exception("Drawable $id not found")
+    return drawableToBitmap(myImage)
+}
+
+@OptIn(MapboxExperimental::class)
+@Composable
+fun NewViewAnnotation(
+    lat: Double,
+    lon: Double,
+){
+    val context = LocalContext.current
+    ViewAnnotation(
+        options = viewAnnotationOptions {
+            geometry(Point.fromLngLat(lon, lat))
+            allowOverlap(false)
+        }
+    ) {
+        Card {
+            Text(text = "ViewAnnotation")
+        }
+    }
+}
 
 @OptIn(MapboxExperimental::class)
 @Composable
 fun Map(
     homeScreenViewModel: HomeScreenViewModel,
-){
-    /*
-    val lat by homeScreenViewModel.lat
-    val lon by homeScreenViewModel.lon
-
-    val mapBoxUiSettings: GesturesSettings by remember {
-        mutableStateOf(GesturesSettings {
-            rotateEnabled = false
-            pinchToZoomEnabled = true
-            pitchEnabled = true
-        })
-    }
-
-    val mapViewportState = MapViewportState ()
-
-    fun updateMapPosition(newLat: Double, newLon: Double) {
-        mapViewportState.flyTo(
-            cameraOptions {
-                center(Point.fromLngLat(lat, lon))
-            }
-        )
-    }
+    mapViewModel: MapViewModel
+) {
+    val lat by mapViewModel.lat
+    val lon by mapViewModel.lon
+    val cameraOptions by mapViewModel.cameraOptions
+    val mapViewportState = mapViewModel.mapViewportState
+    mapViewportState.setCameraOptions(cameraOptions)
+    var p by remember { mutableStateOf(viewAnnotationOptions { geometry(Point.fromLngLat(lon, lat)) })}
 
     MapboxMap(
-        Modifier.fillMaxSize(),
-        gesturesSettings = mapBoxUiSettings,
-        mapViewportState = MapViewportState().apply {
-            setCameraOptions {
-                zoom(10.0)
-                center(Point.fromLngLat(lon, lat))
-                pitch(0.0)
-            }
-        }
+        modifier = Modifier.fillMaxSize(),
+        mapViewportState = mapViewModel.mapViewportState,
     ) {
-        var s by remember {
-            mutableStateOf((viewAnnotationOptions {
-                geometry(Point.fromLngLat(lon, lat))
-                annotationAnchors(
-                    {
-                        anchor(ViewAnnotationAnchor.CENTER)
-                    }
-                )
-                height(60.0)
-                visible(false)
-                allowOverlap(false)
-            }))
-        }
+
+        NewPointAnnotation(
+            "",
+            lat = lat,
+            lon = lon,
+            drawableId = R.drawable.rakkettpin,
+            onClick = { Log.d("PointClick", it.point.toString()) }
+        )
+        
 
         MapEffect(Unit) { mapView ->
             mapView.mapboxMap.styleDataLoadedEvents
 
             mapView.mapboxMap.addOnMapClickListener {
                 Log.d("s", "${it.latitude()},${it.longitude()}")
-                homeScreenViewModel.lat.value = it.latitude()
-                homeScreenViewModel.lon.value = it.longitude()
-
-                s = viewAnnotationOptions {
-                    geometry(Point.fromLngLat(lon, lat))
-                    annotationAnchors(
-                        {
-                            anchor(ViewAnnotationAnchor.CENTER)
-                        }
-                    )
-                    height(100.0)
-                    visible(true)
-                    allowOverlap(false)
-                }
-
+                mapViewModel.lat.value = it.latitude()
+                mapViewModel.lon.value = it.longitude()
                 true
-            }
-
-            // mapView.mapboxMap.addOnScaleListener (listener = )
-        }
-
-        ViewAnnotation(
-            options = s
-        ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Image(painterResource(id = R.drawable.rakkettpin), "RakketPin")
             }
         }
     }
-
-     */
-
 }
-

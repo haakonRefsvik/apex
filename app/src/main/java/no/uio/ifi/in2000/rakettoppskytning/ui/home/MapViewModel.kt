@@ -27,7 +27,6 @@ import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.flow.asStateFlow
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import kotlin.math.abs
 
 class MapViewModel() : ViewModel() {
@@ -37,11 +36,9 @@ class MapViewModel() : ViewModel() {
 
     private val _lat = mutableDoubleStateOf(initLat)
     private val _lon = mutableDoubleStateOf(initLon)
-    private val _favorite = mutableStateOf(Favorite("","",""))
 
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
-    val favorite = _favorite
 
     private val cam: CameraOptions = CameraOptions.Builder()
         .center(Point.fromLngLat(initLon, initLat))
@@ -70,81 +67,4 @@ class MapViewModel() : ViewModel() {
         mapViewportState.flyTo(newCameraPosition, mapAnimationOptions)
     }
 
-
-    /*
-
-    private val _uiState = MutableStateFlow(MapUiState())
-    val uiState = _uiState.asStateFlow()
-    private fun updateUiState(update: (MapUiState) -> MapUiState) {
-        try {
-            _uiState.value = update(_uiState.value)
-        } catch (e: Exception) {
-            Log.e("MapViewModel", "updateUiState: ${e.message}")
-        }
-    }
-
-    private fun cameraToPos(lat: Double, lon: Double) {
-        updateUiState { it.copy(isLoading = true) }
-
-        if (_uiState.value.mapView != null) {
-            val map = _uiState.value.mapView!!.mapboxMap
-            val currentCameraPosition = map.cameraState
-            val currentLat = currentCameraPosition.center.latitude()
-            val currentLon = currentCameraPosition.center.longitude()
-            val duration = (abs(currentLat - lat) + abs(currentLon - lon)).toLong()
-
-            val cameraOptions = CameraOptions.Builder()
-                .center(Point.fromLngLat(lon, lat))
-                .build()
-
-            val mapAnimationOptions = MapAnimationOptions.Builder()
-                .duration(duration)
-                .build()
-
-            map.flyTo(cameraOptions, mapAnimationOptions)
-
-        }
-        updateUiState { it.copy(isLoading = false) }
-
-    }
-
-    private fun addViewAnnotation(
-        point: Point,
-        viewAnnotationManager: ViewAnnotationManager,
-    ){
-
-        val bitmap = convertDrawableToBitmap(R.drawable.rakkettpin.toDrawable())
-        val viewAnnotation = viewAnnotationManager.addViewAnnotation(
-            // Specify the layout resource id
-            resId = R.layout.,
-            // Set any view annotation options
-            options = viewAnnotationOptions {
-                // View annotation is placed at the specific geo coordinate
-                geometry(point)
-            }
-        )
-
-    }
-
-    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
-        if (sourceDrawable == null) {
-            return null
-        }
-        return if (sourceDrawable is BitmapDrawable) {
-            sourceDrawable.bitmap
-        } else {
-// copying drawable object to not manipulate on the same reference
-            val constantState = sourceDrawable.constantState ?: return null
-            val drawable = constantState.newDrawable().mutate()
-            val bitmap: Bitmap = Bitmap.createBitmap(
-                drawable.intrinsicWidth, drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            bitmap
-        }
-    }
-     */
 }
