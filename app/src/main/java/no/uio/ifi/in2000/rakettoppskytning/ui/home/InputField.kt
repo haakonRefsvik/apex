@@ -194,10 +194,13 @@ fun InputField(
                 onEvent(FavoriteEvent.ShowDialog)
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                 scope.launch {
-                    delay(1000)
-                    scaffoldState.bottomSheetState.expand()
                     currentLat = lat
                     currentLon = lon
+                    mapViewModel.lat.value = currentLat
+                    mapViewModel.lon.value = currentLon
+                    delay(1000)
+                    scaffoldState.bottomSheetState.expand()
+
                 }
             }) {
                 Log.d("Før addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
