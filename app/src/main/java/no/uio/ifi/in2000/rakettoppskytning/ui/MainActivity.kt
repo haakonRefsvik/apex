@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ApiKeyHolder.in2000ProxyKey = resources.getString(string.in2000ProxyKey)

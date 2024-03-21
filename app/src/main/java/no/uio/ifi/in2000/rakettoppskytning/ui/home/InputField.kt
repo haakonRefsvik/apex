@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardActions
@@ -73,25 +74,6 @@ fun formatNewValue(input: String): Double {
 }
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
-@OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun InputFieldMain(
-) {
-
-
-    Row {
-
-
-    }
-    Spacer(modifier = Modifier.height(20.dp))
-    Row {
-
-
-    }
-    Spacer(modifier = Modifier.height(5.dp))
-
-}
 
 @OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -104,10 +86,6 @@ fun InputField(
 ) {
 
     val showDecimals = 5
-    if (mapViewModel.favorite.value != Favorite("", "", "")) {
-        mapViewModel.lat.value = mapViewModel.favorite.value.lat.toDouble()
-        mapViewModel.lon.value = mapViewModel.favorite.value.lon.toDouble()
-    }
 
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
@@ -191,17 +169,20 @@ fun InputField(
                 controller?.hide()
                 mapViewModel.lat.value = lat
                 mapViewModel.lon.value = lon
-                onEvent(FavoriteEvent.ShowDialog)
+
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                 scope.launch {
                     currentLat = lat
                     currentLon = lon
                     mapViewModel.lat.value = currentLat
                     mapViewModel.lon.value = currentLon
+                    mapViewModel.moveMapCamera(lat, lon)
+
                     delay(1000)
                     scaffoldState.bottomSheetState.expand()
-
+                    onEvent(FavoriteEvent.ShowDialog)
                 }
+
             }) {
                 Log.d("Før addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
                 if (state.isAddingFavorite) {
@@ -238,7 +219,7 @@ fun InputField(
         )
         {
 
-            state.favorites.forEach { favorite ->
+            state.favorites.reversed().forEach { favorite ->
                 item {
                     ElevatedCard(
                         modifier = Modifier
@@ -264,7 +245,8 @@ fun InputField(
 
 
                         ) {
-                            IconButton(onClick = {
+                            IconButton(modifier = Modifier.size(35.dp).padding(8.dp),
+                                onClick = {
                                 onEvent(FavoriteEvent.DeleteFavorite(favorite))
 
                             }) {
@@ -278,16 +260,12 @@ fun InputField(
                         }
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(favorite.name)
 
-
                         }
-
-
                     }
-
 
                     Spacer(modifier = Modifier.width(20.dp))
                 }
