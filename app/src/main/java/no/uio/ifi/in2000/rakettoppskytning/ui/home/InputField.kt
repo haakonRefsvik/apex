@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardActions
@@ -187,6 +188,8 @@ fun InputField(
             var currentLat: Double by remember { mutableDoubleStateOf(lat) }
             var currentLon: Double by remember { mutableDoubleStateOf(lon) }
 
+            //Log.d("Favorite 1: ", "$currentLat og $currentLon")
+
             OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
                 controller?.hide()
                 mapViewModel.lat.value = lat
@@ -194,15 +197,23 @@ fun InputField(
                 onEvent(FavoriteEvent.ShowDialog)
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                 scope.launch {
-                    delay(1000)
-                    scaffoldState.bottomSheetState.expand()
                     currentLat = lat
                     currentLon = lon
+                    mapViewModel.lat.value = currentLat
+                    mapViewModel.lon.value = currentLon
+                    Log.d("Favorite 1: ", "$lat og $lon")
+                    Log.d("Favorite 2: ", "${mapViewModel.lat.value} og ${mapViewModel.lon.value}")
+                    delay(1000)
+                    scaffoldState.bottomSheetState.expand()
+
                 }
             }) {
-                Log.d("Før addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+               // Log.d("Før addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+                Log.d("Favorite 3: ", "${mapViewModel.lat.value} og ${mapViewModel.lon.value}")
+                Log.d("Favorite 4: ", "${currentLat} og ${currentLon}")
+                Log.d("Favorite 5: ", "${lat} og ${lon}")
                 if (state.isAddingFavorite) {
-                    Log.d("addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+                    //Log.d("addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
                     AddFavoriteDialog(
                         state = state,
                         onEvent = onEvent,
@@ -210,7 +221,7 @@ fun InputField(
                         lon = currentLon
                     )
                 }
-                Text("Legg til favoritter")
+                Text("Legg til favoritt")
             }
             Spacer(modifier = Modifier.width(25.dp))
             Button(modifier = Modifier.width(155.dp), onClick = {
@@ -261,10 +272,9 @@ fun InputField(
 
 
                         ) {
-                            IconButton(onClick = {
-                                onEvent(FavoriteEvent.DeleteFavorite(favorite))
-
-                            }) {
+                            IconButton(
+                                modifier = Modifier.size(35.dp).padding(8.dp),
+                                onClick = { onEvent(FavoriteEvent.DeleteFavorite(favorite))}) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = "Delete favorite"
@@ -278,7 +288,6 @@ fun InputField(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(favorite.name)
-
 
                         }
 
