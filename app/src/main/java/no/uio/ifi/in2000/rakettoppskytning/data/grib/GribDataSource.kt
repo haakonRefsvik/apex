@@ -57,7 +57,13 @@ class GribDataSource{
         }
 
         val urlAvailable = "weatherapi/isobaricgrib/1.0/available.json?type=grib2"
-        val latestGribs: List<Grib> = client.get(urlAvailable).body()?: throw Exception("Could not find the latest uri for the grib files")
+
+        val latestGribs: List<Grib> = try {
+            client.get(urlAvailable).body()
+        }catch (e: Exception){
+            listOf()
+        }
+
         Log.d("Grib", "Updating ${latestGribs.size} grib-files...")
         updateGribCache(client, latestGribs)
     }

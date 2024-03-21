@@ -156,7 +156,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
     }
     private suspend fun loadForecastFromDataSource(lat: Double, lon: Double): List<LocationForecast> {
         val forecast: List<LocationForecast> = try {
-            listOf(getForecast(lat, lon))
+            getForecast(lat, lon)
         } catch (exception: Exception) {
             listOf()
         }
