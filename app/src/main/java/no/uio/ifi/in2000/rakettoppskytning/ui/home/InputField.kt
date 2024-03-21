@@ -4,11 +4,9 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
@@ -162,8 +159,8 @@ fun InputField(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Row {
-            var currentLat: Double by remember { mutableDoubleStateOf(lat) }
-            var currentLon: Double by remember { mutableDoubleStateOf(lon) }
+            Log.d("moveCam -1: ", "lat: ${lat} og lon: ${lon}")
+            mapViewModel.moveMapCamera(lat, lon)
 
             OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
                 controller?.hide()
@@ -171,27 +168,23 @@ fun InputField(
                 mapViewModel.lon.value = lon
 
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
+                mapViewModel.updateCamera(lat, lon)
                 scope.launch {
-                    currentLat = lat
-                    currentLon = lon
-                    mapViewModel.lat.value = currentLat
-                    mapViewModel.lon.value = currentLon
-                    mapViewModel.moveMapCamera(lat, lon)
-
                     delay(1000)
-                    scaffoldState.bottomSheetState.expand()
                     onEvent(FavoriteEvent.ShowDialog)
                 }
 
             }) {
-                Log.d("Før addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+                Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
+
                 if (state.isAddingFavorite) {
-                    Log.d("addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+                    Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
                     AddFavoriteDialog(
                         state = state,
                         onEvent = onEvent,
-                        lat = currentLat,
-                        lon = currentLon
+                        lat = lat,
+                        lon = lon,
+                        mapViewModel
                     )
                 }
                 Text("Legg til favoritter")
@@ -231,10 +224,11 @@ fun InputField(
 
                             controller?.hide()
                             homeScreenViewModel.getWeatherByCord(lat, lon, 24)
-                            mapViewModel.moveMapCamera(favorite.lat.toDouble(), lon)
+                            mapViewModel.moveMapCamera(lat, lon)
 
                             scope.launch {
                                 delay(1000)
+                                scaffoldState.bottomSheetState.expand()
                             }
 
                         }
