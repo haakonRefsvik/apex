@@ -21,16 +21,6 @@ import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 
-/*
-data class ForeCastUiState(
-    val foreCast: List<LocationForecast> = listOf()
-)
-data class VerticalProfileUiState(
-    val verticalProfiles: List<VerticalProfile> = listOf()
-)
-
- */
-
 data class WeatherUiState(
     val weatherAtPos: WeatherAtPos = WeatherAtPos()
 )

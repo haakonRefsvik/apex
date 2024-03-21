@@ -50,5 +50,4 @@ suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
         listOf()
     }
 
-
 }
