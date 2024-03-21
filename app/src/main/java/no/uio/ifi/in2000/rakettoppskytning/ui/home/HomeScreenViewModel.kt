@@ -88,7 +88,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     }
 
 
-    //private val _sortType = MutableStateFlow(SortType.FIRST_NAME)
     private val _favorites =
         dao.getFavorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
