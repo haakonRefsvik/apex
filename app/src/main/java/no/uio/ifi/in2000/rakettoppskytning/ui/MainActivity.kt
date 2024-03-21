@@ -22,32 +22,48 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import no.uio.ifi.in2000.rakettoppskytning.R.string
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
+import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDatabase
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.FavoriteViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 class MainActivity : ComponentActivity() {
-    //@RequiresApi(Build.VERSION_CODES.O)
+
+    val thresholdRepository = ThresholdRepository()
+    val gribRepository = GribRepository()
+    val weatherRepo = WeatherRepository(thresholdRepository, gribRepository)
+
+    val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
+
+    //val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
+    val mapViewModel = MapViewModel()
+    val thresholdViewModel = ThresholdViewModel(thresholdRepository)
+
 
     private val db by lazy {
         FavoriteDatabase.getInstance(this)
     }
 
-    private val viewModel by viewModels<FavoriteViewModel>(
-        factoryProducer = {
-            object : ViewModelProvider.Factory {
-                @RequiresApi(Build.VERSION_CODES.O)
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return FavoriteViewModel(db.dao) as T
-                }
+    private val viewModel by viewModels<HomeScreenViewModel> {
+        object : ViewModelProvider.Factory {
+
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return HomeScreenViewModel(weatherRepo, db.dao) as T
             }
         }
-    )
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +76,15 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val state by viewModel.state.collectAsState()
-                    Navigation(state = state, onEvent = viewModel::onEvent)
+                    Navigation(
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                        homeScreenViewModel = viewModel,
+                        detailsScreenViewModel = detailsScreenViewModel,
+                        weatherRepo = weatherRepo,
+                        thresholdViewModel = thresholdViewModel,
+                        mapViewModel = mapViewModel
+                    )
                 }
             }
         }

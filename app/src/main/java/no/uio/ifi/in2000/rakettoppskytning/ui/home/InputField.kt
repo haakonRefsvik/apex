@@ -4,14 +4,13 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.text.KeyboardActions
@@ -44,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
@@ -73,25 +71,6 @@ fun formatNewValue(input: String): Double {
 }
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
-@OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun InputFieldMain(
-) {
-
-
-    Row {
-
-
-    }
-    Spacer(modifier = Modifier.height(20.dp))
-    Row {
-
-
-    }
-    Spacer(modifier = Modifier.height(5.dp))
-
-}
 
 @OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -104,10 +83,6 @@ fun InputField(
 ) {
 
     val showDecimals = 5
-    if (mapViewModel.favorite.value != Favorite("", "", "")) {
-        mapViewModel.lat.value = mapViewModel.favorite.value.lat.toDouble()
-        mapViewModel.lon.value = mapViewModel.favorite.value.lon.toDouble()
-    }
 
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
@@ -184,30 +159,32 @@ fun InputField(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Row {
-            var currentLat: Double by remember { mutableDoubleStateOf(lat) }
-            var currentLon: Double by remember { mutableDoubleStateOf(lon) }
+            Log.d("moveCam -1: ", "lat: ${lat} og lon: ${lon}")
+            mapViewModel.moveMapCamera(lat, lon)
 
             OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
                 controller?.hide()
                 mapViewModel.lat.value = lat
                 mapViewModel.lon.value = lon
-                onEvent(FavoriteEvent.ShowDialog)
+
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
+                mapViewModel.updateCamera(lat, lon)
                 scope.launch {
                     delay(1000)
-                    scaffoldState.bottomSheetState.expand()
-                    currentLat = lat
-                    currentLon = lon
+                    onEvent(FavoriteEvent.ShowDialog)
                 }
+
             }) {
-                Log.d("Før addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+                Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
+
                 if (state.isAddingFavorite) {
-                    Log.d("addingFav: ", "lat: ${currentLat} og lon: ${currentLon}")
+                    Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
                     AddFavoriteDialog(
                         state = state,
                         onEvent = onEvent,
-                        lat = currentLat,
-                        lon = currentLon
+                        lat = lat,
+                        lon = lon,
+                        mapViewModel
                     )
                 }
                 Text("Legg til favoritter")
@@ -235,7 +212,7 @@ fun InputField(
         )
         {
 
-            state.favorites.forEach { favorite ->
+            state.favorites.reversed().forEach { favorite ->
                 item {
                     ElevatedCard(
                         modifier = Modifier
@@ -247,10 +224,11 @@ fun InputField(
 
                             controller?.hide()
                             homeScreenViewModel.getWeatherByCord(lat, lon, 24)
-                            mapViewModel.moveMapCamera(favorite.lat.toDouble(), lon)
+                            mapViewModel.moveMapCamera(lat, lon)
 
                             scope.launch {
                                 delay(1000)
+                                scaffoldState.bottomSheetState.expand()
                             }
 
                         }
@@ -261,7 +239,8 @@ fun InputField(
 
 
                         ) {
-                            IconButton(onClick = {
+                            IconButton(modifier = Modifier.size(35.dp).padding(8.dp),
+                                onClick = {
                                 onEvent(FavoriteEvent.DeleteFavorite(favorite))
 
                             }) {
@@ -275,16 +254,12 @@ fun InputField(
                         }
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(favorite.name)
 
-
                         }
-
-
                     }
-
 
                     Spacer(modifier = Modifier.width(20.dp))
                 }
