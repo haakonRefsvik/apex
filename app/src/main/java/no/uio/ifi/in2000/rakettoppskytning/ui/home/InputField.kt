@@ -104,10 +104,7 @@ fun InputField(
 
         Row {
             OutlinedTextField(
-                value = String.format(
-                    "%.${showDecimals}f",
-                    lat
-                ), // viser lat, verdien som maks 5 desimaler
+                value = String.format("%.${showDecimals}f", lat), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
                     mapViewModel.lat.value = formatNewValue(input)
                 },

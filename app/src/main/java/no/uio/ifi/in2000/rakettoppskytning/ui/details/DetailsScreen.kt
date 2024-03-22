@@ -159,7 +159,7 @@ fun DetailsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {navController.navigate("ThresholdScreen")}) {
                         Icon(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
@@ -553,7 +553,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = "Vindskjæret er på ca ${
+                        text = "Vindskjæret er på rundt ${
                             verticalProfile.getMaxSheerWind().upperLayer.getLevelHeightInMeters()
                                 .roundToInt()
                         } meters høyde",

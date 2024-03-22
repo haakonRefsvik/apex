@@ -43,14 +43,14 @@ fun BottomAppBar(navController: NavController){
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
-            IconButton(onClick = {navController.navigate("ThresholdScreen")}) {
+            IconButton(onClick = {/* TODO */}) {
                 Image(
                     painter = painterResource(R.drawable.rakket),
                     contentDescription = "Rakket"
                 )
             }
             Spacer(modifier = Modifier.width(95.dp))
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navController.navigate("ThresholdScreen") }) {
                 Icon(
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),

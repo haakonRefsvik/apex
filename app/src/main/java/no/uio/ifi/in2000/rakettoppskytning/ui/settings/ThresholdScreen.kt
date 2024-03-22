@@ -80,12 +80,6 @@ fun ThresholdScreen(
     thresholdViewModel: ThresholdViewModel,
     weatherRepository: WeatherRepository
 ) {
-    //nedbør 0
-    //vind & shearwind
-    //luftfuktighet
-    //dewpoint
-    //tåke/sikt 0%
-    //sette høyde
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -272,9 +266,9 @@ fun ThresholdCard(
                     .width(80.dp)
                     .height(60.dp),
                 textStyle = TextStyle(textAlign = TextAlign.Center),
-                value = mutableValue.value.toString(),
+                value = String.format("%.2f", mutableValue.value),
                 onValueChange = { input ->
-                    mutableValue.value = input.toDouble()
+                    mutableValue.value = formatNewValue(input)
                 },
                 label = { Text(suffix) },
                 keyboardOptions = KeyboardOptions(
@@ -286,7 +280,8 @@ fun ThresholdCard(
                         controller?.hide()
                         focusManager.clearFocus()
                     }
-                )
+                ),
+                singleLine = true,
             )
         }
     }
@@ -294,3 +289,25 @@ fun ThresholdCard(
 
 }
 
+fun formatNewValue(input: String): Double {
+    val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
+
+    val decimalParts = onlyDigitsAndDot.split(".")
+    val integerPart = decimalParts.getOrNull(0) ?: ""
+
+    var formattedIntegerValue = integerPart
+
+    while (formattedIntegerValue.length > 3) {
+        formattedIntegerValue = formattedIntegerValue.dropLast(1)
+    }
+
+    val decimalPart = if (decimalParts.size > 1) {
+        "." + decimalParts[1]  // Reconstruct the decimal part, if present
+    } else {
+        ""
+    }
+
+    val r = (formattedIntegerValue + decimalPart)
+
+    return (r).toDouble()
+}
