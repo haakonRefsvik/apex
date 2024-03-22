@@ -58,6 +58,9 @@ class VerticalProfile(
     }
 
     fun addGroundInfo(series: Series) {
+        if (groundLevel != null){
+            return
+        }
         if(verticalProfileMap.isEmpty()){return}
         val data = series.data.instant.details
         val pressurePascal =
