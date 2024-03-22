@@ -26,18 +26,16 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 @Composable
 fun Navigation(
     state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit
-){
+    onEvent: (FavoriteEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
+    mapViewModel: MapViewModel,
+    thresholdViewModel: ThresholdViewModel,
+    weatherRepo: WeatherRepository,
+    detailsScreenViewModel: DetailsScreenViewModel
+) {
 
     val navController = rememberNavController()
-    val thresholdRepository = ThresholdRepository()
-    val gribRepository = GribRepository()
-    val weatherRepo = WeatherRepository(thresholdRepository, gribRepository)
 
-    val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
-    val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
-    val mapViewModel = MapViewModel()
-    val thresholdViewModel = ThresholdViewModel(thresholdRepository)
 
     NavHost(navController = navController, startDestination = "HomeScreen") {
         composable("HomeScreen") {
