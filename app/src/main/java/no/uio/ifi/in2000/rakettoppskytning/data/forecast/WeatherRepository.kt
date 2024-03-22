@@ -67,29 +67,34 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
     /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
-        val gribFiles = loadGribFromDataSource(lat, lon)
-        val list = mutableListOf<WeatherAtPosHour>()
-        val allForecasts = loadForecastFromDataSource(lat, lon).firstOrNull()?: throw Exception("Could not fetch forecast-data")
-        val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
-        var hour = 0
+        try {
+            val gribFiles = loadGribFromDataSource(lat, lon)
+            val list = mutableListOf<WeatherAtPosHour>()
+            val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
 
-        allForecasts.properties.timeseries.forEach{series ->
-            if (hour >= loadHours){
-                return@forEach      // stops loading forecast-data when enough hours are loaded
+            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+            var hour = 0
+
+            allForecasts?.properties?.timeseries?.forEach{series ->
+                if (hour >= loadHours){
+                    return@forEach      // stops loading forecast-data when enough hours are loaded
+                }
+
+                hour++
+                val date = series.time
+                val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
+                val closenessMap = thresholdRepository.getValueClosenessMap(series, vp)
+                val score = thresholdRepository.getReadinessScore(closenessMap)
+                vp?.addGroundInfo(series)
+                val weatherAtPosHour = WeatherAtPosHour(date, getHourFromDate(date), lat, lon, series, vp, closenessMap, score)
+                list.add(weatherAtPosHour)
             }
 
-            hour++
-            val date = series.time
-            val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
-            val closenessMap = thresholdRepository.getValueClosenessMap(series, vp)
-            val score = thresholdRepository.getReadinessScore(closenessMap)
-            vp?.addGroundInfo(series)
-            val weatherAtPosHour = WeatherAtPosHour(date, getHourFromDate(date), lat, lon, series, vp, closenessMap, score)
-            list.add(weatherAtPosHour)
+            val updatedWeatherAtPos = WeatherAtPos(list)
+            _weatherAtPos.update { updatedWeatherAtPos }
+        }catch (e: Exception){
+            _weatherAtPos.update { WeatherAtPos() }
         }
-
-        val updatedWeatherAtPos = WeatherAtPos(list)
-        _weatherAtPos.update { updatedWeatherAtPos }
     }
 
 

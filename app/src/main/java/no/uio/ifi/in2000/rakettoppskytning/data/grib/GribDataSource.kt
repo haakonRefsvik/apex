@@ -55,7 +55,7 @@ class GribDataSource{
 
             }
         }
-
+        Log.d("APICALL", "Kaller på grib-apiet")
         val urlAvailable = "weatherapi/isobaricgrib/1.0/available.json?type=grib2"
 
         val latestGribs: List<Grib> = try {
