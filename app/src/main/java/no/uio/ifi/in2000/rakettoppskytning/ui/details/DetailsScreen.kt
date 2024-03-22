@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
@@ -39,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -58,8 +59,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+import java.util.Locale
 import kotlin.math.roundToInt
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun DetailsScreenPreview() {
@@ -76,6 +79,7 @@ fun DetailsScreenPreview() {
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
@@ -113,7 +117,7 @@ fun DetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ArrowBack"
                         )
                     }
@@ -209,8 +213,6 @@ fun DetailsScreen(
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
                         item {
-                            val statusValue: Double = statusMap["maxShearWind"] ?: 0.0
-
                             weatherNow.verticalProfile?.let { ShearWindCard(verticalProfile = it) }
                             Spacer(modifier = Modifier.height(30.dp))
                         }
@@ -247,7 +249,7 @@ fun DetailsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 
-                                var combinedStatus = 0.0
+                                val combinedStatus: Double
                                 val d = statusMap["maxDewPoint"] ?: 0.0
                                 val h = statusMap["maxHumidity"] ?: 0.0
 
@@ -279,17 +281,17 @@ fun DetailsScreen(
 
                                 val d = fcData.instant.details
                                 val fog: Double = d.fogAreaFraction ?: 0.0
-                                val visibilityKm = visibilityConverter(
+                                val visibility = getVerticalSightKm(
                                     fog,
                                     d.cloudAreaFractionLow,
                                     d.cloudAreaFractionMedium,
-                                    d.cloudAreaFractionHigh
+                                    d.cloudAreaFractionHigh,
                                 )
 
                                 AddWeatherCard(
                                     iconId = R.drawable.eye,
                                     desc = "Sikt",
-                                    value = "$visibilityKm km",
+                                    value = visibility,
                                     info = "Estimert vertikal sikt"
                                 )
                             }
@@ -305,39 +307,41 @@ fun DetailsScreen(
 
 }
 
-fun visibilityConverter(
+fun getVerticalSightKm(
     fogGround: Double,
     cloudLow: Double,
     cloudMed: Double,
     cloudHigh: Double
-): String {
-    // Convert fog percentage to visibility reduction factor
-    val fogFactor: Double = fogGround * 0.01
+): String{
 
-    // Convert cloud covers to corresponding visibility reduction factors
-    val lowCloudFactor: Double = cloudLow * 0.01    // 0 - 2000
-    val medCloudFactor: Double = cloudMed * 0.01    // 2000 - 5000
-    val highCloudFactor: Double = cloudHigh * 0.01  // 5000 - infinity
+    val l2 = (fogGround + cloudLow).coerceAtMost(100.0) // 10 + 20
+    val l3 = (l2 + cloudMed).coerceAtMost(100.0)        // 30 +
+    val l4 = (l3 + cloudHigh).coerceAtMost(100.0)
 
-    val fogWeight =
-        1.0                     // sikt blir mer påvirket av tåke på bakken enn langt opp i høyden
-    val lowCloudWeight: Double = 0.8
-    val medCloudWeight: Double = 0.6
-    val highCloudWeight: Double = 0.2
+    val m1 = ((100 - fogGround) / 100) * 1
+    val m2 = ((100 - l2) / 100) * 1
+    val m3 = ((100 - l3) / 100) * 3
+    val m4 = ((100 - l4) / 100) * 5
 
-    // Calculate the combined impact of fog and cloud cover on visibility
-    val visibilityReductionFactor: Double =
-        1 - (1 - (fogFactor * fogWeight)) * (1 - (lowCloudFactor * lowCloudWeight)) * (1 - (medCloudFactor * medCloudWeight)) * (1 - (highCloudFactor * highCloudWeight))
+    val sumKm = m1 + m2 + m3 + m4
 
-    //Log.d("visibilityConverter", "\n LowC: $lowCloudFactor \nMedC: $medCloudFactor \nHighC: $highCloudFactor \nvisFactor: $visibilityReductionFactor \n")
-
-    val visibility: Double = 8.0 / visibilityReductionFactor
-
-    if (visibility > 50) {
-        return ">50"
+    if (sumKm > 10) {
+        return ">10 km"
     }
 
-    return visibility.roundToInt().toString()
+    if(sumKm < 0.1){
+        return "<100 m"
+    }
+
+    if (sumKm < 1){
+        return "≈${(roundToNearestHundred(sumKm))} m"
+    }
+
+    return "≈${sumKm.roundToInt()} km"
+}
+
+fun roundToNearestHundred(number: Double): Int {
+    return (number * 10).toInt()  * 100
 }
 
 

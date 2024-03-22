@@ -20,7 +20,7 @@ fun getApproximateHeight(pressure: Double): Double{
 }
 /** Values for each isobaric layer, takes in a pressureLevel*/
 class LevelData(val pressurePascal: Double){
-
+    var groundLevelTempKelvin: Double = 0.0
     var tempValueKelvin: Double = 0.0
     var uComponentValue: Double = 0.0
     var vComponentValue: Double = 0.0
@@ -40,10 +40,17 @@ class LevelData(val pressurePascal: Double){
         val r = 8.31432
         val g = 9.8066
 
-        val c = (r * tempValueKelvin) / (m * g)
+        val temp = if (groundLevelTempKelvin > 0.0){
+            (tempValueKelvin + groundLevelTempKelvin) / 2
+        } else {
+            tempValueKelvin
+        }
+
+        val c = (r * temp) / (m * g)
         val a = ln((standardSeaPressure / pressurePascal))
         return c * a
     }
+
     fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {
         return sqrt(uComponent.pow(2) + vComponent.pow(2))
     }
