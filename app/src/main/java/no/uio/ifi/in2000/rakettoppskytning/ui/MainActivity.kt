@@ -26,7 +26,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDatabase
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.details.WeatherDetails
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
