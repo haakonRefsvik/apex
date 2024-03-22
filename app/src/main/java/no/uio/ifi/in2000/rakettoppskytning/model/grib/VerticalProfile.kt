@@ -14,16 +14,17 @@ import kotlin.math.sin
 
 
 fun getTime(file: File): String {
-    val raf = RandomAccessFile(file.absolutePath, "r")
-    val scan = Grib2RecordScanner(raf)
-    val record: Grib2Record = try {
-        scan.next()
-    } catch (e: Exception) {
-        return ""
+    return try {
+        val raf = RandomAccessFile(file.absolutePath, "r")
+        val scan = Grib2RecordScanner(raf)
+        val record: Grib2Record = scan.next()
+        val referenceDate = record.id.referenceDate
+        val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
+        referenceDate.add(hourOffset).toString() // leverer riktig forecast tid
+    }catch (e: Exception){
+        ""
     }
-    val referenceDate = record.id.referenceDate
-    val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
-    return referenceDate.add(hourOffset).toString() // leverer riktig forecast tid
+
 }
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
