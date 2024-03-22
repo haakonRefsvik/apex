@@ -14,7 +14,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
 
-suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
+suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
     if(ApiKeyHolder.in2000ProxyKey == ""){
         throw Exception("Api-key not found")
     }
@@ -35,12 +35,19 @@ suspend fun getForecast(lat: Double, lon: Double): LocationForecast {
     }
 
     Log.d("APICALL", "PÅ locationForecast")
+    /*
     Log.d(
         "LINK",
         "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
     )
-    return client.get("https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}")
-        .body<LocationForecast>()
 
+     */
+
+    val url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
+    return try {
+        listOf(client.get(url).body<LocationForecast>())
+    }catch (e: Exception){
+        listOf()
+    }
 
 }
