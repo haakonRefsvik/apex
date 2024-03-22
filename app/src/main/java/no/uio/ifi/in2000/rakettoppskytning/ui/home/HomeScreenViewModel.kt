@@ -28,16 +28,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 
-/*
-data class ForeCastUiState(
-    val foreCast: List<LocationForecast> = listOf()
-)
-data class VerticalProfileUiState(
-    val verticalProfiles: List<VerticalProfile> = listOf()
-)
-
- */
-
 data class WeatherUiState(
     val weatherAtPos: WeatherAtPos = WeatherAtPos()
 )
