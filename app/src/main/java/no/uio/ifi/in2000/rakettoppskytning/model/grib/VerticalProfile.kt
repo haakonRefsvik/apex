@@ -75,6 +75,7 @@ class VerticalProfile(
 
         for (value in verticalProfileMap.values) {
             value.seaPressurePa = pressurePascal
+            value.groundLevelTempKelvin = tempKelvin
         }
 
         allShearWinds = getAllSheerWinds()
