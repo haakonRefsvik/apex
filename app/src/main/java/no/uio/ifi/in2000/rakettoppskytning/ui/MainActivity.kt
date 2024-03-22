@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
+import no.uio.ifi.in2000.rakettoppskytning.NetworkConnection
 import no.uio.ifi.in2000.rakettoppskytning.R.string
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
@@ -84,8 +86,19 @@ class MainActivity : ComponentActivity() {
                         thresholdViewModel = thresholdViewModel,
                         mapViewModel = mapViewModel
                     )
+                    val networkConnection = NetworkConnection(applicationContext)
+                    networkConnection.observe(this) {
+                        if (!it) {
+                            //sett inn en AlertDialog om du vil ha samme som det som kommer opp når du trykker på "legg til favoritter"
+                            //eller
+                            //legg til en snackbar med prøv igjen knapp
+                            Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show()
+
+                        }
+                    }
                 }
             }
         }
     }
 }
+
