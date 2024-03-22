@@ -1,17 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.theme
 
-/*import androidx.compose.ui.graphics.Color
-
-val Primary = Color(0xFF0E131F)
-val PrimaryDarkBlue = Color(0xFF38405F)
-val PrimaryGrey = Color(0xFF59546C)
-
-val SecondaryDarkBlue = Color(0xFFA59BCC)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
-*/
-
-
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF006C4C) //Tekst i knapper og selve knapper?
