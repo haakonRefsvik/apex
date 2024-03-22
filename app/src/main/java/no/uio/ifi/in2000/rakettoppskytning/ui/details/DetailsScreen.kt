@@ -204,8 +204,8 @@ fun DetailsScreen(
                 }
 
             }
-
             weatherAtPosHour.forEach { weatherNow ->
+
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
 
