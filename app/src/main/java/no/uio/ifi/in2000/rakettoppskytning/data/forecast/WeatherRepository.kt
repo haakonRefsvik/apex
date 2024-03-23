@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.*
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.historicalData.getHistoricalData
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
 import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
@@ -150,6 +151,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
         return@coroutineScope deferredList.awaitAll<VerticalProfile>()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun loadGribFromDataSource(lat: Double, lon: Double): List<File> {
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
@@ -157,6 +159,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
             Log.w("VerticalProfile", "Could not load grib-files")
             listOf()
         }
+
         return gribFiles
     }
     private suspend fun loadForecastFromDataSource(lat: Double, lon: Double): List<LocationForecast> {

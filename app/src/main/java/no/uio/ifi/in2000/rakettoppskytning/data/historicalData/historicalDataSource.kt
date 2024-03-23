@@ -1,6 +1,8 @@
-package no.uio.ifi.in2000.rakettoppskytning.data.forecast
+package no.uio.ifi.in2000.rakettoppskytning.data.historicalData
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -11,20 +13,15 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
+import no.uio.ifi.in2000.rakettoppskytning.model.dateNumberOfDaysAgo
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
+import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalData
 
 
-suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
-    if(ApiKeyHolder.in2000ProxyKey == ""){
-        throw Exception("Api-key not found")
-    }
-
+/** Henter data fra en open-source api med kun percipation_sum som parameter (nedbør i sum per dag)*/
+@RequiresApi(Build.VERSION_CODES.O)
+suspend fun getHistoricalData(lat: Double, lon: Double): List<HistoricalData> {
     val client = HttpClient(CIO) {
-
-        defaultRequest {
-            url("https://gw-uio.intark.uh-it.no/in2000/")
-            header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
-        }
 
         install(ContentNegotiation) {
             json(Json {
@@ -34,12 +31,11 @@ suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
         }
     }
 
-    Log.d("APICALL", "PÅ locationForecast")
-
-    val url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
+    val url2 = "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=precipitation_sum&timezone=GMT&past_days=7&forecast_days=1"
     return try {
-        listOf(client.get(url).body<LocationForecast>())
+        listOf(client.get(url2).body<HistoricalData>())
     }catch (e: Exception){
+        Log.d("feil i historisk-dataSource", e.toString())
         listOf()
     }
 
