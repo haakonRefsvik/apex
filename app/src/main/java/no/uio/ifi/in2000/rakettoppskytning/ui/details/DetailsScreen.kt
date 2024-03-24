@@ -52,6 +52,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
@@ -203,11 +204,19 @@ fun DetailsScreen(
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
                         item {
-                            weatherNow.verticalProfile?.let { ShearWindCard(verticalProfile = it) }
+                            weatherNow.verticalProfile?.let {
+                                ShearWindCard(
+                                    verticalProfile = it,
+                                    statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name]?: 0.0
+                                )
+                            }
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
-                            WindCard(details = fcData.instant.details, 0.0)
+                            WindCard(
+                                details = fcData.instant.details,
+                                statusCode = statusMap[ThresholdType.MAX_WIND.name]?: 0.0
+                            )
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
@@ -228,7 +237,7 @@ fun DetailsScreen(
                                     desc = "Nedbør",
                                     value = "${fcData.next1Hours?.details?.precipitationAmount} mm",
                                     info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene",
-                                    statusCode = statusMap["maxPrecipitation"] ?: 0.0
+                                    statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]?: 0.0
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -244,8 +253,8 @@ fun DetailsScreen(
                                 Spacer(modifier = Modifier.width(20.dp))
 
                                 val combinedStatus: Double
-                                val d = statusMap["maxDewPoint"] ?: 0.0
-                                val h = statusMap["maxHumidity"] ?: 0.0
+                                val d = statusMap[ThresholdType.MAX_DEW_POINT.name]?: 0.0
+                                val h = statusMap[ThresholdType.MAX_HUMIDITY.name]?: 0.0
 
                                 combinedStatus = if (d == 1.0 || h == 1.0) {
                                     1.0
@@ -308,7 +317,7 @@ fun WeatherCard(
     iconId: Int,
     desc: String,
     info: String = "",
-    statusCode: Double = 0.0
+    statusCode: Double = -1.0
 ) {
     ElevatedCard(
         modifier = Modifier

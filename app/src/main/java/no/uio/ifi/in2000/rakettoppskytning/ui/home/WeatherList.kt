@@ -77,6 +77,7 @@ fun WeatherList(
                                     .fillMaxHeight()
                                     .background(getColorFromStatusValue(input.closeToLimitScore))
                             )
+                            Spacer(modifier = Modifier.width(5.dp))
                             Row(
                                 modifier = Modifier.fillMaxSize(),
                                 horizontalArrangement = Arrangement.Center,
@@ -122,9 +123,9 @@ fun WeatherList(
                                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                     contentDescription = "Arrow"
                                 )
+                                Spacer(modifier = Modifier.width(5.dp))
                             }
                         }
-
                     }
                     Spacer(modifier = Modifier.height(7.5.dp))
                 }

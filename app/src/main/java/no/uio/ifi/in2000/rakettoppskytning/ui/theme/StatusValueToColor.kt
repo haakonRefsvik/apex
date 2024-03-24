@@ -4,6 +4,11 @@ import androidx.compose.ui.graphics.Color
 
 
 fun getColorFromStatusValue(statusCode: Double): Color {
+
+    if(statusCode == -1.0){
+        return Color.Transparent
+    }
+
     if (statusCode == 1.0) {
         return StatusColor.RED.color
     }

@@ -57,17 +57,19 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
         try {
-            val gribFiles = loadGribFromDataSource(lat, lon)
             val list = mutableListOf<WeatherAtPosHour>()
+
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
+
+            val gribFiles: List<File> = loadGribFromDataSource(lat, lon)
+            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
             val soilIndex = getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
-            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
-            var hour = 0
 
-            allForecasts?.properties?.timeseries?.forEach{series ->
+            allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
                 if (hour >= loadHours){
-                    return@forEach      // stops loading forecast-data when enough hours are loaded
+                    return@forEachIndexed
                 }
 
                 var soilMoisture: Int? = null
@@ -83,7 +85,6 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
                 vp?.addGroundInfo(series)
                 val weatherAtPosHour = WeatherAtPosHour(date, getHourFromDate(date), lat, lon, series, vp, soilMoisture, closenessMap, score)
                 list.add(weatherAtPosHour)
-                hour++
             }
 
             val updatedWeatherAtPos = WeatherAtPos(list)

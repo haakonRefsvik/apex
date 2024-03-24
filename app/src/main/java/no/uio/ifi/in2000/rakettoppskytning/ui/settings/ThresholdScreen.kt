@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,15 +39,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -80,7 +85,6 @@ fun ThresholdScreen(
     thresholdViewModel: ThresholdViewModel,
     weatherRepository: WeatherRepository
 ) {
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -154,6 +158,7 @@ fun ThresholdScreen(
             }
         }
     ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -161,7 +166,26 @@ fun ThresholdScreen(
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-            LazyColumn {
+
+            LazyColumn(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Juster terskelverdier",
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
                 item {
                     ThresholdCard(
                         mutableValue = thresholdViewModel.maxPrecipitation,
@@ -206,7 +230,32 @@ fun ThresholdScreen(
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "℃",
                     )
+
                 }
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Juster rakettspesifikasjoner",
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+                item {
+                    ThresholdCard(
+                        mutableValue = thresholdViewModel.maxDewPoint,
+                        title = "Høyeste punkt",
+                        desc = "Sett rakettens høyeste punkt",
+                        drawableId = R.drawable.rakett_pin2,
+                        suffix = "moh",
+                        numberOfDecimals = 0
+                    )
+                }
+
             }
         }
     }
@@ -224,7 +273,9 @@ fun ThresholdCard(
     title: String,
     desc: String,
     suffix: String,
-    drawableId: Int
+    drawableId: Int,
+    numberOfDecimals: Int = 1,
+    numberOfIntegers: Int = 2
 ) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -266,9 +317,9 @@ fun ThresholdCard(
                     .width(80.dp)
                     .height(60.dp),
                 textStyle = TextStyle(textAlign = TextAlign.Center),
-                value = String.format("%.2f", mutableValue.value),
+                value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
-                    mutableValue.value = formatNewValue(input)
+                    mutableValue.value = formatNewValue(input, numberOfIntegers)
                 },
                 label = { Text(suffix) },
                 keyboardOptions = KeyboardOptions(
@@ -285,11 +336,12 @@ fun ThresholdCard(
             )
         }
     }
+
     Spacer(modifier = Modifier.height(15.dp))
 
 }
 
-fun formatNewValue(input: String): Double {
+fun formatNewValue(input: String, numberOfIntegers: Int): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
 
     val decimalParts = onlyDigitsAndDot.split(".")
@@ -297,7 +349,7 @@ fun formatNewValue(input: String): Double {
 
     var formattedIntegerValue = integerPart
 
-    while (formattedIntegerValue.length > 3) {
+    while (formattedIntegerValue.length > numberOfIntegers) {
         formattedIntegerValue = formattedIntegerValue.dropLast(1)
     }
 

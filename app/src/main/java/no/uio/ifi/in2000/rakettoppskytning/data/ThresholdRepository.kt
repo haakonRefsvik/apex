@@ -18,7 +18,8 @@ enum class ThresholdType() {
     MAX_HUMIDITY,
     MAX_WIND,
     MAX_SHEAR_WIND,
-    MAX_DEW_POINT
+    MAX_DEW_POINT,
+    APOGEE
 }
 
 class ThresholdRepository(){
@@ -29,13 +30,6 @@ class ThresholdRepository(){
         // put data back in database
     }
 
-    /**
-     *     map["maxPrecipitation"]
-     *     map["maxHumidity"]
-     *     map["maxWind"]
-     *     map["maxShearWind"]
-     *     map["maxDewPoint"]
-     * */
     fun getThresholdsMap(): HashMap<String, Double> {
         return thresholds.valueMap
     }
@@ -51,37 +45,41 @@ class ThresholdRepository(){
 
         val c1 = getCloseness(
             value = verticalProfile?.getMaxSheerWind()?.windSpeed?: 0.0,
-            limit = thresholds["maxShearWind"]?: 0.0,
+            limit = thresholds[ThresholdType.MAX_SHEAR_WIND.name]?: 0.0,
         )
         val c2 = getCloseness(
             value = fc.relativeHumidity,
-            limit = thresholds["maxHumidity"]?: 0.0,
+            limit = thresholds[ThresholdType.MAX_HUMIDITY.name]?: 0.0,
         )
         val c3 = getCloseness(
             value = fc.windSpeed,
-            limit = thresholds["maxWind"]?: 0.0,
+            limit = thresholds[ThresholdType.MAX_WIND.name]?: 0.0,
         )
         val c4 = getCloseness(
             value = fc1?.precipitationAmount?: Double.MAX_VALUE ,
-            limit = thresholds["maxPrecipitation"]?: 0.0,
+            limit = thresholds[ThresholdType.MAX_PRECIPITATION.name]?: 0.0,
         )
 
         val c5 = getCloseness(
             value = fc.dewPointTemperature,
-            limit = thresholds["maxDewPoint"]?: 0.0,
+            limit = thresholds[ThresholdType.MAX_DEW_POINT.name]?: 0.0,
             lowerLimit = -20.0
         )
 
-        closenessMap["maxShearWind"] = c1
-        closenessMap["maxHumidity"] = c2
-        closenessMap["maxWind"] = c3
-        closenessMap["maxPrecipitation"] = c4
-        closenessMap["maxDewPoint"] = c5
+        closenessMap[ThresholdType.MAX_SHEAR_WIND.name] = c1
+        closenessMap[ThresholdType.MAX_HUMIDITY.name] = c2
+        closenessMap[ThresholdType.MAX_WIND.name] = c3
+        closenessMap[ThresholdType.MAX_PRECIPITATION.name] = c4
+        closenessMap[ThresholdType.MAX_DEW_POINT.name] = c5
 
         return closenessMap
     }
 
     fun getCloseness(value: Double, limit: Double, lowerLimit: Double = 0.0, max: Boolean = true): Double{
+        if(limit == -1.0){
+            return -1.0
+        }
+
         if(!max){
             //TODO() NOT IMPLEMENTED
             return 1.0
@@ -119,11 +117,11 @@ class ThresholdRepository(){
 
 fun exampleDataFromDataBase(): ThresholdValues {
     val map = hashMapOf<String, Double>()
-    map["maxPrecipitation"] = 0.0
-    map["maxHumidity"] = 90.0
-    map["maxWind"] = 20.0
-    map["maxShearWind"] = 25.0
-    map["maxDewPoint"] = 5.0
+    map[ThresholdType.MAX_PRECIPITATION.name] = 0.0
+    map[ThresholdType.MAX_HUMIDITY.name] = 90.0
+    map[ThresholdType.MAX_WIND.name] = 20.0
+    map[ThresholdType.MAX_SHEAR_WIND.name] = 25.0
+    map[ThresholdType.MAX_DEW_POINT.name] = 5.0
 
     return ThresholdValues(map)
 }
