@@ -3,7 +3,7 @@ package no.uio.ifi.in2000.rakettoppskytning.model.historicalData
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HistoricalData(
+data class HistoricalPrecipitation(
     /*
     val latitude: Double,
     val longitude: Double,
@@ -18,6 +18,20 @@ data class HistoricalData(
     val daily: Daily
 )
 
+
+@Serializable
+data class SoilMoistureHourly(
+    val hourly: Hourly
+)
+
+@Serializable
+data class Hourly(
+    val time: List<String>,
+    val soil_moisture_0_to_1cm: List<Double>,
+)
+
+
+
 /*
 @Serializable
 data class DailyUnits(
@@ -26,7 +40,6 @@ data class DailyUnits(
 )
 
  */
-
 
 @Serializable
 data class Daily(

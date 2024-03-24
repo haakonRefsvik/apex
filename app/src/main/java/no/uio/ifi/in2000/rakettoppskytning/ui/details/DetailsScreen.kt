@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
@@ -41,10 +39,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,31 +52,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import java.util.Locale
 import kotlin.math.roundToInt
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DetailsScreenPreview() {
-    val navController = rememberNavController()
-    DetailsScreen(
-        navController = navController,
-        backStackEntry = "1",
-        detailsScreenViewModel = DetailsScreenViewModel(
-            WeatherRepository(
-                ThresholdRepository(),
-                GribRepository()
-            )
-        )
-    )
+    SoilCard(soilPercentage = 35)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -87,7 +78,6 @@ fun DetailsScreen(
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
 ) {
-
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val time: String = backStackEntry ?: ""
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
@@ -221,15 +211,19 @@ fun DetailsScreen(
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
+                            weatherNow.soilMoisture?.let { SoilCard(soilPercentage = it) }
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+                        item {
                             Row {
-                                AddWeatherCard(
+                                WeatherCard(
                                     iconId = R.drawable.temp,
                                     desc = "Temperatur",
                                     value = "${fcData.instant.details.airTemperature} ℃",
                                     info = "Temperaturen om 6 timer er minimalt ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
-                                AddWeatherCard(
+                                WeatherCard(
                                     iconId = R.drawable.vann,
                                     desc = "Nedbør",
                                     value = "${fcData.next1Hours?.details?.precipitationAmount} mm",
@@ -241,7 +235,7 @@ fun DetailsScreen(
                         }
                         item {
                             Row {
-                                AddWeatherCard(
+                                WeatherCard(
                                     iconId = R.drawable.fog,
                                     desc = "Tåke",
                                     value = "${fcData.instant.details.fogAreaFraction?.roundToInt()} %",
@@ -259,7 +253,7 @@ fun DetailsScreen(
                                     (d + h) / 2
                                 }
 
-                                AddWeatherCard(
+                                WeatherCard(
                                     iconId = R.drawable.luftfuktighet,
                                     desc = "Luftfuktighet",
                                     value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
@@ -271,7 +265,7 @@ fun DetailsScreen(
                         }
                         item {
                             Row {
-                                AddWeatherCard(
+                                WeatherCard(
                                     iconId = R.drawable.cloudy,
                                     desc = "Skydekke",
                                     value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
@@ -288,13 +282,14 @@ fun DetailsScreen(
                                     d.cloudAreaFractionHigh,
                                 )
 
-                                AddWeatherCard(
+                                WeatherCard(
                                     iconId = R.drawable.eye,
                                     desc = "Sikt",
                                     value = visibility,
                                     info = "Estimert vertikal sikt"
                                 )
                             }
+                            Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
                             Spacer(modifier = Modifier.height(100.dp))
@@ -307,46 +302,8 @@ fun DetailsScreen(
 
 }
 
-fun getVerticalSightKm(
-    fogGround: Double,
-    cloudLow: Double,
-    cloudMed: Double,
-    cloudHigh: Double
-): String{
-
-    val l2 = (fogGround + cloudLow).coerceAtMost(100.0) // 10 + 20
-    val l3 = (l2 + cloudMed).coerceAtMost(100.0)        // 30 +
-    val l4 = (l3 + cloudHigh).coerceAtMost(100.0)
-
-    val m1 = ((100 - fogGround) / 100) * 1
-    val m2 = ((100 - l2) / 100) * 1
-    val m3 = ((100 - l3) / 100) * 3
-    val m4 = ((100 - l4) / 100) * 5
-
-    val sumKm = m1 + m2 + m3 + m4
-
-    if (sumKm > 10) {
-        return ">10 km"
-    }
-
-    if(sumKm < 0.1){
-        return "<100 m"
-    }
-
-    if (sumKm < 1){
-        return "≈${(roundToNearestHundred(sumKm))} m"
-    }
-
-    return "≈${sumKm.roundToInt()} km"
-}
-
-fun roundToNearestHundred(number: Double): Int {
-    return (number * 10).toInt()  * 100
-}
-
-
 @Composable
-fun AddWeatherCard(
+fun WeatherCard(
     value: String,
     iconId: Int,
     desc: String,
@@ -425,7 +382,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
 
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(15.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -438,7 +395,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                         Text(
                             text = "Vind på bakkenivå",
                             modifier = Modifier.padding(vertical = 5.dp),
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -491,7 +448,6 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                             painter = painterResource(R.drawable.kompasspil),
                             contentDescription = "kompasspil"
                         )
-
                     }
                 }
             }
@@ -516,7 +472,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                     .fillMaxHeight()
                     .background(getColorFromStatusValue(statusCode))
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(15.dp))
             Row {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -533,7 +489,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                         Text(
                             text = "Maksimalt vertikalt vindskjær",
                             modifier = Modifier.padding(vertical = 5.dp),
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -563,6 +519,98 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
 
                 }
             }
+        }
+
+    }
+}
+
+@Composable
+fun SoilCard(soilPercentage: Int) {
+
+    val warningIconId = when{
+        soilPercentage > 60 -> R.drawable.warning_green
+        soilPercentage > 10 -> R.drawable.warning_yellow
+        else -> R.drawable.warning_red
+    }
+
+
+    ElevatedCard(
+
+        modifier = Modifier
+            .height(140.dp)
+            .width(360.dp)
+    ) {
+        Row {
+
+            Spacer(
+                modifier = Modifier
+                    .width(5.dp)
+                    .fillMaxHeight()
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Spacer(modifier = Modifier.width(15.dp))
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier
+                                .size(30.dp),
+                            painter = painterResource(R.drawable.vann),
+                            contentDescription = "Vannsymbol"
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "Fuktighet i bakken",
+                            modifier = Modifier.padding(vertical = 0.dp),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .width(200.dp)
+                    )
+                    Text(
+                        text = "$soilPercentage %",
+                        modifier = Modifier.padding(vertical = 5.dp),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(
+                        text = getSoilCategory(soilPercentage),
+                        fontSize = 14.sp,
+                        lineHeight = 16.sp,
+                    )
+
+                }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(contentAlignment = Alignment.TopCenter,
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .width(50.dp),
+                            painter = painterResource(warningIconId),
+                            contentDescription = "kompasspil",
+                            tint = Color.Unspecified
+                        )
+                        Text(text = getSoilDescription(soilPercentage),
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            lineHeight = 16.sp,
+                            modifier = Modifier
+                                .padding(top = 55.dp)
+                                .width(100.dp)
+                        )
+                    }
+                }
+            }
+
         }
 
     }

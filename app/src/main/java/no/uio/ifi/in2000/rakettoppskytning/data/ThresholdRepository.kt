@@ -13,6 +13,14 @@ data class ThresholdValues(
     var valueMap: HashMap<String, Double>   // parameterId, Value
 )
 
+enum class ThresholdType() {
+    MAX_PRECIPITATION,
+    MAX_HUMIDITY,
+    MAX_WIND,
+    MAX_SHEAR_WIND,
+    MAX_DEW_POINT
+}
+
 class ThresholdRepository(){
 
     private val thresholds: ThresholdValues = exampleDataFromDataBase()
