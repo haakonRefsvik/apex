@@ -26,15 +26,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 
-fun String.isDouble(): Boolean {
-    return try {
-        this.toDouble()
-        true
-    } catch (e: NumberFormatException) {
-        false
-    }
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
@@ -81,7 +72,12 @@ fun HomeScreen(
 
                         content =
                         {
-                            InputField(homeScreenViewModel = homeScreenViewModel, mapViewModel, state, onEvent)
+                            InputField(
+                                homeScreenViewModel = homeScreenViewModel,
+                                mapViewModel,
+                                state,
+                                onEvent
+                            )
 
 
                             Spacer(modifier = Modifier.height(10.dp))

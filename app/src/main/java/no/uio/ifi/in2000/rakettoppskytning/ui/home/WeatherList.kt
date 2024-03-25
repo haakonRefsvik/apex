@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,7 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
@@ -42,22 +47,44 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherList(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
 ) {
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        // Add the gradient on top of LazyColumn
-        LazyColumn(
-            content = {
+//    Box(
+//        modifier = Modifier.fillMaxSize(),
+//        contentAlignment = Alignment.Center
+//    ) {
+
+    // Add the gradient on top of LazyColumn
+    LazyColumn(
+        content = {
             item {
-                forecast.weatherAtPos.weatherList.forEach breaking@{ input ->
+                if (forecast.weatherAtPos.weatherList.isNotEmpty()) {
+                    val wtf =
+                        WeatherAtPos(forecast.weatherAtPos.weatherList.sortedBy {
+                            it.date
+                            it.closeToLimitScore
+
+                        }.subList(0, 10))
+                    Column(
+                        modifier = Modifier.width(340.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        IconButton(onClick = { homeScreenViewModel.updateweatherAtPos(wtf) }) {
+                            Image(
+                                painter = painterResource(R.drawable.filter),
+                                contentDescription = "Filter"
+                            )
+                        }
+
+                    }
+                }
+            }
+            item {
+                forecast.weatherAtPos.weatherList.forEach { input ->
                     val daysAhead = getNumberOfDaysAhead(input.date)
 
                     Spacer(modifier = Modifier.height(7.5.dp))
@@ -130,22 +157,22 @@ fun WeatherList(
                 }
             }
         })
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Black // Adjust the color as needed
-                        ),
-                        startY = 0f,
-                        endY = 2100f // Adjust the endY value to control the gradient height
-                    )
-                )
-        )
-    }
-
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .background(
+//                    brush = Brush.verticalGradient(
+//                        colors = listOf(
+//                            Color.Transparent,
+//                            Color.Transparent,
+//                            Color.Transparent,
+//                            Color.Black // Adjust the color as needed
+//                        ),
+//                        startY = 0f,
+//                        endY = 2100f // Adjust the endY value to control the gradient height
+//                    )
+//                )
+//        )
 }
+
+//}
