@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,17 +61,31 @@ import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
 @Preview(showBackground = true)
 @Composable
-fun DetailsScreenPreview() {
+fun SoilPreview() {
     SoilCard(soilPercentage = 35)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun DetailScreenPreview() {
+    val navController = rememberNavController()
+    val gr = GribRepository()
+    val tr = ThresholdRepository()
+    val wr = WeatherRepository(tr, gr)
+    val vm = DetailsScreenViewModel(wr)
+    DetailsScreen(navController = navController, backStackEntry = "", detailsScreenViewModel = vm)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -169,8 +186,10 @@ fun DetailsScreen(
         ) {
 
             if (weatherAtPosHour.isEmpty()) {
-                Text("Her var det tomt")
-            } else {
+                Text("Her var det tomt ...")
+            }
+            /*
+            else {
                 if (getNumberOfDaysAhead(weatherAtPosHour.first().date) == 1) {
                     Text(
                         "Værdata for imorgen klokken ${
@@ -178,31 +197,64 @@ fun DetailsScreen(
                                 11,
                                 16
                             )
-                        } "
+                        } ",
+                        fontWeight = FontWeight.Bold
                     )
 
 
                 } else {
                     Text(
-                        "Værdata for klokken ${
+                        text = "Værdata for klokken ${
                             weatherAtPosHour.first().series.time.substring(
                                 11,
                                 16
                             )
-                        } "
+                        } ",
+                        fontWeight = FontWeight.Bold
                     )
 
                 }
 
             }
+
+             */
             weatherAtPosHour.forEach { weatherNow ->
 
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
+                val datoPrefix: String = when{
+                    getNumberOfDaysAhead(weatherNow.date) == 1 -> "Imorgen"
+                    getNumberOfDaysAhead(weatherNow.date) == 0 -> "I dag"
 
-                Spacer(modifier = Modifier.height(30.dp))
+                    else -> ""
+                }
+
+                Spacer(modifier = Modifier.height(15.dp))
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
+                        item {
+                            Spacer(modifier = Modifier.width(25.dp))
+                            Column(
+                                modifier = Modifier.width(340.dp),
+                            )
+                            {
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "$datoPrefix klokken ${weatherNow.date.subSequence(11, 16)}",
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 30.sp
+                                )
+
+                                Spacer(modifier = Modifier.height(40.dp))
+
+                                HorizontalDivider(
+                                    modifier = Modifier.width(340.dp),
+                                    thickness = 1.dp, color = Color.Black.copy(alpha = 0.2f))
+                                Spacer(modifier = Modifier.height(15.dp))
+                            }
+                        }
                         item {
                             weatherNow.verticalProfile?.let {
                                 ShearWindCard(
@@ -345,8 +397,8 @@ fun WeatherCard(
                     Text(
                         text = desc,
                         modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
                 Row(modifier = Modifier.padding(horizontal = 15.dp)) {
@@ -354,11 +406,12 @@ fun WeatherCard(
                         text = value,
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold
                     )
                 }
                 Row(modifier = Modifier.padding(horizontal = 15.dp)) {
                     Text(
+                        color = Color.Black.copy(alpha = 0.7f),
                         text = info,
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 12.sp,
@@ -421,6 +474,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
+                        color = Color.Black.copy(alpha = 0.7f),
                         text = "Max vindkast er ${details.windSpeedOfGust} m/s",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
@@ -518,6 +572,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
+                        color = Color.Black.copy(alpha = 0.7f),
                         text = "Vindskjæret er på rundt ${
                             verticalProfile.getMaxSheerWind().upperLayer.getLevelHeightInMeters()
                                 .roundToInt()
@@ -588,6 +643,7 @@ fun SoilCard(soilPercentage: Int) {
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
+                        color = Color.Black.copy(alpha = 0.7f),
                         text = getSoilCategory(soilPercentage),
                         fontSize = 14.sp,
                         lineHeight = 16.sp,

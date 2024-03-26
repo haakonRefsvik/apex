@@ -14,18 +14,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +47,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -59,10 +64,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.mapbox.maps.extension.style.style
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryLight
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
@@ -105,7 +112,7 @@ fun ThresholdScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = "ArrowBack"
                         )
                     }
@@ -173,24 +180,52 @@ fun ThresholdScreen(
             ){
 
                 item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row {
+                    Spacer(modifier = Modifier.width(25.dp))
+                    Column(
+                        modifier = Modifier.width(340.dp),
+                    )
+                    {
+                    Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = "Juster terskelverdier",
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp
+                            text = "Innstillinger",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 35.sp
                         )
+
+                        Spacer(modifier = Modifier.height(40.dp))
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ){
+                            Icon(
+                                modifier = Modifier
+                                    .size(30.dp),
+                                painter = painterResource(R.drawable.trykk),
+                                contentDescription = "trykk"
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Tillpass værvarslingen",
+                                fontWeight = FontWeight.W400,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        HorizontalDivider(
+                            modifier = Modifier.width(340.dp),
+                            thickness = 1.dp, color = Color.Black.copy(alpha = 0.2f))
+                        Spacer(modifier = Modifier.height(15.dp))
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 item {
                     ThresholdCard(
                         mutableValue = thresholdViewModel.maxPrecipitation,
                         title = "Maks nedbør",
-                        desc = "Juster øvre grense for nedbør",
                         drawableId = R.drawable.vann,
                         suffix = "mm",
                     )
@@ -199,7 +234,6 @@ fun ThresholdScreen(
                     ThresholdCard(
                         mutableValue = thresholdViewModel.maxHumidity,
                         title = "Maks luftfuktighet",
-                        desc = "Juster øvre grense for luftfuktighet",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "%",
                     )
@@ -208,7 +242,6 @@ fun ThresholdScreen(
                     ThresholdCard(
                         mutableValue = thresholdViewModel.maxWind,
                         title = "Maks vind",
-                        desc = "Juster øvre grense for vindhastighet på bakken",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
                     )
@@ -217,7 +250,6 @@ fun ThresholdScreen(
                     ThresholdCard(
                         mutableValue = thresholdViewModel.maxShearWind,
                         title = "Maks vindskjær",
-                        desc = "Juster øvre grense for de vertikale vindskjærene",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
                     )
@@ -226,24 +258,44 @@ fun ThresholdScreen(
                     ThresholdCard(
                         mutableValue = thresholdViewModel.maxDewPoint,
                         title = "Minimalt duggpunkt",
-                        desc = "Juster nedre grense for duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "℃",
                     )
 
                 }
                 item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Juster rakettspesifikasjoner",
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp
-                        )
+                    Spacer(modifier = Modifier.width(25.dp))
+                    Column(
+                        modifier = Modifier.width(340.dp),
+                    )
+                    {
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Row(
+                            modifier = Modifier,
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ){
+                            Icon(
+                                modifier = Modifier
+                                    .size(30.dp),
+                                painter = painterResource(R.drawable.rakett_pin2),
+                                contentDescription = "trykk"
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Tilpass rakettprofil",
+                                fontWeight = FontWeight.W400,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        HorizontalDivider(
+                            modifier = Modifier.width(340.dp),
+                            thickness = 1.dp, color = Color.Black.copy(alpha = 0.2f))
+                        Spacer(modifier = Modifier.height(15.dp))
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
                 item {
                     ThresholdCard(
@@ -271,7 +323,7 @@ fun ThresholdScreen(
 fun ThresholdCard(
     mutableValue: MutableState<Double>,
     title: String,
-    desc: String,
+    desc: String = "",
     suffix: String,
     drawableId: Int,
     numberOfDecimals: Int = 1,
@@ -280,48 +332,54 @@ fun ThresholdCard(
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    ElevatedCard(
-        modifier = Modifier
-            .width(340.dp)
-            .height(100.dp)
-    )
-    {
+    val checkedState = remember { mutableStateOf(true) }
+
+
+
         Row(
             modifier = Modifier
                 .fillMaxSize(),
-            Arrangement.Center,
-            Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+
         ) {
-            Icon(
-                modifier = Modifier
-                    .size(30.dp),
-                painter = painterResource(drawableId),
-                contentDescription = "id: $drawableId"
-            )
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                Spacer(modifier = Modifier.width(20.dp))
+
+            }
 
             Column(
-                modifier = Modifier.width(160.dp)
+                modifier = Modifier.width(210.dp),
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(title, fontSize = 17.sp)
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = desc,
-                    lineHeight = 16.sp,
-                    fontSize = 12.sp,
-                )
+                Text(text = title,
+                    fontSize = 16.sp,
+                    style = TextStyle(color = Color.Black.copy(alpha = 0.7f))
+                    )
+                if(desc != ""){
+                    Spacer(modifier = Modifier.height(7.dp))
+                    Text(
+                        text = desc,
+                        lineHeight = 16.sp,
+                        fontSize = 13.sp,
+                        style = TextStyle(color = Color.Black.copy(alpha = 0.5f))
+                    )
+                }
             }
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(20.dp))
             OutlinedTextField(
                 modifier = Modifier
                     .width(80.dp)
-                    .height(60.dp),
-                textStyle = TextStyle(textAlign = TextAlign.Center),
+                    .height(50.dp),
+                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
                 value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
                     mutableValue.value = formatNewValue(input, numberOfIntegers)
                 },
-                label = { Text(suffix) },
+                //label = { Text(suffix) },
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -334,10 +392,27 @@ fun ThresholdCard(
                 ),
                 singleLine = true,
             )
-        }
-    }
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = suffix,
+                    style = TextStyle(color = Color.Black.copy(alpha = 0.5f))
+                )
 
-    Spacer(modifier = Modifier.height(15.dp))
+            }
+            /*
+            Checkbox(
+                checked = checkedState.value,
+                onCheckedChange = { checkedState.value = it }
+            )
+
+             */
+        }
+
+
+    Spacer(modifier = Modifier.height(27.dp))
 
 }
 
