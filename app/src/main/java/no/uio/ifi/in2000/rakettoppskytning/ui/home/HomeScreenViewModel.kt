@@ -36,6 +36,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
 
+    val loading = mutableStateOf(false)
+
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
         bottomSheetState = SheetState(
@@ -58,10 +60,15 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
+        Log.d("yepp", "LASTER START")
+        loading.value = true
         Log.d("getWeather", "apicall")
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon, loadHours)
         }
+
+        Log.d("yepp", "LASTER FERDIG")
+        loading.value = false
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
@@ -72,9 +79,11 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         )
 
     init {
+
         viewModelScope.launch {
             gribRepo.loadGribFiles()
         }
+
     }
 
 
