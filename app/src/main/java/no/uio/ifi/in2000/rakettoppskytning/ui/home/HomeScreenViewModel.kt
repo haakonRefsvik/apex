@@ -60,14 +60,14 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
-        Log.d("yepp", "LASTER START")
+     
         loading.value = true
         Log.d("getWeather", "apicall")
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon, loadHours)
         }
 
-        Log.d("yepp", "LASTER FERDIG")
+
         loading.value = false
     }
 
