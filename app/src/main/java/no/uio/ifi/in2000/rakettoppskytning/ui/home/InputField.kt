@@ -27,7 +27,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -40,11 +42,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 
 fun formatNewValue(input: String): Double {
@@ -79,8 +83,14 @@ fun InputField(
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
     state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit
+    onEvent: (FavoriteEvent) -> Unit,
+    internetConnectionViewModel: InternetConnectionViewModel,
 ) {
+
+    val isInternetConnected by internetConnectionViewModel.isInternetConnected.observeAsState()
+
+    Log.d("intenet: ", isInternetConnected.toString())
+
 
     val showDecimals = 5
 
@@ -174,7 +184,9 @@ fun InputField(
                     onEvent(FavoriteEvent.ShowDialog)
                 }
 
-            }) {
+            },
+                enabled = isInternetConnected?: false
+            ) {
                 Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
 
                 if (state.isAddingFavorite) {
@@ -239,7 +251,9 @@ fun InputField(
 
 
                         ) {
-                            IconButton(modifier = Modifier.size(35.dp).padding(8.dp),
+                            IconButton(modifier = Modifier
+                                .size(35.dp)
+                                .padding(8.dp),
                                 onClick = {
                                 onEvent(FavoriteEvent.DeleteFavorite(favorite))
 

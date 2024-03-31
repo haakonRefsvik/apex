@@ -62,6 +62,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDatabase
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
 import no.uio.ifi.in2000.rakettoppskytning.network.NetworkConnection
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
@@ -70,6 +71,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 class MainActivity : ComponentActivity() {
+    val internetConnectionViewModel by viewModels<InternetConnectionViewModel>()
 
     val thresholdRepository = ThresholdRepository()
     val gribRepository = GribRepository()
@@ -116,14 +118,16 @@ class MainActivity : ComponentActivity() {
                         detailsScreenViewModel = detailsScreenViewModel,
                         weatherRepo = weatherRepo,
                         thresholdViewModel = thresholdViewModel,
-                        mapViewModel = mapViewModel
+                        mapViewModel = mapViewModel,
+                        internetConnectionViewModel = internetConnectionViewModel
                     )
 
 
 
                     val networkManager = NetworkConnection(this)
-                    networkManager.observe(this){
-                        if(!it){
+                    networkManager.observe(this){ isConnected ->
+                        internetConnectionViewModel.isInternetConnected.value = isConnected
+                        if(!isConnected){
                             //Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show()
 
 

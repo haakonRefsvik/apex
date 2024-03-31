@@ -13,6 +13,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
@@ -31,7 +32,8 @@ fun Navigation(
     mapViewModel: MapViewModel,
     thresholdViewModel: ThresholdViewModel,
     weatherRepo: WeatherRepository,
-    detailsScreenViewModel: DetailsScreenViewModel
+    detailsScreenViewModel: DetailsScreenViewModel,
+    internetConnectionViewModel: InternetConnectionViewModel
 ) {
 
     val navController = rememberNavController()
@@ -45,7 +47,8 @@ fun Navigation(
                 state,
                 onEvent,
                 mapViewModel,
-                thresholdViewModel
+                thresholdViewModel,
+                internetConnectionViewModel
             )
         }
         composable(

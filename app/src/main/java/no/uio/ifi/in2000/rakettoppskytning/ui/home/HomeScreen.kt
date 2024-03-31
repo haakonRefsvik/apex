@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 
 fun String.isDouble(): Boolean {
@@ -44,7 +45,8 @@ fun HomeScreen(
     state: FavoriteState,
     onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
-    thresholdViewModel: ThresholdViewModel
+    thresholdViewModel: ThresholdViewModel,
+    internetConnectionViewModel: InternetConnectionViewModel
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
@@ -81,7 +83,7 @@ fun HomeScreen(
 
                         content =
                         {
-                            InputField(homeScreenViewModel = homeScreenViewModel, mapViewModel, state, onEvent)
+                            InputField(homeScreenViewModel = homeScreenViewModel, mapViewModel, state, onEvent, internetConnectionViewModel)
 
 
                             Spacer(modifier = Modifier.height(10.dp))
