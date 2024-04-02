@@ -373,8 +373,8 @@ fun ThresholdCard(
             OutlinedTextField(
                 modifier = Modifier
                     .width(80.dp)
-                    .height(50.dp),
-                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 16.sp),
+                    .height(45.dp),
+                textStyle = TextStyle(textAlign = TextAlign.Center),
                 value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
                     mutableValue.value = formatNewValue(input, numberOfIntegers)
