@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,18 +20,28 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.LocationOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,34 +58,47 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherList(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
 ) {
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
+    val openFilterDialog = remember { mutableStateOf(false) }
+
     if (forecast.weatherAtPos.weatherList.isNotEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            when {
 
-            // Add the gradient on top of LazyColumn
+                openFilterDialog.value -> {
+                    FilterDialog(
+                        onDismissRequest = { openFilterDialog.value = false },
+                        onConfirmation = {
+                            openFilterDialog.value = false
+                            // Add logic here to handle confirmation.
+                        }
+                    )
+                }
+            }
+
+
             LazyColumn(
                 content = {
                     item {
                         if (forecast.weatherAtPos.weatherList.isNotEmpty()) {
-                            val wtf =
-                                WeatherAtPos(forecast.weatherAtPos.weatherList.sortedBy {
-                                    it.date
-                                    it.closeToLimitScore
 
-                                }.subList(0, 10))
                             Column(
                                 modifier = Modifier.width(340.dp),
                                 horizontalAlignment = Alignment.End
                             ) {
-                                IconButton(onClick = { homeScreenViewModel.updateweatherAtPos(wtf) }) {
+                                IconButton(onClick = {
+                                    homeScreenViewModel.updateweatherAtPos(WeatherAtPos(forecast.weatherAtPos.weatherList))
+                                    openFilterDialog.value = true
+                                }) {
                                     Image(
                                         painter = painterResource(R.drawable.filter),
                                         contentDescription = "Filter"
@@ -85,6 +109,7 @@ fun WeatherList(
                         }
                     }
                     item {
+                        Log.d("jannefaen", forecast.weatherAtPos.weatherList.size.toString())
                         forecast.weatherAtPos.weatherList.forEach { input ->
                             val daysAhead = getNumberOfDaysAhead(input.date)
 
@@ -181,4 +206,67 @@ fun WeatherList(
         }
     }
 
+}
+
+
+@Composable
+fun FilterDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+
+    ) {
+    var sliderValue by remember { mutableFloatStateOf(24f) }
+    AlertDialog(
+        icon = {
+            Icon(
+                modifier = Modifier
+                    .size(40.dp),
+                painter = painterResource(R.drawable.filter),
+                contentDescription = "Filter"
+            )
+        },
+
+        title = {
+            Text("Filter")
+
+        },
+        text = {
+            LazyColumn {
+                item {
+                    Text(sliderValue.toInt().toString())
+                    Slider(
+                        value = sliderValue,
+                        onValueChange = { sliderValue = it },
+                        valueRange = 1f..24f,
+                        steps = 24
+
+
+                    )
+
+                }
+            }
+        },
+
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Reset")
+            }
+        }
+    )
 }
