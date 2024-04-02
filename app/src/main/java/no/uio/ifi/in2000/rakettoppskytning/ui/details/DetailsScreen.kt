@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
@@ -59,9 +57,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import java.util.Locale
 import kotlin.math.roundToInt
 
+/*
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
@@ -72,12 +70,14 @@ fun DetailsScreenPreview() {
         backStackEntry = "1",
         detailsScreenViewModel = DetailsScreenViewModel(
             WeatherRepository(
-                ThresholdRepository(),
+                ThresholdRepository(db.thresholdsDao),
                 GribRepository()
             )
         )
     )
 }
+
+ */
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)

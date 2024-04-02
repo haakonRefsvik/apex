@@ -2,11 +2,8 @@ package no.uio.ifi.in2000.rakettoppskytning
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-import no.uio.ifi.in2000.rakettoppskytning.ui.details.getVerticalSightKm
-import no.uio.ifi.in2000.rakettoppskytning.ui.details.visibilityConverter
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -53,7 +50,7 @@ class ExampleUnitTest {
 
     @Test
     fun testHoursBetweenDates(){
-        val repo = ThresholdRepository()
+        val repo = ThresholdRepository(db.thresholdsDao)
         val d1 = "2024-03-19T00:00:00Z"
         val d2 = "2024-03-20T00:00:00Z"
 
@@ -66,7 +63,7 @@ class ExampleUnitTest {
 
     @Test
     fun testClosenessMinLimit(){
-        val repo = ThresholdRepository()
+        val repo = ThresholdRepository(db.thresholdsDao)
         val v = -1.4
         val l = -2.0
 
@@ -77,7 +74,7 @@ class ExampleUnitTest {
     }
     @Test
     fun testClosenessMaxLimit(){
-        val repo = ThresholdRepository()
+        val repo = ThresholdRepository(db.thresholdsDao)
         val v = 2.2
         val l = 0.0
 
