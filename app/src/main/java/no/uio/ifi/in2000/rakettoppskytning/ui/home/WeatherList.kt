@@ -77,10 +77,8 @@ fun WeatherList(
                 openFilterDialog.value -> {
                     FilterDialog(
                         onDismissRequest = { openFilterDialog.value = false },
-                        onConfirmation = {
-                            openFilterDialog.value = false
-                            // Add logic here to handle confirmation.
-                        }
+                        onConfirmation = { openFilterDialog.value = false },
+                        sizeOnList = forecast.weatherAtPos.weatherList.size
                     )
                 }
             }
@@ -89,27 +87,26 @@ fun WeatherList(
             LazyColumn(
                 content = {
                     item {
-                        if (forecast.weatherAtPos.weatherList.isNotEmpty()) {
 
-                            Column(
-                                modifier = Modifier.width(340.dp),
-                                horizontalAlignment = Alignment.End
-                            ) {
-                                IconButton(onClick = {
-                                    homeScreenViewModel.updateweatherAtPos(WeatherAtPos(forecast.weatherAtPos.weatherList))
-                                    openFilterDialog.value = true
-                                }) {
-                                    Image(
-                                        painter = painterResource(R.drawable.filter),
-                                        contentDescription = "Filter"
-                                    )
-                                }
 
+                        Column(
+                            modifier = Modifier.width(340.dp),
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            IconButton(onClick = {
+
+                                openFilterDialog.value = true
+                            }) {
+                                Image(
+                                    painter = painterResource(R.drawable.filter),
+                                    contentDescription = "Filter"
+                                )
                             }
+
                         }
+
                     }
                     item {
-                        Log.d("jannefaen", forecast.weatherAtPos.weatherList.size.toString())
                         forecast.weatherAtPos.weatherList.forEach { input ->
                             val daysAhead = getNumberOfDaysAhead(input.date)
 
@@ -213,9 +210,11 @@ fun WeatherList(
 fun FilterDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
+    sizeOnList: Int
 
-    ) {
-    var sliderValue by remember { mutableFloatStateOf(24f) }
+) {
+    var sliderValue by remember { mutableFloatStateOf(sizeOnList.toFloat()) }
+    val uppperRange = sizeOnList.toFloat()
     AlertDialog(
         icon = {
             Icon(
@@ -237,8 +236,8 @@ fun FilterDialog(
                     Slider(
                         value = sliderValue,
                         onValueChange = { sliderValue = it },
-                        valueRange = 1f..24f,
-                        steps = 24
+                        valueRange = 1f..uppperRange,
+                        steps = sizeOnList
 
 
                     )
