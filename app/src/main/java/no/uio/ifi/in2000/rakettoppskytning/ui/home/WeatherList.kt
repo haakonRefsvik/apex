@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.ElevatedCard
@@ -77,6 +78,7 @@ fun WeatherList(
                                     .fillMaxHeight()
                                     .background(getColorFromStatusValue(input.closeToLimitScore))
                             )
+                            Spacer(modifier = Modifier.width(5.dp))
                             Row(
                                 modifier = Modifier.fillMaxSize(),
                                 horizontalArrangement = Arrangement.Center,
@@ -122,9 +124,9 @@ fun WeatherList(
                                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                     contentDescription = "Arrow"
                                 )
+                                Spacer(modifier = Modifier.width(5.dp))
                             }
                         }
-
                     }
                     Spacer(modifier = Modifier.height(7.5.dp))
                 }

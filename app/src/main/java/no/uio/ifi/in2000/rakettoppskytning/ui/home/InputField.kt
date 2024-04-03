@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -187,7 +188,8 @@ fun InputField(
                 Text("Legg til favoritter")
             }
             Spacer(modifier = Modifier.width(25.dp))
-            Button(modifier = Modifier.width(155.dp), onClick = {
+            Button(
+                modifier = Modifier.width(155.dp), onClick = {
                 controller?.hide()
                 homeScreenViewModel.getWeatherByCord(lat, lon, 24)
                 mapViewModel.moveMapCamera(lat, lon)
