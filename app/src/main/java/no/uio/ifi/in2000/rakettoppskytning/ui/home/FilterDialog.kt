@@ -74,9 +74,9 @@ fun FilterDialog(
                             onClick = {
 
                             },
-                            enabled = false
 
-                        )
+
+                            )
 
                         {
                             Row {
@@ -168,7 +168,7 @@ fun FilterDialog(
                         value = sliderValue,
                         onValueChange = { sliderValue = it },
                         valueRange = 1f..uppperRange,
-                        steps = sizeOnList
+                        steps = uppperRange.toInt()
 
 
                     )
