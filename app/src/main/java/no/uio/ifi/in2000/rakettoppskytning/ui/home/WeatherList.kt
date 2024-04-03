@@ -23,10 +23,12 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,17 +50,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherList(
     navController: NavHostController,
@@ -88,22 +93,27 @@ fun WeatherList(
                 content = {
                     item {
 
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Row {
 
-                        Column(
-                            modifier = Modifier.width(340.dp),
-                            horizontalAlignment = Alignment.End
-                        ) {
-                            IconButton(onClick = {
+                            Button(modifier = Modifier.width(155.dp), onClick = {
 
-                                openFilterDialog.value = true
+
                             }) {
-                                Image(
-                                    painter = painterResource(R.drawable.filter),
-                                    contentDescription = "Filter"
-                                )
+
+                                Text("Change time")
+                            }
+                            Spacer(modifier = Modifier.width(25.dp))
+                            Button(modifier = Modifier.width(155.dp), onClick = {
+                                openFilterDialog.value = true
+
+                            }) {
+                                Text("Filter")
                             }
 
+
                         }
+                        Spacer(modifier = Modifier.height(5.dp))
 
                     }
                     item {
