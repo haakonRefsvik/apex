@@ -41,6 +41,11 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
 
+    fun updateweatherAtPos(WeatherAtPos: WeatherAtPos) {
+        foreCastRep.updateWeatherAtPos(WeatherAtPos)
+
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
         bottomSheetState = SheetState(
@@ -61,7 +66,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     @OptIn(ExperimentalMaterial3Api::class)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
         Log.d("getWeather", "apicall")
         viewModelScope.launch(Dispatchers.IO) {
