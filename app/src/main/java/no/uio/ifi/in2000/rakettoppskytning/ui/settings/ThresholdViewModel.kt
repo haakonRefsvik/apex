@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdValues
 
 
@@ -20,29 +21,31 @@ class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
     private val thresholdRepo = repo
     private val map = thresholdRepo.getThresholdsMap()
 
-    val maxPrecipitation: MutableState<Double> = mutableDoubleStateOf(map["maxPrecipitation"] ?: 0.0)
-    val maxHumidity: MutableState<Double> = mutableDoubleStateOf(map["maxHumidity"] ?: 0.0)
-    val maxWind: MutableState<Double> = mutableDoubleStateOf(map["maxWind"] ?: 0.0)
-    val maxShearWind: MutableState<Double> = mutableDoubleStateOf(map["maxShearWind"] ?: 0.0)
-    val maxDewPoint: MutableState<Double> = mutableDoubleStateOf(map["maxDewPoint"] ?: 0.0)
+    val maxPrecipitation = mutableDoubleStateOf(map[ThresholdType.MAX_PRECIPITATION.name] ?: 0.0)
+    val maxHumidity = mutableDoubleStateOf(map[ThresholdType.MAX_HUMIDITY.name] ?: 0.0)
+    val maxWind = mutableDoubleStateOf(map[ThresholdType.MAX_WIND.name] ?: 0.0)
+    val maxShearWind = mutableDoubleStateOf(map[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0)
+    val maxDewPoint = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
+
+    val apogee = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
 
     /**
      * Takes the values from the mutableStates and saves them in the ThresholdRepository
      * */
     fun saveThresholdValues(){
 
-        val maxPrecipitation: Double = maxPrecipitation.value
-        val maxHumidity: Double = maxHumidity.value
-        val maxWind: Double = maxWind.value
-        val maxShearWind: Double = maxShearWind.value
-        val minDewPoint: Double = maxDewPoint.value
+        val maxPrecipitation: Double = maxPrecipitation.doubleValue
+        val maxHumidity: Double = maxHumidity.doubleValue
+        val maxWind: Double = maxWind.doubleValue
+        val maxShearWind: Double = maxShearWind.doubleValue
+        val minDewPoint: Double = maxDewPoint.doubleValue
 
         val map = hashMapOf<String, Double>()
-        map["maxPrecipitation"] = maxPrecipitation
-        map["maxHumidity"] = maxHumidity
-        map["maxWind"] = maxWind
-        map["maxShearWind"] = maxShearWind
-        map["maxDewPoint"] = minDewPoint
+        map[ThresholdType.MAX_PRECIPITATION.name] = maxPrecipitation
+        map[ThresholdType.MAX_HUMIDITY.name] = maxHumidity
+        map[ThresholdType.MAX_WIND.name] = maxWind
+        map[ThresholdType.MAX_SHEAR_WIND.name] = maxShearWind
+        map[ThresholdType.MAX_DEW_POINT.name] = minDewPoint
 
         thresholdRepo.updateThresholdValues(map)
     }

@@ -15,25 +15,35 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocationForecast(
     val type: String,
-    val geometry: Geometry,
+    //val geometry: Geometry,
     val properties: Properties,
 )
+/*
 @Serializable
 data class Geometry(
     val type: String,
     val coordinates: List<Double>,
 )
+
+ */
 @Serializable
 data class Properties(
-    val meta: Meta,
+    //val meta: Meta,
     val timeseries: List<Series>,
 )
+
+/*
+
+Kommenterer ut variabler som ikke blir brukt
+
 @Serializable
 data class Meta(
     @SerialName("updated_at")
     val updatedAt: String,
     val units: Units,
 )
+
+
 @Serializable
 data class Units(
     @SerialName("air_pressure_at_sea_level")
@@ -85,6 +95,8 @@ data class Units(
     @SerialName("wind_speed_percentile_90")
     val windSpeedPercentile90: String,
 )
+
+ */
 
 @Serializable
 data class Series(

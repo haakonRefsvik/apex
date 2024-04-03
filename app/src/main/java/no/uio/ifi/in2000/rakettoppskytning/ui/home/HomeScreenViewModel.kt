@@ -22,14 +22,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 
 data class WeatherUiState(
     val weatherAtPos: WeatherAtPos = WeatherAtPos()
+)
+
+data class HistoricalDataUIState(
+    val historicalData: List<HistoricalPrecipitation> = listOf()
 )
 
 class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
@@ -74,6 +79,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = WeatherUiState()
         )
+
+
 
     init {
         viewModelScope.launch {

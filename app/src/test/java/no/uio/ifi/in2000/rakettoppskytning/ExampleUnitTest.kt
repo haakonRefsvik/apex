@@ -6,7 +6,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.getVerticalSightKm
-import no.uio.ifi.in2000.rakettoppskytning.ui.details.visibilityConverter
 import org.junit.Test
 
 import org.junit.Assert.*
