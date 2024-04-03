@@ -40,11 +40,8 @@ data class HistoricalDataUIState(
 class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
+    val loading = mutableStateOf(false)
 
-    fun updateweatherAtPos(WeatherAtPos: WeatherAtPos) {
-        foreCastRep.updateWeatherAtPos(WeatherAtPos)
-
-    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -68,8 +65,10 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
         Log.d("getWeather", "apicall")
+        loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon, loadHours)
+            loading.value = false
         }
     }
 
@@ -79,7 +78,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = WeatherUiState()
         )
-
 
 
     init {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -42,6 +43,7 @@ fun HomeScreen(
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
+    val loading = homeScreenViewModel.loading
 
     Scaffold(
         snackbarHost = {
@@ -82,10 +84,16 @@ fun HomeScreen(
 
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            WeatherList(
-                                homeScreenViewModel = homeScreenViewModel,
-                                navController = navController,
-                            )
+                            if (loading.value) {
+                                CircularProgressIndicator()
+
+                            } else {
+                                WeatherList(
+                                    homeScreenViewModel = homeScreenViewModel,
+                                    navController = navController,
+                                )
+
+                            }
                         })
                 }) {
 
