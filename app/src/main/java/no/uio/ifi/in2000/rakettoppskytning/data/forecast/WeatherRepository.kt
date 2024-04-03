@@ -72,12 +72,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
                     return@forEachIndexed
                 }
 
-                var soilMoisture: Int? = null
-
-                if(soilForecast != null && soilIndex != -1){
-                    soilMoisture = ((soilForecast.hourly.soil_moisture_0_to_1cm[soilIndex + hour]) * 100).roundToInt()
-                }
-
+                val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
                 val date = series.time
                 val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
                 val closenessMap = thresholdRepository.getValueClosenessMap(series, vp)
@@ -92,6 +87,26 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
         }catch (e: Exception){
             _weatherAtPos.update { WeatherAtPos() }
         }
+    }
+
+    private fun errorCheckSoilForecast(soilForecast: SoilMoistureHourly?, soilIndex: Int, hour: Int): Int? {
+        if(soilForecast == null || soilIndex == -1){
+            return null     // check if it exists
+        }
+
+        val i = soilIndex + hour
+
+        if (i >= soilForecast.hourly.soil_moisture_0_to_1cm.size){
+            return null     // check if it has the index
+        }
+
+        val fraction = soilForecast.hourly.soil_moisture_0_to_1cm[i]
+
+        if (fraction == 0.0){
+            return null     // check if its exactly 0.0 (if it is, the position is very likely in the sea)
+        }
+
+        return (fraction * 100).roundToInt()
     }
 
     private fun getFirstSoilIndex(firstForecastDate: String?, soilForecast: SoilMoistureHourly?): Int{
