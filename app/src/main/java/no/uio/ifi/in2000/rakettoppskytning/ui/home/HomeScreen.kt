@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -25,15 +26,6 @@ import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
-
-fun String.isDouble(): Boolean {
-    return try {
-        this.toDouble()
-        true
-    } catch (e: NumberFormatException) {
-        false
-    }
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
@@ -51,6 +43,7 @@ fun HomeScreen(
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
 
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
+    val loading = homeScreenViewModel.loading
 
     Scaffold(
         snackbarHost = {
@@ -81,15 +74,26 @@ fun HomeScreen(
 
                         content =
                         {
-                            InputField(homeScreenViewModel = homeScreenViewModel, mapViewModel, state, onEvent)
+                            InputField(
+                                homeScreenViewModel = homeScreenViewModel,
+                                mapViewModel,
+                                state,
+                                onEvent
+                            )
 
 
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            WeatherList(
-                                homeScreenViewModel = homeScreenViewModel,
-                                navController = navController,
-                            )
+                            if (loading.value) {
+                                CircularProgressIndicator()
+
+                            } else {
+                                WeatherList(
+                                    homeScreenViewModel = homeScreenViewModel,
+                                    navController = navController,
+                                )
+
+                            }
                         })
                 }) {
 

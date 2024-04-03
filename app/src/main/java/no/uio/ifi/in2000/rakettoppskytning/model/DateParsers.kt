@@ -40,3 +40,12 @@ fun getNumberOfDaysAhead(dateString: String): Int {
     return period.days
 }
 
+/** Returns yesterdays date on the form year-month-day */
+@RequiresApi(Build.VERSION_CODES.O)
+fun dateNumberOfDaysAgo(n: Int): String {
+    val today = LocalDate.now()
+    val yesterday = today.minusDays(n.toLong())
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    return yesterday.format(formatter)
+}
+

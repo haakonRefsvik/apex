@@ -22,19 +22,26 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 
 data class WeatherUiState(
     val weatherAtPos: WeatherAtPos = WeatherAtPos()
 )
 
+data class HistoricalDataUIState(
+    val historicalData: List<HistoricalPrecipitation> = listOf()
+)
+
 class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
+    val loading = mutableStateOf(false)
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -56,11 +63,12 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     @OptIn(ExperimentalMaterial3Api::class)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
         Log.d("getWeather", "apicall")
+        loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon, loadHours)
+            loading.value = false
         }
     }
 
@@ -70,6 +78,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = WeatherUiState()
         )
+
 
     init {
         viewModelScope.launch {

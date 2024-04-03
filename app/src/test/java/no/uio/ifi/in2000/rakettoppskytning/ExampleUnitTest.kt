@@ -4,6 +4,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
+<<<<<<< HEAD
+=======
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.getVerticalSightKm
+>>>>>>> origin/main
 import org.junit.Test
 
 import org.junit.Assert.*
