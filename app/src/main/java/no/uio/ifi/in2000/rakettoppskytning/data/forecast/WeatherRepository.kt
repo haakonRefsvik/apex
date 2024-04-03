@@ -19,8 +19,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.Daily
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
@@ -61,7 +59,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
 
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
 
-            val gribFiles: List<File> = loadGribFromDataSource(lat, lon)
+            val gribFiles: List<File> = loadGribFromDataSource()
             val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
 
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
@@ -170,7 +168,7 @@ class WeatherRepository(private val thresholdRepository: ThresholdRepository, va
         return@coroutineScope deferredList.awaitAll<VerticalProfile>()
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun loadGribFromDataSource(lat: Double, lon: Double): List<File> {
+    private suspend fun loadGribFromDataSource(): List<File> {
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
         } catch (e: Exception) {
