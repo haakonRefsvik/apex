@@ -34,14 +34,24 @@ class ThresholdRepository(private val thresholdsDao: ThresholdsDao) {
 
     suspend fun updateThresholdValues(map: HashMap<String, Double>, thresholdsDao: ThresholdsDao){
         thresholds.valueMap = map
-        Log.d("threshold2: ",thresholds.toString() )
+        Log.d("kake3: ",map.toString() )
         thresholdsDao.updateThreshold(
+            /*
             Thresholds(
                 nedbor = thresholds.valueMap["maxPrecipitation"].toString(),
                 luftfuktighet = thresholds.valueMap["maxHumidity"].toString(),
                 vind = thresholds.valueMap["maxWind"].toString(),
                 shearWind = thresholds.valueMap["maxShearWind"].toString(),
                 duggpunkt = thresholds.valueMap["maxDewPoint"].toString(),
+            )
+
+             */
+            Thresholds(
+                nedbor = thresholds.valueMap[ThresholdType.MAX_PRECIPITATION.name].toString(),
+                luftfuktighet = thresholds.valueMap[ThresholdType.MAX_HUMIDITY.name].toString(),
+                vind = thresholds.valueMap[ThresholdType.MAX_WIND.name].toString(),
+                shearWind = thresholds.valueMap[ThresholdType.MAX_SHEAR_WIND.name].toString(),
+                duggpunkt = thresholds.valueMap[ThresholdType.MAX_DEW_POINT.name].toString(),
             )
         )
 
@@ -57,6 +67,7 @@ class ThresholdRepository(private val thresholdsDao: ThresholdsDao) {
      *     map["maxDewPoint"]
      * */
     fun getThresholdsMap(): HashMap<String, Double> {
+        Log.d("kake4: ", thresholds.valueMap.toString())
         return thresholds.valueMap
     }
 
@@ -153,11 +164,19 @@ suspend fun getThresholdValues(thresholdsDao: ThresholdsDao): ThresholdValues {
         // If threshold with ID 1 exists, create ThresholdValues from the retrieved data
         ThresholdValues(
             hashMapOf(
+                /*
                 "maxPrecipitation" to threshold.nedbor.toDouble(),
                 "maxHumidity" to threshold.luftfuktighet.toDouble(),
                 "maxWind" to threshold.vind.toDouble(),
                 "maxShearWind" to threshold.shearWind.toDouble(),
                 "maxDewPoint" to threshold.duggpunkt.toDouble()
+
+                 */
+                ThresholdType.MAX_PRECIPITATION.name to threshold.nedbor.toDouble(),
+                ThresholdType.MAX_HUMIDITY.name to threshold.luftfuktighet.toDouble(),
+                ThresholdType.MAX_WIND.name to threshold.vind.toDouble(),
+                ThresholdType.MAX_SHEAR_WIND.name to threshold.shearWind.toDouble(),
+                ThresholdType.MAX_DEW_POINT.name to threshold.duggpunkt.toDouble()
             )
         )
     } else {
@@ -180,12 +199,23 @@ suspend fun getThresholdValues(thresholdsDao: ThresholdsDao): ThresholdValues {
 
 
 fun getDefaultThresholdValues(): ThresholdValues {
+    /*
     val map = hashMapOf<String, Double>()
     map[ThresholdType.MAX_PRECIPITATION.name] = 0.0
     map[ThresholdType.MAX_HUMIDITY.name] = 90.0
     map[ThresholdType.MAX_WIND.name] = 20.0
     map[ThresholdType.MAX_SHEAR_WIND.name] = 25.0
     map[ThresholdType.MAX_DEW_POINT.name] = 5.0
+
+     */
+
+    val map = hashMapOf(
+        ThresholdType.MAX_PRECIPITATION.name to 0.0,
+        ThresholdType.MAX_HUMIDITY.name to 90.0,
+        ThresholdType.MAX_WIND.name to 20.0,
+        ThresholdType.MAX_SHEAR_WIND.name to 25.0,
+        ThresholdType.MAX_DEW_POINT.name to 5.0
+    )
 
     return ThresholdValues(map)
 }

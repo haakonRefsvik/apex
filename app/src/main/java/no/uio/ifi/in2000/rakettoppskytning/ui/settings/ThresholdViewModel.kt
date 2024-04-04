@@ -30,11 +30,13 @@ class ThresholdViewModel(repo: ThresholdRepository, private val thresholdsDao: T
     private val thresholdRepo = repo
     private val map = thresholdRepo.getThresholdsMap()
 
-    val maxPrecipitation = mutableDoubleStateOf(map[ThresholdType.MAX_PRECIPITATION.name] ?: 0.0)
-    val maxHumidity = mutableDoubleStateOf(map[ThresholdType.MAX_HUMIDITY.name] ?: 0.0)
-    val maxWind = mutableDoubleStateOf(map[ThresholdType.MAX_WIND.name] ?: 0.0)
-    val maxShearWind = mutableDoubleStateOf(map[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0)
-    val maxDewPoint = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
+
+
+    val maxPrecipitation: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_PRECIPITATION.name] ?: 0.0)
+    val maxHumidity: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_HUMIDITY.name] ?: 0.0)
+    val maxWind: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_WIND.name] ?: 0.0)
+    val maxShearWind: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0)
+    val maxDewPoint: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
 
     val apogee = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
 
@@ -42,12 +44,13 @@ class ThresholdViewModel(repo: ThresholdRepository, private val thresholdsDao: T
      * Takes the values from the mutableStates and saves them in the ThresholdRepository
      * */
     suspend fun saveThresholdValues(){
+        Log.d("kake1: ", map.toString())
 
-        val maxPrecipitation: Double = maxPrecipitation.doubleValue
-        val maxHumidity: Double = maxHumidity.doubleValue
-        val maxWind: Double = maxWind.doubleValue
-        val maxShearWind: Double = maxShearWind.doubleValue
-        val minDewPoint: Double = maxDewPoint.doubleValue
+        val maxPrecipitation: Double = maxPrecipitation.value
+        val maxHumidity: Double = maxHumidity.value
+        val maxWind: Double = maxWind.value
+        val maxShearWind: Double = maxShearWind.value
+        val minDewPoint: Double = maxDewPoint.value
 
         val map = hashMapOf<String, Double>()
         map[ThresholdType.MAX_PRECIPITATION.name] = maxPrecipitation
@@ -55,6 +58,8 @@ class ThresholdViewModel(repo: ThresholdRepository, private val thresholdsDao: T
         map[ThresholdType.MAX_WIND.name] = maxWind
         map[ThresholdType.MAX_SHEAR_WIND.name] = maxShearWind
         map[ThresholdType.MAX_DEW_POINT.name] = minDewPoint
+
+        Log.d("kake: ", map.toString())
 
         Log.d("threshold3: ", map.toString())
 

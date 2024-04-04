@@ -91,6 +91,12 @@ fun ThresholdPreview() {
 
  */
 
+
+
+
+
+//finne ut hvorfor null verdier legges inn i databasen:
+
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
