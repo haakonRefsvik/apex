@@ -42,6 +42,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,18 +60,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import androidx.navigation.compose.rememberNavController
 import com.mapbox.maps.extension.style.style
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryLight
 
+/*
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
@@ -83,6 +89,14 @@ fun ThresholdPreview() {
     )
 }
 
+ */
+
+
+
+
+
+//finne ut hvorfor null verdier legges inn i databasen:
+
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,7 +104,9 @@ fun ThresholdPreview() {
 fun ThresholdScreen(
     navController: NavHostController,
     thresholdViewModel: ThresholdViewModel,
-    weatherRepository: WeatherRepository
+    weatherRepository: WeatherRepository,
+    onThresholdEvent: (ThresholdsEvent) -> Unit,
+    thresholdState: ThresholdState
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -228,6 +244,8 @@ fun ThresholdScreen(
                         title = "Maks nedbør",
                         drawableId = R.drawable.vann,
                         suffix = "mm",
+                        onThresholdEvent = onThresholdEvent,
+                        thresholdState = thresholdState
                     )
                 }
                 item {
@@ -236,6 +254,8 @@ fun ThresholdScreen(
                         title = "Maks luftfuktighet",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "%",
+                        onThresholdEvent = onThresholdEvent,
+                        thresholdState = thresholdState
                     )
                 }
                 item {
@@ -244,6 +264,8 @@ fun ThresholdScreen(
                         title = "Maks vind",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
+                        onThresholdEvent = onThresholdEvent,
+                        thresholdState = thresholdState
                     )
                 }
                 item {
@@ -252,6 +274,8 @@ fun ThresholdScreen(
                         title = "Maks vindskjær",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
+                        onThresholdEvent = onThresholdEvent,
+                        thresholdState = thresholdState
                     )
                 }
                 item {
@@ -260,6 +284,8 @@ fun ThresholdScreen(
                         title = "Minimalt duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "℃",
+                        onThresholdEvent = onThresholdEvent,
+                        thresholdState = thresholdState
                     )
 
                 }
@@ -304,6 +330,8 @@ fun ThresholdScreen(
                         desc = "Sett rakettens høyeste punkt",
                         drawableId = R.drawable.rakett_pin2,
                         suffix = "moh",
+                        onThresholdEvent = onThresholdEvent,
+                        thresholdState = thresholdState,
                         numberOfDecimals = 0
                     )
                 }
@@ -311,12 +339,17 @@ fun ThresholdScreen(
             }
         }
     }
+
     DisposableEffect(Unit) {
-        onDispose {                                     // Things to do after closing screen:
-            thresholdViewModel.saveThresholdValues()    // update values in thresholdRepo
-            weatherRepository.thresholdValuesUpdated()  // update status-colors in the weatherCards
+        onDispose { // Things to do after closing screen:
+            CoroutineScope(Dispatchers.IO).launch {
+            thresholdViewModel.saveThresholdValues()     // update values in thresholdRepo
+            // onThresholdEvent(ThresholdsEvent.SaveThreshold)
+            weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
+        }
         }
     }
+
 }
 
 @Composable
@@ -326,6 +359,8 @@ fun ThresholdCard(
     desc: String = "",
     suffix: String,
     drawableId: Int,
+    onThresholdEvent: (ThresholdsEvent) -> Unit,
+    thresholdState: ThresholdState,
     numberOfDecimals: Int = 1,
     numberOfIntegers: Int = 2
 ) {
@@ -377,6 +412,15 @@ fun ThresholdCard(
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
+                    mutableValue.value = formatNewValue(input)
+
+                    when(title) {
+                        "Maks nedbør" -> {onThresholdEvent(ThresholdsEvent.SetNedbor(mutableValue.value.toString()))}
+                        "Maks luftfuktighet" -> {onThresholdEvent(ThresholdsEvent.SetLuftfuktighet(mutableValue.value.toString()))}
+                        "Maks vind" -> {onThresholdEvent(ThresholdsEvent.SetVind(mutableValue.value.toString()))}
+                        "Maks vindskjær" -> {onThresholdEvent(ThresholdsEvent.SetShearWind(mutableValue.value.toString()))}
+                        "Minimalt duggpunkt" -> {onThresholdEvent(ThresholdsEvent.SetDuggpunkt(mutableValue.value.toString()))}
+                    }
                     mutableValue.value = formatNewValue(input, numberOfIntegers)
                 },
                 //label = { Text(suffix) },

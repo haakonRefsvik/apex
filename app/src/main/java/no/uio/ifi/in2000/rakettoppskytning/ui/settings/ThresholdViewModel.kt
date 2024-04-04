@@ -3,42 +3,54 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdValues
 
 
-class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
+class ThresholdViewModel(repo: ThresholdRepository, private val thresholdsDao: ThresholdsDao) : ViewModel(){
     private val thresholdRepo = repo
     private val map = thresholdRepo.getThresholdsMap()
 
-    val maxPrecipitation = mutableDoubleStateOf(map[ThresholdType.MAX_PRECIPITATION.name] ?: 0.0)
-    val maxHumidity = mutableDoubleStateOf(map[ThresholdType.MAX_HUMIDITY.name] ?: 0.0)
-    val maxWind = mutableDoubleStateOf(map[ThresholdType.MAX_WIND.name] ?: 0.0)
-    val maxShearWind = mutableDoubleStateOf(map[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0)
-    val maxDewPoint = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
+
+
+    val maxPrecipitation: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_PRECIPITATION.name] ?: 0.0)
+    val maxHumidity: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_HUMIDITY.name] ?: 0.0)
+    val maxWind: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_WIND.name] ?: 0.0)
+    val maxShearWind: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0)
+    val maxDewPoint: MutableState<Double> = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
 
     val apogee = mutableDoubleStateOf(map[ThresholdType.MAX_DEW_POINT.name] ?: 0.0)
 
     /**
      * Takes the values from the mutableStates and saves them in the ThresholdRepository
      * */
-    fun saveThresholdValues(){
+    suspend fun saveThresholdValues(){
+        Log.d("kake1: ", map.toString())
 
-        val maxPrecipitation: Double = maxPrecipitation.doubleValue
-        val maxHumidity: Double = maxHumidity.doubleValue
-        val maxWind: Double = maxWind.doubleValue
-        val maxShearWind: Double = maxShearWind.doubleValue
-        val minDewPoint: Double = maxDewPoint.doubleValue
+        val maxPrecipitation: Double = maxPrecipitation.value
+        val maxHumidity: Double = maxHumidity.value
+        val maxWind: Double = maxWind.value
+        val maxShearWind: Double = maxShearWind.value
+        val minDewPoint: Double = maxDewPoint.value
 
         val map = hashMapOf<String, Double>()
         map[ThresholdType.MAX_PRECIPITATION.name] = maxPrecipitation
@@ -47,7 +59,80 @@ class ThresholdViewModel(repo: ThresholdRepository) : ViewModel(){
         map[ThresholdType.MAX_SHEAR_WIND.name] = maxShearWind
         map[ThresholdType.MAX_DEW_POINT.name] = minDewPoint
 
-        thresholdRepo.updateThresholdValues(map)
+        Log.d("kake: ", map.toString())
+
+        Log.d("threshold3: ", map.toString())
+
+        thresholdRepo.updateThresholdValues(map, thresholdsDao)
     }
 
+
+
+    private val _thresholds: Flow<Thresholds?> = thresholdsDao.getThresholdById(1)
+
+    private val _state = MutableStateFlow(ThresholdState())
+
+    val state = combine(_state, _thresholds) { state, thresholds ->
+        state.copy(
+            nedbor = thresholds?.nedbor ?: "",
+            luftfuktighet = thresholds?.luftfuktighet ?: "",
+            vind = thresholds?.vind ?: "",
+            shearWind = thresholds?.shearWind ?: "",
+            duggpunkt = thresholds?.duggpunkt ?: ""
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThresholdState())
+
+    fun onEvent(event: ThresholdsEvent) {
+        when(event) {
+            is ThresholdsEvent.SaveThreshold -> {
+                val nedbor = state.value.nedbor
+                val luftfuktighet = state.value.luftfuktighet
+                val vind = state.value.vind
+                val shearWind = state.value.shearWind
+                val duggpunkt = state.value.duggpunkt
+
+                if(nedbor.isBlank() || luftfuktighet.isBlank() || vind.isBlank()|| shearWind.isBlank() || duggpunkt.isBlank()) {
+                    return
+                }
+
+                val thresholds = Thresholds(
+                    nedbor = nedbor,
+                    luftfuktighet = luftfuktighet,
+                    vind = vind,
+                    shearWind = shearWind,
+                    duggpunkt = duggpunkt
+                )
+                viewModelScope.launch {
+                    thresholdsDao.updateThreshold(thresholds)
+                }
+
+            }
+            is ThresholdsEvent.SetNedbor -> {
+                _state.update { it.copy(
+                    nedbor = event.nedbor
+                ) }
+            }
+            is ThresholdsEvent.SetLuftfuktighet -> {
+                _state.update { it.copy(
+                    luftfuktighet = event.luftfuktighet
+                ) }
+            }
+            is ThresholdsEvent.SetVind -> {
+                _state.update { it.copy(
+                    vind = event.vind
+                ) }
+            }
+            is ThresholdsEvent.SetShearWind -> {
+                _state.update { it.copy(
+                    shearWind = event.shearWind
+                ) }
+            }
+            is ThresholdsEvent.SetDuggpunkt -> {
+                _state.update { it.copy(
+                    duggpunkt = event.duggpunkt
+                ) }
+            }
+        }
+    }
 }
+

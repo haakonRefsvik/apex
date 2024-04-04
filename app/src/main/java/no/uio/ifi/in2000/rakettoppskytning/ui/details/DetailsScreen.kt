@@ -70,6 +70,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun SoilPreview() {
@@ -87,6 +88,46 @@ fun DetailScreenPreview() {
     val vm = DetailsScreenViewModel(wr)
     DetailsScreen(navController = navController, backStackEntry = "", detailsScreenViewModel = vm)
 }
+
+ */
+
+/*
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview
+=======
+@Preview(showBackground = true)
+>>>>>>> origin/main
+@Composable
+fun SoilPreview() {
+    SoilCard(soilPercentage = 35)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun DetailScreenPreview() {
+    val navController = rememberNavController()
+<<<<<<< HEAD
+    DetailsScreen(
+        navController = navController,
+        backStackEntry = "1",
+        detailsScreenViewModel = DetailsScreenViewModel(
+            WeatherRepository(
+                ThresholdRepository(db.thresholdsDao),
+                GribRepository()
+            )
+        )
+    )
+=======
+    val gr = GribRepository()
+    val tr = ThresholdRepository()
+    val wr = WeatherRepository(tr, gr)
+    val vm = DetailsScreenViewModel(wr)
+    DetailsScreen(navController = navController, backStackEntry = "", detailsScreenViewModel = vm)
+>>>>>>> origin/main
+}
+
+ */
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
