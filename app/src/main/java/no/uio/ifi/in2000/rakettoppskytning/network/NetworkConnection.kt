@@ -19,7 +19,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 
-class NetworkConnection( context: Context):LiveData<Boolean>() {
+
+/*
+class NetworkConnection(private val context: Context) : LiveData<Boolean>() {
+
+    private var connectivityManager: ConnectivityManager =
+        context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     override fun onActive() {
         super.onActive()
@@ -31,20 +36,17 @@ class NetworkConnection( context: Context):LiveData<Boolean>() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
-
-    private var connectivityManager: ConnectivityManager =
-        context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    private val networkCallback = object: ConnectivityManager.NetworkCallback(){
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-
-            postValue(true)
-        }
-
-        override fun onUnavailable() {
-            super.onUnavailable()
-            postValue(false)
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            val hasInternetCapability =
+                networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            val hasWifiCapability =
+                networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            if (hasInternetCapability == true && hasWifiCapability == true) {
+                postValue(true)
+            }
         }
 
         override fun onLost(network: Network) {
@@ -53,27 +55,32 @@ class NetworkConnection( context: Context):LiveData<Boolean>() {
         }
     }
 
-    private fun checkNetworkConnectivity(){
-        val network = connectivityManager.activeNetwork
-        if(network == null)
+    private fun checkNetworkConnectivity() {
+        val networkInfo = connectivityManager.activeNetworkInfo
+        if (networkInfo == null || !networkInfo.isConnected) {
             postValue(false)
+            return
+        }
+
 
         val requestBuilder = NetworkRequest.Builder().apply {
-            addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+
             addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
             addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+
+
         }.build()
 
         connectivityManager.registerNetworkCallback(requestBuilder, networkCallback)
+
+
+
+
     }
-
-
-
 }
 
 
+ */
 /*
 
 

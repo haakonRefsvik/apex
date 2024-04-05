@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -51,6 +52,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
@@ -62,15 +64,20 @@ import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDatabase
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityObserver
 import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
-import no.uio.ifi.in2000.rakettoppskytning.network.NetworkConnection
+
+import no.uio.ifi.in2000.rakettoppskytning.network.NetworkConnectivityObserver
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
+import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
+    //val internetConnectionViewModel by viewModels<InternetConnectionViewModel>()
+
     val internetConnectionViewModel by viewModels<InternetConnectionViewModel>()
 
     val thresholdRepository = ThresholdRepository()
@@ -97,12 +104,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private lateinit var dialog: AlertDialog
+    private lateinit var connectivityObserver: ConnectivityObserver
+    @OptIn(ExperimentalCoroutinesApi::class)
     @SuppressLint("CoroutineCreationDuringComposition")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+        connectivityObserver = NetworkConnectivityObserver(applicationContext)
+
         ApiKeyHolder.in2000ProxyKey = resources.getString(string.in2000ProxyKey)
+
+
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
@@ -120,18 +133,51 @@ class MainActivity : ComponentActivity() {
                         thresholdViewModel = thresholdViewModel,
                         mapViewModel = mapViewModel,
                         internetConnectionViewModel = internetConnectionViewModel
+
                     )
 
 
 
+
+
+
+                    val status by connectivityObserver.observe().collectAsState(
+                        initial = ConnectivityObserver.Status.Available )
+
+
+                    if (status == ConnectivityObserver.Status.Lost || status == ConnectivityObserver.Status.Unavailable ) {
+                        // show the toast
+                        val toast = Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG)
+                        val toastLayout = layoutInflater.inflate(R.layout.toast, null)
+
+                        toast.view = toastLayout
+                        toast.duration = Toast.LENGTH_LONG
+
+                        val toastIcon = toastLayout.findViewById<ImageView>(R.id.toast_icon)
+                        toastIcon.setImageResource(R.drawable.info_24)
+
+                        val toastText = toastLayout.findViewById<TextView>(R.id.toast_text)
+                        toastText.text = "No internet connection"
+
+                        toast.show()
+                    }
+
+
+
+
+
+
+
+
+
+
+
+                    /*
                     val networkManager = NetworkConnection(this)
-                    networkManager.observe(this){ isConnected ->
+                    networkManager.observe(this) { isConnected ->
                         internetConnectionViewModel.isInternetConnected.value = isConnected
-                        if(!isConnected){
-                            //Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show()
-
-
-                            val toast = Toast(this)
+                        if (!isConnected) {
+                            val toast = Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG)
                             val toastLayout = layoutInflater.inflate(R.layout.toast, null)
 
                             toast.view = toastLayout
@@ -144,9 +190,42 @@ class MainActivity : ComponentActivity() {
                             toastText.text = "No internet connection"
 
                             toast.show()
-
                         }
                     }
+
+                     */
+
+
+                        /*
+                        val networkManager = NetworkConnection(this)
+                        networkManager.observe(this){ isConnected ->
+                            internetConnectionViewModel.isInternetConnected.value = isConnected
+                            if(!isConnected){
+                                //Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show()
+
+
+                                val toast = Toast(this)
+                                val toastLayout = layoutInflater.inflate(R.layout.toast, null)
+
+                                toast.view = toastLayout
+                                toast.duration = Toast.LENGTH_LONG
+
+                                val toastIcon = toastLayout.findViewById<ImageView>(R.id.toast_icon)
+                                toastIcon.setImageResource(R.drawable.info_24)
+
+                                val toastText = toastLayout.findViewById<TextView>(R.id.toast_text)
+                                toastText.text = "No internet connection"
+
+                                toast.show()
+
+                            }
+
+
+                        }
+
+                         */
+
+
 
 
                 }

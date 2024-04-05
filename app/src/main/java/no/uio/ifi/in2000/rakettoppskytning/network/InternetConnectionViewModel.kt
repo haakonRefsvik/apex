@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.network
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 

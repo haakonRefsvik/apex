@@ -184,8 +184,8 @@ fun InputField(
                     onEvent(FavoriteEvent.ShowDialog)
                 }
 
-            },
-                enabled = isInternetConnected?: false
+            }
+                //enabled = isInternetConnected?: false
             ) {
                 Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
 
@@ -201,6 +201,7 @@ fun InputField(
                 }
                 Text("Legg til favoritter")
             }
+
             Spacer(modifier = Modifier.width(25.dp))
             Button(modifier = Modifier.width(155.dp), onClick = {
                 controller?.hide()
@@ -211,7 +212,10 @@ fun InputField(
                     delay(1000)
                     scaffoldState.bottomSheetState.expand()
                 }
-            }) {
+            }
+
+                //enabled = isInternetConnected?: false
+                ) {
                 Text("Hent værdata")
             }
             Spacer(modifier = Modifier.height(70.dp))
