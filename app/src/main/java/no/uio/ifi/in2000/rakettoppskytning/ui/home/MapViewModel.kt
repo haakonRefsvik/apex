@@ -37,7 +37,7 @@ class MapViewModel() : ViewModel() {
 
     private val _lat = mutableDoubleStateOf(initLat)
     private val _lon = mutableDoubleStateOf(initLon)
-    private val _favorite = mutableStateOf(Favorite("","",""))
+    private val _favorite = mutableStateOf(Favorite("", "", ""))
 
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
@@ -45,7 +45,6 @@ class MapViewModel() : ViewModel() {
 
     private val cam: CameraOptions = CameraOptions.Builder()
         .center(Point.fromLngLat(initLon, initLat))
-        .pitch(10.0)
         .zoom(10.0)
         .build()
 
@@ -56,7 +55,7 @@ class MapViewModel() : ViewModel() {
     fun updateCamera(lat: Double, lon: Double) {
         val newCameraState = CameraOptions.Builder()
             .center(Point.fromLngLat(lon, lat))
-            .zoom(10.0)
+            .pitch(0.0)
             .build()
         _cam.value = newCameraState
     }
@@ -65,7 +64,7 @@ class MapViewModel() : ViewModel() {
     val mapViewportState: MapViewportState = MapViewportState()
 
     @OptIn(MapboxExperimental::class)
-    fun moveMapCamera(lat: Double, lon: Double){
+    fun moveMapCamera(lat: Double, lon: Double) {
         Log.d("moveMap 1: ", "$lat og $lon")
 
         val newCameraPosition = CameraOptions.Builder()
