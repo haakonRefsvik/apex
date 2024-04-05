@@ -412,7 +412,7 @@ fun ThresholdCard(
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
-                    mutableValue.value = formatNewValue(input)
+                    mutableValue.value = formatNewValue(input, numberOfIntegers)
 
                     when(title) {
                         "Maks nedbør" -> {onThresholdEvent(ThresholdsEvent.SetNedbor(mutableValue.value.toString()))}
@@ -479,6 +479,10 @@ fun formatNewValue(input: String, numberOfIntegers: Int): Double {
     }
 
     val r = (formattedIntegerValue + decimalPart)
+
+    if(r == ""){
+        return 0.0
+    }
 
     return (r).toDouble()
 }
