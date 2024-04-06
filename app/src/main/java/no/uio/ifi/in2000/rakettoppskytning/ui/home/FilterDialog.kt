@@ -10,9 +10,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
@@ -27,11 +32,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Switch
@@ -42,6 +49,8 @@ import androidx.compose.ui.unit.sp
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+
+data class filtercard(val icon: Int, val text: String)
 
 @Composable
 fun FilterDialog(
@@ -120,37 +129,85 @@ fun FilterDialog(
 
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text("Choose a value to filter/sort:", fontSize = 10.sp)
+                    Text(
+                        "Choose a value to filter/sort:",
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
-                    Row {
-                        for (i in 0..2) {
+                    val gridItems: List<filtercard> = listOf(
+                        filtercard(R.drawable.vind2, "Wind strength"),
+                        filtercard(R.drawable.vind2, "Wind direction"),
+                        filtercard(R.drawable.vann, "Rainfall"),
+                        filtercard(R.drawable.eye, "View distance"),
+
+                        filtercard(R.drawable.luftfuktighet, "Air humidity"),
+                        filtercard(R.drawable.eye, "Dew point"),
+
+                        )
+                    var markedCardIndex by remember { mutableIntStateOf(-1) }
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(118.dp),
+                        columns = GridCells.Adaptive(75.dp),
+
+                        ) {
+                        itemsIndexed(gridItems) { index, item ->
                             ElevatedCard(
                                 modifier = Modifier
-                                    .width(85.dp)
-                                    .height(50.dp)
-                            ) {
-                                Text("s")
+                                    .height(60.dp)
+                                    .padding(5.dp)
+                                    .alpha(1f),
+                                onClick = { markedCardIndex = index },
+
+
+                                ) {
+                                Row {
+
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(25.dp)
+                                            .padding(start = 5.dp, top = 5.dp),
+                                        painter = painterResource(item.icon),
+                                        contentDescription = item.text
+                                    )
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.End,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        if (index == markedCardIndex) {
+                                            Icon(
+                                                Icons.Default.Check,
+                                                contentDescription = "Checkmark",
+                                                modifier = Modifier
+                                                    .size(18.dp)
+                                                    .padding(end = 5.dp)
+                                            )
+
+                                        }
+
+
+                                    }
+
+                                }
+                                Text(
+                                    text = item.text,
+                                    fontSize = 8.sp,
+                                    modifier = Modifier.padding(start = 5.dp)
+                                )
 
                             }
-                            Spacer(modifier = Modifier.width(7.5.dp))
                         }
-                    }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Row {
-                        for (i in 0..2) {
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .width(85.dp)
-                                    .height(50.dp)
-                            ) {
-                                Text("2")
-                                Text("Vindstyrke", fontSize = 10.sp)
 
-                            }
-                            Spacer(modifier = Modifier.width(7.5.dp))
-                        }
                     }
+
                     Spacer(modifier = Modifier.height(10.dp))
+                    if (markedCardIndex in 0..5) {
+                        Text(markedCardIndex.toString())
+
+                    }
 
 
                 }

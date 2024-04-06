@@ -107,6 +107,13 @@ fun WeatherList(
                                 openFilterDialog.value = true
 
                             }) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(20.dp),
+                                    painter = painterResource(R.drawable.filter),
+                                    contentDescription = "Filter"
+                                )
+                                Spacer(modifier = Modifier.width(5.dp))
                                 Text("Filter")
                             }
 
