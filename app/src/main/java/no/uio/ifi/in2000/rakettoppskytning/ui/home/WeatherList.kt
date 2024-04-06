@@ -80,9 +80,9 @@ fun WeatherList(
 
                 openFilterDialog.value -> {
                     FilterDialog(
-                        onDismissRequest = { openFilterDialog.value = false },
-                        onConfirmation = { openFilterDialog.value = false },
-                        sizeOnList = forecast.weatherAtPos.weatherList.size
+//                        onDismissRequest = { openFilterDialog.value = false },
+//                        onConfirmation = { openFilterDialog.value = false },
+//                        sizeOnList = forecast.weatherAtPos.weatherList.size
                     )
                 }
             }
