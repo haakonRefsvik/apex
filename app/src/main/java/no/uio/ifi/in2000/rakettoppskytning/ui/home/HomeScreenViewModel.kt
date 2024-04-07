@@ -31,6 +31,8 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
 import kotlin.math.roundToInt
 
 data class WeatherUiState(
@@ -100,6 +102,17 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
                 weatherAtPos.sortedBy { it.series.data.next1Hours?.details?.precipitationAmount }
 
             3 -> {
+                weatherAtPos =
+                    weatherAtPos.sortedBy {
+                        it.series.data.instant.details.fogAreaFraction?.let { it1 ->
+                            getVerticalSightKmNumber(
+                                it1,
+                                it.series.data.instant.details.cloudAreaFractionLow,
+                                it.series.data.instant.details.cloudAreaFractionMedium,
+                                it.series.data.instant.details.cloudAreaFractionHigh
+                            )
+                        }
+                    }
 
             }
 
