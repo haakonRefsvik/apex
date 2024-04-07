@@ -96,42 +96,40 @@ fun WeatherList(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(5.dp))
+        Row {
+
+            Button(modifier = Modifier.width(155.dp), onClick = {
+
+
+            }) {
+
+                Text("Change time")
+            }
+            Spacer(modifier = Modifier.width(25.dp))
+            Button(modifier = Modifier.width(155.dp), onClick = {
+                openFilterDialog.value = true
+
+            }) {
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp),
+                    painter = painterResource(R.drawable.filter),
+                    contentDescription = "Filter"
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text("Filter")
+            }
+
+
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+
 
 
         LazyColumn(
             content = {
-                item {
 
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Row {
-
-                        Button(modifier = Modifier.width(155.dp), onClick = {
-
-
-                        }) {
-
-                            Text("Change time")
-                        }
-                        Spacer(modifier = Modifier.width(25.dp))
-                        Button(modifier = Modifier.width(155.dp), onClick = {
-                            openFilterDialog.value = true
-
-                        }) {
-                            Icon(
-                                modifier = Modifier
-                                    .size(20.dp),
-                                painter = painterResource(R.drawable.filter),
-                                contentDescription = "Filter"
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text("Filter")
-                        }
-
-
-                    }
-                    Spacer(modifier = Modifier.height(5.dp))
-
-                }
                 item {
                     forecast.weatherAtPos.weatherList.forEach { input ->
                         val daysAhead = getNumberOfDaysAhead(input.date)

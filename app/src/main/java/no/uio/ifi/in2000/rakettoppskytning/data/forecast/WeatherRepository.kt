@@ -113,6 +113,7 @@ class WeatherRepository(
             _weatherAtPosCpy = updatedWeatherAtPos
             _weatherAtPos.update { updatedWeatherAtPos }
         } catch (e: Exception) {
+            _weatherAtPosCpy = WeatherAtPos()
             _weatherAtPos.update { WeatherAtPos() }
         }
     }
