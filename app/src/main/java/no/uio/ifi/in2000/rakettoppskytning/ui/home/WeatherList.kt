@@ -71,153 +71,163 @@ fun WeatherList(
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
     val openFilterDialog = remember { mutableStateOf(false) }
 
-    if (forecast.weatherAtPos.weatherList.isNotEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            when {
+    if (forecast.weatherAtPos.weatherList.isNotEmpty() || homeScreenViewModel.hasBeenFiltered.value) {
+//        Box(
+//            modifier = Modifier.fillMaxSize(),
+//            contentAlignment = Alignment.Center
+//        ) {
+        when {
 
-                openFilterDialog.value -> {
-                    FilterDialog(
-//                        onDismissRequest = { openFilterDialog.value = false },
-//                        onConfirmation = { openFilterDialog.value = false },
-//                        sizeOnList = forecast.weatherAtPos.weatherList.size
-                    )
-                }
+            openFilterDialog.value -> {
+                FilterDialog(
+                    onDismissRequest = {
+                        openFilterDialog.value = false
+
+                    },
+                    onResetRequest = {
+                        homeScreenViewModel.resetFilter()
+                    },
+                    onConfirmation = {
+                        openFilterDialog.value = false
+                        homeScreenViewModel.filterList()
+                    },
+                    homeScreenViewModel = homeScreenViewModel
+
+                )
             }
+        }
 
 
-            LazyColumn(
-                content = {
-                    item {
+        LazyColumn(
+            content = {
+                item {
 
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Row {
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Row {
 
-                            Button(modifier = Modifier.width(155.dp), onClick = {
-
-
-                            }) {
-
-                                Text("Change time")
-                            }
-                            Spacer(modifier = Modifier.width(25.dp))
-                            Button(modifier = Modifier.width(155.dp), onClick = {
-                                openFilterDialog.value = true
-
-                            }) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(20.dp),
-                                    painter = painterResource(R.drawable.filter),
-                                    contentDescription = "Filter"
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text("Filter")
-                            }
+                        Button(modifier = Modifier.width(155.dp), onClick = {
 
 
+                        }) {
+
+                            Text("Change time")
                         }
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.width(25.dp))
+                        Button(modifier = Modifier.width(155.dp), onClick = {
+                            openFilterDialog.value = true
+
+                        }) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(20.dp),
+                                painter = painterResource(R.drawable.filter),
+                                contentDescription = "Filter"
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text("Filter")
+                        }
+
 
                     }
-                    item {
-                        forecast.weatherAtPos.weatherList.forEach { input ->
-                            val daysAhead = getNumberOfDaysAhead(input.date)
+                    Spacer(modifier = Modifier.height(5.dp))
 
-                            Spacer(modifier = Modifier.height(7.5.dp))
-                            ElevatedCard(
-                                modifier = Modifier
-                                    .height(80.dp)
-                                    .width(340.dp),
-                                onClick = {
-                                    navController.navigate("DetailsScreen/${input.date}")
-                                }
-                            )
-                            {
-                                Row {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .width(10.dp)
-                                            .fillMaxHeight()
-                                            .background(getColorFromStatusValue(input.closeToLimitScore))
-                                    )
-                                    Row(
-                                        modifier = Modifier.fillMaxSize(),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
+                }
+                item {
+                    forecast.weatherAtPos.weatherList.forEach { input ->
+                        val daysAhead = getNumberOfDaysAhead(input.date)
+
+                        Spacer(modifier = Modifier.height(7.5.dp))
+                        ElevatedCard(
+                            modifier = Modifier
+                                .height(80.dp)
+                                .width(340.dp),
+                            onClick = {
+                                navController.navigate("DetailsScreen/${input.date}")
+                            }
+                        )
+                        {
+                            Row {
+                                Spacer(
+                                    modifier = Modifier
+                                        .width(10.dp)
+                                        .fillMaxHeight()
+                                        .background(getColorFromStatusValue(input.closeToLimitScore))
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(
+                                        modifier = Modifier.width(65.dp),
+                                        horizontalAlignment = Alignment.Start,
                                     ) {
-                                        Column(
-                                            modifier = Modifier.width(65.dp),
-                                            horizontalAlignment = Alignment.Start,
-                                        ) {
-                                            Text(
-                                                input.series.time.substring(11, 16),
-                                                fontSize = 20.sp
-                                            )
-                                            if (daysAhead == 1) {
-                                                Text(text = "Imorgen", fontSize = 14.sp)
-                                            }
+                                        Text(
+                                            input.series.time.substring(11, 16),
+                                            fontSize = 20.sp
+                                        )
+                                        if (daysAhead == 1) {
+                                            Text(text = "Imorgen", fontSize = 14.sp)
                                         }
-                                        Spacer(modifier = Modifier.width(50.dp))
-                                        Column {
-                                            Text(
-                                                "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
+                                    }
+                                    Spacer(modifier = Modifier.width(50.dp))
+                                    Column {
+                                        Text(
+                                            "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
 
-                                        }
+                                    }
 
-                                        Spacer(modifier = Modifier.width(27.5.dp))
+                                    Spacer(modifier = Modifier.width(27.5.dp))
 
-                                        Spacer(modifier = Modifier.width(15.dp))
-                                        input.series.data.next1Hours?.summary?.let {
-                                            Image(
-                                                modifier = Modifier.size(55.dp),
+                                    Spacer(modifier = Modifier.width(15.dp))
+                                    input.series.data.next1Hours?.summary?.let {
+                                        Image(
+                                            modifier = Modifier.size(55.dp),
 
-                                                painter = painterResource(
-                                                    id = ForeCastSymbols.valueOf(
-                                                        it.symbolCode.uppercase()
-                                                    ).id
-                                                ),
-                                                contentDescription = it.symbolCode
-                                            )
-                                        }
-
-                                        Icon(
-                                            modifier = Modifier.size(20.dp),
-                                            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                            contentDescription = "Arrow"
+                                            painter = painterResource(
+                                                id = ForeCastSymbols.valueOf(
+                                                    it.symbolCode.uppercase()
+                                                ).id
+                                            ),
+                                            contentDescription = it.symbolCode
                                         )
                                     }
+
+                                    Icon(
+                                        modifier = Modifier.size(20.dp),
+                                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                        contentDescription = "Arrow"
+                                    )
                                 }
-
                             }
-                            Spacer(modifier = Modifier.height(7.5.dp))
-                        }
-                    }
-                })
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color.Black // Adjust the color as needed
-                            ),
-                            startY = 0f,
-                            endY = 2800f // Adjust the endY value to control the gradient height
-                        )
-                    )
-            )
-        }
+                        }
+                        Spacer(modifier = Modifier.height(7.5.dp))
+                    }
+                }
+            })
+
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(
+//                        brush = Brush.verticalGradient(
+//                            colors = listOf(
+//                                Color.Transparent,
+//                                Color.Transparent,
+//                                Color.Transparent,
+//                                Color.Black // Adjust the color as needed
+//                            ),
+//                            startY = 0f,
+//                            endY = 2800f // Adjust the endY value to control the gradient height
+//                        )
+//                    )
+//            )
     }
+//    }
 
 }
 
