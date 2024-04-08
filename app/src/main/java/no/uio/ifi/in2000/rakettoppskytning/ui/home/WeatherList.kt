@@ -172,7 +172,7 @@ fun WeatherList(
                                             Text(text = "Imorgen", fontSize = 14.sp)
                                         }
                                     }
-                                    Spacer(modifier = Modifier.width(50.dp))
+                                    Spacer(modifier = Modifier.width(40.dp))
                                     Column {
                                         when (homeScreenViewModel.markedCardIndex.intValue) {
                                             0 -> {
@@ -182,13 +182,13 @@ fun WeatherList(
                                                     "${input.series.data.instant.details.windSpeed} m/s",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier.width(80.dp)
                                                 )
                                             }
 
                                             1 -> {
                                                 Box(
-                                                    modifier = Modifier.width(75.dp),
+                                                    modifier = Modifier.width(80.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Icon(
@@ -211,7 +211,7 @@ fun WeatherList(
                                                     "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier.width(80.dp)
                                                 )
 
                                             3 -> {
@@ -228,7 +228,7 @@ fun WeatherList(
                                                     visibility,
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier.width(80.dp)
                                                 )
                                             }
 
@@ -238,7 +238,7 @@ fun WeatherList(
                                                     "${input.series.data.instant.details.relativeHumidity} %",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier.width(80.dp)
                                                 )
 
                                             5 ->
@@ -246,7 +246,7 @@ fun WeatherList(
                                                     "${input.series.data.instant.details.dewPointTemperature} °c",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier.width(80.dp)
                                                 )
 
                                             else ->
@@ -254,7 +254,7 @@ fun WeatherList(
                                                     "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier.width(80.dp)
                                                 )
                                         }
 
@@ -264,7 +264,10 @@ fun WeatherList(
                                     Spacer(modifier = Modifier.width(27.5.dp))
 
                                     Spacer(modifier = Modifier.width(15.dp))
+
+
                                     input.series.data.next1Hours?.summary?.let {
+
                                         Image(
                                             modifier = Modifier.size(55.dp),
 
@@ -276,6 +279,19 @@ fun WeatherList(
                                             contentDescription = it.symbolCode
                                         )
                                     }
+                                        ?: run {
+                                            Box(
+                                                modifier = Modifier.size(55.dp),
+                                                contentAlignment = Alignment.CenterStart
+                                            ) {
+                                                Text(
+                                                    text = "N/A",
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 20.sp
+                                                )
+                                            }
+
+                                        }
 
                                     Icon(
                                         modifier = Modifier.size(20.dp),

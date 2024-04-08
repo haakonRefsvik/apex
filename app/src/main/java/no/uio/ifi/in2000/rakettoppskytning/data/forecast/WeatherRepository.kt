@@ -85,10 +85,6 @@ class WeatherRepository(
                 getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
 
             allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
-                if (hour >= loadHours) {
-                    return@forEachIndexed
-                }
-
                 val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
                 val date = series.time
                 val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
