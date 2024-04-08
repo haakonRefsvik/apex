@@ -28,7 +28,7 @@ import kotlin.math.roundToInt
 
 
 class WeatherRepository(
-    private val thresholdRepository: ThresholdRepository,
+    private val settingsRepository: SettingsRepository,
     val gribRepository: GribRepository
 ) {
     private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
@@ -40,8 +40,8 @@ class WeatherRepository(
     fun thresholdValuesUpdated() {
         val weatherAtPos = _weatherAtPos.value
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
-        val closenessMap = thresholdRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
-        val score = thresholdRepository.getReadinessScore(closenessMap)
+        val closenessMap = settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
+        val score = settingsRepository.getReadinessScore(closenessMap)
             WeatherAtPosHour(
                 weather.date,
                 getHourFromDate(weather.date),

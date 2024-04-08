@@ -138,6 +138,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
         Log.d("getWeather", "apicall")
         loading.value = true
