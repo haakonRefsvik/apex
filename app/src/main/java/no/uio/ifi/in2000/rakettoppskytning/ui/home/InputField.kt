@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
@@ -199,7 +202,14 @@ fun InputField(
                 }
 
             }) {
-                Text("Legg til favoritter")
+
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Text("Add favorite")
             }
             Spacer(modifier = Modifier.width(25.dp))
             Button(
@@ -213,7 +223,7 @@ fun InputField(
                         scaffoldState.bottomSheetState.expand()
                     }
                 }) {
-                Text("Hent værdata")
+                Text("Get weatherdata")
             }
             Spacer(modifier = Modifier.height(70.dp))
 

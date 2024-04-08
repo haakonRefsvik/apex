@@ -4,10 +4,13 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.CalendarLocale
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +36,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import kotlin.math.roundToInt
 
 data class WeatherUiState(
@@ -55,6 +61,12 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     val text = mutableStateOf(options[0])
     val markedCardIndex = mutableIntStateOf(-1)
     val hasBeenFiltered = mutableStateOf(false)
+    private val initialSelectedStartDateMillis = mutableStateOf(Calendar.getInstance())
+    private val initialSelectedEndDateMillis = mutableStateOf(Calendar.getInstance())
+    private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    var startISOtime: String = ""
+    var endISOtime: String = ""
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -132,6 +144,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             weatherAtPos = weatherAtPos.reversed()
 
         }
+        weatherAtPos = weatherAtPos.filter { it.series.time in startISOtime..endISOtime }
+
 
 
         foreCastRep.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
@@ -171,10 +185,41 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
 
     init {
+
+        initialSelectedStartDateMillis.value.time = Date()
+
+        initialSelectedEndDateMillis.value.time = Date()
+
+        initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
+        startISOtime =
+            sdf.format(initialSelectedStartDateMillis.value.timeInMillis)
+                .replaceRange(14, 19, "00:00")
+
+        endISOtime = sdf.format(initialSelectedEndDateMillis.value.timeInMillis)
         viewModelScope.launch {
             gribRepo.loadGribFiles()
         }
     }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    val dtrpState = mutableStateOf(
+        DateRangePickerState(
+            CalendarLocale("NO"),
+            yearRange = 2024..2024,
+            initialSelectedStartDateMillis = initialSelectedStartDateMillis.value.timeInMillis,
+            initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis
+        )
+    )
+    val validateHour = { x: Int -> if (x == 23) 0 else x }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    val tiState = mutableStateOf(
+        TimePickerState(
+            initialHour = validateHour(initialSelectedStartDateMillis.value.time.hours),
+            0,
+            true
+        )
+    )
 
 
     private val _favorites =
