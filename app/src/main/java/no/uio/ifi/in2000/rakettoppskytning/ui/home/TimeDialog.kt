@@ -46,7 +46,7 @@ fun TimeDialog(
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val dtrpState = homeScreenViewModel.dtrpState.value
     val tiState = homeScreenViewModel.tiState.value
-
+    val hourcheck = { x: Int -> if (x in 0..9) "0${x}" else x.toString() }
 
     DatePickerDialog(
         modifier = Modifier.fillMaxWidth(),
@@ -61,11 +61,20 @@ fun TimeDialog(
         },
         confirmButton = {
             Button(onClick = {
-
                 homeScreenViewModel.startISOtime = sdf.format(dtrpState.selectedStartDateMillis)
-                    .replaceRange(11, 15, "${tiState.hour}:${tiState.minute}")
-                homeScreenViewModel.endISOtime = sdf.format(dtrpState.selectedEndDateMillis)
-                    .replaceRange(11, 15, "${tiState.hour}:${tiState.minute}")
+                    .replaceRange(11, 16, "${hourcheck(tiState.hour)}:${hourcheck(tiState.minute)}")
+                if (dtrpState.selectedEndDateMillis == null) {
+                    homeScreenViewModel.endISOtime = homeScreenViewModel.startISOtime
+                } else {
+                    homeScreenViewModel.endISOtime = sdf.format(dtrpState.selectedEndDateMillis)
+                        .replaceRange(
+                            11,
+                            16,
+                            "${hourcheck(tiState.hour)}:${hourcheck(tiState.minute)}"
+                        )
+
+                }
+
                 homeScreenViewModel.filterList()
                 onDismissRequest()
             }) {

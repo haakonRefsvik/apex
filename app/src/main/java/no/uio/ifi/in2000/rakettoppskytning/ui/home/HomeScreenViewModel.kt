@@ -63,7 +63,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     val hasBeenFiltered = mutableStateOf(false)
     private val initialSelectedStartDateMillis = mutableStateOf(Calendar.getInstance())
     private val initialSelectedEndDateMillis = mutableStateOf(Calendar.getInstance())
-    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     var startISOtime: String = ""
     var endISOtime: String = ""
 
@@ -185,16 +185,17 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
 
     init {
+
         initialSelectedStartDateMillis.value.time = Date()
+
         initialSelectedEndDateMillis.value.time = Date()
-        initialSelectedStartDateMillis.value.add(Calendar.HOUR_OF_DAY, -1)
+
         initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
-        startISOtime = sdf.format(initialSelectedStartDateMillis.value.timeInMillis)
+        startISOtime =
+            sdf.format(initialSelectedStartDateMillis.value.timeInMillis)
+                .replaceRange(14, 19, "00:00")
+
         endISOtime = sdf.format(initialSelectedEndDateMillis.value.timeInMillis)
-
-        Log.d("Timestampsss", startISOtime)
-        Log.d("Timestampsss", endISOtime)
-
         viewModelScope.launch {
             gribRepo.loadGribFiles()
         }
@@ -209,11 +210,12 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis
         )
     )
+    val validateHour = { x: Int -> if (x == 23) 0 else x }
 
     @OptIn(ExperimentalMaterial3Api::class)
     val tiState = mutableStateOf(
         TimePickerState(
-            initialHour = initialSelectedStartDateMillis.value.time.hours,
+            initialHour = validateHour(initialSelectedStartDateMillis.value.time.hours),
             0,
             true
         )
