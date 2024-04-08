@@ -218,8 +218,14 @@ fun InputField(
         Spacer(modifier = Modifier.height(2.5.dp))
         if (state.favorites.isNotEmpty()) {
             Row(modifier = Modifier.width(340.dp)) {
+                if (state.favorites.size == 1) {
+                    Text("Favorite location:", fontSize = 14.sp)
 
-                Text("Favorite location/s:", fontSize = 14.sp)
+                } else {
+                    Text("Favorite locations:", fontSize = 14.sp)
+                }
+
+
             }
 
         }

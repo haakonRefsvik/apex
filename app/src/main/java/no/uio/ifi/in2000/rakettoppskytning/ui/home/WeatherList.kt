@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.AlertDialog
@@ -41,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -56,6 +59,7 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
@@ -170,11 +174,90 @@ fun WeatherList(
                                     }
                                     Spacer(modifier = Modifier.width(50.dp))
                                     Column {
-                                        Text(
-                                            "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                        when (homeScreenViewModel.markedCardIndex.intValue) {
+                                            0 -> {
+
+
+                                                Text(
+                                                    "${input.series.data.instant.details.windSpeed} m/s",
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.width(75.dp)
+                                                )
+                                            }
+
+                                            1 -> {
+                                                Box(
+                                                    modifier = Modifier.width(75.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Icon(
+
+                                                        Icons.AutoMirrored.Filled.ArrowForward,
+                                                        modifier = Modifier
+                                                            .size(30.dp)
+                                                            .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
+                                                        contentDescription = "Location"
+                                                    )
+
+
+                                                }
+
+                                            }
+
+
+                                            2 ->
+                                                Text(
+                                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.width(75.dp)
+                                                )
+
+                                            3 -> {
+                                                val d = input.series.data.instant.details
+                                                val fog: Double = d.fogAreaFraction ?: 0.0
+                                                val visibility = getVerticalSightKm(
+                                                    fog,
+                                                    d.cloudAreaFractionLow,
+                                                    d.cloudAreaFractionMedium,
+                                                    d.cloudAreaFractionHigh,
+                                                )
+
+                                                Text(
+                                                    visibility,
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.width(75.dp)
+                                                )
+                                            }
+
+
+                                            4 ->
+                                                Text(
+                                                    "${input.series.data.instant.details.relativeHumidity} %",
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.width(75.dp)
+                                                )
+
+                                            5 ->
+                                                Text(
+                                                    "${input.series.data.instant.details.dewPointTemperature} °c",
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.width(75.dp)
+                                                )
+
+                                            else ->
+                                                Text(
+                                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.width(75.dp)
+                                                )
+                                        }
+
 
                                     }
 
