@@ -271,8 +271,9 @@ fun InputField(
                                 verticalAlignment = Alignment.CenterVertically
 
                             ) {
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Icon(
-                                    modifier = Modifier.size(35.dp),
+                                    modifier = Modifier.size(25.dp),
                                     imageVector = Icons.Default.Place,
                                     contentDescription = "Location",
                                     tint = Color(216, 64, 64, 255)
