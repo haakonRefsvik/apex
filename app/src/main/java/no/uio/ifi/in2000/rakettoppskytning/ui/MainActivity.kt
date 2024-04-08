@@ -16,24 +16,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
-import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var db: AppDatabase // Change to lateinit var
 
-    private lateinit var thresholdRepository: ThresholdRepository // Change to lateinit var
+    private lateinit var settingsRepository: SettingsRepository // Change to lateinit var
     private val gribRepository = GribRepository()
     private val weatherRepo: WeatherRepository by lazy {
-        WeatherRepository(thresholdRepository, gribRepository)
+        WeatherRepository(settingsRepository, gribRepository)
     }
 
     private val detailsScreenViewModel by lazy {
@@ -51,11 +51,11 @@ class MainActivity : ComponentActivity() {
     }
 
      */
-    private val thresholdViewModel by viewModels<ThresholdViewModel> {
+    private val settingsViewModel by viewModels<SettingsViewModel> {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return ThresholdViewModel(thresholdRepository, db.thresholdsDao) as T
+                return SettingsViewModel(settingsRepository, db.thresholdsDao) as T
             }
         }
     }
@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize db and thresholdRepository after context is available
         db = AppDatabase.getInstance(this)
-        thresholdRepository = ThresholdRepository(db.thresholdsDao)
+        settingsRepository = SettingsRepository(db.thresholdsDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
 
@@ -87,17 +87,17 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val state by viewModel.state.collectAsState()
-                    val thresholdState by thresholdViewModel.state.collectAsState()
+                    val thresholdState by settingsViewModel.state.collectAsState()
                     Navigation(
                         state = state,
                         onEvent = viewModel::onEvent,
                         homeScreenViewModel = viewModel,
                         detailsScreenViewModel = detailsScreenViewModel,
                         weatherRepo = weatherRepo,
-                        thresholdViewModel = thresholdViewModel,
+                        settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
                         thresholdState = thresholdState,
-                        onThresholdEvent  = thresholdViewModel::onEvent
+                        onThresholdEvent  = settingsViewModel::onEvent
                     )
                 }
             }

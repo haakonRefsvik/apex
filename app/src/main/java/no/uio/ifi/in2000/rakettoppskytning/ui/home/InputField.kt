@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -103,6 +104,21 @@ fun InputField(
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
+    Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
+
+    val isAddingFavorite by remember(state.isAddingFavorite) { mutableStateOf(state.isAddingFavorite) }
+
+
+    if (isAddingFavorite) {
+        Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
+        AddFavoriteDialog(
+            state = state,
+            onEvent = onEvent,
+            lat = lat,
+            lon = lon,
+            mapViewModel
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -179,23 +195,10 @@ fun InputField(
                 //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                 mapViewModel.updateCamera(lat, lon)
                 scope.launch {
-                    delay(1000)
                     onEvent(FavoriteEvent.ShowDialog)
                 }
 
             }) {
-                Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
-
-                if (state.isAddingFavorite) {
-                    Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
-                    AddFavoriteDialog(
-                        state = state,
-                        onEvent = onEvent,
-                        lat = lat,
-                        lon = lon,
-                        mapViewModel
-                    )
-                }
                 Text("Legg til favoritter")
             }
             Spacer(modifier = Modifier.width(25.dp))

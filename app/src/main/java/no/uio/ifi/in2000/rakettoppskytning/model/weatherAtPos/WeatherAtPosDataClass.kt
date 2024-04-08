@@ -17,13 +17,6 @@ data class WeatherAtPosHour(
     val verticalProfile: VerticalProfile?,
     /** Moisture in the soil in %*/
     val soilMoisture: Int?,
-    /**
-     *     map["maxPrecipitation"]
-     *     map["maxHumidity"]
-     *     map["maxWind"]
-     *     map["maxShearWind"]
-     *     map["maxDewPoint"]
-     * */
     val valuesToLimitMap: HashMap<String, Double>,
     val closeToLimitScore: Double
 )

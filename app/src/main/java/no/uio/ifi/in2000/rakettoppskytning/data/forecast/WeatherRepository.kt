@@ -15,16 +15,17 @@ import java.io.File
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.*
-import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.errorCheckSoilForecast
+import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getFirstSoilIndex
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.Daily
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import kotlin.math.roundToInt
+
 
 class WeatherRepository(
     private val thresholdRepository: ThresholdRepository,
@@ -39,9 +40,8 @@ class WeatherRepository(
     fun thresholdValuesUpdated() {
         val weatherAtPos = _weatherAtPos.value
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
-            val closenessMap =
-                thresholdRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
-            val score = thresholdRepository.getReadinessScore(closenessMap)
+        val closenessMap = thresholdRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
+        val score = thresholdRepository.getReadinessScore(closenessMap)
             WeatherAtPosHour(
                 weather.date,
                 getHourFromDate(weather.date),
@@ -54,6 +54,9 @@ class WeatherRepository(
                 score
             )
         }
+
+
+
         val updatedWeatherAtPos = WeatherAtPos(updatedWeatherList)
         _weatherAtPosCpy = updatedWeatherAtPos
         _weatherAtPos.update { updatedWeatherAtPos }
@@ -76,9 +79,11 @@ class WeatherRepository(
 
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
 
-            val gribFiles: List<File> = loadGribFromDataSource(lat, lon)
-            val allVerticalProfiles: List<VerticalProfile> =
-                makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+
+            val gribFiles: List<File> = loadGribFromDataSource()
+            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+            makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+
 
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
             val soilIndex =
@@ -92,8 +97,8 @@ class WeatherRepository(
                 val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
                 val date = series.time
                 val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
-                val closenessMap = thresholdRepository.getValueClosenessMap(series, vp)
-                val score = thresholdRepository.getReadinessScore(closenessMap)
+                val closenessMap = settingsRepository.getValueClosenessMap(series, vp)
+                val score = settingsRepository.getReadinessScore(closenessMap)
                 vp?.addGroundInfo(series)
                 val weatherAtPosHour = WeatherAtPosHour(
                     date,
@@ -215,7 +220,7 @@ class WeatherRepository(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun loadGribFromDataSource(lat: Double, lon: Double): List<File> {
+    private suspend fun loadGribFromDataSource(): List<File> {
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()
         } catch (e: Exception) {

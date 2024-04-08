@@ -19,7 +19,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdScreen
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,7 +29,7 @@ fun Navigation(
     onEvent: (FavoriteEvent) -> Unit,
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
-    thresholdViewModel: ThresholdViewModel,
+    settingsViewModel: SettingsViewModel,
     weatherRepo: WeatherRepository,
     detailsScreenViewModel: DetailsScreenViewModel,
     thresholdState: ThresholdState,
@@ -47,7 +47,7 @@ fun Navigation(
                 state,
                 onEvent,
                 mapViewModel,
-                thresholdViewModel
+                settingsViewModel
             )
         }
         composable(
@@ -66,7 +66,7 @@ fun Navigation(
         composable("ThresholdScreen") {
             ThresholdScreen(
                 navController,
-                thresholdViewModel,
+                settingsViewModel,
                 weatherRepo,
                 onThresholdEvent,
                 thresholdState

@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.favorite
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardActions
@@ -68,12 +69,6 @@ fun AddFavoriteDialogCorrect(
                     value = inputName, // viser lat, verdien som maks 5 desimaler
                     onValueChange = {
                         inputName = it
-                        isNameAlreadyUsed = state.favorites.any { favorite -> favorite.name == it }
-                        if (!isNameAlreadyUsed) {
-                            onEvent(FavoriteEvent.SetName(it))
-                            onEvent(FavoriteEvent.SetLat(lat.toString()))
-                            onEvent(FavoriteEvent.SetLon(lon.toString()))
-                        }
                     },
 
                     textStyle = TextStyle(fontSize = 18.sp),
@@ -164,14 +159,28 @@ fun AddFavoriteDialog(
     lon: Double,
     mapViewModel: MapViewModel
 ) {
-
-    val isLocationFavorited = state.favorites.any { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
-
-    if (isLocationFavorited) {
-        AddFavoriteDialogError(state = state, onEvent = onEvent, lat = lat, lon = lon, mapViewModel = mapViewModel)
+    val isLocationFavorited = remember(lat, lon) {
+        mutableStateOf(state.favorites.any {
+            it.lat.toDouble() == lat && it.lon.toDouble() == lon
+        })
     }
-    else {
-        AddFavoriteDialogCorrect(state = state, onEvent = onEvent, lat = lat, lon = lon, mapViewModel = mapViewModel)
+
+    if (isLocationFavorited.value) {
+        AddFavoriteDialogError(
+            state = state,
+            onEvent = onEvent,
+            lat = lat,
+            lon = lon,
+            mapViewModel = mapViewModel
+        )
+    } else {
+        AddFavoriteDialogCorrect(
+            state = state,
+            onEvent = onEvent,
+            lat = lat,
+            lon = lon,
+            mapViewModel = mapViewModel
+        )
     }
 }
 
