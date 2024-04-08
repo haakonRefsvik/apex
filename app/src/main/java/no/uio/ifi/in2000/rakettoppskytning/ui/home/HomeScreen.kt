@@ -25,7 +25,7 @@ import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
@@ -36,7 +36,7 @@ fun HomeScreen(
     state: FavoriteState,
     onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
-    thresholdViewModel: ThresholdViewModel
+    settingsViewModel: SettingsViewModel
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 

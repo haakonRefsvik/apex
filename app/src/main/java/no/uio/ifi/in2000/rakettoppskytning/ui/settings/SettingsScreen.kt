@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,20 +15,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,13 +39,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -66,15 +59,10 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.navigation.compose.rememberNavController
-import com.mapbox.maps.extension.style.style
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.formatNewValue
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryLight
 
 /*
 @RequiresApi(Build.VERSION_CODES.O)
@@ -84,18 +72,16 @@ fun ThresholdPreview() {
     val navController = rememberNavController()
     ThresholdScreen(
         navController = navController,
-        ThresholdViewModel(ThresholdRepository()),
+        SettingsViewModel(ThresholdsDao()),
         WeatherRepository(ThresholdRepository(), GribRepository())
     )
 }
+
 
  */
 
 
 
-
-
-//finne ut hvorfor null verdier legges inn i databasen:
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -103,7 +89,7 @@ fun ThresholdPreview() {
 @Composable
 fun ThresholdScreen(
     navController: NavHostController,
-    thresholdViewModel: ThresholdViewModel,
+    settingsViewModel: SettingsViewModel,
     weatherRepository: WeatherRepository,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
     thresholdState: ThresholdState
@@ -240,52 +226,44 @@ fun ThresholdScreen(
 
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxPrecipitation,
+                        mutableValue = settingsViewModel.maxPrecipitation,
                         title = "Maks nedbør",
                         drawableId = R.drawable.vann,
                         suffix = "mm",
-                        onThresholdEvent = onThresholdEvent,
-                        thresholdState = thresholdState
                     )
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxHumidity,
+                        mutableValue = settingsViewModel.maxHumidity,
                         title = "Maks luftfuktighet",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "%",
-                        onThresholdEvent = onThresholdEvent,
-                        thresholdState = thresholdState
+                        highestInput = 100.0,
+                        numberOfIntegers = 3
                     )
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxWind,
+                        mutableValue = settingsViewModel.maxWind,
                         title = "Maks vind",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
-                        onThresholdEvent = onThresholdEvent,
-                        thresholdState = thresholdState
                     )
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxShearWind,
+                        mutableValue = settingsViewModel.maxShearWind,
                         title = "Maks vindskjær",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
-                        onThresholdEvent = onThresholdEvent,
-                        thresholdState = thresholdState
                     )
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxDewPoint,
+                        mutableValue = settingsViewModel.maxDewPoint,
                         title = "Minimalt duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "℃",
-                        onThresholdEvent = onThresholdEvent,
-                        thresholdState = thresholdState
                     )
 
                 }
@@ -325,17 +303,51 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = thresholdViewModel.maxDewPoint,
-                        title = "Høyeste punkt",
-                        desc = "Sett rakettens høyeste punkt",
+                        mutableValue = settingsViewModel.apogee,
+                        title = "Apogee",
+                        desc = "The rockets highest point",
                         drawableId = R.drawable.rakett_pin2,
-                        suffix = "moh",
-                        onThresholdEvent = onThresholdEvent,
-                        thresholdState = thresholdState,
-                        numberOfDecimals = 0
+                        suffix = "m",
+                        numberOfDecimals = 0,
+                        numberOfIntegers = 6
                     )
                 }
-
+                item {
+                    ThresholdCard(
+                        mutableValue = settingsViewModel.launchAngle,
+                        title = "Launch angle",
+                        drawableId = R.drawable.rakett_pin2,
+                        suffix = "Deg",
+                        numberOfDecimals = 1,
+                        numberOfIntegers = 3,
+                        lowestInput = 0.0,
+                        highestInput = 90.0
+                    )
+                }
+                item {
+                    ThresholdCard(
+                        mutableValue = settingsViewModel.launchDirection,
+                        title = "Launch direction",
+                        drawableId = R.drawable.rakett_pin2,
+                        suffix = "Deg",
+                        numberOfDecimals = 1,
+                        numberOfIntegers = 3,
+                        lowestInput = 0.0,
+                        highestInput = 360.0
+                    )
+                }
+                item {
+                    ThresholdCard(
+                        mutableValue = settingsViewModel.thrust,
+                        title = "Thrust",
+                        drawableId = R.drawable.rakett_pin2,
+                        desc = "Thrust in newtons",
+                        suffix = "N",
+                        numberOfDecimals = 0,
+                        numberOfIntegers = 5,
+                        lowestInput = 0.0
+                    )
+                }
             }
         }
     }
@@ -343,7 +355,7 @@ fun ThresholdScreen(
     DisposableEffect(Unit) {
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
-            thresholdViewModel.saveThresholdValues()     // update values in thresholdRepo
+            settingsViewModel.saveThresholdValues(onThresholdEvent)     // update values in thresholdRepo
             // onThresholdEvent(ThresholdsEvent.SaveThreshold)
             weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
         }
@@ -352,6 +364,7 @@ fun ThresholdScreen(
 
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun ThresholdCard(
     mutableValue: MutableState<Double>,
@@ -359,22 +372,19 @@ fun ThresholdCard(
     desc: String = "",
     suffix: String,
     drawableId: Int,
-    onThresholdEvent: (ThresholdsEvent) -> Unit,
-    thresholdState: ThresholdState,
     numberOfDecimals: Int = 1,
-    numberOfIntegers: Int = 2
+    numberOfIntegers: Int = 2,
+    highestInput: Double = Double.POSITIVE_INFINITY,
+    lowestInput: Double = Double.NEGATIVE_INFINITY,
 ) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-
-    val checkedState = remember { mutableStateOf(true) }
-
-
 
         Row(
             modifier = Modifier
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
 
         ) {
             Spacer(modifier = Modifier.width(10.dp))
@@ -412,18 +422,22 @@ fun ThresholdCard(
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
-                    mutableValue.value = formatNewValue(input, numberOfIntegers)
-
-                    when(title) {
-                        "Maks nedbør" -> {onThresholdEvent(ThresholdsEvent.SetNedbor(mutableValue.value.toString()))}
-                        "Maks luftfuktighet" -> {onThresholdEvent(ThresholdsEvent.SetLuftfuktighet(mutableValue.value.toString()))}
-                        "Maks vind" -> {onThresholdEvent(ThresholdsEvent.SetVind(mutableValue.value.toString()))}
-                        "Maks vindskjær" -> {onThresholdEvent(ThresholdsEvent.SetShearWind(mutableValue.value.toString()))}
-                        "Minimalt duggpunkt" -> {onThresholdEvent(ThresholdsEvent.SetDuggpunkt(mutableValue.value.toString()))}
+                    val newValue = try {
+                        formatNewValue(input, numberOfIntegers)
+                    }catch (e: Exception){
+                        Log.d("Mais", "Formatteringa faila")
+                        mutableValue.value
                     }
-                    mutableValue.value = formatNewValue(input, numberOfIntegers)
+                    Log.d("Mais", "ny verdi $newValue")
+                    Log.d("Mais", "lavest verdi $lowestInput")
+                    Log.d("Mais", "høyest verdi $highestInput")
+
+                    if(newValue >= lowestInput && newValue <= highestInput ) {
+                        Log.d("Mais", "Oppdaterer verdi")
+                        mutableValue.value = newValue
+
+                    }
                 },
-                //label = { Text(suffix) },
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -437,7 +451,7 @@ fun ThresholdCard(
                 singleLine = true,
             )
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.width(50.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -446,13 +460,6 @@ fun ThresholdCard(
                 )
 
             }
-            /*
-            Checkbox(
-                checked = checkedState.value,
-                onCheckedChange = { checkedState.value = it }
-            )
-
-             */
         }
 
 
@@ -460,11 +467,29 @@ fun ThresholdCard(
 
 }
 
-fun formatNewValue(input: String, numberOfIntegers: Int): Double {
+fun formatNewValue(
+    input: String,
+    numberOfIntegers: Int,
+): Double{
+    if(input == ""){
+        return 0.0
+    }
+
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
 
     val decimalParts = onlyDigitsAndDot.split(".")
     val integerPart = decimalParts.getOrNull(0) ?: ""
+
+    if (integerPart == ""){
+        Log.d("Mais", "GJØR OM TIL 0." + decimalParts[1])
+
+        return ("0." + decimalParts[1]).toDouble()
+    }
+
+    if (decimalParts.size > 1 && decimalParts[1] == ""){
+        return ("$integerPart.0").toDouble()
+    }
+
 
     var formattedIntegerValue = integerPart
 
@@ -479,10 +504,6 @@ fun formatNewValue(input: String, numberOfIntegers: Int): Double {
     }
 
     val r = (formattedIntegerValue + decimalPart)
-
-    if(r == ""){
-        return 0.0
-    }
 
     return (r).toDouble()
 }
