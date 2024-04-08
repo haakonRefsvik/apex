@@ -32,8 +32,8 @@ import kotlin.math.abs
 
 class MapViewModel() : ViewModel() {
 
-    private val initLat = 59.94349
-    private val initLon = 10.71181
+    private val initLat = 59.94363
+    private val initLon = 10.71830
 
     private val _lat = mutableDoubleStateOf(initLat)
     private val _lon = mutableDoubleStateOf(initLon)

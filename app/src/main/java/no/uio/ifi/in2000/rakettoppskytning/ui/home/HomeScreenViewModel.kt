@@ -9,10 +9,12 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +30,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
+import kotlin.math.roundToInt
 
 data class WeatherUiState(
     val weatherAtPos: WeatherAtPos = WeatherAtPos()
@@ -41,7 +47,14 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
     val loading = mutableStateOf(false)
-
+    val checkedGreen = mutableStateOf(true)
+    val checkedRed = mutableStateOf(true)
+    val sliderPosition = mutableStateOf(0f..360f)
+    val options = (listOf("Lowest to highest", "Highest to lowest"))
+    val isReversed = mutableStateOf(false)
+    val text = mutableStateOf(options[0])
+    val markedCardIndex = mutableIntStateOf(-1)
+    val hasBeenFiltered = mutableStateOf(false)
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -62,6 +75,68 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     @OptIn(ExperimentalMaterial3Api::class)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
+    fun filterList() {
+        hasBeenFiltered.value = true
+        foreCastRep.resetFilter()
+        var weatherAtPos: List<WeatherAtPosHour> = if (checkedGreen.value && !checkedRed.value) {
+            weatherUiState.value.weatherAtPos.weatherList.filter { it.closeToLimitScore < 1 }
+
+        } else if (!checkedGreen.value && checkedRed.value) {
+            weatherUiState.value.weatherAtPos.weatherList.filter { it.closeToLimitScore >= 1 }
+
+        } else {
+            weatherUiState.value.weatherAtPos.weatherList
+        }
+
+        when (markedCardIndex.intValue) {
+            0 -> {
+                weatherAtPos = weatherAtPos.sortedBy { it.series.data.instant.details.windSpeed }
+            }
+
+            1 -> {
+                weatherAtPos =
+                    weatherAtPos.filter { it.series.data.instant.details.windFromDirection in sliderPosition.value.start..sliderPosition.value.endInclusive }
+            }
+
+            2 -> weatherAtPos =
+                weatherAtPos.sortedBy { it.series.data.next1Hours?.details?.precipitationAmount }
+
+            3 -> {
+                weatherAtPos =
+                    weatherAtPos.sortedBy {
+                        it.series.data.instant.details.fogAreaFraction?.let { it1 ->
+                            getVerticalSightKmNumber(
+                                it1,
+                                it.series.data.instant.details.cloudAreaFractionLow,
+                                it.series.data.instant.details.cloudAreaFractionMedium,
+                                it.series.data.instant.details.cloudAreaFractionHigh
+                            )
+                        }
+                    }
+
+            }
+
+            4 -> {
+                weatherAtPos =
+                    weatherAtPos.sortedBy { it.series.data.instant.details.relativeHumidity }
+            }
+
+            5 -> {
+                weatherAtPos =
+                    weatherAtPos.sortedBy { it.series.data.instant.details.dewPointTemperature }
+            }
+
+            else -> {}
+        }
+        if (isReversed.value) {
+            weatherAtPos = weatherAtPos.reversed()
+
+        }
+
+
+        foreCastRep.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
+
+    }
 
     fun getWeatherByCord(lat: Double, lon: Double, loadHours: Int) {
         Log.d("getWeather", "apicall")
@@ -69,6 +144,9 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon, loadHours)
             loading.value = false
+            delay(100)
+            filterList()
+
         }
     }
 
@@ -78,6 +156,17 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = WeatherUiState()
         )
+
+    fun resetFilter() {
+        checkedGreen.value = true
+        checkedRed.value = true
+        sliderPosition.value = 0f..360f
+        isReversed.value = false
+        text.value = options[0]
+        markedCardIndex.intValue = -1
+
+
+    }
 
 
     init {
