@@ -58,6 +58,7 @@ fun WeatherList(
 ) {
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
     val openFilterDialog = remember { mutableStateOf(false) }
+    val openTimeDialog = remember { mutableStateOf(false) }
 
     if (forecast.weatherAtPos.weatherList.isNotEmpty() || homeScreenViewModel.hasBeenFiltered.value) {
 //        Box(
@@ -84,12 +85,20 @@ fun WeatherList(
                 )
             }
         }
+        when {
+            openTimeDialog.value -> {
+                TimeDialog(
+                    onDismissRequest = { openTimeDialog.value = false },
+                    onConfirmation = { /*TODO*/ },
+                    homeScreenViewModel = homeScreenViewModel
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(5.dp))
         Row {
 
             Button(modifier = Modifier.width(155.dp), onClick = {
-
-
+                openTimeDialog.value = true
             }) {
 
                 Text("Change time")
