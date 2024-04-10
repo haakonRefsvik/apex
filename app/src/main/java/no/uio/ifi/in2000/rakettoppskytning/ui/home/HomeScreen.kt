@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,8 @@ import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryDark
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
@@ -60,15 +63,19 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
+                .background(color = tertiaryDark)
                 .fillMaxSize()
         ) {
             BottomSheetScaffold(
+                containerColor = tertiaryDark,
+                contentColor = tertiaryDark, // ingen forskjell??
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
                 sheetContent = {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .background(color = tertiaryDark), // ingen forskjell??
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween,
 

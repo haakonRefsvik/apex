@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -51,6 +53,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryContainerDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -97,9 +102,16 @@ fun WeatherList(
             }
         }
         Spacer(modifier = Modifier.height(5.dp))
+
         Row {
 
-            Button(modifier = Modifier.width(155.dp), onClick = {
+            Button(modifier = Modifier.width(155.dp),
+                colors = ButtonColors(
+                    containerColor = secondaryDark,
+                    contentColor = primaryDark,
+                    disabledContainerColor = secondaryDark,
+                    disabledContentColor = primaryDark),
+                onClick = {
                 openTimeDialog.value = true
             }) {
                 Icon(
@@ -111,8 +123,17 @@ fun WeatherList(
 
                 Text("Change time")
             }
+
             Spacer(modifier = Modifier.width(25.dp))
-            Button(modifier = Modifier.width(155.dp), onClick = {
+
+            Button(modifier = Modifier
+                .width(155.dp),
+                colors = ButtonColors(
+                    containerColor = secondaryDark,
+                    contentColor = primaryDark,
+                    disabledContainerColor = secondaryDark,
+                    disabledContentColor = primaryDark),
+                onClick = {
                 openFilterDialog.value = true
 
             }) {
@@ -125,12 +146,9 @@ fun WeatherList(
                 Spacer(modifier = Modifier.width(5.dp))
                 Text("Filter")
             }
-
-
         }
+
         Spacer(modifier = Modifier.height(5.dp))
-
-
 
         LazyColumn(
             content = {
@@ -144,6 +162,11 @@ fun WeatherList(
                             modifier = Modifier
                                 .height(80.dp)
                                 .width(340.dp),
+                            colors = CardColors(
+                                containerColor = primaryContainerDark,
+                                contentColor = primaryContainerDark,
+                                disabledContainerColor = primaryContainerDark,
+                                disabledContentColor = primaryContainerDark),
                             onClick = {
                                 navController.navigate("DetailsScreen/${input.date}")
                             }
@@ -167,10 +190,15 @@ fun WeatherList(
                                     ) {
                                         Text(
                                             input.series.time.substring(11, 16),
+                                            color = secondaryDark,
                                             fontSize = 20.sp
                                         )
                                         if (daysAhead == 1) {
-                                            Text(text = "Imorgen", fontSize = 14.sp)
+                                            Text(
+                                                text = "Imorgen",
+                                                fontSize = 14.sp,
+                                                color = secondaryDark
+                                            )
                                         }
                                     }
                                     Spacer(modifier = Modifier.width(50.dp))
@@ -178,11 +206,11 @@ fun WeatherList(
                                         when (homeScreenViewModel.markedCardIndex.intValue) {
                                             0 -> {
 
-
                                                 Text(
                                                     "${input.series.data.instant.details.windSpeed} m/s",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
+                                                    color = secondaryDark,
                                                     modifier = Modifier.width(75.dp)
                                                 )
                                             }
@@ -193,26 +221,24 @@ fun WeatherList(
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Icon(
-
                                                         Icons.AutoMirrored.Filled.ArrowForward,
                                                         modifier = Modifier
                                                             .size(30.dp)
                                                             .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
+                                                        tint = secondaryDark,
                                                         contentDescription = "Location"
                                                     )
-
-
                                                 }
-
                                             }
-
 
                                             2 ->
                                                 Text(
                                                     "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier
+                                                        .width(75.dp),
+                                                    color = secondaryDark
                                                 )
 
                                             3 -> {
@@ -229,17 +255,20 @@ fun WeatherList(
                                                     visibility,
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier
+                                                        .width(75.dp),
+                                                    color = secondaryDark
                                                 )
                                             }
-
 
                                             4 ->
                                                 Text(
                                                     "${input.series.data.instant.details.relativeHumidity} %",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier
+                                                        .width(75.dp),
+                                                    color = secondaryDark
                                                 )
 
                                             5 ->
@@ -247,7 +276,9 @@ fun WeatherList(
                                                     "${input.series.data.instant.details.dewPointTemperature} °c",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier
+                                                        .width(75.dp),
+                                                    color = secondaryDark
                                                 )
 
                                             else ->
@@ -255,11 +286,11 @@ fun WeatherList(
                                                     "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    modifier = Modifier.width(75.dp)
+                                                    modifier = Modifier
+                                                        .width(75.dp),
+                                                    color = secondaryDark
                                                 )
                                         }
-
-
                                     }
 
                                     Spacer(modifier = Modifier.width(27.5.dp))
@@ -280,17 +311,19 @@ fun WeatherList(
 
                                     Icon(
                                         modifier = Modifier.size(20.dp),
+                                        tint = secondaryDark,
                                         imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                         contentDescription = "Arrow"
                                     )
                                 }
                             }
-
                         }
                         Spacer(modifier = Modifier.height(7.5.dp))
                     }
                 }
             })
+    }
+}
 
 //            Box(
 //                modifier = Modifier
@@ -308,9 +341,8 @@ fun WeatherList(
 //                        )
 //                    )
 //            )
-    }
+
 //    }
 
-}
 
 

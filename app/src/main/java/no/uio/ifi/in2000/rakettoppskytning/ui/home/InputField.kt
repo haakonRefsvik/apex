@@ -5,6 +5,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -59,6 +61,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryDark
 
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
@@ -125,6 +130,7 @@ fun InputField(
 
     Column(
         modifier = Modifier
+            .background(color = tertiaryDark)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -142,7 +148,7 @@ fun InputField(
                 Modifier
                     .width(130.dp)
                     .height(58.dp),
-                textStyle = TextStyle(fontSize = 18.sp),
+                textStyle = TextStyle(fontSize = 18.sp, color = primaryDark),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -169,7 +175,7 @@ fun InputField(
                     .width(130.dp)
                     .height(58.dp),
 
-                textStyle = TextStyle(fontSize = 18.sp),
+                textStyle = TextStyle(fontSize = 18.sp, color = primaryDark),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -209,11 +215,17 @@ fun InputField(
                     contentDescription = "Favorite",
                 )
                 Spacer(modifier = Modifier.width(3.dp))
-                Text("Add favorite")
+                Text("Add favorite", color = primaryDark)
             }
             Spacer(modifier = Modifier.width(25.dp))
             Button(
-                modifier = Modifier.width(155.dp), onClick = {
+                modifier = Modifier.width(155.dp),
+                colors = ButtonColors(
+                    containerColor = primaryDark,
+                    contentColor = secondaryDark,
+                    disabledContainerColor = primaryDark,
+                    disabledContentColor = secondaryDark),
+                onClick = {
                     controller?.hide()
                     homeScreenViewModel.getWeatherByCord(lat, lon, 24)
                     mapViewModel.moveMapCamera(lat, lon)

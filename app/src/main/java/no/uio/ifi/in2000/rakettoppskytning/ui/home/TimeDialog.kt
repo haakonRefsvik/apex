@@ -42,7 +42,6 @@ fun TimeDialog(
     homeScreenViewModel: HomeScreenViewModel
 ) {
 
-
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val dtrpState = homeScreenViewModel.dtrpState.value
     val tiState = homeScreenViewModel.tiState.value
@@ -72,7 +71,6 @@ fun TimeDialog(
                             16,
                             "${hourcheck(tiState.hour)}:${hourcheck(tiState.minute)}"
                         )
-
                 }
 
                 homeScreenViewModel.filterList()
@@ -94,9 +92,5 @@ fun TimeDialog(
             TimeInput(state = tiState)
 
         }
-
-
     }
-
-
 }

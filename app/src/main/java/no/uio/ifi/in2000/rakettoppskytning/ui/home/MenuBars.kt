@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,21 +26,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
 
 @Composable
 fun BottomAppBar(navController: NavController){
     BottomAppBar {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = primaryDark),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
-                    contentDescription = "Location"
+                    contentDescription = "Location",
+                    tint = secondaryDark
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
@@ -54,7 +59,8 @@ fun BottomAppBar(navController: NavController){
                 Icon(
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),
-                    contentDescription = "Settings"
+                    contentDescription = "Settings",
+                    tint = secondaryDark
                 )
             }
         }
