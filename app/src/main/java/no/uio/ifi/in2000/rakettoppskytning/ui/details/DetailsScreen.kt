@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,18 +42,34 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import co.yml.charts.axis.AxisData
+import co.yml.charts.common.model.Point
+import co.yml.charts.ui.linechart.LineChart
+import co.yml.charts.ui.linechart.model.GridLines
+import co.yml.charts.ui.linechart.model.IntersectionPoint
+import co.yml.charts.ui.linechart.model.Line
+import co.yml.charts.ui.linechart.model.LineChartData
+import co.yml.charts.ui.linechart.model.LinePlotData
+import co.yml.charts.ui.linechart.model.LineStyle
+import co.yml.charts.ui.linechart.model.SelectionHighlightPoint
+import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
+import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.ShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
@@ -120,6 +137,99 @@ fun DetailScreenPreview() {
 }
 
  */
+/*
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true)
+fun ShearWindCardPreview(){
+    ShearWindSpeedCard()
+}
+
+ */
+@Composable
+fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
+    val shearWindList = verticalProfile.getAllSheerWinds()
+    val steps = 4
+    val pointsData: MutableList<Point> = shearWindList.mapIndexed{ index, shearWind ->
+        Point(index.toFloat(), shearWind.windSpeed.toFloat())
+    }.toMutableList()
+
+
+    val maxY = pointsData.maxBy { it.y }.y
+    val minY = pointsData.minBy { it.y }.y
+
+    val xAxisData = AxisData.Builder()
+        .axisStepSize(80.dp)
+        .backgroundColor(Color.Transparent)
+        .steps(pointsData.size - 1)
+        .labelData { i -> "${shearWindList[i].altitude.roundToInt()} m" }
+        .labelAndAxisLinePadding(15.dp)
+        .axisLabelFontSize(13.sp)
+        .build()
+
+    val yAxisData = AxisData.Builder()
+        .steps(steps)
+        .backgroundColor(MaterialTheme.colorScheme.background)
+        .labelAndAxisLinePadding(20.dp)
+        .axisLabelFontSize(13.sp)
+        .axisLineThickness(1.5.dp)
+        .startPadding(0.dp)
+        .labelData { i ->
+            val yScale = (maxY - minY) / steps
+            ((i * yScale ) + minY) .roundToInt().toString() + " m/s"
+        }.build()
+
+    val lineChartData = LineChartData(
+        linePlotData = LinePlotData(
+            lines = listOf(
+                Line(
+                    dataPoints = pointsData,
+                    LineStyle(width = 5.0F),
+                    IntersectionPoint(color = Color.Transparent),
+                    SelectionHighlightPoint(color = Color.Transparent),
+                    ShadowUnderLine(
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.Black,
+                                Color.Transparent
+                            )
+                        ), alpha = 0.3f
+                    ),
+                    SelectionHighlightPopUp(),
+
+                )
+            ),
+        ),
+        xAxisData = xAxisData,
+        yAxisData = yAxisData,
+        gridLines = GridLines(enableVerticalLines = false),
+        backgroundColor = Color.Transparent,
+        paddingRight = 0.dp,
+
+    )
+
+    ElevatedCard(
+        modifier = Modifier
+            .height(160.dp)
+            .width(360.dp)
+    ) {
+        Row {
+            Spacer(modifier = Modifier.width(15.dp))
+            Column() {
+                LineChart(
+                    modifier = Modifier
+                        .width(330.dp)
+                        .height(200.dp),
+                    lineChartData = lineChartData
+                )
+
+            }
+        }
+    }
+
+
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -265,6 +375,14 @@ fun DetailsScreen(
                 Spacer(modifier = Modifier.height(15.dp))
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
+                        item {
+
+                            weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
+
+
+                            weatherNow.verticalProfile?.getAllSheerWinds()
+                                ?.forEach { Log.d("mais", it.toString()) }
+                        }
                         item {
                             Spacer(modifier = Modifier.width(25.dp))
                             Column(
