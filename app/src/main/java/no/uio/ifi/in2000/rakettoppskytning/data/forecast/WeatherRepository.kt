@@ -22,6 +22,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
+import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import kotlin.math.roundToInt
@@ -192,7 +193,7 @@ class WeatherRepository(
             for (file in gribFiles) {
                 Log.d("gribThread", "Making verticalProfile on new thread")
                 val deferred = async(Dispatchers.IO) {
-                    VerticalProfile(heightLimitMeters = 3000, lat = lat, lon = lon, file = file)
+                    VerticalProfile(heightLimitMeters = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt(), lat = lat, lon = lon, file = file)
                 }
                 deferredList.add(deferred)
                 Log.d("gribThread", "Thread done")

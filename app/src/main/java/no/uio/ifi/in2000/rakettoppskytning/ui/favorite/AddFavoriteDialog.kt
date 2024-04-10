@@ -31,6 +31,10 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.dsl.cameraOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
@@ -69,6 +73,7 @@ fun AddFavoriteDialogCorrect(
                     value = inputName, // viser lat, verdien som maks 5 desimaler
                     onValueChange = {
                         inputName = it
+                        isNameAlreadyUsed = state.favorites.any { favorite -> favorite.name == it }
                     },
 
                     textStyle = TextStyle(fontSize = 18.sp),
@@ -96,7 +101,15 @@ fun AddFavoriteDialogCorrect(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEvent(FavoriteEvent.SaveFavorite)
+                    if (!isNameAlreadyUsed) {
+                        CoroutineScope(Dispatchers.Default).launch {
+                            onEvent(FavoriteEvent.SetName(inputName))
+                            onEvent(FavoriteEvent.SetLat(lat.toString()))
+                            onEvent(FavoriteEvent.SetLon(lon.toString()))
+                            delay(500L)
+                            onEvent(FavoriteEvent.SaveFavorite)
+                        }
+                    }
                 }
 
             ) {
@@ -164,28 +177,14 @@ fun AddFavoriteDialog(
     lon: Double,
     mapViewModel: MapViewModel
 ) {
-    val isLocationFavorited = remember(lat, lon) {
-        mutableStateOf(state.favorites.any {
-            it.lat.toDouble() == lat && it.lon.toDouble() == lon
-        })
-    }
 
-    if (isLocationFavorited.value) {
-        AddFavoriteDialogError(
-            state = state,
-            onEvent = onEvent,
-            lat = lat,
-            lon = lon,
-            mapViewModel = mapViewModel
-        )
-    } else {
-        AddFavoriteDialogCorrect(
-            state = state,
-            onEvent = onEvent,
-            lat = lat,
-            lon = lon,
-            mapViewModel = mapViewModel
-        )
+    val isLocationFavorited = state.favorites.any { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
+
+    if (isLocationFavorited) {
+        AddFavoriteDialogError(state = state, onEvent = onEvent, lat = lat, lon = lon, mapViewModel = mapViewModel)
+    }
+    else {
+        AddFavoriteDialogCorrect(state = state, onEvent = onEvent, lat = lat, lon = lon, mapViewModel = mapViewModel)
     }
 }
 
