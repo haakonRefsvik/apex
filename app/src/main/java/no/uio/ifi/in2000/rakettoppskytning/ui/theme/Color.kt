@@ -2,15 +2,15 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryDark = Color(0xFF191A1A)
+val primaryDark = Color(0xFF191A1A) //mørk farge main
 val onPrimaryDark = Color(0xFFF1ECE4)
-val primaryContainerDark = Color(0xFF323432)
+val primaryContainerDark = Color(0xFF323432) //mørke 'cards'
 val onPrimaryContainerDark = Color(0xFFF1ECE4)
-val secondaryDark = Color(0xFFF1ECE4)
+val secondaryDark = Color(0xFFF1ECE4) //knapper og på 'mørk farge main'
 val onSecondaryDark = Color(0xFFDBDBDB)
 val secondaryContainerDark = Color(0xFF034B71)
 val onSecondaryContainerDark = Color(0xFFCBE6FF)
-val tertiaryDark = Color(0xFFD8D8D8)
+val tertiaryDark = Color(0xFFD8D8D8) //bakgrunn på sheet og screens
 val onTertiaryDark = Color(0xFF1D2D61)
 val tertiaryContainerDark = Color(0xFFA0A0A0)
 val onTertiaryContainerDark = Color(0xFFDCE1FF)
