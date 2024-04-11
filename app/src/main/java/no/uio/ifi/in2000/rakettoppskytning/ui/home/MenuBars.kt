@@ -31,7 +31,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
 
 @Composable
 fun BottomAppBar(navController: NavController){
-    BottomAppBar {
+    BottomAppBar(containerColor = primaryDark) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,6 +74,5 @@ fun TopAppBar(navController: NavController){
         title = {}, modifier = Modifier
             .background(Color.Transparent)
             .height(0.dp)
-
     )
 }

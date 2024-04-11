@@ -5,6 +5,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,11 +28,13 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,8 +64,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.onSecondaryDark
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryContainerDark
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryDark
 
 fun formatNewValue(input: String): Double {
@@ -162,7 +167,9 @@ fun InputField(
                 label = { Text("Latitude") },
                 singleLine = true,
             )
+
             Spacer(modifier = Modifier.width(50.dp))
+
             OutlinedTextField(
                 value = String.format(
                     "%.${showDecimals}f",
@@ -189,8 +196,8 @@ fun InputField(
                 label = { Text("Longitude") },
                 singleLine = true
             )
-
         }
+
         Spacer(modifier = Modifier.height(20.dp))
         Row {
             Log.d("moveCam -1: ", "lat: ${lat} og lon: ${lon}")
@@ -244,15 +251,11 @@ fun InputField(
         if (state.favorites.isNotEmpty()) {
             Row(modifier = Modifier.width(340.dp)) {
                 if (state.favorites.size == 1) {
-                    Text("Favorite location:", fontSize = 14.sp)
-
+                    Text("Favorite location:", fontSize = 14.sp, color = primaryDark)
                 } else {
-                    Text("Favorite locations:", fontSize = 14.sp)
+                    Text("Favorite locations:", fontSize = 14.sp, color = primaryDark)
                 }
-
-
             }
-
         }
         Spacer(modifier = Modifier.height(2.5.dp))
         LazyRow(
@@ -262,10 +265,16 @@ fun InputField(
 
             state.favorites.reversed().forEach { favorite ->
                 item {
-                    ElevatedCard(
+                    OutlinedCard(
                         modifier = Modifier
                             .height(55.dp)
                             .width(200.dp),
+                        colors = CardColors(
+                            containerColor = tertiaryContainerDark,
+                            contentColor = tertiaryContainerDark,
+                            disabledContentColor = tertiaryContainerDark,
+                            disabledContainerColor = tertiaryContainerDark),
+                        border = BorderStroke(2.dp, color = onSecondaryDark),
                         onClick = {
                             mapViewModel.lat.value = favorite.lat.toDouble()
                             mapViewModel.lon.value = favorite.lon.toDouble()
@@ -278,12 +287,10 @@ fun InputField(
                                 delay(1000)
                                 scaffoldState.bottomSheetState.expand()
                             }
-
                         }
                     ) {
                         Row(
                             modifier = Modifier.fillMaxSize()
-
 
                         ) {
                             Row(
@@ -301,7 +308,7 @@ fun InputField(
                                     tint = Color(216, 64, 64, 255)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(favorite.name, fontSize = 18.sp)
+                                Text(favorite.name, fontSize = 18.sp, color = primaryDark)
 
                             }
                             Row(
@@ -317,24 +324,15 @@ fun InputField(
                                     Icon(
                                         imageVector = Icons.Default.Close,
                                         contentDescription = "Delete favorite",
-
-
+                                        tint = primaryDark
                                         )
-
                                 }
-
                             }
-
-
                         }
-
-
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                 }
             }
-
-
         }
     }
 }

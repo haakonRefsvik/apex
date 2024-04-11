@@ -227,12 +227,9 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                         .height(200.dp),
                     lineChartData = lineChartData
                 )
-
             }
         }
     }
-
-
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -261,14 +258,6 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Sharp.Menu,
-                            contentDescription = "ArrowBack"
-                        )
-                    }
-                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(modifier = Modifier,
@@ -538,7 +527,12 @@ fun WeatherCard(
     ElevatedCard(
         modifier = Modifier
             .height(125.dp)
-            .width(170.dp)
+            .width(170.dp),
+        colors = CardColors(
+            containerColor = primaryContainerDark,
+            contentColor = primaryContainerDark,
+            disabledContainerColor = primaryContainerDark,
+            disabledContentColor = primaryContainerDark)
     ) {
         Row {
             Spacer(
@@ -555,14 +549,16 @@ fun WeatherCard(
                         modifier = Modifier
                             .width(30.dp),
                         painter = painterResource(iconId),
-                        contentDescription = desc
+                        contentDescription = desc,
+                        tint = secondaryDark
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = desc,
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = secondaryDark
                     )
                 }
                 Row(modifier = Modifier.padding(horizontal = 15.dp)) {
@@ -570,16 +566,17 @@ fun WeatherCard(
                         text = value,
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 22.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = secondaryDark
                     )
                 }
                 Row(modifier = Modifier.padding(horizontal = 15.dp)) {
                     Text(
-                        color = Color.Black.copy(alpha = 0.7f),
                         text = info,
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
+                        color = secondaryDark
                     )
                 }
             }
@@ -593,10 +590,14 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
 
         modifier = Modifier
             .height(140.dp)
-            .width(360.dp)
+            .width(360.dp),
+        colors = CardColors(
+            containerColor = primaryContainerDark,
+            contentColor = primaryContainerDark,
+            disabledContainerColor = primaryContainerDark,
+            disabledContentColor = primaryContainerDark)
     ) {
         Row {
-
 
             Spacer(
                 modifier = Modifier
@@ -604,8 +605,6 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                     .fillMaxHeight()
                     .background(getColorFromStatusValue(statusCode))
             )
-
-
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(15.dp))
@@ -615,14 +614,16 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                             modifier = Modifier
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol"
+                            contentDescription = "VindSymbol",
+                            tint = secondaryDark
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Vind på bakkenivå",
                             modifier = Modifier.padding(vertical = 5.dp),
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = secondaryDark
                         )
                     }
                     Spacer(
@@ -634,11 +635,12 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                         text = "${details.windSpeed} m/s",
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = secondaryDark
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        color = Color.Black.copy(alpha = 0.7f),
+                        color = secondaryDark,
                         text = "Max vindkast er ${details.windSpeedOfGust} m/s",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
@@ -651,29 +653,32 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(text = "N", modifier = Modifier.padding(bottom = 60.dp))
-                        Text(text = "S", modifier = Modifier.padding(top = 60.dp))
-                        Text(text = "V", modifier = Modifier.padding(end = 60.dp))
-                        Text(text = "Ø", modifier = Modifier.padding(start = 60.dp))
+                        Text(text = "N", modifier = Modifier.padding(bottom = 60.dp), color = secondaryDark)
+                        Text(text = "S", modifier = Modifier.padding(top = 60.dp), color = secondaryDark)
+                        Text(text = "V", modifier = Modifier.padding(end = 60.dp), color = secondaryDark)
+                        Text(text = "Ø", modifier = Modifier.padding(start = 60.dp), color = secondaryDark)
                         Icon(
                             modifier = Modifier
                                 .width(50.dp)
                                 .rotate(270.0F + details.windFromDirection.toFloat()),
                             painter = painterResource(R.drawable.kompasspil),
-                            contentDescription = "kompasspil"
+                            contentDescription = "kompasspil",
+                            tint = secondaryDark
                         )
 
                         Icon(
                             painter = painterResource(R.drawable.kompass),
                             contentDescription = "Kompass",
-                            modifier = Modifier.size(100.dp)
+                            modifier = Modifier.size(100.dp),
+                            tint = secondaryDark
                         )
                         Icon(
                             modifier = Modifier
                                 .width(50.dp)
                                 .rotate(270.0F + details.windFromDirection.toFloat()),
                             painter = painterResource(R.drawable.kompasspil),
-                            contentDescription = "kompasspil"
+                            contentDescription = "kompasspil",
+                            tint = secondaryDark
                         )
                     }
                 }

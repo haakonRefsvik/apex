@@ -1,16 +1,19 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.favorite
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +41,9 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryDark
 
 //Lag funksjonen slik at den ikke leser inn mer enn 1 gang per lokasjon
 @OptIn(MapboxExperimental::class)
@@ -61,8 +67,9 @@ fun AddFavoriteDialogCorrect(
     var isNameAlreadyUsed by remember { mutableStateOf(false) }
 
     AlertDialog(
+        containerColor = tertiaryDark,
         title = {
-            Text(text = "Legg til favoritt")
+            Text(text = "Legg til favoritt", color = primaryDark)
         },
         text = {
             Column(
@@ -75,7 +82,6 @@ fun AddFavoriteDialogCorrect(
                         inputName = it
                         isNameAlreadyUsed = state.favorites.any { favorite -> favorite.name == it }
                     },
-
                     textStyle = TextStyle(fontSize = 18.sp),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
@@ -86,9 +92,53 @@ fun AddFavoriteDialogCorrect(
                             focusManager.clearFocus()
                         }
                     ),
-                    label = { Text("Name") },
+                    label = { Text("Name", color = primaryDark) },
                     singleLine = true,
-                    modifier = Modifier.focusRequester(focusRequester)
+                    modifier = Modifier.focusRequester(focusRequester),
+                    colors = TextFieldColors(
+                        focusedTextColor = primaryDark,
+                        cursorColor = primaryDark,
+                        disabledContainerColor = tertiaryDark,
+                        disabledIndicatorColor = primaryDark,
+                        disabledLabelColor = primaryDark,
+                        disabledLeadingIconColor = primaryDark,
+                        disabledPlaceholderColor = primaryDark,
+                        disabledPrefixColor = primaryDark,
+                        disabledSuffixColor = primaryDark,
+                        disabledSupportingTextColor = primaryDark,
+                        disabledTextColor = primaryDark,
+                        disabledTrailingIconColor = primaryDark,
+                        errorContainerColor = tertiaryDark,
+                        errorCursorColor = primaryDark,
+                        errorIndicatorColor = primaryDark,
+                        errorLabelColor = primaryDark,
+                        errorLeadingIconColor = primaryDark,
+                        errorPlaceholderColor = primaryDark,
+                        errorPrefixColor = primaryDark,
+                        errorSuffixColor = primaryDark,
+                        errorSupportingTextColor = primaryDark,
+                        errorTextColor = primaryDark,
+                        errorTrailingIconColor = primaryDark,
+                        focusedContainerColor = tertiaryDark,
+                        focusedIndicatorColor = primaryDark,
+                        focusedLabelColor = primaryDark,
+                        focusedLeadingIconColor = primaryDark,
+                        focusedPlaceholderColor = primaryDark,
+                        focusedPrefixColor = primaryDark,
+                        focusedSuffixColor = primaryDark,
+                        focusedSupportingTextColor = primaryDark,
+                        focusedTrailingIconColor = primaryDark,
+                        textSelectionColors = TextSelectionColors(primaryDark, primaryDark),
+                        unfocusedContainerColor = secondaryDark,
+                        unfocusedIndicatorColor = primaryDark,
+                        unfocusedLabelColor = primaryDark,
+                        unfocusedLeadingIconColor = primaryDark,
+                        unfocusedPlaceholderColor = primaryDark,
+                        unfocusedPrefixColor = primaryDark,
+                        unfocusedSuffixColor = primaryDark,
+                        unfocusedSupportingTextColor = primaryDark,
+                        unfocusedTextColor = primaryDark,
+                        unfocusedTrailingIconColor = primaryDark)
                 )
                 if (isNameAlreadyUsed) {
                     Text("Dette navnet er allerede i bruk", color = Color.Red)
@@ -113,7 +163,7 @@ fun AddFavoriteDialogCorrect(
                 }
 
             ) {
-                Text("Confirm")
+                Text("Confirm", color = primaryDark)
             }
         },
         dismissButton = {
@@ -122,7 +172,7 @@ fun AddFavoriteDialogCorrect(
                     onEvent(FavoriteEvent.HideDialog)
                 }
             ) {
-                Text("Dismiss")
+                Text("Dismiss", color = primaryDark)
             }
         }
     )
@@ -140,6 +190,7 @@ fun AddFavoriteDialogError(
 ) {
     val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
     AlertDialog(
+        containerColor = tertiaryDark,
         icon = {
             androidx.compose.material3.Icon(
                 imageVector = Icons.Default.Warning,
@@ -148,11 +199,11 @@ fun AddFavoriteDialogError(
             )
         },
         title = {
-            Text(text = "Legg til favoritt")
+            Text(text = "Legg til favoritt", color = primaryDark)
         },
         text = {
             if (favorite != null) {
-                Text("Denne lokasjonen er allerede lagret under navnet ${favorite.name}")
+                Text("Denne lokasjonen er allerede lagret under navnet ${favorite.name}", color = primaryDark)
             }
         },
         onDismissRequest = {},
@@ -162,7 +213,7 @@ fun AddFavoriteDialogError(
                     onEvent(FavoriteEvent.HideDialog)
                 }
             ) {
-                Text("OK")
+                Text("OK", color = primaryDark)
             }
         }
     )

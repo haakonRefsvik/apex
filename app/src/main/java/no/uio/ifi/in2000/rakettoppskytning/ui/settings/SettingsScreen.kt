@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,6 +64,8 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
 
 /*
 @RequiresApi(Build.VERSION_CODES.O)
@@ -79,9 +82,6 @@ fun ThresholdPreview() {
 
 
  */
-
-
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -103,19 +103,12 @@ fun ThresholdScreen(
 
         topBar = {
             TopAppBar(
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Sharp.Menu,
-                            contentDescription = "ArrowBack"
-                        )
-                    }
-                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
-                            contentDescription = "ArrowBack"
+                            contentDescription = "ArrowBack",
+                            tint = primaryDark
                         )
                     }
                 },
@@ -134,25 +127,29 @@ fun ThresholdScreen(
             )
         },
         bottomBar = {
-            BottomAppBar() {
+            BottomAppBar(containerColor = primaryDark) {
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = primaryDark
+                    ),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
-
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
-                            contentDescription = "Location"
+                            contentDescription = "Location",
+                            tint = secondaryDark
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket"
+                            contentDescription = "Rakket",
+                            tint = secondaryDark
                         )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
@@ -160,7 +157,8 @@ fun ThresholdScreen(
                         Icon(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
-                            contentDescription = "Settings"
+                            contentDescription = "Settings",
+                            tint = secondaryDark
                         )
                     }
                 }
@@ -192,7 +190,8 @@ fun ThresholdScreen(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Innstillinger",
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 35.sp
+                            fontSize = 35.sp,
+                            color = primaryDark
                         )
 
                         Spacer(modifier = Modifier.height(40.dp))
@@ -205,14 +204,16 @@ fun ThresholdScreen(
                                 modifier = Modifier
                                     .size(30.dp),
                                 painter = painterResource(R.drawable.trykk),
-                                contentDescription = "trykk"
+                                contentDescription = "trykk",
+                                tint = primaryDark
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = "Tillpass værvarslingen",
                                 fontWeight = FontWeight.W400,
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
+                                color = primaryDark
                             )
                         }
                         Spacer(modifier = Modifier.height(15.dp))
@@ -283,7 +284,8 @@ fun ThresholdScreen(
                                 modifier = Modifier
                                     .size(30.dp),
                                 painter = painterResource(R.drawable.rakett_pin2),
-                                contentDescription = "trykk"
+                                contentDescription = "trykk",
+                                tint = primaryDark
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
@@ -402,7 +404,7 @@ fun ThresholdCard(
             ) {
                 Text(text = title,
                     fontSize = 16.sp,
-                    style = TextStyle(color = Color.Black.copy(alpha = 0.7f))
+                    color = primaryDark
                     )
                 if(desc != ""){
                     Spacer(modifier = Modifier.height(7.dp))
@@ -410,7 +412,7 @@ fun ThresholdCard(
                         text = desc,
                         lineHeight = 16.sp,
                         fontSize = 13.sp,
-                        style = TextStyle(color = Color.Black.copy(alpha = 0.5f))
+                        color = primaryDark
                     )
                 }
             }
@@ -456,12 +458,11 @@ fun ThresholdCard(
             ) {
                 Text(
                     text = suffix,
-                    style = TextStyle(color = Color.Black.copy(alpha = 0.5f))
+                    color = primaryDark
                 )
 
             }
         }
-
 
     Spacer(modifier = Modifier.height(27.dp))
 
@@ -489,7 +490,6 @@ fun formatNewValue(
     if (decimalParts.size > 1 && decimalParts[1] == ""){
         return ("$integerPart.0").toDouble()
     }
-
 
     var formattedIntegerValue = integerPart
 

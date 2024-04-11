@@ -27,6 +27,7 @@ import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryDark
 
@@ -67,6 +68,7 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             BottomSheetScaffold(
+                sheetContainerColor = tertiaryDark,
                 containerColor = tertiaryDark,
                 contentColor = tertiaryDark, // ingen forskjell??
                 scaffoldState = scaffoldState,
@@ -88,11 +90,10 @@ fun HomeScreen(
                                 onEvent
                             )
 
-
                             Spacer(modifier = Modifier.height(10.dp))
 
                             if (loading.value) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(color = primaryDark)
 
                             } else {
                                 WeatherList(
@@ -107,7 +108,6 @@ fun HomeScreen(
                 Map(homeScreenViewModel, mapViewModel)
 
             }
-
         }
     }
 }
