@@ -125,7 +125,7 @@ fun Map(
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_1 =
         "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Embedded/Duck.gltf"
-    val SAMPLE_MODEL_URI_2 = "asset://adamHead.gltf"
+    val SAMPLE_MODEL_URI_2 = "asset://rakettmedlinje.gltf"
     val MAPBOX_HELSINKI = Point.fromLngLat(10.71830, 59.94363)
     val MODEL1_COORDINATES = Point.fromLngLat(
         MAPBOX_HELSINKI.longitude() - 0.002,
@@ -184,7 +184,7 @@ fun Map(
                         +modelLayer(MODEL_LAYER_ID, SOURCE_ID) {
                             modelId(get(MODEL_ID_KEY))
                             modelType(ModelType.COMMON_3D)
-                            modelScale(listOf(2240.0, 2240.0, 2240.0))
+                            modelScale(listOf(300.0, 300.0, 300.0))
                             modelTranslation(listOf(0.0, 0.0, 0.0))
                             modelRotation(listOf(0.0, 0.0, 90.0))
 
