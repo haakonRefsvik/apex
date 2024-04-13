@@ -22,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,11 +38,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
-
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -64,8 +61,10 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 
 /*
 @RequiresApi(Build.VERSION_CODES.O)
@@ -79,8 +78,6 @@ fun ThresholdPreview() {
         WeatherRepository(ThresholdRepository(), GribRepository())
     )
 }
-
-
  */
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -97,6 +94,7 @@ fun ThresholdScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        contentColor = settings100,
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
@@ -108,7 +106,7 @@ fun ThresholdScreen(
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = "ArrowBack",
-                            tint = primaryDark
+                            tint = settings0
                         )
                     }
                 },
@@ -127,11 +125,11 @@ fun ThresholdScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(containerColor = primaryDark) {
+            BottomAppBar(containerColor = main50) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = primaryDark
+                        .background(color = main50
                     ),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -141,7 +139,7 @@ fun ThresholdScreen(
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
-                            tint = secondaryDark
+                            tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
@@ -149,7 +147,7 @@ fun ThresholdScreen(
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
-                            tint = secondaryDark
+                            tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
@@ -158,7 +156,7 @@ fun ThresholdScreen(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Settings",
-                            tint = secondaryDark
+                            tint = main0
                         )
                     }
                 }
@@ -191,7 +189,7 @@ fun ThresholdScreen(
                             text = "Innstillinger",
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 35.sp,
-                            color = primaryDark
+                            color = settings0
                         )
 
                         Spacer(modifier = Modifier.height(40.dp))
@@ -205,7 +203,7 @@ fun ThresholdScreen(
                                     .size(30.dp),
                                 painter = painterResource(R.drawable.trykk),
                                 contentDescription = "trykk",
-                                tint = primaryDark
+                                tint = settings0
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
@@ -213,14 +211,14 @@ fun ThresholdScreen(
                                 text = "Tillpass værvarslingen",
                                 fontWeight = FontWeight.W400,
                                 fontSize = 18.sp,
-                                color = primaryDark
+                                color = settings0
                             )
                         }
                         Spacer(modifier = Modifier.height(15.dp))
 
                         HorizontalDivider(
                             modifier = Modifier.width(340.dp),
-                            thickness = 1.dp, color = Color.Black.copy(alpha = 0.2f))
+                            thickness = 1.dp, color = settings0)
                         Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
@@ -285,21 +283,22 @@ fun ThresholdScreen(
                                     .size(30.dp),
                                 painter = painterResource(R.drawable.rakett_pin2),
                                 contentDescription = "trykk",
-                                tint = primaryDark
+                                tint = settings0
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = "Tilpass rakettprofil",
                                 fontWeight = FontWeight.W400,
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
+                                color = settings0
                             )
                         }
                         Spacer(modifier = Modifier.height(15.dp))
 
                         HorizontalDivider(
                             modifier = Modifier.width(340.dp),
-                            thickness = 1.dp, color = Color.Black.copy(alpha = 0.2f))
+                            thickness = 1.dp, color = settings0)
                         Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
@@ -404,7 +403,7 @@ fun ThresholdCard(
             ) {
                 Text(text = title,
                     fontSize = 16.sp,
-                    color = primaryDark
+                    color = settings0
                     )
                 if(desc != ""){
                     Spacer(modifier = Modifier.height(7.dp))
@@ -412,7 +411,7 @@ fun ThresholdCard(
                         text = desc,
                         lineHeight = 16.sp,
                         fontSize = 13.sp,
-                        color = primaryDark
+                        color = settings0
                     )
                 }
             }
@@ -458,7 +457,7 @@ fun ThresholdCard(
             ) {
                 Text(
                     text = suffix,
-                    color = primaryDark
+                    color = settings0
                 )
 
             }

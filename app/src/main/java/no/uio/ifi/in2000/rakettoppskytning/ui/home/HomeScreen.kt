@@ -27,9 +27,8 @@ import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.tertiaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
@@ -64,20 +63,20 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(color = tertiaryDark)
+                .background(color = main100)
                 .fillMaxSize()
         ) {
             BottomSheetScaffold(
-                sheetContainerColor = tertiaryDark,
-                containerColor = tertiaryDark,
-                contentColor = tertiaryDark, // ingen forskjell??
+                sheetContainerColor = main100,
+                containerColor = main100,
+                contentColor = main100, // ingen forskjell??
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
                 sheetContent = {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(color = tertiaryDark), // ingen forskjell??
+                            .background(color = main100),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween,
 
@@ -93,20 +92,18 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             if (loading.value) {
-                                CircularProgressIndicator(color = primaryDark)
+                                CircularProgressIndicator(color = main0)
+                                Spacer(modifier = Modifier.height(10.dp))
 
                             } else {
                                 WeatherList(
                                     homeScreenViewModel = homeScreenViewModel,
                                     navController = navController,
                                 )
-
                             }
                         })
                 }) {
-
                 Map(homeScreenViewModel, mapViewModel)
-
             }
         }
     }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,21 +20,33 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
 @Composable
 fun BottomAppBar(navController: NavController){
-    BottomAppBar(containerColor = primaryDark) {
+    BottomAppBar(
+        containerColor = main50,
+        modifier = Modifier.shadow(
+            100.dp,
+            RectangleShape,
+            false,
+            DefaultShadowColor,
+            DefaultShadowColor
+        )
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = primaryDark),
+                .background(color = main50),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -44,7 +55,7 @@ fun BottomAppBar(navController: NavController){
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Location",
-                    tint = secondaryDark
+                    tint = main0
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
@@ -60,7 +71,7 @@ fun BottomAppBar(navController: NavController){
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Settings",
-                    tint = secondaryDark
+                    tint = main0
                 )
             }
         }

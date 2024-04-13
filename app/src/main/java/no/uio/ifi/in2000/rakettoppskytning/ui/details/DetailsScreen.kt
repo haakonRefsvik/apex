@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardColors
@@ -50,7 +49,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -69,18 +67,18 @@ import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.ShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryContainerDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import kotlin.math.roundToInt
 
 /*
@@ -263,7 +261,7 @@ fun DetailsScreen(
                         Icon(modifier = Modifier,
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ArrowBack",
-                            tint = primaryDark
+                            tint = main0
                         )
                     }
                 },
@@ -282,21 +280,20 @@ fun DetailsScreen(
             )
         },
         bottomBar = {
-            BottomAppBar() {
+            BottomAppBar(containerColor = main50) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = primaryDark),
+                        .background(color = main50),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
-
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
-                            tint = secondaryDark
+                            tint = main100
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
@@ -304,7 +301,7 @@ fun DetailsScreen(
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
-                            tint = secondaryDark
+                            tint = main100
                         )
                     }
 
@@ -315,7 +312,7 @@ fun DetailsScreen(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Settings",
-                            tint = secondaryDark
+                            tint = main100
                         )
                     }
                 }
@@ -403,7 +400,7 @@ fun DetailsScreen(
                                 HorizontalDivider(
                                     modifier = Modifier.width(340.dp),
                                     thickness = 1.dp,
-                                    color = primaryDark
+                                    color = main0
                                 )
                                 Spacer(modifier = Modifier.height(15.dp))
                             }
@@ -529,10 +526,10 @@ fun WeatherCard(
             .height(125.dp)
             .width(170.dp),
         colors = CardColors(
-            containerColor = primaryContainerDark,
-            contentColor = primaryContainerDark,
-            disabledContainerColor = primaryContainerDark,
-            disabledContentColor = primaryContainerDark)
+            containerColor = details50,
+            contentColor = details0,
+            disabledContainerColor = details50,
+            disabledContentColor = details0)
     ) {
         Row {
             Spacer(
@@ -550,7 +547,7 @@ fun WeatherCard(
                             .width(30.dp),
                         painter = painterResource(iconId),
                         contentDescription = desc,
-                        tint = secondaryDark
+                        tint = details0
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
@@ -558,7 +555,7 @@ fun WeatherCard(
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = secondaryDark
+                        color = details0
                     )
                 }
                 Row(modifier = Modifier.padding(horizontal = 15.dp)) {
@@ -567,7 +564,7 @@ fun WeatherCard(
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = secondaryDark
+                        color = details0
                     )
                 }
                 Row(modifier = Modifier.padding(horizontal = 15.dp)) {
@@ -576,7 +573,7 @@ fun WeatherCard(
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
-                        color = secondaryDark
+                        color = details0
                     )
                 }
             }
@@ -592,10 +589,10 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
             .height(140.dp)
             .width(360.dp),
         colors = CardColors(
-            containerColor = primaryContainerDark,
-            contentColor = primaryContainerDark,
-            disabledContainerColor = primaryContainerDark,
-            disabledContentColor = primaryContainerDark)
+            containerColor = details50,
+            contentColor = details0,
+            disabledContainerColor = details50,
+            disabledContentColor = details0)
     ) {
         Row {
 
@@ -615,7 +612,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
                             contentDescription = "VindSymbol",
-                            tint = secondaryDark
+                            tint = details0
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
@@ -623,7 +620,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                             modifier = Modifier.padding(vertical = 5.dp),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = secondaryDark
+                            color = details0
                         )
                     }
                     Spacer(
@@ -636,11 +633,11 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = secondaryDark
+                        color = details0
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        color = secondaryDark,
+                        color = details0,
                         text = "Max vindkast er ${details.windSpeedOfGust} m/s",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
@@ -653,24 +650,24 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(text = "N", modifier = Modifier.padding(bottom = 60.dp), color = secondaryDark)
-                        Text(text = "S", modifier = Modifier.padding(top = 60.dp), color = secondaryDark)
-                        Text(text = "V", modifier = Modifier.padding(end = 60.dp), color = secondaryDark)
-                        Text(text = "Ø", modifier = Modifier.padding(start = 60.dp), color = secondaryDark)
+                        Text(text = "N", modifier = Modifier.padding(bottom = 60.dp), color = details0)
+                        Text(text = "S", modifier = Modifier.padding(top = 60.dp), color = details0)
+                        Text(text = "V", modifier = Modifier.padding(end = 60.dp), color = details0)
+                        Text(text = "Ø", modifier = Modifier.padding(start = 60.dp), color = details0)
                         Icon(
                             modifier = Modifier
                                 .width(50.dp)
                                 .rotate(270.0F + details.windFromDirection.toFloat()),
                             painter = painterResource(R.drawable.kompasspil),
                             contentDescription = "kompasspil",
-                            tint = secondaryDark
+                            tint = details0
                         )
 
                         Icon(
                             painter = painterResource(R.drawable.kompass),
                             contentDescription = "Kompass",
                             modifier = Modifier.size(100.dp),
-                            tint = secondaryDark
+                            tint = details0
                         )
                         Icon(
                             modifier = Modifier
@@ -678,13 +675,12 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                                 .rotate(270.0F + details.windFromDirection.toFloat()),
                             painter = painterResource(R.drawable.kompasspil),
                             contentDescription = "kompasspil",
-                            tint = secondaryDark
+                            tint = details0
                         )
                     }
                 }
             }
         }
-
     }
 }
 
@@ -695,10 +691,10 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
             .height(140.dp)
             .width(360.dp),
         colors = CardColors(
-            containerColor = primaryContainerDark,
-            contentColor = primaryContainerDark,
-            disabledContainerColor = primaryContainerDark,
-            disabledContentColor = primaryContainerDark)
+            containerColor = details50,
+            contentColor = details0,
+            disabledContainerColor = details50,
+            disabledContentColor = details0)
     ) {
 
 
@@ -732,7 +728,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                             modifier = Modifier.padding(vertical = 5.dp),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = secondaryDark
+                            color = details0
                         )
                     }
 
@@ -750,7 +746,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = secondaryDark
+                        color = details0
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -762,13 +758,11 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                         } meters høyde",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
-                        color = secondaryDark
+                        color = details0
                     )
-
                 }
             }
         }
-
     }
 }
 
@@ -787,10 +781,10 @@ fun SoilCard(soilPercentage: Int) {
             .height(140.dp)
             .width(360.dp),
         colors = CardColors(
-            containerColor = primaryContainerDark,
-            contentColor = primaryContainerDark,
-            disabledContainerColor = primaryContainerDark,
-            disabledContentColor = primaryContainerDark)
+            containerColor = details0,
+            contentColor = details0,
+            disabledContainerColor = details0,
+            disabledContentColor = details0)
     ) {
         Row {
 
@@ -818,7 +812,7 @@ fun SoilCard(soilPercentage: Int) {
                             modifier = Modifier.padding(vertical = 0.dp),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = secondaryDark
+                            color = details0
                         )
                     }
 
@@ -833,7 +827,7 @@ fun SoilCard(soilPercentage: Int) {
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = secondaryDark
+                        color = details0
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -842,7 +836,7 @@ fun SoilCard(soilPercentage: Int) {
                         text = getSoilCategory(soilPercentage),
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
-                        color = secondaryDark
+                        color = details0
                     )
                 }
 
@@ -867,7 +861,7 @@ fun SoilCard(soilPercentage: Int) {
                             modifier = Modifier
                                 .padding(top = 55.dp)
                                 .width(100.dp),
-                            color = secondaryDark
+                            color = details0
                         )
                     }
                 }

@@ -18,12 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardColors
@@ -38,8 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,14 +41,13 @@ import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
-import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryContainerDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondaryDark
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -88,7 +80,6 @@ fun WeatherList(
                         homeScreenViewModel.filterList()
                     },
                     homeScreenViewModel = homeScreenViewModel
-
                 )
             }
         }
@@ -101,16 +92,17 @@ fun WeatherList(
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(5.dp))
 
         Row {
 
             Button(modifier = Modifier.width(155.dp),
                 colors = ButtonColors(
-                    containerColor = secondaryDark,
-                    contentColor = primaryDark,
-                    disabledContainerColor = secondaryDark,
-                    disabledContentColor = primaryDark),
+                    containerColor = secondButton0,
+                    contentColor = secondButton100,
+                    disabledContainerColor = secondButton0,
+                    disabledContentColor = secondButton100),
                 onClick = {
                 openTimeDialog.value = true
             }) {
@@ -129,10 +121,10 @@ fun WeatherList(
             Button(modifier = Modifier
                 .width(155.dp),
                 colors = ButtonColors(
-                    containerColor = secondaryDark,
-                    contentColor = primaryDark,
-                    disabledContainerColor = secondaryDark,
-                    disabledContentColor = primaryDark),
+                    containerColor = secondButton0,
+                    contentColor = secondButton100,
+                    disabledContainerColor = secondButton0,
+                    disabledContentColor = secondButton100),
                 onClick = {
                 openFilterDialog.value = true
 
@@ -150,7 +142,7 @@ fun WeatherList(
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        LazyColumn(
+        LazyColumn(modifier = Modifier.background(main100),
             content = {
 
                 item {
@@ -163,10 +155,10 @@ fun WeatherList(
                                 .height(80.dp)
                                 .width(340.dp),
                             colors = CardColors(
-                                containerColor = primaryContainerDark,
-                                contentColor = primaryContainerDark,
-                                disabledContainerColor = primaryContainerDark,
-                                disabledContentColor = primaryContainerDark),
+                                containerColor = weatherCard50,
+                                contentColor = weatherCard0,
+                                disabledContainerColor = weatherCard50,
+                                disabledContentColor = weatherCard0),
                             onClick = {
                                 navController.navigate("DetailsScreen/${input.date}")
                             }
@@ -190,14 +182,14 @@ fun WeatherList(
                                     ) {
                                         Text(
                                             input.series.time.substring(11, 16),
-                                            color = secondaryDark,
+                                            color = weatherCard0,
                                             fontSize = 20.sp
                                         )
                                         if (daysAhead == 1) {
                                             Text(
                                                 text = "Imorgen",
                                                 fontSize = 14.sp,
-                                                color = secondaryDark
+                                                color = weatherCard0
                                             )
                                         }
                                     }
@@ -210,7 +202,7 @@ fun WeatherList(
                                                     "${input.series.data.instant.details.windSpeed} m/s",
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
-                                                    color = secondaryDark,
+                                                    color = weatherCard0,
                                                     modifier = Modifier.width(75.dp)
                                                 )
                                             }
@@ -225,7 +217,7 @@ fun WeatherList(
                                                         modifier = Modifier
                                                             .size(30.dp)
                                                             .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
-                                                        tint = secondaryDark,
+                                                        tint = weatherCard0,
                                                         contentDescription = "Location"
                                                     )
                                                 }
@@ -238,7 +230,7 @@ fun WeatherList(
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier
                                                         .width(75.dp),
-                                                    color = secondaryDark
+                                                    color = weatherCard0
                                                 )
 
                                             3 -> {
@@ -257,7 +249,7 @@ fun WeatherList(
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier
                                                         .width(75.dp),
-                                                    color = secondaryDark
+                                                    color = weatherCard0
                                                 )
                                             }
 
@@ -268,7 +260,7 @@ fun WeatherList(
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier
                                                         .width(75.dp),
-                                                    color = secondaryDark
+                                                    color = weatherCard0
                                                 )
 
                                             5 ->
@@ -278,7 +270,7 @@ fun WeatherList(
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier
                                                         .width(75.dp),
-                                                    color = secondaryDark
+                                                    color = weatherCard0
                                                 )
 
                                             else ->
@@ -288,7 +280,7 @@ fun WeatherList(
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier
                                                         .width(75.dp),
-                                                    color = secondaryDark
+                                                    color = weatherCard0
                                                 )
                                         }
                                     }
@@ -311,7 +303,7 @@ fun WeatherList(
 
                                     Icon(
                                         modifier = Modifier.size(20.dp),
-                                        tint = secondaryDark,
+                                        tint = weatherCard0,
                                         imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                         contentDescription = "Arrow"
                                     )
