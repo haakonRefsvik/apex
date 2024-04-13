@@ -41,8 +41,9 @@ class WeatherRepository(
     fun thresholdValuesUpdated() {
         val weatherAtPos = _weatherAtPos.value
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
-        val closenessMap = settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
-        val score = settingsRepository.getReadinessScore(closenessMap)
+            val closenessMap =
+                settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
+            val score = settingsRepository.getReadinessScore(closenessMap)
             WeatherAtPosHour(
                 weather.date,
                 getHourFromDate(weather.date),
@@ -55,7 +56,6 @@ class WeatherRepository(
                 score
             )
         }
-
 
 
         val updatedWeatherAtPos = WeatherAtPos(updatedWeatherList)
@@ -82,7 +82,8 @@ class WeatherRepository(
 
 
             val gribFiles: List<File> = loadGribFromDataSource()
-            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+            val allVerticalProfiles: List<VerticalProfile> =
+                makeVerticalProfilesFromGrib(gribFiles, lat, lon)
             makeVerticalProfilesFromGrib(gribFiles, lat, lon)
 
 
@@ -91,9 +92,6 @@ class WeatherRepository(
                 getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
 
             allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
-                if (hour >= loadHours) {
-                    return@forEachIndexed
-                }
 
                 val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
                 val date = series.time

@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.AlertDialog
@@ -58,6 +60,7 @@ fun WeatherList(
 ) {
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
     val openFilterDialog = remember { mutableStateOf(false) }
+    val openTimeDialog = remember { mutableStateOf(false) }
 
     if (forecast.weatherAtPos.weatherList.isNotEmpty() || homeScreenViewModel.hasBeenFiltered.value) {
 //        Box(
@@ -84,13 +87,27 @@ fun WeatherList(
                 )
             }
         }
+        when {
+            openTimeDialog.value -> {
+                TimeDialog(
+                    onDismissRequest = { openTimeDialog.value = false },
+                    onConfirmation = { /*TODO*/ },
+                    homeScreenViewModel = homeScreenViewModel
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(5.dp))
         Row {
 
             Button(modifier = Modifier.width(155.dp), onClick = {
-
-
+                openTimeDialog.value = true
             }) {
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit",
+                )
+                Spacer(modifier = Modifier.width(5.dp))
 
                 Text("Change time")
             }

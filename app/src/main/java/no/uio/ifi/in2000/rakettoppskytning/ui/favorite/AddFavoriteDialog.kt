@@ -131,15 +131,22 @@ fun AddFavoriteDialogCorrect(
 
 @OptIn(MapboxExperimental::class)
 @Composable
-fun AddFavoriteDialogError(state: FavoriteState,
-                           onEvent: (FavoriteEvent) -> Unit,
-                           lat: Double,
-                           lon: Double,
-                           mapViewModel: MapViewModel
+fun AddFavoriteDialogError(
+    state: FavoriteState,
+    onEvent: (FavoriteEvent) -> Unit,
+    lat: Double,
+    lon: Double,
+    mapViewModel: MapViewModel
 ) {
-    val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon}
+    val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
     AlertDialog(
-        icon = { androidx.compose.material3.Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning Icon", tint = Color.Red)},
+        icon = {
+            androidx.compose.material3.Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = "Warning Icon",
+                tint = Color.Red
+            )
+        },
         title = {
             Text(text = "Legg til favoritt")
         },
