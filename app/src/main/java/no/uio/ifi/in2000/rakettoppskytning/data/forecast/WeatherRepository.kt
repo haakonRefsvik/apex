@@ -193,7 +193,7 @@ class WeatherRepository(
         val deferredList = mutableListOf<Deferred<VerticalProfile>>()
         try {
             for (file in gribFiles) {
-                Log.d("gribThread", "Making verticalProfile on new thread")
+                Log.d("gribThread", "Making verticalProfile on new thread up to ${settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE)} m")
                 val deferred = async(Dispatchers.IO) {
                     VerticalProfile(heightLimitMeters = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt(), lat = lat, lon = lon, file = file)
                 }

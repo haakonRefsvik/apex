@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.grib
 
 import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -11,7 +12,7 @@ class ShearWind(
     val upperLayer: LevelData,
     /** Difference measured as wind-speed (m/s) */
     val windSpeed: Double,
-
+    val direction: Double = getShearDirection(upperLayer, lowerLayer),
     /** Avarage altitude between the upper and lower layer*/
     val altitude: Double = (lowerLayer.getLevelHeightInMeters() + upperLayer.getLevelHeightInMeters() ) / 2
 ){
@@ -32,4 +33,17 @@ fun getShearWind(upperLayer: LevelData, lowerLayer: LevelData): Double{
     val windSpeed = sqrt(shearU.pow(2) + shearV.pow(2))
 
     return abs(windSpeed)
+}
+
+fun getShearDirection(upperLayer: LevelData, lowerLayer: LevelData): Double {
+    val deltaU = upperLayer.uComponentValue - lowerLayer.uComponentValue
+    val deltaV = upperLayer.vComponentValue - lowerLayer.vComponentValue
+    var shearWindDirection = Math.toDegrees(atan2(deltaU, deltaV))
+    shearWindDirection %= 360.0
+
+    if (shearWindDirection < 0) {
+        shearWindDirection + 360.0
+    }
+
+    return shearWindDirection
 }

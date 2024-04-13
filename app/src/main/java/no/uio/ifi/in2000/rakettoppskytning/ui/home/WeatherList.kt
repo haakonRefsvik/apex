@@ -274,25 +274,26 @@ fun WeatherList(
                     }
                 }
             })
+        /*
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Black // Adjust the color as needed
+                            ),
+                            startY = 0f,
+                            endY = 1000f // Adjust the endY value to control the gradient height
+                        )
+                    )
+            )
 
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(
-//                        brush = Brush.verticalGradient(
-//                            colors = listOf(
-//                                Color.Transparent,
-//                                Color.Transparent,
-//                                Color.Transparent,
-//                                Color.Black // Adjust the color as needed
-//                            ),
-//                            startY = 0f,
-//                            endY = 2800f // Adjust the endY value to control the gradient height
-//                        )
-//                    )
-//            )
+
+ */
     }
-//    }
 
 }
 

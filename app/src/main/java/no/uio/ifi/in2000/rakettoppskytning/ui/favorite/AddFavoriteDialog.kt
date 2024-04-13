@@ -161,7 +161,6 @@ fun AddFavoriteDialogError(state: FavoriteState,
     )
 }
 
-@OptIn(MapboxExperimental::class)
 @Composable
 fun AddFavoriteDialog(
     state: FavoriteState,
@@ -180,80 +179,3 @@ fun AddFavoriteDialog(
         AddFavoriteDialogCorrect(state = state, onEvent = onEvent, lat = lat, lon = lon, mapViewModel = mapViewModel)
     }
 }
-
-/*
-@Composable
-fun AddFavoriteDialogCorrect(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
-    lat: Double,
-    lon: Double,
-    mapViewModel: MapViewModel
-) {
-
-    val controller = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
-
-    AlertDialog(
-        title = {
-            Text(text = "Legg til favoritt")
-        },
-        text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                OutlinedTextField(
-                    value = state.name, // viser lat, verdien som maks 5 desimaler
-                    onValueChange = {
-                        onEvent(FavoriteEvent.SetName(it))
-                        onEvent(FavoriteEvent.SetLat(lat.toString()))
-                        onEvent(FavoriteEvent.SetLon(lon.toString()))
-                    },
-
-                    textStyle = TextStyle(fontSize = 18.sp),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            controller?.hide()
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    label = { Text("Name") },
-                    singleLine = true,
-                    modifier = Modifier.focusRequester(focusRequester)
-                )
-            }
-        },
-        onDismissRequest = {
-            onEvent(FavoriteEvent.HideDialog)
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onEvent(FavoriteEvent.SaveFavorite)
-                }
-
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onEvent(FavoriteEvent.HideDialog)
-                }
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
-}
-*/
