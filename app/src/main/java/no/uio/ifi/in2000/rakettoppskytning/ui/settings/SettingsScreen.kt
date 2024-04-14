@@ -85,7 +85,6 @@ fun ThresholdPreview() {
 
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -427,15 +426,11 @@ fun ThresholdCard(
                     val newValue = try {
                         formatNewValue(input, numberOfIntegers)
                     }catch (e: Exception){
-                        Log.d("Mais", "Formatteringa faila")
                         mutableValue.value
                     }
-                    Log.d("Mais", "ny verdi $newValue")
-                    Log.d("Mais", "lavest verdi $lowestInput")
-                    Log.d("Mais", "høyest verdi $highestInput")
 
-                    if(newValue >= lowestInput && newValue <= highestInput ) {
-                        Log.d("Mais", "Oppdaterer verdi")
+
+                    if(newValue in lowestInput..highestInput) {
                         mutableValue.value = newValue
 
                     }

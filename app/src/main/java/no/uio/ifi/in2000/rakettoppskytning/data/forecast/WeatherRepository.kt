@@ -74,7 +74,7 @@ class WeatherRepository(
 
     /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
+    suspend fun loadWeather(lat: Double, lon: Double) {
         try {
             val list = mutableListOf<WeatherAtPosHour>()
 

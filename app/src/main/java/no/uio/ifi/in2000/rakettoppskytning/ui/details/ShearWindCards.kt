@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.key.Key.Companion.F
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.Typeface
@@ -47,6 +48,7 @@ import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import com.mapbox.maps.extension.style.expressions.dsl.generated.step
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberTopAxis
+import com.patrykandpatrick.vico.compose.axis.rememberAxisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.CartesianChartHost
 import com.patrykandpatrick.vico.compose.chart.layer.rememberColumnCartesianLayer
@@ -311,9 +313,9 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                         ) {
                         CartesianChartHost(
                             rememberCartesianChart(
-                                rememberLineCartesianLayer(),
+                                rememberLineCartesianLayer(
+                                ),
                                 startAxis = rememberStartAxis(
-
                                     label =
                                     rememberTextComponent(
                                         textSize = 13.sp,
