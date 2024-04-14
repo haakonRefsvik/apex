@@ -36,6 +36,8 @@ fun String.isDouble(): Boolean {
     }
 }
 
+
+
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
 @Composable
@@ -102,3 +104,5 @@ fun HomeScreen(
         }
     }
 }
+
+

@@ -125,5 +125,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
+    implementation("androidx.compose.runtime:runtime:1.0.0-beta01")
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib")
+
+
+    //const val hilt_compiler = "com.google.dagger:hilt-compiler:${Versions.hilt}"
+    ///const val room_compiler = "androidx.room:room-compiler:${Versions.room}"
+     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+
+
 
 }
