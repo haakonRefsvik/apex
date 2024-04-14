@@ -27,8 +27,12 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao) {
                 duggpunkt = getThresholdValue(ThresholdType.MAX_DEW_POINT).toString(),
             )
         )
-        // put data back in database
     }
+
+    suspend fun updateRocketSpecValues(map: HashMap<String, Double>){
+        rocketSpecs.valueMap = map
+    }
+
     fun getThresholdsMap(): HashMap<String, Double> {
         return thresholds.valueMap
     }

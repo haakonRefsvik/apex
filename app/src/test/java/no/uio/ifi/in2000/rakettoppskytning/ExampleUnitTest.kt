@@ -3,10 +3,9 @@ import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
+import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
+import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-<<<<<<< HEAD
-=======
->>>>>>> origin/main
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -51,6 +50,7 @@ class ExampleUnitTest {
         assertEquals(expected, result, 0.1)
     }
 
+    /*
     @Test
     fun testHoursBetweenDates(){
         val repo = SettingsRepository(db.thresholdsDao)
@@ -93,6 +93,25 @@ class ExampleUnitTest {
         val expected = 1
 
         assertEquals(result, expected)
+    }
+
+     */
+
+    @Test
+    fun testWeekDayName(){
+        val result = getDayName("2024-04-10", 0)
+        val expected = "Wednesday"
+
+        assertEquals(result, expected)
+    }
+
+    @Test
+    fun testDayAndMonth(){
+        val date = "2022-08-15T12:34:56Z"
+        val result = getDayAndMonth(date)
+        val expected = "15.08"
+
+        assertEquals(expected, result)
     }
 
 }

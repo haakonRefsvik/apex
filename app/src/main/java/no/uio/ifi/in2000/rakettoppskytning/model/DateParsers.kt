@@ -2,15 +2,19 @@ package no.uio.ifi.in2000.rakettoppskytning.model
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import org.joda.time.Hours
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
+import java.util.Locale
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
     return try {
         val dateTime1 = ZonedDateTime.parse(vpDate)
@@ -22,7 +26,6 @@ fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun getHourFromDate(date: String): Int {
     return try {
         ZonedDateTime.parse(date).hour
@@ -31,7 +34,6 @@ fun getHourFromDate(date: String): Int {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun getNumberOfDaysAhead(dateString: String): Int {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val currentDate = LocalDate.now()
@@ -40,12 +42,44 @@ fun getNumberOfDaysAhead(dateString: String): Int {
     return period.days
 }
 
-/** Returns yesterdays date on the form year-month-day */
-@RequiresApi(Build.VERSION_CODES.O)
-fun dateNumberOfDaysAgo(n: Int): String {
-    val today = LocalDate.now()
-    val yesterday = today.minusDays(n.toLong())
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    return yesterday.format(formatter)
+fun getDayAndMonth(dateString: String): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+    val parsedDateTime = LocalDateTime.parse(dateString, formatter)
+
+    val day = parsedDateTime.dayOfMonth
+    val month = parsedDateTime.monthValue
+
+    return parsedDateTime.format(DateTimeFormatter.ofPattern("dd.MM"))
+}
+
+fun getDayName(dateString: String, dayOffset: Int): String{
+    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+    val date = sdf.parse(dateString)
+    val calendar = Calendar.getInstance()
+    if (date != null) {
+        calendar.time = date
+    }
+
+    val dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + dayOffset - 1) % 7
+    val weekdays = arrayOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+    return weekdays[if (dayOfWeek < 0) dayOfWeek + 7 else dayOfWeek]
+}
+
+/** Returns an appropriate display of the date*/
+
+fun formatDate(date: String): String {
+    val daysAhead = getNumberOfDaysAhead(date)
+    val formattedDate: String = when{
+        daysAhead == 1 -> "Tomorrow"
+        daysAhead == 0 -> "Today"
+        daysAhead in 2..6 -> getDayName(date, daysAhead)
+        daysAhead > 6 -> getDayAndMonth(date)
+
+        else -> ""
+    }
+
+    return formattedDate
 }
 

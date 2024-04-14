@@ -67,6 +67,9 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
+import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
+import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.ShearWind
@@ -79,159 +82,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCatego
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
-/*
-@Preview(showBackground = true)
-@Composable
-fun SoilPreview() {
-    SoilCard(soilPercentage = 35)
-}
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun DetailScreenPreview() {
-    val navController = rememberNavController()
-    val gr = GribRepository()
-    val tr = ThresholdRepository()
-    val wr = WeatherRepository(tr, gr)
-    val vm = DetailsScreenViewModel(wr)
-    DetailsScreen(navController = navController, backStackEntry = "", detailsScreenViewModel = vm)
-}
-
- */
-
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview
-=======
-@Preview(showBackground = true)
->>>>>>> origin/main
-@Composable
-fun SoilPreview() {
-    SoilCard(soilPercentage = 35)
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun DetailScreenPreview() {
-    val navController = rememberNavController()
-<<<<<<< HEAD
-    DetailsScreen(
-        navController = navController,
-        backStackEntry = "1",
-        detailsScreenViewModel = DetailsScreenViewModel(
-            WeatherRepository(
-                ThresholdRepository(db.thresholdsDao),
-                GribRepository()
-            )
-        )
-    )
-=======
-    val gr = GribRepository()
-    val tr = ThresholdRepository()
-    val wr = WeatherRepository(tr, gr)
-    val vm = DetailsScreenViewModel(wr)
-    DetailsScreen(navController = navController, backStackEntry = "", detailsScreenViewModel = vm)
->>>>>>> origin/main
-}
-
- */
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-@Preview(showBackground = true)
-fun ShearWindCardPreview(){
-    ShearWindSpeedCard()
-}
-
- */
-@Composable
-fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
-    val shearWindList = verticalProfile.getAllSheerWinds()
-    val steps = 4
-    val pointsData: MutableList<Point> = shearWindList.mapIndexed{ index, shearWind ->
-        Point(index.toFloat(), shearWind.windSpeed.toFloat())
-    }.toMutableList()
-
-
-    val maxY = pointsData.maxBy { it.y }.y
-    val minY = pointsData.minBy { it.y }.y
-
-    val xAxisData = AxisData.Builder()
-        .axisStepSize(80.dp)
-        .backgroundColor(Color.Transparent)
-        .steps(pointsData.size - 1)
-        .labelData { i -> "${shearWindList[i].altitude.roundToInt()} m" }
-        .labelAndAxisLinePadding(15.dp)
-        .axisLabelFontSize(13.sp)
-        .build()
-
-    val yAxisData = AxisData.Builder()
-        .steps(steps)
-        .backgroundColor(MaterialTheme.colorScheme.background)
-        .labelAndAxisLinePadding(20.dp)
-        .axisLabelFontSize(13.sp)
-        .axisLineThickness(1.5.dp)
-        .startPadding(0.dp)
-        .labelData { i ->
-            val yScale = (maxY - minY) / steps
-            ((i * yScale ) + minY) .roundToInt().toString() + " m/s"
-        }.build()
-
-    val lineChartData = LineChartData(
-        linePlotData = LinePlotData(
-            lines = listOf(
-                Line(
-                    dataPoints = pointsData,
-                    LineStyle(width = 5.0F),
-                    IntersectionPoint(color = Color.Transparent),
-                    SelectionHighlightPoint(color = Color.Transparent),
-                    ShadowUnderLine(
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.Black,
-                                Color.Transparent
-                            )
-                        ), alpha = 0.3f
-                    ),
-                    SelectionHighlightPopUp(),
-
-                )
-            ),
-        ),
-        xAxisData = xAxisData,
-        yAxisData = yAxisData,
-        gridLines = GridLines(enableVerticalLines = false),
-        backgroundColor = Color.Transparent,
-        paddingRight = 0.dp,
-
-    )
-
-    ElevatedCard(
-        modifier = Modifier
-            .height(160.dp)
-            .width(360.dp)
-    ) {
-        Row {
-            Spacer(modifier = Modifier.width(15.dp))
-            Column() {
-                LineChart(
-                    modifier = Modifier
-                        .width(330.dp)
-                        .height(200.dp),
-                    lineChartData = lineChartData
-                )
-
-            }
-        }
-    }
-
-
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
@@ -329,60 +180,19 @@ fun DetailsScreen(
         ) {
 
             if (weatherAtPosHour.isEmpty()) {
-                Text("Her var det tomt ...")
-            }
-            /*
-            else {
-                if (getNumberOfDaysAhead(weatherAtPosHour.first().date) == 1) {
-                    Text(
-                        "Værdata for imorgen klokken ${
-                            weatherAtPosHour.first().series.time.substring(
-                                11,
-                                16
-                            )
-                        } ",
-                        fontWeight = FontWeight.Bold
-                    )
-
-
-                } else {
-                    Text(
-                        text = "Værdata for klokken ${
-                            weatherAtPosHour.first().series.time.substring(
-                                11,
-                                16
-                            )
-                        } ",
-                        fontWeight = FontWeight.Bold
-                    )
-
-                }
-
+                Text("Its empty here ...")
             }
 
-             */
             weatherAtPosHour.forEach { weatherNow ->
 
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
-                val datoPrefix: String = when{
-                    getNumberOfDaysAhead(weatherNow.date) == 1 -> "Imorgen"
-                    getNumberOfDaysAhead(weatherNow.date) == 0 -> "I dag"
-
-                    else -> ""
-                }
+                val daysAhead = getNumberOfDaysAhead(weatherNow.date)
+                val datePrefix = formatDate(weatherNow.date)
 
                 Spacer(modifier = Modifier.height(15.dp))
                 Row(modifier = Modifier.padding(0.dp)) {
                     LazyColumn {
-                        item {
-
-                            weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
-
-
-                            weatherNow.verticalProfile?.getAllSheerWinds()
-                                ?.forEach { Log.d("mais", it.toString()) }
-                        }
                         item {
                             Spacer(modifier = Modifier.width(25.dp))
                             Column(
@@ -393,7 +203,7 @@ fun DetailsScreen(
 
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = "$datoPrefix klokken ${weatherNow.date.subSequence(11, 16)}",
+                                    text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 30.sp
                                 )
@@ -406,6 +216,7 @@ fun DetailsScreen(
                                 Spacer(modifier = Modifier.height(15.dp))
                             }
                         }
+
                         item {
                             weatherNow.verticalProfile?.let {
                                 ShearWindCard(
@@ -413,6 +224,15 @@ fun DetailsScreen(
                                     statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name]?: 0.0
                                 )
                             }
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+
+                        item {
+                            weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
+                            Spacer(modifier = Modifier.height(30.dp))
+                        }
+                        item {
+                            weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
                             Spacer(modifier = Modifier.height(30.dp))
                         }
                         item {
@@ -430,16 +250,16 @@ fun DetailsScreen(
                             Row {
                                 WeatherCard(
                                     iconId = R.drawable.temp,
-                                    desc = "Temperatur",
+                                    desc = "Temperature",
                                     value = "${fcData.instant.details.airTemperature} ℃",
-                                    info = "Temperaturen om 6 timer er minimalt ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
+                                    info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
                                 WeatherCard(
                                     iconId = R.drawable.vann,
-                                    desc = "Nedbør",
+                                    desc = "Precipitation",
                                     value = "${fcData.next1Hours?.details?.precipitationAmount} mm",
-                                    info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene",
+                                    info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours",
                                     statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]?: 0.0
                                 )
                             }
@@ -449,9 +269,9 @@ fun DetailsScreen(
                             Row {
                                 WeatherCard(
                                     iconId = R.drawable.fog,
-                                    desc = "Tåke",
+                                    desc = "Fog",
                                     value = "${fcData.instant.details.fogAreaFraction?.roundToInt()} %",
-                                    info = "Tåkedekke på bakken"
+                                    info = "Amount of surrounding area covered in fog"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -467,9 +287,9 @@ fun DetailsScreen(
 
                                 WeatherCard(
                                     iconId = R.drawable.luftfuktighet,
-                                    desc = "Luftfuktighet",
+                                    desc = "Humidity",
                                     value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
-                                    info = "Duggpunktet er ${fcData.instant.details.dewPointTemperature} ℃",
+                                    info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
                                     statusCode = combinedStatus
                                 )
                             }
@@ -479,9 +299,9 @@ fun DetailsScreen(
                             Row {
                                 WeatherCard(
                                     iconId = R.drawable.cloudy,
-                                    desc = "Skydekke",
+                                    desc = "Cloud cover",
                                     value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
-                                    info = "Total skydekke for alle høyder"
+                                    info = "Total cloud cover for all heights in"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -496,9 +316,9 @@ fun DetailsScreen(
 
                                 WeatherCard(
                                     iconId = R.drawable.eye,
-                                    desc = "Sikt",
+                                    desc = "Visibility",
                                     value = visibility,
-                                    info = "Estimert vertikal sikt"
+                                    info = "Estimated vertical visibility"
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))
@@ -512,322 +332,4 @@ fun DetailsScreen(
         }
     }
 
-}
-
-@Composable
-fun WeatherCard(
-    value: String,
-    iconId: Int,
-    desc: String,
-    info: String = "",
-    statusCode: Double = -1.0
-) {
-    ElevatedCard(
-        modifier = Modifier
-            .height(125.dp)
-            .width(170.dp)
-    ) {
-        Row {
-            Spacer(
-                modifier = Modifier
-                    .width(5.dp)
-                    .fillMaxHeight()
-                    .background(getColorFromStatusValue(statusCode))
-            )
-            Column {
-                Spacer(modifier = Modifier.height(10.dp))
-                Row {
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Icon(
-                        modifier = Modifier
-                            .width(30.dp),
-                        painter = painterResource(iconId),
-                        contentDescription = desc
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = desc,
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                Row(modifier = Modifier.padding(horizontal = 15.dp)) {
-                    Text(
-                        text = value,
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                }
-                Row(modifier = Modifier.padding(horizontal = 15.dp)) {
-                    Text(
-                        color = Color.Black.copy(alpha = 0.7f),
-                        text = info,
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 12.sp,
-                        lineHeight = 16.sp,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun WindCard(details: Details, statusCode: Double = 0.0) {
-    ElevatedCard(
-
-        modifier = Modifier
-            .height(140.dp)
-            .width(360.dp)
-    ) {
-        Row {
-
-
-            Spacer(
-                modifier = Modifier
-                    .width(5.dp)
-                    .fillMaxHeight()
-                    .background(getColorFromStatusValue(statusCode))
-            )
-
-
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(15.dp))
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            modifier = Modifier
-                                .size(30.dp),
-                            painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol"
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Vind på bakkenivå",
-                            modifier = Modifier.padding(vertical = 5.dp),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(200.dp)
-                    )
-                    Text(
-                        text = "${details.windSpeed} m/s",
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        color = Color.Black.copy(alpha = 0.7f),
-                        text = "Max vindkast er ${details.windSpeedOfGust} m/s",
-                        fontSize = 14.sp,
-                        lineHeight = 16.sp,
-                    )
-
-                }
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(text = "N", modifier = Modifier.padding(bottom = 60.dp))
-                        Text(text = "S", modifier = Modifier.padding(top = 60.dp))
-                        Text(text = "V", modifier = Modifier.padding(end = 60.dp))
-                        Text(text = "Ø", modifier = Modifier.padding(start = 60.dp))
-                        Icon(
-                            modifier = Modifier
-                                .width(50.dp)
-                                .rotate(270.0F + details.windFromDirection.toFloat()),
-                            painter = painterResource(R.drawable.kompasspil),
-                            contentDescription = "kompasspil"
-                        )
-
-                        Icon(
-                            painter = painterResource(R.drawable.kompass),
-                            contentDescription = "Kompass",
-                            modifier = Modifier.size(100.dp)
-                        )
-                        Icon(
-                            modifier = Modifier
-                                .width(50.dp)
-                                .rotate(270.0F + details.windFromDirection.toFloat()),
-                            painter = painterResource(R.drawable.kompasspil),
-                            contentDescription = "kompasspil"
-                        )
-                    }
-                }
-            }
-        }
-
-    }
-}
-
-@Composable
-fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
-    ElevatedCard(
-        modifier = Modifier
-            .height(140.dp)
-            .width(360.dp)
-    ) {
-
-
-        Row {
-            Spacer(
-                modifier = Modifier
-                    .width(5.dp)
-                    .fillMaxHeight()
-                    .background(getColorFromStatusValue(statusCode))
-            )
-            Spacer(modifier = Modifier.width(15.dp))
-            Row {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            modifier = Modifier
-                                .size(30.dp),
-                            painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol"
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Maksimalt vertikalt vindskjær",
-                            modifier = Modifier.padding(vertical = 5.dp),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(200.dp)
-                    )
-                    Text(
-                        text = String.format(
-                            "%.1f",
-                            verticalProfile.getMaxSheerWind().windSpeed
-                        ) + " m/s",
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        color = Color.Black.copy(alpha = 0.7f),
-                        text = "Vindskjæret er på rundt ${
-                            verticalProfile.getMaxSheerWind().upperLayer.getLevelHeightInMeters()
-                                .roundToInt()
-                        } meters høyde",
-                        fontSize = 14.sp,
-                        lineHeight = 16.sp,
-                    )
-
-                }
-            }
-        }
-
-    }
-}
-
-@Composable
-fun SoilCard(soilPercentage: Int) {
-
-    val warningIconId = when{
-        soilPercentage > 60 -> R.drawable.warning_green
-        soilPercentage > 10 -> R.drawable.warning_yellow
-        else -> R.drawable.warning_red
-    }
-
-
-    ElevatedCard(
-
-        modifier = Modifier
-            .height(140.dp)
-            .width(360.dp)
-    ) {
-        Row {
-
-            Spacer(
-                modifier = Modifier
-                    .width(5.dp)
-                    .fillMaxHeight()
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(15.dp))
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            modifier = Modifier
-                                .size(30.dp),
-                            painter = painterResource(R.drawable.vann),
-                            contentDescription = "Vannsymbol"
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Fuktighet i bakken",
-                            modifier = Modifier.padding(vertical = 0.dp),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(200.dp)
-                    )
-                    Text(
-                        text = "$soilPercentage %",
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        color = Color.Black.copy(alpha = 0.7f),
-                        text = getSoilCategory(soilPercentage),
-                        fontSize = 14.sp,
-                        lineHeight = 16.sp,
-                    )
-
-                }
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(contentAlignment = Alignment.TopCenter,
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .width(50.dp),
-                            painter = painterResource(warningIconId),
-                            contentDescription = "kompasspil",
-                            tint = Color.Unspecified
-                        )
-                        Text(text = getSoilDescription(soilPercentage),
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            lineHeight = 16.sp,
-                            modifier = Modifier
-                                .padding(top = 55.dp)
-                                .width(100.dp)
-                        )
-                    }
-                }
-            }
-
-        }
-
-    }
 }

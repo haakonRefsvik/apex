@@ -215,7 +215,7 @@ fun InputField(
             Button(
                 modifier = Modifier.width(155.dp), onClick = {
                     controller?.hide()
-                    homeScreenViewModel.getWeatherByCord(lat, lon, 24)
+                    homeScreenViewModel.getWeatherByCord(lat, lon)
                     mapViewModel.moveMapCamera(lat, lon)
 
                     scope.launch {
@@ -259,7 +259,7 @@ fun InputField(
                             mapViewModel.lon.value = favorite.lon.toDouble()
 
                             controller?.hide()
-                            homeScreenViewModel.getWeatherByCord(lat, lon, 24)
+                            homeScreenViewModel.getWeatherByCord(lat, lon)
                             mapViewModel.moveMapCamera(lat, lon)
 
                             scope.launch {

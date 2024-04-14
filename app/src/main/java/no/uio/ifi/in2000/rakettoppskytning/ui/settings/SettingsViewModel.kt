@@ -18,47 +18,50 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
+import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdValues
 
 
 class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: ThresholdsDao) : ViewModel(){
     private val settingsRepo = repo
-    private val map = settingsRepo.getThresholdsMap()
 
-    val maxPrecipitation: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getThresholdValue(ThresholdType.MAX_PRECIPITATION))
-    val maxHumidity: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getThresholdValue(ThresholdType.MAX_HUMIDITY))
-    val maxWind: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getThresholdValue(ThresholdType.MAX_WIND))
-    val maxShearWind: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getThresholdValue(ThresholdType.MAX_SHEAR_WIND))
-    val maxDewPoint: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getThresholdValue(ThresholdType.MAX_DEW_POINT))
+    val thresholdMutableStates = ThresholdType.entries.map {
+        mutableDoubleStateOf(settingsRepo.getThresholdValue(it))
+    }
 
-    val apogee: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getRocketSpecValue(RocketSpecType.APOGEE))
-    val launchAngle: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getRocketSpecValue(RocketSpecType.LAUNCH_ANGLE))
-    val launchDirection: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getRocketSpecValue(RocketSpecType.LAUNCH_DIRECTION))
-    val thrust: MutableState<Double> = mutableDoubleStateOf(settingsRepo.getRocketSpecValue(RocketSpecType.THRUST_NEWTONS))
+    val rocketSpecMutableStates = RocketSpecType.entries.map {
+        mutableDoubleStateOf(settingsRepo.getRocketSpecValue(it))
+    }
 
     /**
-     * Takes the values from the mutableStates and saves them in the ThresholdRepository
+     * Takes the values from the mutableStates and saves them in the Repo
      * */
-    suspend fun saveThresholdValues(event: (ThresholdsEvent) -> Unit){
-        val maxPrecipitation: Double = maxPrecipitation.value
-        val maxHumidity: Double = maxHumidity.value
-        val maxWind: Double = maxWind.value
-        val maxShearWind: Double = maxShearWind.value
-        val minDewPoint: Double = maxDewPoint.value
-
-        val map = hashMapOf<String, Double>()
-        map[ThresholdType.MAX_PRECIPITATION.name] = maxPrecipitation
-        map[ThresholdType.MAX_HUMIDITY.name] = maxHumidity
-        map[ThresholdType.MAX_WIND.name] = maxWind
-        map[ThresholdType.MAX_SHEAR_WIND.name] = maxShearWind
-        map[ThresholdType.MAX_DEW_POINT.name] = minDewPoint
-
-        settingsRepo.updateThresholdValues(map, thresholdsDao)
-
-        // Saves all the new values in the database
-        map.forEach{
-            event(ThresholdsEvent.SetNedbor(it.value.toString()))
+    suspend fun updateThresholdValues(event: (ThresholdsEvent) -> Unit){
+        val updatedThresholdsMap = HashMap<String, Double>().apply {
+            thresholdMutableStates.forEachIndexed { index, mutableState ->
+                put(ThresholdType.entries[index].name, mutableState.doubleValue)
+            }
         }
 
+        settingsRepo.updateThresholdValues(
+            updatedThresholdsMap,
+            thresholdsDao
+        )
+        // Saves all the new values in the database
+        updatedThresholdsMap.forEach{
+            event(ThresholdsEvent.SetNedbor(it.value.toString()))
+        }
+    }
+
+    suspend fun updateRocketSpecValues(){
+        val updatedRocketSpecMap = HashMap<String, Double>().apply {
+            rocketSpecMutableStates.forEachIndexed { index, mutableState ->
+                put(RocketSpecType.entries[index].name, mutableState.doubleValue)
+            }
+        }
+
+        settingsRepo.updateRocketSpecValues(
+            updatedRocketSpecMap,
+        )
     }
 
     private val _thresholds: Flow<Thresholds?> = thresholdsDao.getThresholdById(1)

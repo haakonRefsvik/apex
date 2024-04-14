@@ -63,6 +63,8 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
+import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 
 /*
 @RequiresApi(Build.VERSION_CODES.O)
@@ -83,7 +85,6 @@ fun ThresholdPreview() {
 
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -226,7 +227,7 @@ fun ThresholdScreen(
 
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.maxPrecipitation,
+                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_PRECIPITATION.ordinal],
                         title = "Maks nedbør",
                         drawableId = R.drawable.vann,
                         suffix = "mm",
@@ -234,7 +235,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.maxHumidity,
+                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_HUMIDITY.ordinal],
                         title = "Maks luftfuktighet",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "%",
@@ -244,7 +245,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.maxWind,
+                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_WIND.ordinal],
                         title = "Maks vind",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
@@ -252,7 +253,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.maxShearWind,
+                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_SHEAR_WIND.ordinal],
                         title = "Maks vindskjær",
                         drawableId = R.drawable.vind2,
                         suffix = "m/s",
@@ -260,7 +261,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.maxDewPoint,
+                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_DEW_POINT.ordinal],
                         title = "Minimalt duggpunkt",
                         drawableId = R.drawable.luftfuktighet,
                         suffix = "℃",
@@ -303,7 +304,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.apogee,
+                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.APOGEE.ordinal],
                         title = "Apogee",
                         desc = "The rockets highest point",
                         drawableId = R.drawable.rakett_pin2,
@@ -314,7 +315,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.launchAngle,
+                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_ANGLE.ordinal],
                         title = "Launch angle",
                         drawableId = R.drawable.rakett_pin2,
                         suffix = "Deg",
@@ -326,7 +327,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.launchDirection,
+                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal],
                         title = "Launch direction",
                         drawableId = R.drawable.rakett_pin2,
                         suffix = "Deg",
@@ -338,7 +339,7 @@ fun ThresholdScreen(
                 }
                 item {
                     ThresholdCard(
-                        mutableValue = settingsViewModel.thrust,
+                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
                         title = "Thrust",
                         drawableId = R.drawable.rakett_pin2,
                         desc = "Thrust in newtons",
@@ -355,8 +356,8 @@ fun ThresholdScreen(
     DisposableEffect(Unit) {
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
-            settingsViewModel.saveThresholdValues(onThresholdEvent)     // update values in thresholdRepo
-            // onThresholdEvent(ThresholdsEvent.SaveThreshold)
+            settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
+            settingsViewModel.updateRocketSpecValues()
             weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
         }
         }
@@ -425,15 +426,11 @@ fun ThresholdCard(
                     val newValue = try {
                         formatNewValue(input, numberOfIntegers)
                     }catch (e: Exception){
-                        Log.d("Mais", "Formatteringa faila")
                         mutableValue.value
                     }
-                    Log.d("Mais", "ny verdi $newValue")
-                    Log.d("Mais", "lavest verdi $lowestInput")
-                    Log.d("Mais", "høyest verdi $highestInput")
 
-                    if(newValue >= lowestInput && newValue <= highestInput ) {
-                        Log.d("Mais", "Oppdaterer verdi")
+
+                    if(newValue in lowestInput..highestInput) {
                         mutableValue.value = newValue
 
                     }

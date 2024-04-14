@@ -74,7 +74,7 @@ class WeatherRepository(
 
     /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun loadWeather(lat: Double, lon: Double, loadHours: Int = 24) {
+    suspend fun loadWeather(lat: Double, lon: Double) {
         try {
             val list = mutableListOf<WeatherAtPosHour>()
 
@@ -191,7 +191,7 @@ class WeatherRepository(
         val deferredList = mutableListOf<Deferred<VerticalProfile>>()
         try {
             for (file in gribFiles) {
-                Log.d("gribThread", "Making verticalProfile on new thread")
+                Log.d("gribThread", "Making verticalProfile on new thread up to ${settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE)} m")
                 val deferred = async(Dispatchers.IO) {
                     VerticalProfile(heightLimitMeters = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt(), lat = lat, lon = lon, file = file)
                 }
