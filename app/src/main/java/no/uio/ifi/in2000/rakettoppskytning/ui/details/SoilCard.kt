@@ -63,7 +63,7 @@ fun SoilCard(soilPercentage: Int) {
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "Fuktighet i bakken",
+                            text = "Ground moisture",
                             modifier = Modifier.padding(vertical = 0.dp),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
@@ -100,7 +100,7 @@ fun SoilCard(soilPercentage: Int) {
                             modifier = Modifier
                                 .width(50.dp),
                             painter = painterResource(warningIconId),
-                            contentDescription = "kompasspil",
+                            contentDescription = "faresymbol",
                             tint = Color.Unspecified
                         )
                         Text(text = getSoilDescription(soilPercentage),

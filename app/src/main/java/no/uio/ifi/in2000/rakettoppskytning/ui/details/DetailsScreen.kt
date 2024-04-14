@@ -67,6 +67,8 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
+import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
@@ -185,14 +187,8 @@ fun DetailsScreen(
 
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
-                val datoPrefix: String = when{
-                    getNumberOfDaysAhead(weatherNow.date) == 1 -> "Tomorrow"
-                    getNumberOfDaysAhead(weatherNow.date) == 0 -> "Today"
-                    getNumberOfDaysAhead(weatherNow.date) < 1 -> getDayName(weatherNow.date, getNumberOfDaysAhead(weatherNow.date))
-                    getNumberOfDaysAhead(weatherNow.date) < 6 -> weatherNow.date
-
-                    else -> ""
-                }
+                val daysAhead = getNumberOfDaysAhead(weatherNow.date)
+                val datePrefix = formatDate(weatherNow.date)
 
                 Spacer(modifier = Modifier.height(15.dp))
                 Row(modifier = Modifier.padding(0.dp)) {
@@ -207,7 +203,7 @@ fun DetailsScreen(
 
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = "$datoPrefix at ${weatherNow.date.subSequence(11, 16)}",
+                                    text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
                                     fontWeight = FontWeight.ExtraBold,
                                     fontSize = 30.sp
                                 )
@@ -254,16 +250,16 @@ fun DetailsScreen(
                             Row {
                                 WeatherCard(
                                     iconId = R.drawable.temp,
-                                    desc = "Temperatur",
+                                    desc = "Temperature",
                                     value = "${fcData.instant.details.airTemperature} ℃",
-                                    info = "Temperaturen om 6 timer er minimalt ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
+                                    info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
                                 WeatherCard(
                                     iconId = R.drawable.vann,
-                                    desc = "Nedbør",
+                                    desc = "Precipitation",
                                     value = "${fcData.next1Hours?.details?.precipitationAmount} mm",
-                                    info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % sjanse for nedbør de neste 12 timene",
+                                    info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours",
                                     statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]?: 0.0
                                 )
                             }
@@ -273,9 +269,9 @@ fun DetailsScreen(
                             Row {
                                 WeatherCard(
                                     iconId = R.drawable.fog,
-                                    desc = "Tåke",
+                                    desc = "Fog",
                                     value = "${fcData.instant.details.fogAreaFraction?.roundToInt()} %",
-                                    info = "Tåkedekke på bakken"
+                                    info = "Amount of surrounding area covered in fog"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -291,9 +287,9 @@ fun DetailsScreen(
 
                                 WeatherCard(
                                     iconId = R.drawable.luftfuktighet,
-                                    desc = "Luftfuktighet",
+                                    desc = "Humidity",
                                     value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
-                                    info = "Duggpunktet er ${fcData.instant.details.dewPointTemperature} ℃",
+                                    info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
                                     statusCode = combinedStatus
                                 )
                             }
@@ -303,9 +299,9 @@ fun DetailsScreen(
                             Row {
                                 WeatherCard(
                                     iconId = R.drawable.cloudy,
-                                    desc = "Skydekke",
+                                    desc = "Cloud cover",
                                     value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
-                                    info = "Total skydekke for alle høyder"
+                                    info = "Total cloud cover for all heights in"
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -320,9 +316,9 @@ fun DetailsScreen(
 
                                 WeatherCard(
                                     iconId = R.drawable.eye,
-                                    desc = "Sikt",
+                                    desc = "Visibility",
                                     value = visibility,
-                                    info = "Estimert vertikal sikt"
+                                    info = "Estimated vertical visibility"
                                 )
                             }
                             Spacer(modifier = Modifier.height(30.dp))

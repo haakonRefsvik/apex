@@ -15,8 +15,8 @@ fun getVerticalSightKmNumber(
     cloudHigh: Double
 ): Double {
 
-    val l2 = (fogGround + cloudLow).coerceAtMost(100.0) // 10 + 20
-    val l3 = (l2 + cloudMed).coerceAtMost(100.0)        // 30 +
+    val l2 = (fogGround + cloudLow).coerceAtMost(100.0)
+    val l3 = (l2 + cloudMed).coerceAtMost(100.0)
     val l4 = (l3 + cloudHigh).coerceAtMost(100.0)
 
     val m1 = ((100 - fogGround) / 100) * 1

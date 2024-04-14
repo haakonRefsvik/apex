@@ -20,22 +20,22 @@ package no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil
  * */
 fun getSoilDescription(soilPercentage: Int): String{
     return when {
-        soilPercentage < 10 -> "Svært høy brannfare"
-        soilPercentage < 30 -> "Moderat brannfare"
-        soilPercentage < 60 -> "Lavere brannfare"
-        soilPercentage < 90 -> "Lav brannfare"
-        soilPercentage >= 90 -> "Svært lav brannfare"
+        soilPercentage < 10 -> "Very high fire risk"
+        soilPercentage < 30 -> "Moderate fire risk"
+        soilPercentage < 60 -> "Lower fire risk"
+        soilPercentage < 90 -> "Low fire risk"
+        soilPercentage >= 90 -> "Very low fire risk"
         else -> ""
     }
 }
 
 fun getSoilCategory(soilPercentage: Int): String{
     return when {
-        soilPercentage < 10 -> "Bakken er svært tørr"
-        soilPercentage < 30 -> "Bakken er tørr"
-        soilPercentage < 60 -> "Bakken er middels fuktig"
-        soilPercentage < 90 -> "Bakken er ganske fuktig"
-        soilPercentage >= 90 -> "Bakken er svært fuktig"
+        soilPercentage < 10 -> "The ground is very dry"
+        soilPercentage < 30 -> "The ground is dry"
+        soilPercentage < 60 -> "The ground is moderately dry"
+        soilPercentage < 90 -> "The ground is pretty moist"
+        soilPercentage >= 90 -> "The ground is very moist"
         else -> ""
     }
 }

@@ -40,10 +40,7 @@ fun getShearDirection(upperLayer: LevelData, lowerLayer: LevelData): Double {
     val deltaV = upperLayer.vComponentValue - lowerLayer.vComponentValue
     var shearWindDirection = Math.toDegrees(atan2(deltaU, deltaV))
     shearWindDirection %= 360.0
-
-    if (shearWindDirection < 0) {
-        shearWindDirection + 360.0
-    }
+    shearWindDirection = abs(shearWindDirection)
 
     return shearWindDirection
 }

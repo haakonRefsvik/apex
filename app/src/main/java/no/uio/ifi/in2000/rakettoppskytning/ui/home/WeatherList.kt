@@ -41,10 +41,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
+import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
@@ -162,18 +164,25 @@ fun WeatherList(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Column(
-                                        modifier = Modifier.width(65.dp),
+                                        modifier = Modifier.width(75.dp),
                                         horizontalAlignment = Alignment.Start,
                                     ) {
                                         Text(
                                             input.series.time.substring(11, 16),
                                             fontSize = 20.sp
                                         )
-                                        if (daysAhead == 1) {
-                                            Text(text = "Imorgen", fontSize = 14.sp)
+                                        if (daysAhead > 0) {
+                                            Text(
+                                                text = formatDate(input.series.time),
+                                                fontSize = 13.sp,
+                                                softWrap = true,
+                                                color = Color.Black.copy(alpha = 0.7F),
+                                                maxLines = 1
+                                            )
+
                                         }
                                     }
-                                    Spacer(modifier = Modifier.width(50.dp))
+                                    Spacer(modifier = Modifier.width(40.dp))
                                     Column {
                                         when (homeScreenViewModel.markedCardIndex.intValue) {
                                             0 -> {

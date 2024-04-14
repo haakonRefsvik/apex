@@ -60,7 +60,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "Vind på bakkenivå",
+                            text = "Wind at ground",
                             modifier = Modifier.padding(vertical = 5.dp),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
@@ -80,7 +80,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
                         color = Color.Black.copy(alpha = 0.7f),
-                        text = "Max vindkast er ${details.windSpeedOfGust} m/s",
+                        text = "Max speed of gust is ${details.windSpeedOfGust} m/s",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
                     )

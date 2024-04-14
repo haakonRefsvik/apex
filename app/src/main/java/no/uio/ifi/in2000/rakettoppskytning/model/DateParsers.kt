@@ -2,8 +2,10 @@ package no.uio.ifi.in2000.rakettoppskytning.model
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import org.joda.time.Hours
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -40,6 +42,17 @@ fun getNumberOfDaysAhead(dateString: String): Int {
     return period.days
 }
 
+fun getDayAndMonth(dateString: String): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+    val parsedDateTime = LocalDateTime.parse(dateString, formatter)
+
+    val day = parsedDateTime.dayOfMonth
+    val month = parsedDateTime.monthValue
+
+    return parsedDateTime.format(DateTimeFormatter.ofPattern("dd.MM"))
+}
+
 fun getDayName(dateString: String, dayOffset: Int): String{
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
     val date = sdf.parse(dateString)
@@ -54,11 +67,19 @@ fun getDayName(dateString: String, dayOffset: Int): String{
     return weekdays[if (dayOfWeek < 0) dayOfWeek + 7 else dayOfWeek]
 }
 
-/** Returns yesterdays date on the form year-month-day */
-fun dateNumberOfDaysAgo(n: Int): String {
-    val today = LocalDate.now()
-    val yesterday = today.minusDays(n.toLong())
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    return yesterday.format(formatter)
+/** Returns an appropriate display of the date*/
+
+fun formatDate(date: String): String {
+    val daysAhead = getNumberOfDaysAhead(date)
+    val formattedDate: String = when{
+        daysAhead == 1 -> "Tomorrow"
+        daysAhead == 0 -> "Today"
+        daysAhead in 2..6 -> getDayName(date, daysAhead)
+        daysAhead > 6 -> getDayAndMonth(date)
+
+        else -> ""
+    }
+
+    return formattedDate
 }
 
