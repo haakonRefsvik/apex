@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 
@@ -58,7 +59,7 @@ fun WeatherCard(
                             .width(30.dp),
                         painter = painterResource(iconId),
                         contentDescription = desc,
-                            tint = details0
+                            tint = details100
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(

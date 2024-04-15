@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
@@ -70,8 +71,11 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 
 /*
 @RequiresApi(Build.VERSION_CODES.O)
@@ -104,13 +108,13 @@ fun ThresholdScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(
+    Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
 
         topBar = {
-            TopAppBar(
+            TopAppBar(colors = TopAppBarColors(settings100, settings100, settings0, settings0, settings0),
                 actions = {
                     IconButton(onClick = { }) {
                         Icon(
@@ -194,7 +198,8 @@ fun ThresholdScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .background(color = settings100),
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
@@ -432,7 +437,7 @@ fun ThresholdCard(
             ) {
                 Text(text = title,
                     fontSize = 16.sp,
-                        color = settings0
+                        color = settings50
                     )
                 if(desc != ""){
                     Spacer(modifier = Modifier.height(7.dp))
@@ -440,7 +445,7 @@ fun ThresholdCard(
                         text = desc,
                         lineHeight = 16.sp,
                         fontSize = 13.sp,
-                            color = settings0
+                            color = settings50
                     )
                 }
             }
@@ -482,7 +487,7 @@ fun ThresholdCard(
             ) {
                 Text(
                     text = suffix,
-                        color = settings0
+                        color = settings50
                 )
 
             }

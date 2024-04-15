@@ -166,7 +166,7 @@ fun InputField(
                         focusManager.clearFocus()
                     }
                 ),
-                label = { Text("Latitude") },
+                label = { Text("Latitude", color = firstButton0) },
                 singleLine = true,
             )
             Spacer(modifier = Modifier.width(50.dp))
@@ -193,7 +193,7 @@ fun InputField(
                         focusManager.clearFocus()
                     }
                 ),
-                label = { Text("Longitude") },
+                label = { Text("Longitude", color = firstButton0) },
                 singleLine = true
             )
 
