@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 
 @Composable
 fun SoilCard(soilPercentage: Int) {
@@ -41,7 +45,12 @@ fun SoilCard(soilPercentage: Int) {
 
         modifier = Modifier
             .height(140.dp)
-            .width(360.dp)
+            .width(360.dp),
+            colors = CardColors(
+                    containerColor = details50,
+                    contentColor = details100,
+                    disabledContainerColor = details50,
+                    disabledContentColor = details100)
     ) {
         Row {
 
@@ -66,7 +75,8 @@ fun SoilCard(soilPercentage: Int) {
                             text = "Ground moisture",
                             modifier = Modifier.padding(vertical = 0.dp),
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                                color = details0
                         )
                     }
                     Spacer(
@@ -78,14 +88,15 @@ fun SoilCard(soilPercentage: Int) {
                         text = "$soilPercentage %",
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                            color = details0
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        color = Color.Black.copy(alpha = 0.7f),
                         text = getSoilCategory(soilPercentage),
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
+                            color = details0
                     )
 
                 }
@@ -109,7 +120,8 @@ fun SoilCard(soilPercentage: Int) {
                             lineHeight = 16.sp,
                             modifier = Modifier
                                 .padding(top = 55.dp)
-                                .width(100.dp)
+                                .width(100.dp),
+                                color = details0
                         )
                     }
                 }

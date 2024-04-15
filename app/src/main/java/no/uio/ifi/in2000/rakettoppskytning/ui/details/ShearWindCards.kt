@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -69,9 +70,9 @@ import com.patrykandpatrick.vico.core.model.columnSeries
 import com.patrykandpatrick.vico.core.model.lineSeries
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryContainerDark
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.primaryContainerLight
 import kotlin.math.roundToInt
 
 
@@ -80,7 +81,12 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
     ElevatedCard(
         modifier = Modifier
             .height(140.dp)
-            .width(360.dp)
+            .width(360.dp),
+            colors = CardColors(
+                    containerColor = details50,
+                    contentColor = details0,
+                    disabledContainerColor = details50,
+                    disabledContentColor = details0)
     ) {
 
         Row {
@@ -108,7 +114,8 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                             text = "Peak vertical shear",
                             modifier = Modifier.padding(vertical = 5.dp),
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                                color = details0
                         )
                     }
                     Spacer(
@@ -123,15 +130,16 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                         ) + " m/s",
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                            color = details0
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        color = Color.Black.copy(alpha = 0.7f),
                         text = "The mean altitude of this shearwind is ${
                             verticalProfile.getMaxSheerWind().altitude.roundToInt()} m",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
+                            color = details0
                     )
 
                 }

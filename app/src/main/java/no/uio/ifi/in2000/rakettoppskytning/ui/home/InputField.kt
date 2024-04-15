@@ -5,6 +5,8 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,11 +27,14 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,6 +64,13 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
@@ -125,7 +137,8 @@ fun InputField(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(color = main100),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -142,7 +155,7 @@ fun InputField(
                 Modifier
                     .width(130.dp)
                     .height(58.dp),
-                textStyle = TextStyle(fontSize = 18.sp),
+                textStyle = TextStyle(fontSize = 18.sp, color = firstButton0),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -169,7 +182,7 @@ fun InputField(
                     .width(130.dp)
                     .height(58.dp),
 
-                textStyle = TextStyle(fontSize = 18.sp),
+                textStyle = TextStyle(fontSize = 18.sp, color = firstButton0),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -207,13 +220,20 @@ fun InputField(
                     modifier = Modifier.size(15.dp),
                     imageVector = Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite",
+                        tint = firstButton0
                 )
                 Spacer(modifier = Modifier.width(3.dp))
-                Text("Add favorite")
+                Text("Add favorite", color = firstButton0)
             }
             Spacer(modifier = Modifier.width(25.dp))
             Button(
-                modifier = Modifier.width(155.dp), onClick = {
+                modifier = Modifier.width(155.dp),
+                    colors = ButtonColors(
+                            containerColor = firstButton0,
+                            contentColor = firstButton100,
+                            disabledContainerColor = firstButton0,
+                            disabledContentColor = firstButton100),
+                    onClick = {
                     controller?.hide()
                     homeScreenViewModel.getWeatherByCord(lat, lon)
                     mapViewModel.moveMapCamera(lat, lon)
@@ -232,10 +252,10 @@ fun InputField(
         if (state.favorites.isNotEmpty()) {
             Row(modifier = Modifier.width(340.dp)) {
                 if (state.favorites.size == 1) {
-                    Text("Favorite location:", fontSize = 14.sp)
+                    Text("Favorite location:", fontSize = 14.sp, color = main0)
 
                 } else {
-                    Text("Favorite locations:", fontSize = 14.sp)
+                    Text("Favorite locations:", fontSize = 14.sp, color = main0)
                 }
 
 
@@ -250,10 +270,16 @@ fun InputField(
 
             state.favorites.reversed().forEach { favorite ->
                 item {
-                    ElevatedCard(
+                    OutlinedCard(
                         modifier = Modifier
                             .height(55.dp)
                             .width(200.dp),
+                            colors = CardColors(
+                                    containerColor = favoriteCard50,
+                                    contentColor = favoriteCard0,
+                                    disabledContentColor = favoriteCard50,
+                                    disabledContainerColor = favoriteCard0),
+                            border = BorderStroke(3.dp, color = favoriteCard100),
                         onClick = {
                             mapViewModel.lat.value = favorite.lat.toDouble()
                             mapViewModel.lon.value = favorite.lon.toDouble()
@@ -289,7 +315,7 @@ fun InputField(
                                     tint = Color(216, 64, 64, 255)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(favorite.name, fontSize = 18.sp)
+                                Text(favorite.name, fontSize = 18.sp, color = favoriteCard0)
 
                             }
                             Row(
@@ -305,7 +331,7 @@ fun InputField(
                                     Icon(
                                         imageVector = Icons.Default.Close,
                                         contentDescription = "Delete favorite",
-
+                                            tint = favoriteCard0
 
                                         )
 

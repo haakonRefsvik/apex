@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,8 @@ import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
@@ -60,15 +63,20 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
+                .background(color = main100)
                 .fillMaxSize()
         ) {
             BottomSheetScaffold(
+                    sheetContainerColor = main100,
+                    containerColor = main100,
+                    contentColor = main100,
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
                 sheetContent = {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .background(color = main100),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween,
 
@@ -85,7 +93,7 @@ fun HomeScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             if (loading.value) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(color = main0)
 
                             } else {
                                 WeatherList(
