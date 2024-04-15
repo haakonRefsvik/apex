@@ -20,17 +20,33 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
 @Composable
 fun BottomAppBar(navController: NavController){
-    BottomAppBar {
+    BottomAppBar(
+        containerColor = main50,
+        modifier = Modifier.shadow(
+                10.dp,
+                RectangleShape,
+                false,
+                DefaultShadowColor,
+                DefaultShadowColor
+        )
+        ){
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = main50),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -39,7 +55,8 @@ fun BottomAppBar(navController: NavController){
 
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
-                    contentDescription = "Location"
+                    contentDescription = "Location",
+                        tint = main0
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
@@ -54,7 +71,8 @@ fun BottomAppBar(navController: NavController){
                 Icon(
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),
-                    contentDescription = "Settings"
+                    contentDescription = "Settings",
+                        tint = main0
                 )
             }
         }

@@ -42,8 +42,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -80,6 +83,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import kotlin.math.roundToInt
 
 
@@ -108,19 +114,12 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Sharp.Menu,
-                            contentDescription = "ArrowBack"
-                        )
-                    }
-                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "ArrowBack"
+                            contentDescription = "ArrowBack",
+                                tint = main0
                         )
                     }
                 },
@@ -139,25 +138,36 @@ fun DetailsScreen(
             )
         },
         bottomBar = {
-            BottomAppBar() {
+            BottomAppBar(
+                    containerColor = main50,
+                    modifier = Modifier.shadow(
+                            10.dp,
+                            RectangleShape,
+                            false,
+                            DefaultShadowColor,
+                            DefaultShadowColor
+                    )) {
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = main50),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
-
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
-                            contentDescription = "Location"
+                            contentDescription = "Location",
+                                tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket"
+                            contentDescription = "Rakket",
+                                tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
@@ -165,7 +175,8 @@ fun DetailsScreen(
                         Icon(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
-                            contentDescription = "Settings"
+                            contentDescription = "Settings",
+                                tint = main0
                         )
                     }
                 }
@@ -205,14 +216,17 @@ fun DetailsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
                                     fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 30.sp
+                                    fontSize = 30.sp,
+                                        color = main0
                                 )
 
                                 Spacer(modifier = Modifier.height(40.dp))
 
                                 HorizontalDivider(
                                     modifier = Modifier.width(340.dp),
-                                    thickness = 1.dp, color = Color.Black.copy(alpha = 0.2f))
+                                    thickness = 1.dp,
+                                        color = main0
+                                )
                                 Spacer(modifier = Modifier.height(15.dp))
                             }
                         }
