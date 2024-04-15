@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,6 +83,8 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescri
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
@@ -114,6 +117,7 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
+                    colors = TopAppBarColors(details100, details100, details0, details0, details0),
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -186,12 +190,13 @@ fun DetailsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .background(main100),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             if (weatherAtPosHour.isEmpty()) {
-                Text("Its empty here ...")
+                Text("Its empty here ...", color = main0)
             }
 
             weatherAtPosHour.forEach { weatherNow ->

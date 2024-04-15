@@ -65,6 +65,7 @@ fun AddFavoriteDialogCorrect(
     var isNameAlreadyUsed by remember { mutableStateOf(false) }
 
     AlertDialog(
+            containerColor = favorite100,
         title = {
             Text(text = "Legg til favoritt", color = favorite0)
         },
@@ -188,6 +189,7 @@ fun AddFavoriteDialogError(
 ) {
     val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
     AlertDialog(
+            containerColor = favorite100,
         icon = {
             androidx.compose.material3.Icon(
                 imageVector = Icons.Default.Warning,
