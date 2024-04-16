@@ -59,7 +59,7 @@ fun WeatherCard(
                             .width(30.dp),
                         painter = painterResource(iconId),
                         contentDescription = desc,
-                            tint = details100
+                            tint = details0
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(

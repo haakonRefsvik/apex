@@ -94,6 +94,7 @@ fun HomeScreen(
 
                             if (loading.value) {
                                 CircularProgressIndicator(color = main0)
+                                Spacer(modifier = Modifier.height(10.dp))
 
                             } else {
                                 WeatherList(

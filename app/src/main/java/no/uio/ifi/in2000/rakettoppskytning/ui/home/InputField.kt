@@ -69,6 +69,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
@@ -155,7 +156,7 @@ fun InputField(
                 Modifier
                     .width(130.dp)
                     .height(58.dp),
-                textStyle = TextStyle(fontSize = 18.sp, color = firstButton0),
+                textStyle = TextStyle(fontSize = 18.sp, color = firstButton50),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -166,7 +167,7 @@ fun InputField(
                         focusManager.clearFocus()
                     }
                 ),
-                label = { Text("Latitude", color = firstButton0) },
+                label = { Text("Latitude", color = firstButton50) },
                 singleLine = true,
             )
             Spacer(modifier = Modifier.width(50.dp))
@@ -182,7 +183,7 @@ fun InputField(
                     .width(130.dp)
                     .height(58.dp),
 
-                textStyle = TextStyle(fontSize = 18.sp, color = firstButton0),
+                textStyle = TextStyle(fontSize = 18.sp, color = firstButton50),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.Number
@@ -193,7 +194,7 @@ fun InputField(
                         focusManager.clearFocus()
                     }
                 ),
-                label = { Text("Longitude", color = firstButton0) },
+                label = { Text("Longitude", color = firstButton50) },
                 singleLine = true
             )
 
@@ -203,7 +204,9 @@ fun InputField(
             Log.d("moveCam -1: ", "lat: ${lat} og lon: ${lon}")
             mapViewModel.moveMapCamera(lat, lon)
 
-            OutlinedButton(modifier = Modifier.width(155.dp), onClick = {
+            OutlinedButton(modifier = Modifier.width(155.dp),
+                border = BorderStroke(2.dp, firstButton0),
+                onClick = {
                 controller?.hide()
                 mapViewModel.lat.value = lat
                 mapViewModel.lon.value = lon
@@ -220,10 +223,10 @@ fun InputField(
                     modifier = Modifier.size(15.dp),
                     imageVector = Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite",
-                        tint = firstButton0
+                        tint = firstButton50
                 )
                 Spacer(modifier = Modifier.width(3.dp))
-                Text("Add favorite", color = firstButton0)
+                Text("Add favorite", color = firstButton50)
             }
             Spacer(modifier = Modifier.width(25.dp))
             Button(

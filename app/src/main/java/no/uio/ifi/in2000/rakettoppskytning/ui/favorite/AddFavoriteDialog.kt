@@ -42,6 +42,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 //Lag funksjonen slik at den ikke leser inn mer enn 1 gang per lokasjon
 @OptIn(MapboxExperimental::class)
@@ -65,9 +66,9 @@ fun AddFavoriteDialogCorrect(
     var isNameAlreadyUsed by remember { mutableStateOf(false) }
 
     AlertDialog(
-            containerColor = favorite100,
+            containerColor = main100,
         title = {
-            Text(text = "Legg til favoritt", color = favorite0)
+            Text(text = "Legg til favoritt", color = favorite100)
         },
         text = {
             Column(
@@ -95,49 +96,49 @@ fun AddFavoriteDialogCorrect(
                     singleLine = true,
                     modifier = Modifier.focusRequester(focusRequester),
                         colors = TextFieldColors(
-                                focusedTextColor = favorite0,
-                                cursorColor = favorite0,
-                                disabledContainerColor = favorite0,
-                                disabledIndicatorColor = favorite0,
-                                disabledLabelColor = favorite0,
-                                disabledLeadingIconColor = favorite0,
-                                disabledPlaceholderColor = favorite0,
-                                disabledPrefixColor = favorite0,
-                                disabledSuffixColor = favorite0,
-                                disabledSupportingTextColor = favorite0,
-                                disabledTextColor = favorite0,
-                                disabledTrailingIconColor = favorite0,
+                                focusedTextColor = favorite100,
+                                cursorColor = favorite100,
+                                disabledContainerColor = favorite100,
+                                disabledIndicatorColor = favorite100,
+                                disabledLabelColor = favorite100,
+                                disabledLeadingIconColor = favorite100,
+                                disabledPlaceholderColor = favorite100,
+                                disabledPrefixColor = favorite100,
+                                disabledSuffixColor = favorite100,
+                                disabledSupportingTextColor = favorite100,
+                                disabledTextColor = favorite100,
+                                disabledTrailingIconColor = favorite100,
                                 errorContainerColor = favorite100,
-                                errorCursorColor = favorite0,
-                                errorIndicatorColor = favorite0,
-                                errorLabelColor = favorite0,
-                                errorLeadingIconColor = favorite0,
-                                errorPlaceholderColor = favorite0,
-                                errorPrefixColor = favorite0,
-                                errorSuffixColor = favorite0,
-                                errorSupportingTextColor = favorite0,
-                                errorTextColor = favorite0,
-                                errorTrailingIconColor = favorite0,
-                                focusedContainerColor = favorite100,
-                                focusedIndicatorColor = favorite0,
-                                focusedLabelColor = favorite0,
-                                focusedLeadingIconColor = favorite0,
-                                focusedPlaceholderColor = favorite0,
-                                focusedPrefixColor = favorite0,
-                                focusedSuffixColor = favorite0,
-                                focusedSupportingTextColor = favorite0,
-                                focusedTrailingIconColor = favorite0,
-                                textSelectionColors = TextSelectionColors(favorite0, favorite0),
-                                unfocusedContainerColor = favorite100,
-                                unfocusedIndicatorColor = favorite0,
-                                unfocusedLabelColor = favorite0,
-                                unfocusedLeadingIconColor = favorite0,
-                                unfocusedPlaceholderColor = favorite0,
-                                unfocusedPrefixColor = favorite0,
-                                unfocusedSuffixColor = favorite0,
-                                unfocusedSupportingTextColor = favorite0,
-                                unfocusedTextColor = favorite0,
-                                unfocusedTrailingIconColor = favorite0)
+                                errorCursorColor = favorite100,
+                                errorIndicatorColor = favorite100,
+                                errorLabelColor = favorite100,
+                                errorLeadingIconColor = favorite100,
+                                errorPlaceholderColor = favorite100,
+                                errorPrefixColor = favorite100,
+                                errorSuffixColor = favorite100,
+                                errorSupportingTextColor = favorite100,
+                                errorTextColor = favorite100,
+                                errorTrailingIconColor = favorite100,
+                                focusedContainerColor = main100,
+                                focusedIndicatorColor = favorite100,
+                                focusedLabelColor = favorite100,
+                                focusedLeadingIconColor = favorite100,
+                                focusedPlaceholderColor = favorite100,
+                                focusedPrefixColor = favorite100,
+                                focusedSuffixColor = favorite100,
+                                focusedSupportingTextColor = favorite100,
+                                focusedTrailingIconColor = favorite100,
+                                textSelectionColors = TextSelectionColors(favorite100, favorite100),
+                                unfocusedContainerColor = main100,
+                                unfocusedIndicatorColor = favorite100,
+                                unfocusedLabelColor = favorite100,
+                                unfocusedLeadingIconColor = favorite100,
+                                unfocusedPlaceholderColor = favorite100,
+                                unfocusedPrefixColor = favorite100,
+                                unfocusedSuffixColor = favorite100,
+                                unfocusedSupportingTextColor = favorite100,
+                                unfocusedTextColor = favorite100,
+                                unfocusedTrailingIconColor = favorite100)
                 )
                 if (isNameAlreadyUsed) {
                     Text("Dette navnet er allerede i bruk", color = Color.Red)
@@ -162,7 +163,7 @@ fun AddFavoriteDialogCorrect(
                 }
 
             ) {
-                Text("Confirm", color = favorite0)
+                Text("Confirm", color = favorite100)
             }
         },
         dismissButton = {
@@ -171,7 +172,7 @@ fun AddFavoriteDialogCorrect(
                     onEvent(FavoriteEvent.HideDialog)
                 }
             ) {
-                Text("Dismiss", color = favorite0)
+                Text("Dismiss", color = Color.Red)
             }
         }
     )
@@ -189,7 +190,7 @@ fun AddFavoriteDialogError(
 ) {
     val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
     AlertDialog(
-            containerColor = favorite100,
+            containerColor = main100,
         icon = {
             androidx.compose.material3.Icon(
                 imageVector = Icons.Default.Warning,
@@ -198,11 +199,11 @@ fun AddFavoriteDialogError(
             )
         },
         title = {
-            Text(text = "Legg til favoritt", color = favorite0)
+            Text(text = "Legg til favoritt", color = favorite100)
         },
         text = {
             if (favorite != null) {
-                Text("Denne lokasjonen er allerede lagret under navnet ${favorite.name}", color = favorite0)
+                Text("Denne lokasjonen er allerede lagret under navnet ${favorite.name}", color = favorite100)
             }
         },
         onDismissRequest = {},
@@ -212,7 +213,7 @@ fun AddFavoriteDialogError(
                     onEvent(FavoriteEvent.HideDialog)
                 }
             ) {
-                Text("OK", color = favorite0)
+                Text("OK", color = favorite100)
             }
         }
     )

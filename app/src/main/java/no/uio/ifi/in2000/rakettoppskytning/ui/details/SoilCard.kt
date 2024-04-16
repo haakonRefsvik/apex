@@ -69,7 +69,7 @@ fun SoilCard(soilPercentage: Int) {
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vann),
                             contentDescription = "Vannsymbol",
-                                tint = details100
+                                tint = details0
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(

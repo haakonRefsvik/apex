@@ -115,14 +115,6 @@ fun ThresholdScreen(
 
         topBar = {
             TopAppBar(colors = TopAppBarColors(settings100, settings100, settings0, settings0, settings0),
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(
-                            imageVector = Icons.Sharp.Menu,
-                            contentDescription = "ArrowBack"
-                        )
-                    }
-                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -454,7 +446,7 @@ fun ThresholdCard(
                 modifier = Modifier
                     .width(80.dp)
                     .height(45.dp),
-                textStyle = TextStyle(textAlign = TextAlign.Center),
+                textStyle = TextStyle(textAlign = TextAlign.Center, color = settings50),
                 value = String.format("%.${numberOfDecimals}f", mutableValue.value),
                 onValueChange = { input ->
                     val newValue = try {

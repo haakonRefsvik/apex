@@ -117,7 +117,7 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
-                    colors = TopAppBarColors(details100, details100, details0, details0, details0),
+                    colors = TopAppBarColors(main100, main100, main100, main100, main100),
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
