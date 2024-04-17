@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -34,6 +35,7 @@ fun Navigation(
     detailsScreenViewModel: DetailsScreenViewModel,
     thresholdState: ThresholdState,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
+    context: Context
 ) {
 
     val navController = rememberNavController()
@@ -47,7 +49,8 @@ fun Navigation(
                 state,
                 onEvent,
                 mapViewModel,
-                settingsViewModel
+                settingsViewModel,
+                context
             )
         }
         composable(
