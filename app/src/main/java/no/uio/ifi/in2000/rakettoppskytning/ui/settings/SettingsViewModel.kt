@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
@@ -21,8 +22,12 @@ import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdValues
 
 
-class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: ThresholdsDao) : ViewModel(){
+class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: ThresholdsDao) :
+    ViewModel() {
     private val settingsRepo = repo
+
+    val settingscheck1 = mutableStateOf(true)
+    val settingscheck2 = mutableStateOf(false)
 
     val thresholdMutableStates = ThresholdType.entries.map {
         mutableDoubleStateOf(settingsRepo.getThresholdValue(it))
@@ -35,7 +40,7 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
     /**
      * Takes the values from the mutableStates and saves them in the Repo
      * */
-    suspend fun updateThresholdValues(event: (ThresholdsEvent) -> Unit){
+    suspend fun updateThresholdValues(event: (ThresholdsEvent) -> Unit) {
         val updatedThresholdsMap = HashMap<String, Double>().apply {
             thresholdMutableStates.forEachIndexed { index, mutableState ->
                 put(ThresholdType.entries[index].name, mutableState.doubleValue)
@@ -47,12 +52,12 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
             thresholdsDao
         )
         // Saves all the new values in the database
-        updatedThresholdsMap.forEach{
+        updatedThresholdsMap.forEach {
             event(ThresholdsEvent.SetNedbor(it.value.toString()))
         }
     }
 
-    suspend fun updateRocketSpecValues(){
+    suspend fun updateRocketSpecValues() {
         val updatedRocketSpecMap = HashMap<String, Double>().apply {
             rocketSpecMutableStates.forEachIndexed { index, mutableState ->
                 put(RocketSpecType.entries[index].name, mutableState.doubleValue)
@@ -79,7 +84,7 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThresholdState())
 
     fun onEvent(event: ThresholdsEvent) {
-        when(event) {
+        when (event) {
             is ThresholdsEvent.SaveThreshold -> {
                 val nedbor = state.value.nedbor
                 val luftfuktighet = state.value.luftfuktighet
@@ -87,7 +92,7 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
                 val shearWind = state.value.shearWind
                 val duggpunkt = state.value.duggpunkt
 
-                if(nedbor.isBlank() || luftfuktighet.isBlank() || vind.isBlank()|| shearWind.isBlank() || duggpunkt.isBlank()) {
+                if (nedbor.isBlank() || luftfuktighet.isBlank() || vind.isBlank() || shearWind.isBlank() || duggpunkt.isBlank()) {
                     return
                 }
 
@@ -103,30 +108,45 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
                 }
 
             }
+
             is ThresholdsEvent.SetNedbor -> {
-                _state.update { it.copy(
-                    nedbor = event.nedbor
-                ) }
+                _state.update {
+                    it.copy(
+                        nedbor = event.nedbor
+                    )
+                }
             }
+
             is ThresholdsEvent.SetLuftfuktighet -> {
-                _state.update { it.copy(
-                    luftfuktighet = event.luftfuktighet
-                ) }
+                _state.update {
+                    it.copy(
+                        luftfuktighet = event.luftfuktighet
+                    )
+                }
             }
+
             is ThresholdsEvent.SetVind -> {
-                _state.update { it.copy(
-                    vind = event.vind
-                ) }
+                _state.update {
+                    it.copy(
+                        vind = event.vind
+                    )
+                }
             }
+
             is ThresholdsEvent.SetShearWind -> {
-                _state.update { it.copy(
-                    shearWind = event.shearWind
-                ) }
+                _state.update {
+                    it.copy(
+                        shearWind = event.shearWind
+                    )
+                }
             }
+
             is ThresholdsEvent.SetDuggpunkt -> {
-                _state.update { it.copy(
-                    duggpunkt = event.duggpunkt
-                ) }
+                _state.update {
+                    it.copy(
+                        duggpunkt = event.duggpunkt
+                    )
+                }
             }
         }
     }

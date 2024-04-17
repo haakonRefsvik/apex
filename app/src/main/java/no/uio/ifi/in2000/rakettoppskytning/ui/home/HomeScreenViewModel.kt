@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -207,7 +208,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             CalendarLocale("NO"),
             yearRange = 2024..2024,
             initialSelectedStartDateMillis = initialSelectedStartDateMillis.value.timeInMillis,
-            initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis
+            initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis,
         )
     )
     val validateHour = { x: Int -> if (x == 23) 0 else x }
