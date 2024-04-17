@@ -77,7 +77,6 @@ fun formatDate(date: String): String {
         daysAhead > 6 -> getDayAndMonth(date)
         else -> ""
     }
-    Log.d("mais", "$date, dager foran nå: $daysAhead, dagen idag: ${getDayName(date, 0)}")
 
     return formattedDate
 }

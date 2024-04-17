@@ -29,14 +29,14 @@ suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
-
             })
         }
     }
 
-    Log.d("APICALL", "PÅ locationForecast")
 
     val url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
+    Log.d("APICALL", "url: $url")
+
     return try {
         listOf(client.get(url).body<LocationForecast>())
     }catch (e: Exception){
