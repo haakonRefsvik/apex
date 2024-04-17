@@ -8,6 +8,7 @@ import ucar.nc2.grib.grib2.Grib2RecordScanner
 import ucar.nc2.time.CalendarPeriod
 import ucar.unidata.io.RandomAccessFile
 import java.io.File
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -107,6 +108,23 @@ class VerticalProfile(
 
     fun getMaxSheerWind(): ShearWind {
         return getAllSheerWinds().maxBy { it.windSpeed }
+    }
+
+    fun getNearestLevelData(altitudeMeters: Double): LevelData?{
+        var nearest: LevelData = verticalProfileMap[(verticalProfileMap.keys.max())]?: return null
+        var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
+
+        verticalProfileMap.forEach {
+            val levelAlt = it.value.getLevelHeightInMeters()
+            val d = abs(levelAlt - altitudeMeters)
+
+            if(d < nearestAlt){
+                nearest = it.value
+                nearestAlt = d
+            }
+        }
+
+        return nearest
     }
 
     override fun toString(): String {
