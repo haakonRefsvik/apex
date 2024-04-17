@@ -335,7 +335,6 @@ fun ThresholdScreen(
                             modifier = Modifier.width(340.dp),
                         )
                         {
-                            Spacer(modifier = Modifier.height(30.dp))
                             Row(
                                 modifier = Modifier,
                                 verticalAlignment = Alignment.CenterVertically
