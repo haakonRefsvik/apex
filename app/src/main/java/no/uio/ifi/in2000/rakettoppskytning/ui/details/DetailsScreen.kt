@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -71,6 +73,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescri
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
@@ -78,6 +84,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import kotlin.math.roundToInt
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -212,141 +220,182 @@ fun DetailsScreen(
 
                 }
 
-                LazyColumn {
 
 
-                    item {
-                        weatherNow.verticalProfile?.let {
-                            ShearWindCard(
-                                verticalProfile = it,
-                                statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
+                val listState = rememberLazyListState()
 
-                    item {
-                        weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
-                        Spacer(modifier = Modifier.height(30.dp))
+                LazyColumnScrollbar(
+                    listState = listState,
+                    modifier = Modifier,
+                    rightSide = true,
+                    alwaysShowScrollBar = false,
+                    thickness = 6.dp,
+                    padding = 8.dp,
+                    thumbMinHeight = 0.1f,
+                    thumbColor = Color.White,
+                    thumbSelectedColor = Color.White,
+                    thumbShape = CircleShape,
+                    selectionMode = ScrollbarSelectionMode.Thumb,
+                    selectionActionable = ScrollbarSelectionActionable.Always,
+                    hideDelay = 400.toDuration(DurationUnit.MILLISECONDS),
+                    showItemIndicator = ListIndicatorSettings.EnabledMirrored(
+                        100.dp,
+                        Color.Gray
+                    ),
+                    enabled = true,
+                    indicatorContent = { index, isThumbSelected ->
+                        // Indicator content composable
+                        // Replace with your own implementation
                     }
-                    item {
-                        weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                    item {
-                        WindCard(
-                            details = fcData.instant.details,
-                            statusCode = statusMap[ThresholdType.MAX_WIND.name] ?: 0.0
-                        )
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                    item {
-                        weatherNow.soilMoisture?.let { SoilCard(soilPercentage = it) }
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                    item {
-                        Row {
-                            WeatherCard(
-                                iconId = R.drawable.temp,
-                                desc = "Temperature",
-                                value = "${fcData.instant.details.airTemperature} ℃",
-                                info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
-                            )
-                            Spacer(modifier = Modifier.width(20.dp))
-                            var valueText =
-                                "${fcData.next1Hours?.details?.precipitationAmount} mm"
-                            var descText =
-                                "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
-                            if (fcData.next1Hours == null) {
-                                valueText =
-                                    "${fcData.next6Hours?.details?.precipitationAmount} mm"
-                                descText = "Rain in the next 6 hours"
+                ) {
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                    LazyColumn(state = listState) {
+
+
+
+                            item {
+                                weatherNow.verticalProfile?.let {
+                                    ShearWindCard(
+                                        verticalProfile = it,
+                                        statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(30.dp))
                             }
 
-                            WeatherCard(
-                                iconId = R.drawable.vann,
-                                desc = "Precipitation",
-                                value = valueText,
-                                info = descText,
-                                statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]
-                                    ?: 0.0
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                    item {
-                        Row {
-                            var valueText =
-                                "${fcData.instant.details.fogAreaFraction?.roundToInt()} mm"
-                            var descText = "Amount of surrounding area covered in fog"
-                            var titleText = "Fog"
-                            if (fcData.instant.details.fogAreaFraction == null) {
-                                valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
-                                descText = "Cloud cover lower than 2000m altitude"
-                                titleText = "Low clouds"
+                            item {
+                                weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
+                                Spacer(modifier = Modifier.height(30.dp))
                             }
-
-                            WeatherCard(
-                                iconId = R.drawable.fog,
-                                desc = titleText,
-                                value = valueText,
-                                info = descText
-                            )
-                            Spacer(modifier = Modifier.width(20.dp))
-
-                            val combinedStatus: Double
-                            val d = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
-                            val h = statusMap[ThresholdType.MAX_HUMIDITY.name] ?: 0.0
-
-                            combinedStatus = if (d == 1.0 || h == 1.0) {
-                                1.0
-                            } else {
-                                (d + h) / 2
+                            item {
+                                weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
+                                Spacer(modifier = Modifier.height(30.dp))
                             }
+                            item {
+                                WindCard(
+                                    details = fcData.instant.details,
+                                    statusCode = statusMap[ThresholdType.MAX_WIND.name] ?: 0.0
+                                )
+                                Spacer(modifier = Modifier.height(30.dp))
+                            }
+                            item {
+                                weatherNow.soilMoisture?.let { SoilCard(soilPercentage = it) }
+                                Spacer(modifier = Modifier.height(30.dp))
+                            }
+                            item {
+                                Row {
+                                    WeatherCard(
+                                        iconId = R.drawable.temp,
+                                        desc = "Temperature",
+                                        value = "${fcData.instant.details.airTemperature} ℃",
+                                        info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
+                                    )
+                                    Spacer(modifier = Modifier.width(20.dp))
+                                    var valueText =
+                                        "${fcData.next1Hours?.details?.precipitationAmount} mm"
+                                    var descText =
+                                        "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
+                                    if (fcData.next1Hours == null) {
+                                        valueText =
+                                            "${fcData.next6Hours?.details?.precipitationAmount} mm"
+                                        descText = "Rain in the next 6 hours"
 
-                            WeatherCard(
-                                iconId = R.drawable.luftfuktighet,
-                                desc = "Humidity",
-                                value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
-                                info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
-                                statusCode = combinedStatus
-                            )
+                                    }
+
+                                    WeatherCard(
+                                        iconId = R.drawable.vann,
+                                        desc = "Precipitation",
+                                        value = valueText,
+                                        info = descText,
+                                        statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]
+                                            ?: 0.0
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(30.dp))
+                            }
+                            item {
+                                Row {
+                                    var valueText =
+                                        "${fcData.instant.details.fogAreaFraction?.roundToInt()} mm"
+                                    var descText = "Amount of surrounding area covered in fog"
+                                    var titleText = "Fog"
+                                    if (fcData.instant.details.fogAreaFraction == null) {
+                                        valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
+                                        descText = "Cloud cover lower than 2000m altitude"
+                                        titleText = "Low clouds"
+                                    }
+
+                                    WeatherCard(
+                                        iconId = R.drawable.fog,
+                                        desc = titleText,
+                                        value = valueText,
+                                        info = descText
+                                    )
+                                    Spacer(modifier = Modifier.width(20.dp))
+
+                                    val combinedStatus: Double
+                                    val d = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
+                                    val h = statusMap[ThresholdType.MAX_HUMIDITY.name] ?: 0.0
+
+                                    combinedStatus = if (d == 1.0 || h == 1.0) {
+                                        1.0
+                                    } else {
+                                        (d + h) / 2
+                                    }
+
+                                    WeatherCard(
+                                        iconId = R.drawable.luftfuktighet,
+                                        desc = "Humidity",
+                                        value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
+                                        info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
+                                        statusCode = combinedStatus
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(30.dp))
+                            }
+                            item {
+                                Row {
+                                    WeatherCard(
+                                        iconId = R.drawable.cloudy,
+                                        desc = "Cloud cover",
+                                        value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
+                                        info = "Total cloud cover for all heights in"
+                                    )
+                                    Spacer(modifier = Modifier.width(20.dp))
+
+                                    val d = fcData.instant.details
+                                    val fog: Double = d.fogAreaFraction ?: 0.0
+                                    val visibility = getVerticalSightKm(
+                                        fog,
+                                        d.cloudAreaFractionLow,
+                                        d.cloudAreaFractionMedium,
+                                        d.cloudAreaFractionHigh,
+                                    )
+
+                                    WeatherCard(
+                                        iconId = R.drawable.eye,
+                                        desc = "Visibility",
+                                        value = visibility,
+                                        info = "Estimated vertical visibility"
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(30.dp))
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(100.dp))
+                            }
                         }
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                    item {
-                        Row {
-                            WeatherCard(
-                                iconId = R.drawable.cloudy,
-                                desc = "Cloud cover",
-                                value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
-                                info = "Total cloud cover for all heights in"
-                            )
-                            Spacer(modifier = Modifier.width(20.dp))
 
-                            val d = fcData.instant.details
-                            val fog: Double = d.fogAreaFraction ?: 0.0
-                            val visibility = getVerticalSightKm(
-                                fog,
-                                d.cloudAreaFractionLow,
-                                d.cloudAreaFractionMedium,
-                                d.cloudAreaFractionHigh,
-                            )
+                    }
 
-                            WeatherCard(
-                                iconId = R.drawable.eye,
-                                desc = "Visibility",
-                                value = visibility,
-                                info = "Estimated vertical visibility"
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(100.dp))
-                    }
                 }
+
+
             }
         }
     }
