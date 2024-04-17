@@ -262,11 +262,19 @@ fun DetailsScreen(
                                     info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
+                                var valueText = "${fcData.next1Hours?.details?.precipitationAmount} mm"
+                                var descText = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
+                                if(fcData.next1Hours == null){
+                                    valueText = "${fcData.next6Hours?.details?.precipitationAmount} mm"
+                                    descText = "Rain in the next 6 hours"
+
+                                }
+
                                 WeatherCard(
                                     iconId = R.drawable.vann,
                                     desc = "Precipitation",
-                                    value = "${fcData.next1Hours?.details?.precipitationAmount} mm",
-                                    info = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours",
+                                    value = valueText,
+                                    info = descText,
                                     statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]?: 0.0
                                 )
                             }
@@ -274,11 +282,20 @@ fun DetailsScreen(
                         }
                         item {
                             Row {
+                                var valueText = "${fcData.instant.details.fogAreaFraction?.roundToInt()} mm"
+                                var descText = "Amount of surrounding area covered in fog"
+                                var titleText = "Fog"
+                                if(fcData.instant.details.fogAreaFraction == null){
+                                    valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
+                                    descText = "Cloud cover lower than 2000m altitude"
+                                    titleText = "Low clouds"
+                                }
+
                                 WeatherCard(
                                     iconId = R.drawable.fog,
-                                    desc = "Fog",
-                                    value = "${fcData.instant.details.fogAreaFraction?.roundToInt()} %",
-                                    info = "Amount of surrounding area covered in fog"
+                                    desc = titleText,
+                                    value = valueText,
+                                    info = descText
                                 )
                                 Spacer(modifier = Modifier.width(20.dp))
 

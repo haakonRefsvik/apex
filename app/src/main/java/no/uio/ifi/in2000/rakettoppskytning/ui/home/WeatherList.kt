@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -159,6 +160,10 @@ fun WeatherList(
                 item {
                     forecast.weatherAtPos.weatherList.forEach { input ->
                         val daysAhead = getNumberOfDaysAhead(input.date)
+                        var precipText = "${input.series.data.next1Hours?.details?.precipitationAmount} mm"
+                        if(input.series.data.next1Hours == null){
+                            precipText = "${input.series.data.next6Hours?.details?.precipitationAmount} mm"
+                        }
 
                         Spacer(modifier = Modifier.height(7.5.dp))
                         ElevatedCard(
@@ -240,7 +245,7 @@ fun WeatherList(
 
                                             2 ->
                                                 Text(
-                                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                                    precipText,
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
@@ -287,7 +292,7 @@ fun WeatherList(
 
                                             else ->
                                                 Text(
-                                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm",
+                                                    precipText,
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
@@ -301,18 +306,25 @@ fun WeatherList(
                                     Spacer(modifier = Modifier.width(27.5.dp))
 
                                     Spacer(modifier = Modifier.width(15.dp))
-                                    input.series.data.next1Hours?.summary?.let {
+
+
+                                    var symbolId = input.series.data.next1Hours?.summary?.symbolCode?.uppercase()?: "FAIR_DAY"
+
+                                    if(input.series.data.next1Hours == null){
+                                        symbolId = input.series.data.next12Hours?.summary?.symbolCode?.uppercase()?: "FAIR_DAY"
+                                    }
+
                                         Image(
                                             modifier = Modifier.size(55.dp),
 
                                             painter = painterResource(
                                                 id = ForeCastSymbols.valueOf(
-                                                    it.symbolCode.uppercase()
+                                                    symbolId
                                                 ).id
                                             ),
-                                            contentDescription = it.symbolCode
+                                            contentDescription = symbolId
                                         )
-                                    }
+
 
                                     Icon(
                                         modifier = Modifier.size(20.dp),
