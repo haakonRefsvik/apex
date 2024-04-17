@@ -412,6 +412,43 @@ fun ThresholdScreen(
                             lowestInput = 0.0
                         )
                     }
+
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Burn time",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "Duration of engine burn",
+                            suffix = "Sec",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Weight",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "",
+                            suffix = "Kg",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Drop time",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "",
+                            suffix = "Sec",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
                 }
 
 
