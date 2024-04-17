@@ -12,6 +12,18 @@ import kotlinx.serialization.Serializable
  *
  * */
 
+fun getNearestPrecipitation(data: Data): Double?{
+    if(data.next1Hours!= null){
+        return data.next1Hours.details.precipitationAmount
+    }
+
+    if(data.next6Hours != null){
+        return data.next6Hours.details.precipitationAmount
+    }
+
+    return null
+}
+
 @Serializable
 data class LocationForecast(
     val type: String,
@@ -28,22 +40,19 @@ data class Geometry(
  */
 @Serializable
 data class Properties(
-    //val meta: Meta,
+    val meta: Meta,
     val timeseries: List<Series>,
 )
 
-/*
-
-Kommenterer ut variabler som ikke blir brukt
 
 @Serializable
 data class Meta(
     @SerialName("updated_at")
     val updatedAt: String,
-    val units: Units,
+    //val units: Units,
 )
 
-
+/*
 @Serializable
 data class Units(
     @SerialName("air_pressure_at_sea_level")

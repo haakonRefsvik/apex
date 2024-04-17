@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,8 +32,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -107,6 +111,8 @@ fun ThresholdScreen(
     thresholdState: ThresholdState
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val settings1check = settingsViewModel.settingscheck1
+    val settings2check = settingsViewModel.settingscheck2
 
     Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
@@ -114,13 +120,14 @@ fun ThresholdScreen(
         },
 
         topBar = {
-            TopAppBar(colors = TopAppBarColors(settings100, settings100, settings0, settings0, settings0),
+            TopAppBar(
+                colors = TopAppBarColors(settings100, settings100, settings0, settings0, settings0),
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = "ArrowBack",
-                                tint = settings0
+                            tint = settings0
                         )
                     }
                 },
@@ -140,47 +147,54 @@ fun ThresholdScreen(
         },
         bottomBar = {
             BottomAppBar(
-                    containerColor = main50,
-                    modifier = Modifier.shadow(
-                            10.dp,
-                            RectangleShape,
-                            false,
-                            DefaultShadowColor,
-                            DefaultShadowColor
-                    )
+                containerColor = main50,
+                modifier = Modifier.shadow(
+                    10.dp,
+                    RectangleShape,
+                    false,
+                    DefaultShadowColor,
+                    DefaultShadowColor
+                )
             ) {
                 Row(
                     modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = main50),
+                        .fillMaxSize()
+                        .background(color = main50),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigate("HomeScreen") }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
-                                tint = main0
+                            tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
-                                tint = main0
-                        )
+                            tint = main0,
+
+                            )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = { /*TODO*/ },
+
+                        ) {
                         Icon(
                             Icons.Sharp.Settings,
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier
+                                .size(40.dp),
                             contentDescription = "Settings",
-                                tint = main0
-                        )
+                            tint = main100,
+
+
+                            )
                     }
                 }
             }
@@ -195,186 +209,257 @@ fun ThresholdScreen(
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Settings",
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 35.sp,
+                color = settings0
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            MultiChoiceSegmentedButtonRow(modifier = Modifier.width(375.dp)) {
+                SegmentedButton(
+                    checked = settings1check.value,
+                    onCheckedChange = {
+                        settings1check.value = true
+                        settings2check.value = false
+                    },
+                    shape = RoundedCornerShape(percent = 50),
+                ) {
+                    Text("Adjust weather values")
+
+                }
+                Spacer(modifier = Modifier.width(15.dp))
+                SegmentedButton(
+                    checked = settings2check.value,
+                    onCheckedChange = {
+                        settings2check.value = true
+                        settings1check.value = false
+                    },
+                    shape = RoundedCornerShape(percent = 50)
+                ) {
+                    Text("Adjust rocket profile")
+
+                }
+
+            }
+            Spacer(modifier = Modifier.height(20.dp))
 
             LazyColumn(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
-
-                item {
-                    Spacer(modifier = Modifier.width(25.dp))
-                    Column(
-                        modifier = Modifier.width(340.dp),
-                    )
-                    {
-                    Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Innstillinger",
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 35.sp,
-                                color = settings0
-                        )
-
-                        Spacer(modifier = Modifier.height(40.dp))
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically
-
-                        ){
-                            Icon(
-                                modifier = Modifier
-                                    .size(30.dp),
-                                painter = painterResource(R.drawable.trykk),
-                                contentDescription = "trykk",
-                                    tint = settings0
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = "Tillpass værvarslingen",
-                                fontWeight = FontWeight.W400,
-                                fontSize = 18.sp,
-                                    color = settings0
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(15.dp))
-
-                        HorizontalDivider(
+            ) {
+                if (settings1check.value) {
+                    item {
+                        Spacer(modifier = Modifier.width(25.dp))
+                        Column(
                             modifier = Modifier.width(340.dp),
-                            thickness = 1.dp,
-                                color = settings0
                         )
-                        Spacer(modifier = Modifier.height(15.dp))
+                        {
+
+                            Row(
+                                modifier = Modifier,
+                                verticalAlignment = Alignment.CenterVertically
+
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(30.dp),
+                                    painter = painterResource(R.drawable.trykk),
+                                    contentDescription = "trykk",
+                                    tint = settings0
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "Adjust weather values",
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 18.sp,
+                                    color = settings0
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            HorizontalDivider(
+                                modifier = Modifier.width(340.dp),
+                                thickness = 1.dp,
+                                color = settings0
+                            )
+                            Spacer(modifier = Modifier.height(15.dp))
+                        }
+                    }
+
+
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_PRECIPITATION.ordinal],
+                            title = "Max precipitation",
+                            drawableId = R.drawable.vann,
+                            suffix = "mm",
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_HUMIDITY.ordinal],
+                            title = "Max air humidity",
+                            drawableId = R.drawable.luftfuktighet,
+                            suffix = "%",
+                            highestInput = 100.0,
+                            numberOfIntegers = 3
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_WIND.ordinal],
+                            title = "Max wind speed",
+                            drawableId = R.drawable.vind2,
+                            suffix = "m/s",
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_SHEAR_WIND.ordinal],
+                            title = "Max wind shear",
+                            drawableId = R.drawable.vind2,
+                            suffix = "m/s",
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_DEW_POINT.ordinal],
+                            title = "Max dew point",
+                            drawableId = R.drawable.luftfuktighet,
+                            suffix = "°C",
+                        )
+
+                    }
+
+                } else {
+                    item {
+                        Spacer(modifier = Modifier.width(25.dp))
+                        Column(
+                            modifier = Modifier.width(340.dp),
+                        )
+                        {
+                            Row(
+                                modifier = Modifier,
+                                verticalAlignment = Alignment.CenterVertically
+
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(30.dp),
+                                    painter = painterResource(R.drawable.rakett_pin2),
+                                    contentDescription = "trykk",
+                                    tint = settings0
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "Adjust rocket profile",
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 18.sp,
+                                    color = settings0
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(15.dp))
+
+                            HorizontalDivider(
+                                modifier = Modifier.width(340.dp),
+                                thickness = 1.dp, color = settings0
+                            )
+                            Spacer(modifier = Modifier.height(15.dp))
+                        }
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.APOGEE.ordinal],
+                            title = "Apogee",
+                            desc = "The rockets highest point",
+                            drawableId = R.drawable.rakett_pin2,
+                            suffix = "m",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 6
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_ANGLE.ordinal],
+                            title = "Launch angle",
+                            drawableId = R.drawable.rakett_pin2,
+                            suffix = "Deg",
+                            numberOfDecimals = 1,
+                            numberOfIntegers = 3,
+                            lowestInput = 0.0,
+                            highestInput = 90.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal],
+                            title = "Launch direction",
+                            drawableId = R.drawable.rakett_pin2,
+                            suffix = "Deg",
+                            numberOfDecimals = 1,
+                            numberOfIntegers = 3,
+                            lowestInput = 0.0,
+                            highestInput = 360.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Thrust",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "Thrust in newtons",
+                            suffix = "N",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Burn time",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "Duration of engine burn",
+                            suffix = "Sec",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Weight",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "",
+                            suffix = "Kg",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            title = "Drop time",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "",
+                            suffix = "Sec",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
                     }
                 }
 
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_PRECIPITATION.ordinal],
-                        title = "Maks nedbør",
-                        drawableId = R.drawable.vann,
-                        suffix = "mm",
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_HUMIDITY.ordinal],
-                        title = "Maks luftfuktighet",
-                        drawableId = R.drawable.luftfuktighet,
-                        suffix = "%",
-                        highestInput = 100.0,
-                        numberOfIntegers = 3
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_WIND.ordinal],
-                        title = "Maks vind",
-                        drawableId = R.drawable.vind2,
-                        suffix = "m/s",
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_SHEAR_WIND.ordinal],
-                        title = "Maks vindskjær",
-                        drawableId = R.drawable.vind2,
-                        suffix = "m/s",
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_DEW_POINT.ordinal],
-                        title = "Minimalt duggpunkt",
-                        drawableId = R.drawable.luftfuktighet,
-                        suffix = "℃",
-                    )
 
-                }
-                item {
-                    Spacer(modifier = Modifier.width(25.dp))
-                    Column(
-                        modifier = Modifier.width(340.dp),
-                    )
-                    {
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Row(
-                            modifier = Modifier,
-                            verticalAlignment = Alignment.CenterVertically
-
-                        ){
-                            Icon(
-                                modifier = Modifier
-                                    .size(30.dp),
-                                painter = painterResource(R.drawable.rakett_pin2),
-                                contentDescription = "trykk",
-                                    tint = settings0
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = "Tilpass rakettprofil",
-                                fontWeight = FontWeight.W400,
-                                fontSize = 18.sp,
-                                    color = settings0
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(15.dp))
-
-                        HorizontalDivider(
-                            modifier = Modifier.width(340.dp),
-                            thickness = 1.dp, color = settings0)
-                        Spacer(modifier = Modifier.height(15.dp))
-                    }
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.APOGEE.ordinal],
-                        title = "Apogee",
-                        desc = "The rockets highest point",
-                        drawableId = R.drawable.rakett_pin2,
-                        suffix = "m",
-                        numberOfDecimals = 0,
-                        numberOfIntegers = 6
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_ANGLE.ordinal],
-                        title = "Launch angle",
-                        drawableId = R.drawable.rakett_pin2,
-                        suffix = "Deg",
-                        numberOfDecimals = 1,
-                        numberOfIntegers = 3,
-                        lowestInput = 0.0,
-                        highestInput = 90.0
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal],
-                        title = "Launch direction",
-                        drawableId = R.drawable.rakett_pin2,
-                        suffix = "Deg",
-                        numberOfDecimals = 1,
-                        numberOfIntegers = 3,
-                        lowestInput = 0.0,
-                        highestInput = 360.0
-                    )
-                }
-                item {
-                    ThresholdCard(
-                        mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
-                        title = "Thrust",
-                        drawableId = R.drawable.rakett_pin2,
-                        desc = "Thrust in newtons",
-                        suffix = "N",
-                        numberOfDecimals = 0,
-                        numberOfIntegers = 5,
-                        lowestInput = 0.0
-                    )
-                }
             }
         }
     }
@@ -382,10 +467,10 @@ fun ThresholdScreen(
     DisposableEffect(Unit) {
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
-            settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
-            settingsViewModel.updateRocketSpecValues()
-            weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
-        }
+                settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
+                settingsViewModel.updateRocketSpecValues()
+                weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
+            }
         }
     }
 
@@ -407,83 +492,84 @@ fun ThresholdCard(
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-        Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+    Row(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
 
+    ) {
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                Spacer(modifier = Modifier.width(20.dp))
-
-            }
-
-            Column(
-                modifier = Modifier.width(210.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = title,
-                    fontSize = 16.sp,
-                        color = settings50
-                    )
-                if(desc != ""){
-                    Spacer(modifier = Modifier.height(7.dp))
-                    Text(
-                        text = desc,
-                        lineHeight = 16.sp,
-                        fontSize = 13.sp,
-                            color = settings50
-                    )
-                }
-            }
             Spacer(modifier = Modifier.width(20.dp))
-            OutlinedTextField(
-                modifier = Modifier
-                    .width(80.dp)
-                    .height(45.dp),
-                textStyle = TextStyle(textAlign = TextAlign.Center, color = settings50),
-                value = String.format("%.${numberOfDecimals}f", mutableValue.value),
-                onValueChange = { input ->
-                    val newValue = try {
-                        formatNewValue(input, numberOfIntegers)
-                    }catch (e: Exception){
-                        mutableValue.value
-                    }
 
+        }
 
-                    if(newValue in lowestInput..highestInput) {
-                        mutableValue.value = newValue
-
-                    }
-                },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Number
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        controller?.hide()
-                        focusManager.clearFocus()
-                    }
-                ),
-                singleLine = true,
+        Column(
+            modifier = Modifier.width(210.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                color = settings50
             )
-            Column(
-                modifier = Modifier.width(50.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            if (desc != "") {
+                Spacer(modifier = Modifier.height(7.dp))
                 Text(
-                    text = suffix,
-                        color = settings50
+                    text = desc,
+                    lineHeight = 16.sp,
+                    fontSize = 13.sp,
+                    color = settings50
                 )
-
             }
         }
+        Spacer(modifier = Modifier.width(20.dp))
+        OutlinedTextField(
+            modifier = Modifier
+                .width(80.dp)
+                .height(45.dp),
+            textStyle = TextStyle(textAlign = TextAlign.Center, color = settings50),
+            value = String.format("%.${numberOfDecimals}f", mutableValue.value),
+            onValueChange = { input ->
+                val newValue = try {
+                    formatNewValue(input, numberOfIntegers)
+                } catch (e: Exception) {
+                    mutableValue.value
+                }
+
+
+                if (newValue in lowestInput..highestInput) {
+                    mutableValue.value = newValue
+
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Number
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    controller?.hide()
+                    focusManager.clearFocus()
+                }
+            ),
+            singleLine = true,
+        )
+        Column(
+            modifier = Modifier.width(50.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = suffix,
+                color = settings50
+            )
+
+        }
+    }
 
 
     Spacer(modifier = Modifier.height(27.dp))
@@ -493,8 +579,8 @@ fun ThresholdCard(
 fun formatNewValue(
     input: String,
     numberOfIntegers: Int,
-): Double{
-    if(input == ""){
+): Double {
+    if (input == "") {
         return 0.0
     }
 
@@ -503,13 +589,13 @@ fun formatNewValue(
     val decimalParts = onlyDigitsAndDot.split(".")
     val integerPart = decimalParts.getOrNull(0) ?: ""
 
-    if (integerPart == ""){
+    if (integerPart == "") {
         Log.d("Mais", "GJØR OM TIL 0." + decimalParts[1])
 
         return ("0." + decimalParts[1]).toDouble()
     }
 
-    if (decimalParts.size > 1 && decimalParts[1] == ""){
+    if (decimalParts.size > 1 && decimalParts[1] == "") {
         return ("$integerPart.0").toDouble()
     }
 

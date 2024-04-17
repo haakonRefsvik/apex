@@ -4,18 +4,20 @@ import androidx.compose.ui.graphics.Color
 
 val main100 = Color(0xFF14213D) //Overskrift på DetailScreen, BottomSheetScaffold-container
 val main50 = Color(0xFFF1ECE4) // BottomAppBar
-val main0 = Color(0xFFFCA311) // BottomAppBar-ikoner, CircularProgressIndicator, "favorite location:" på HomeScreen
+val main0 =
+    Color(0xFFFCA311) // BottomAppBar-ikoner, CircularProgressIndicator, "favorite location:" på HomeScreen
 
 val firstButton100 = Color(0xFF14213D) // "Get Weatherdata"-Button-content og "Add favorite"-outline
 val firstButton50 = Color(0xFFF1ECE4)
-val firstButton0 = Color(0xFFFCA311) // Latitude/Longitude-InputFields, "Add favorite"-ikon+tekst, "Get Weatherdata"-Button-container
-val secondButton100 = Color(0xFF14213D) // "Change Time" og "Filter" Button container
-val secondButton50 = Color(0xFF87A3DA)
-val secondButton0 = Color(0xFFF1ECE4) // Tekst og ikoner på "Change Time" og "Filter" Button
+val firstButton0 =
+    Color(0xFFFCA311) // Latitude/Longitude-InputFields, "Add favorite"-ikon+tekst, "Get Weatherdata"-Button-container
+val secondButton100 = Color(0xE6FFFFFF) // "Change Time" og "Filter" Button container
+val secondButton50 = Color(0x4DFFFFFF)
+val secondButton0 = Color(0xFF494B5E) // Tekst og ikoner på "Change Time" og "Filter" Button
 
 val filter100 = Color(0xFF14213D) // FilterDialog-container, DropDownMenu-container
 val filter50 = Color(0xFF494B5E) // "FilterCard" og inactiveSlider
-val filter0  = Color(0xFFFFFFFF) // Tittel/Ikon, FilterCard-content, Filter-slider, DropDownMenu-text
+val filter0 = Color(0xFFFFFFFF) // Tittel/Ikon, FilterCard-content, Filter-slider, DropDownMenu-text
 
 val details100 = Color(0xFFFCA311) // WeatherCard-ikon
 val details50 = Color(0xFF494B5E) // SoilCard/WeatherCard/WindCard-container
@@ -56,7 +58,7 @@ val secondButtonDark0 = Color(0xFFFFFFFF)
 
 val filterDark100 = Color(0xFF000000)
 val filterDark50 = Color(0xFF7F7F7F)
-val filterDark0  = Color(0xFFFFFFFF)
+val filterDark0 = Color(0xFFFFFFFF)
 
 val detailsDark100 = Color(0xFF000000)
 val detailsDark50 = Color(0xFF7F7F7F)

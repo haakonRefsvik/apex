@@ -71,104 +71,109 @@ fun TimeDialog(
         },
         confirmButton = {
             Button(
-                    colors = ButtonColors(
-                            time0,
-                            time100,
-                            time0,
-                            time100),
-                    onClick = {
-                homeScreenViewModel.startISOtime = sdf.format(dtrpState.selectedStartDateMillis)
-                    .replaceRange(11, 16, "${hourcheck(tiState.hour)}:${hourcheck(tiState.minute)}")
-                if (dtrpState.selectedEndDateMillis == null) {
-                    homeScreenViewModel.endISOtime = homeScreenViewModel.startISOtime
-                } else {
-                    homeScreenViewModel.endISOtime = sdf.format(dtrpState.selectedEndDateMillis)
+                colors = ButtonColors(
+                    time0,
+                    time100,
+                    time0,
+                    time100
+                ),
+                onClick = {
+                    homeScreenViewModel.startISOtime = sdf.format(dtrpState.selectedStartDateMillis)
                         .replaceRange(
                             11,
                             16,
                             "${hourcheck(tiState.hour)}:${hourcheck(tiState.minute)}"
                         )
+                    if (dtrpState.selectedEndDateMillis == null) {
+                        homeScreenViewModel.endISOtime = homeScreenViewModel.startISOtime
+                    } else {
+                        homeScreenViewModel.endISOtime = sdf.format(dtrpState.selectedEndDateMillis)
+                            .replaceRange(
+                                11,
+                                16,
+                                "${hourcheck(tiState.hour)}:${hourcheck(tiState.minute)}"
+                            )
 
-                }
+                    }
 
-                homeScreenViewModel.filterList()
-                onDismissRequest()
-            }) {
+                    homeScreenViewModel.filterList()
+                    onDismissRequest()
+                }) {
                 Text(text = "Confirm", color = time100)
 
             }
         },
-            colors = DatePickerColors(
-                    time100,
-                    time35,
-                    time35, // title/headline
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    Color.Transparent,
-                    time65, // todayContentColor
-                    time35,
-                    time100,
-                    Color.Transparent,
-                    Color.Transparent,
-                    TextFieldColors(
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            time65,
-                            Color.Transparent,
-                            Color.Transparent,
-                            TextSelectionColors(time0, time100),
-                            time65,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent,
-                            Color.Transparent
-                    )
+        colors = DatePickerColors(
+            time100,
+            time35,
+            time35, // title/headline
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            Color.Transparent,
+            time65, // todayContentColor
+            time35,
+            time100,
+            Color.Transparent,
+            Color.Transparent,
+            TextFieldColors(
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                time65,
+                Color.Transparent,
+                Color.Transparent,
+                TextSelectionColors(time0, time100),
+                time65,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent,
+                Color.Transparent
             )
+        )
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             DateRangePicker(
@@ -176,98 +181,99 @@ fun TimeDialog(
                     .fillMaxWidth()
                     .heightIn(max = 390.dp),
                 showModeToggle = false,
-                    colors = DatePickerColors(
-                            time100,
-                            time0,
-                            time35,
-                            time0,
-                            time0,
-                            time0,
-                            time0,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time0,
-                            time100,
-                            time100, // selectedDayContentColo
-                            time100,
-                            time35,
-                            time100,
-                            time35,
-                            time35,
-                            time65,
-                            time100,
-                            time0,
-                            TextFieldColors(
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    TextSelectionColors(time100, time100),
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                                    time100,
-                            )
+                colors = DatePickerColors(
+                    time100,
+                    time0,
+                    time35,
+                    time0,
+                    time0,
+                    time0,
+                    time0,
+                    time100,
+                    time100,
+                    time100,
+                    time100,
+                    time100,
+                    time100,
+                    time0,
+                    time100,
+                    time100, // selectedDayContentColo
+                    time100,
+                    time35,
+                    time100,
+                    time35,
+                    time35,
+                    time65,
+                    time100,
+                    time0,
+                    TextFieldColors(
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        TextSelectionColors(time100, time100),
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
+                        time100,
                     )
+                )
 
             )
             Spacer(modifier = Modifier.height(20.dp))
             TimeInput(
-                    state = tiState,
-                    colors = TimePickerColors(
-                            time0,
-                            time0,
-                            time100,
-                            time0,
-                            Color.Magenta,
-                            Color.Green,
-                            time0,
-                            time0,
-                            time0,
-                            time0,
-                            time100,
-                            time100,
-                            time0,
-                            time0
-                    ))
+                state = tiState,
+                colors = TimePickerColors(
+                    time0,
+                    time65,
+                    time100,
+                    time0,
+                    Color.Magenta,
+                    Color.Green,
+                    time0,
+                    time0,
+                    time0,
+                    time0,
+                    time100,
+                    time100,
+                    time0,
+                    time0
+                )
+            )
 
         }
 

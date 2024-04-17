@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -39,12 +40,12 @@ fun HomeScreen(
     state: FavoriteState,
     onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    context: Context
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
     /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
-
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
     val loading = homeScreenViewModel.loading
 
@@ -86,7 +87,8 @@ fun HomeScreen(
                                 homeScreenViewModel = homeScreenViewModel,
                                 mapViewModel,
                                 state,
-                                onEvent
+                                onEvent,
+                                context = context
                             )
 
 

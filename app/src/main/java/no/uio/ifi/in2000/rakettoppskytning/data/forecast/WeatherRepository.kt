@@ -79,7 +79,7 @@ class WeatherRepository(
             val list = mutableListOf<WeatherAtPosHour>()
 
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
-
+            Log.d("mais", "updated: ${allForecasts?.properties?.meta?.updatedAt}" )
 
             val gribFiles: List<File> = loadGribFromDataSource()
             val allVerticalProfiles: List<VerticalProfile> =

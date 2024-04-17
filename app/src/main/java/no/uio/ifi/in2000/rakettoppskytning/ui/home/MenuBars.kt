@@ -29,24 +29,25 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
 @Composable
-fun BottomAppBar(navController: NavController){
+fun BottomAppBar(navController: NavController) {
     BottomAppBar(
         containerColor = main50,
         modifier = Modifier.shadow(
-                10.dp,
-                RectangleShape,
-                false,
-                DefaultShadowColor,
-                DefaultShadowColor
+            10.dp,
+            RectangleShape,
+            false,
+            DefaultShadowColor,
+            DefaultShadowColor
         )
-        ){
+    ) {
         Row(
             modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = main50),
+                .fillMaxSize()
+                .background(color = main50),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -56,14 +57,15 @@ fun BottomAppBar(navController: NavController){
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Location",
-                        tint = main0
+                    tint = main0
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
-            IconButton(onClick = {/* TODO */}) {
-                Image(
+            IconButton(onClick = {/* TODO */ }) {
+                Icon(
                     painter = painterResource(R.drawable.rakket),
-                    contentDescription = "Rakket"
+                    contentDescription = "Rakket",
+                    tint = main100,
                 )
             }
             Spacer(modifier = Modifier.width(95.dp))
@@ -72,7 +74,7 @@ fun BottomAppBar(navController: NavController){
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Settings",
-                        tint = main0
+                    tint = main0
                 )
             }
         }
@@ -81,7 +83,7 @@ fun BottomAppBar(navController: NavController){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(navController: NavController){
+fun TopAppBar(navController: NavController) {
     TopAppBar(
         title = {}, modifier = Modifier
             .background(Color.Transparent)

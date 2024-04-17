@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.key.Key.Companion.F
 import androidx.compose.ui.res.painterResource
@@ -41,20 +42,29 @@ import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.CartesianChartHost
 import com.patrykandpatrick.vico.compose.chart.layer.rememberColumnCartesianLayer
 import com.patrykandpatrick.vico.compose.chart.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.chart.layer.rememberLineSpec
 import com.patrykandpatrick.vico.compose.chart.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.component.rememberLineComponent
 import com.patrykandpatrick.vico.compose.component.rememberShapeComponent
 import com.patrykandpatrick.vico.compose.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.component.shape.shader.color
+import com.patrykandpatrick.vico.compose.component.shape.shader.verticalGradient
 import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
 import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.axis.BaseAxis
+import com.patrykandpatrick.vico.core.chart.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.core.chart.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.chart.values.AxisValueOverrider
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
+import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShader
+import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
 import com.patrykandpatrick.vico.core.component.text.TextComponent
 import com.patrykandpatrick.vico.core.model.CartesianChartModel
 import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.model.ExtraStore
 import com.patrykandpatrick.vico.core.model.columnSeries
 import com.patrykandpatrick.vico.core.model.lineSeries
+import com.patrykandpatrick.vico.views.component.shape.shader.verticalGradient
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
@@ -160,13 +170,16 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
             .height(200.dp)
             .width(360.dp)
     ) {
-        Row {
+        Row(
+            modifier = Modifier.background(details50)
+        ){
             Spacer(
                 modifier = Modifier
                     .width(20.dp)
                     .fillMaxHeight()
             )
-            Row {
+            Row(
+            ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
@@ -178,11 +191,13 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                             modifier = Modifier
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol"
+                            contentDescription = "VindSymbol",
+                            tint = details0
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Shearwind direction",
+                            color = details0,
                             modifier = Modifier.padding(vertical = 0.dp),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold
@@ -199,6 +214,15 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                         CartesianChartHost(
                             rememberCartesianChart(
                                 rememberLineCartesianLayer(
+                                    lines = listOf( rememberLineSpec(
+                                        backgroundShader = DynamicShaders.verticalGradient(
+                                            arrayOf(
+                                                details0.copy(alpha = 0.3F),
+                                                details0.copy(alpha = 0.1F)
+                                            )
+                                        ),
+                                        shader = DynamicShaders.color(details0.copy(alpha = 0.5F))),
+                                    ),
                                     axisValueOverrider = AxisValueOverrider.fixed(
                                         minY = 0F,
                                         maxY = 360F
@@ -209,7 +233,7 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                                     label =
                                     rememberTextComponent(
                                         textSize = 13.sp,
-                                        color = Color.Black.copy(alpha = 0.7f),
+                                        color = details0,
                                         textAlignment = Layout.Alignment.ALIGN_CENTER,
                                         padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
                                         margins = dimensionsOf(end = 10.dp),
@@ -225,7 +249,7 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                                 bottomAxis = rememberBottomAxis(
                                     rememberTextComponent(
                                         textSize = 13.sp,
-                                        color = Color.Black.copy(alpha = 0.7f),
+                                        color = details0,
                                         textAlignment = Layout.Alignment.ALIGN_CENTER,
                                         padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
                                         margins = dimensionsOf(end = 10.dp),
@@ -258,10 +282,8 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
     val xData: List<Int> = List(shearList.size) { index ->  index}
     val lineColor: Int = Color.Black.copy(alpha = 0.2f).toArgb()
     val modelProducer = remember { CartesianChartModelProducer.build() }
-
-    LaunchedEffect(Unit) { modelProducer.tryRunTransaction { lineSeries {
-        series(x = xData, yData)
-    }
+    LaunchedEffect(Unit) { modelProducer.tryRunTransaction {
+        lineSeries { series(x = xData, yData) }
     }
     }
 
@@ -270,7 +292,9 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
             .height(200.dp)
             .width(360.dp)
     ) {
-        Row {
+        Row(
+            modifier = Modifier.background(details50)
+        ){
             Spacer(
                 modifier = Modifier
                     .width(20.dp)
@@ -278,23 +302,27 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
             )
             Row {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                    ,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(0.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             modifier = Modifier
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol"
+                            contentDescription = "VindSymbol",
+                            tint = details0
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Shearwind speed",
                             modifier = Modifier.padding(vertical = 0.dp),
                             fontSize = 15.sp,
+                            color = details0,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -309,12 +337,22 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                         CartesianChartHost(
                             rememberCartesianChart(
                                 rememberLineCartesianLayer(
-                                ),
+                                    lines = listOf( rememberLineSpec(
+                                        backgroundShader = DynamicShaders.verticalGradient(
+                                            arrayOf(
+                                                details0.copy(alpha = 0.3F),
+                                                details0.copy(alpha = 0.1F)
+                                            )
+                                        ),
+                                        shader = DynamicShaders.color(details0.copy(alpha = 0.5F))),
+                                    )
+
+                                    ),
                                 startAxis = rememberStartAxis(
                                     label =
                                     rememberTextComponent(
                                         textSize = 13.sp,
-                                        color = Color.Black.copy(alpha = 0.7f),
+                                        color = details0,
                                         padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
                                         margins = dimensionsOf(end = 10.dp),
                                         typeface = android.graphics.Typeface.DEFAULT,
@@ -329,7 +367,7 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                                 bottomAxis = rememberBottomAxis(
                                     rememberTextComponent(
                                         textSize = 13.sp,
-                                        color = Color.Black.copy(alpha = 0.7f),
+                                        color = details0,
                                         textAlignment = Layout.Alignment.ALIGN_CENTER,
                                         padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
                                         margins = dimensionsOf(end = 10.dp),

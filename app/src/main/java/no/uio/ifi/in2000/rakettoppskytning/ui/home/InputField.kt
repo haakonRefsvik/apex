@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
+import android.content.Context
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
@@ -105,7 +106,8 @@ fun InputField(
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
     state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit
+    onEvent: (FavoriteEvent) -> Unit,
+    context: Context
 ) {
 
     val showDecimals = 5
@@ -132,7 +134,8 @@ fun InputField(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            mapViewModel
+            mapViewModel,
+            context
         )
     }
 
@@ -235,7 +238,8 @@ fun InputField(
                     containerColor = firstButton0,
                     contentColor = firstButton100,
                     disabledContainerColor = firstButton0,
-                    disabledContentColor = firstButton100),
+                    disabledContentColor = firstButton100
+                ),
                 onClick = {
                     controller?.hide()
                     homeScreenViewModel.getWeatherByCord(lat, lon)
@@ -281,8 +285,9 @@ fun InputField(
                             containerColor = favoriteCard50,
                             contentColor = favoriteCard0,
                             disabledContentColor = favoriteCard50,
-                            disabledContainerColor = favoriteCard0),
-                        border = BorderStroke(3.dp, color = favoriteCard100),
+                            disabledContainerColor = favoriteCard0
+                        ),
+                        border = BorderStroke(1.dp, color = favoriteCard100),
                         onClick = {
                             mapViewModel.lat.value = favorite.lat.toDouble()
                             mapViewModel.lon.value = favorite.lon.toDouble()
@@ -318,15 +323,18 @@ fun InputField(
                                     tint = Color(216, 64, 64, 255)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(favorite.name, fontSize = 18.sp, color = favoriteCard0)
+                                Text(favorite.name, fontSize = 18.sp, color = favoriteCard100)
 
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
-                            ) {
+                            )
+
+                            {
                                 IconButton(modifier = Modifier
-                                    .size(30.dp),
+                                    .size(30.dp)
+                                    .padding(end = 5.dp),
                                     onClick = {
                                         onEvent(FavoriteEvent.DeleteFavorite(favorite))
 
@@ -334,7 +342,7 @@ fun InputField(
                                     Icon(
                                         imageVector = Icons.Default.Close,
                                         contentDescription = "Delete favorite",
-                                        tint = favoriteCard0
+                                        tint = favoriteCard100
 
                                     )
 

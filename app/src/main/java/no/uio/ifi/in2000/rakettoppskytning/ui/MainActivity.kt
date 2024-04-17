@@ -48,6 +48,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
+    val context = this;
 
 
     private lateinit var db: AppDatabase // Change to lateinit var
@@ -136,7 +137,8 @@ class MainActivity : ComponentActivity() {
                         settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
                         thresholdState = thresholdState,
-                        onThresholdEvent  = settingsViewModel::onEvent
+                        onThresholdEvent = settingsViewModel::onEvent,
+                        context = context
                     )
 
 
