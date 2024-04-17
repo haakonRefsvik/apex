@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -162,7 +163,7 @@ fun ThresholdScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigate("HomeScreen") }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
@@ -172,21 +173,28 @@ fun ThresholdScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
-                            tint = main0
-                        )
+                            tint = main0,
+
+                            )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = { /*TODO*/ },
+
+                        ) {
                         Icon(
                             Icons.Sharp.Settings,
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier
+                                .size(40.dp),
                             contentDescription = "Settings",
-                            tint = main0
-                        )
+                            tint = main100,
+
+
+                            )
                     }
                 }
             }
