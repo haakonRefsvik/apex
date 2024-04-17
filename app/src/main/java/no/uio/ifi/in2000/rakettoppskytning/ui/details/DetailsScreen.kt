@@ -105,13 +105,13 @@ fun DetailsScreen(
 
         topBar = {
             TopAppBar(
-                    colors = TopAppBarColors(main100, main100, main100, main100, main100),
+                colors = TopAppBarColors(main100, main100, main100, main100, main100),
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ArrowBack",
-                                tint = main0
+                            tint = main0
                         )
                     }
                 },
@@ -131,18 +131,19 @@ fun DetailsScreen(
         },
         bottomBar = {
             BottomAppBar(
-                    containerColor = main50,
-                    modifier = Modifier.shadow(
-                            10.dp,
-                            RectangleShape,
-                            false,
-                            DefaultShadowColor,
-                            DefaultShadowColor
-                    )) {
+                containerColor = main50,
+                modifier = Modifier.shadow(
+                    10.dp,
+                    RectangleShape,
+                    false,
+                    DefaultShadowColor,
+                    DefaultShadowColor
+                )
+            ) {
                 Row(
                     modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = main50),
+                        .fillMaxSize()
+                        .background(color = main50),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -151,7 +152,7 @@ fun DetailsScreen(
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
-                                tint = main0
+                            tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
@@ -159,16 +160,16 @@ fun DetailsScreen(
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
-                                tint = main0
+                            tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(onClick = {navController.navigate("ThresholdScreen")}) {
+                    IconButton(onClick = { navController.navigate("ThresholdScreen") }) {
                         Icon(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Settings",
-                                tint = main0
+                            tint = main0
                         )
                     }
                 }
@@ -193,163 +194,157 @@ fun DetailsScreen(
                 val statusMap = weatherNow.valuesToLimitMap
                 val daysAhead = getNumberOfDaysAhead(weatherNow.date)
                 val datePrefix = formatDate(weatherNow.date)
+                Column(
+                    modifier = Modifier.width(340.dp),
+                )
+                {
 
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(modifier = Modifier.padding(0.dp)) {
-                    LazyColumn {
-                        item {
-                            Spacer(modifier = Modifier.width(25.dp))
-                            Column(
-                                modifier = Modifier.width(340.dp),
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 30.sp,
+                        color = main0
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+
+                }
+
+                LazyColumn {
+
+
+                    item {
+                        weatherNow.verticalProfile?.let {
+                            ShearWindCard(
+                                verticalProfile = it,
+                                statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0
                             )
-                            {
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 30.sp,
-                                        color = main0
-                                )
-
-                                Spacer(modifier = Modifier.height(40.dp))
-
-                                HorizontalDivider(
-                                    modifier = Modifier.width(340.dp),
-                                    thickness = 1.dp,
-                                        color = main0
-                                )
-                                Spacer(modifier = Modifier.height(15.dp))
-                            }
                         }
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
 
-                        item {
-                            weatherNow.verticalProfile?.let {
-                                ShearWindCard(
-                                    verticalProfile = it,
-                                    statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name]?: 0.0
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(30.dp))
-                        }
-
-                        item {
-                            weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
-                            Spacer(modifier = Modifier.height(30.dp))
-                        }
-                        item {
-                            weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
-                            Spacer(modifier = Modifier.height(30.dp))
-                        }
-                        item {
-                            WindCard(
-                                details = fcData.instant.details,
-                                statusCode = statusMap[ThresholdType.MAX_WIND.name]?: 0.0
+                    item {
+                        weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        WindCard(
+                            details = fcData.instant.details,
+                            statusCode = statusMap[ThresholdType.MAX_WIND.name] ?: 0.0
+                        )
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        weatherNow.soilMoisture?.let { SoilCard(soilPercentage = it) }
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        Row {
+                            WeatherCard(
+                                iconId = R.drawable.temp,
+                                desc = "Temperature",
+                                value = "${fcData.instant.details.airTemperature} ℃",
+                                info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
                             )
-                            Spacer(modifier = Modifier.height(30.dp))
-                        }
-                        item {
-                            weatherNow.soilMoisture?.let { SoilCard(soilPercentage = it) }
-                            Spacer(modifier = Modifier.height(30.dp))
-                        }
-                        item {
-                            Row {
-                                WeatherCard(
-                                    iconId = R.drawable.temp,
-                                    desc = "Temperature",
-                                    value = "${fcData.instant.details.airTemperature} ℃",
-                                    info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
-                                )
-                                Spacer(modifier = Modifier.width(20.dp))
-                                var valueText = "${fcData.next1Hours?.details?.precipitationAmount} mm"
-                                var descText = "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
-                                if(fcData.next1Hours == null){
-                                    valueText = "${fcData.next6Hours?.details?.precipitationAmount} mm"
-                                    descText = "Rain in the next 6 hours"
+                            Spacer(modifier = Modifier.width(20.dp))
+                            var valueText =
+                                "${fcData.next1Hours?.details?.precipitationAmount} mm"
+                            var descText =
+                                "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
+                            if (fcData.next1Hours == null) {
+                                valueText =
+                                    "${fcData.next6Hours?.details?.precipitationAmount} mm"
+                                descText = "Rain in the next 6 hours"
 
-                                }
-
-                                WeatherCard(
-                                    iconId = R.drawable.vann,
-                                    desc = "Precipitation",
-                                    value = valueText,
-                                    info = descText,
-                                    statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]?: 0.0
-                                )
                             }
-                            Spacer(modifier = Modifier.height(30.dp))
+
+                            WeatherCard(
+                                iconId = R.drawable.vann,
+                                desc = "Precipitation",
+                                value = valueText,
+                                info = descText,
+                                statusCode = statusMap[ThresholdType.MAX_PRECIPITATION.name]
+                                    ?: 0.0
+                            )
                         }
-                        item {
-                            Row {
-                                var valueText = "${fcData.instant.details.fogAreaFraction?.roundToInt()} mm"
-                                var descText = "Amount of surrounding area covered in fog"
-                                var titleText = "Fog"
-                                if(fcData.instant.details.fogAreaFraction == null){
-                                    valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
-                                    descText = "Cloud cover lower than 2000m altitude"
-                                    titleText = "Low clouds"
-                                }
-
-                                WeatherCard(
-                                    iconId = R.drawable.fog,
-                                    desc = titleText,
-                                    value = valueText,
-                                    info = descText
-                                )
-                                Spacer(modifier = Modifier.width(20.dp))
-
-                                val combinedStatus: Double
-                                val d = statusMap[ThresholdType.MAX_DEW_POINT.name]?: 0.0
-                                val h = statusMap[ThresholdType.MAX_HUMIDITY.name]?: 0.0
-
-                                combinedStatus = if (d == 1.0 || h == 1.0) {
-                                    1.0
-                                } else {
-                                    (d + h) / 2
-                                }
-
-                                WeatherCard(
-                                    iconId = R.drawable.luftfuktighet,
-                                    desc = "Humidity",
-                                    value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
-                                    info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
-                                    statusCode = combinedStatus
-                                )
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        Row {
+                            var valueText =
+                                "${fcData.instant.details.fogAreaFraction?.roundToInt()} mm"
+                            var descText = "Amount of surrounding area covered in fog"
+                            var titleText = "Fog"
+                            if (fcData.instant.details.fogAreaFraction == null) {
+                                valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
+                                descText = "Cloud cover lower than 2000m altitude"
+                                titleText = "Low clouds"
                             }
-                            Spacer(modifier = Modifier.height(30.dp))
-                        }
-                        item {
-                            Row {
-                                WeatherCard(
-                                    iconId = R.drawable.cloudy,
-                                    desc = "Cloud cover",
-                                    value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
-                                    info = "Total cloud cover for all heights in"
-                                )
-                                Spacer(modifier = Modifier.width(20.dp))
 
-                                val d = fcData.instant.details
-                                val fog: Double = d.fogAreaFraction ?: 0.0
-                                val visibility = getVerticalSightKm(
-                                    fog,
-                                    d.cloudAreaFractionLow,
-                                    d.cloudAreaFractionMedium,
-                                    d.cloudAreaFractionHigh,
-                                )
+                            WeatherCard(
+                                iconId = R.drawable.fog,
+                                desc = titleText,
+                                value = valueText,
+                                info = descText
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
 
-                                WeatherCard(
-                                    iconId = R.drawable.eye,
-                                    desc = "Visibility",
-                                    value = visibility,
-                                    info = "Estimated vertical visibility"
-                                )
+                            val combinedStatus: Double
+                            val d = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
+                            val h = statusMap[ThresholdType.MAX_HUMIDITY.name] ?: 0.0
+
+                            combinedStatus = if (d == 1.0 || h == 1.0) {
+                                1.0
+                            } else {
+                                (d + h) / 2
                             }
-                            Spacer(modifier = Modifier.height(30.dp))
+
+                            WeatherCard(
+                                iconId = R.drawable.luftfuktighet,
+                                desc = "Humidity",
+                                value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
+                                info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
+                                statusCode = combinedStatus
+                            )
                         }
-                        item {
-                            Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        Row {
+                            WeatherCard(
+                                iconId = R.drawable.cloudy,
+                                desc = "Cloud cover",
+                                value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
+                                info = "Total cloud cover for all heights in"
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+
+                            val d = fcData.instant.details
+                            val fog: Double = d.fogAreaFraction ?: 0.0
+                            val visibility = getVerticalSightKm(
+                                fog,
+                                d.cloudAreaFractionLow,
+                                d.cloudAreaFractionMedium,
+                                d.cloudAreaFractionHigh,
+                            )
+
+                            WeatherCard(
+                                iconId = R.drawable.eye,
+                                desc = "Visibility",
+                                value = visibility,
+                                info = "Estimated vertical visibility"
+                            )
                         }
+                        Spacer(modifier = Modifier.height(30.dp))
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }
