@@ -27,9 +27,14 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
+import com.mapbox.maps.extension.style.layers.addLayer
+import com.mapbox.maps.extension.style.layers.generated.SkyLayer
 import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.ModelType
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
+import com.mapbox.maps.extension.style.light.generated.ambientLight
+import com.mapbox.maps.extension.style.light.generated.directionalLight
+import com.mapbox.maps.extension.style.light.setLight
 import com.mapbox.maps.extension.style.model.model
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
@@ -119,18 +124,28 @@ fun Map(
     val CAMERA_ZOOM = 16.0
     val CAMERA_PITCH = 45.0
     val SOURCE_ID = "source-id"
+    val SOURCE_ID1 = "source-id1"
+    val SOURCE_ID2 = "source-id2"
     val MODEL_LAYER_ID = "model-layer-id"
     val MODEL_ID_KEY = "model-id-key"
     val MODEL_ID_1 = "model-id-1"
     val MODEL_ID_2 = "model-id-2"
+    val MODEL_ID_3 = "model-id-3"
     val SAMPLE_MODEL_URI_1 =
         "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Embedded/Duck.gltf"
-    val SAMPLE_MODEL_URI_2 = "asset://rakettmedlinje.gltf"
+    val SAMPLE_MODEL_URI_2 = "asset://portalrocketv2.glb"
+    val SAMPLE_MODEL_URI_3 = "asset://DamagedHelmet.glb"
     val MAPBOX_HELSINKI = Point.fromLngLat(10.71830, 59.94363)
     val MODEL1_COORDINATES = Point.fromLngLat(
         MAPBOX_HELSINKI.longitude() - 0.002,
         MAPBOX_HELSINKI.latitude() + 0.002
     )
+    val MODEL3_COORDINATES = Point.fromLngLat(
+        MAPBOX_HELSINKI.longitude() - 0.012,
+        MAPBOX_HELSINKI.latitude() + 0.012
+    )
+    val skyLayer = SkyLayer("sky")
+
 
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
@@ -149,6 +164,7 @@ fun Map(
         MapEffect(Unit) { mapView ->
             mapView.mapboxMap.styleDataLoadedEvents
 
+            mapView.mapboxMap.addLayer((skyLayer))
             mapView.mapboxMap.addOnMapClickListener {
                 Log.d("s", "${it.latitude()},${it.longitude()}")
                 mapViewModel.lat.value = it.latitude()
@@ -156,17 +172,22 @@ fun Map(
                 true
             }
             mapView.mapboxMap.apply {
+
                 loadStyle(
                     style(Style.STANDARD) {
-//                        +model(MODEL_ID_1) {
-//                            uri(SAMPLE_MODEL_URI_1)
-//                        }
+                        +model(MODEL_ID_1) {
+                            uri(SAMPLE_MODEL_URI_1)
+                        }
                         +model(MODEL_ID_2) {
                             uri(SAMPLE_MODEL_URI_2)
+                        }
+                        +model(MODEL_ID_3) {
+                            uri(SAMPLE_MODEL_URI_3)
                         }
                         +geoJsonSource(SOURCE_ID) {
                             featureCollection(
                                 FeatureCollection.fromFeatures(
+
                                     listOf(
                                         Feature.fromGeometry(MODEL1_COORDINATES)
                                             .also {
@@ -175,23 +196,81 @@ fun Map(
                                                     MODEL_ID_1
                                                 )
                                             },
+
+                                        )
+                                )
+                            )
+                        }
+                        +geoJsonSource(SOURCE_ID1) {
+                            featureCollection(
+                                FeatureCollection.fromFeatures(
+
+                                    listOf(
+
                                         Feature.fromGeometry(MAPBOX_HELSINKI)
-                                            .also { it.addStringProperty(MODEL_ID_KEY, MODEL_ID_2) }
+                                            .also {
+                                                it.addStringProperty(
+                                                    MODEL_ID_KEY,
+                                                    MODEL_ID_2,
+                                                )
+                                            },
+
+                                        )
+                                )
+                            )
+                        }
+                        +geoJsonSource(SOURCE_ID2) {
+                            featureCollection(
+                                FeatureCollection.fromFeatures(
+
+                                    listOf(
+                                        Feature.fromGeometry(MODEL3_COORDINATES)
+                                            .also {
+                                                it.addStringProperty(
+                                                    MODEL_ID_KEY,
+                                                    MODEL_ID_3,
+                                                )
+                                            }
                                     )
                                 )
                             )
                         }
-                        +modelLayer(MODEL_LAYER_ID, SOURCE_ID) {
+
+                        +modelLayer(MODEL_ID_1, SOURCE_ID) {
                             modelId(get(MODEL_ID_KEY))
                             modelType(ModelType.COMMON_3D)
                             modelScale(listOf(300.0, 300.0, 300.0))
-                            modelTranslation(listOf(0.0, 0.0, 0.0))
+                            modelTranslation(listOf(500.0, 0.0, 100.0)) // Translation for Model 1
                             modelRotation(listOf(0.0, 0.0, 90.0))
+                            modelCastShadows(true)
+                            modelReceiveShadows(true)
+                            modelRoughness(0.1)
+                        }
 
-                            modelAmbientOcclusionIntensity(1.0)
+                        +modelLayer(MODEL_ID_2, SOURCE_ID1) {
+                            modelId(get(MODEL_ID_KEY))
+                            modelType(ModelType.COMMON_3D)
+                            modelScale(listOf(300.0, 300.0, 300.0))
+                            modelTranslation(listOf(0.0, 0.0, 0.0)) // Translation for Model 2
+                            modelRotation(listOf(0.0, 0.0, 180.0))
+                            modelCastShadows(true)
+                            modelReceiveShadows(true)
+                            modelRoughness(0.1)
+                        }
+
+                        +modelLayer(MODEL_ID_3, SOURCE_ID2) {
+                            modelId(get(MODEL_ID_KEY))
+                            modelType(ModelType.COMMON_3D)
+                            modelScale(listOf(300.0, 300.0, 300.0))
+                            modelTranslation(listOf(300.0, 0.0, 3000.0)) // Translation for Model 3
+                            modelRotation(listOf(0.0, 0.0, 90.0))
+                            modelCastShadows(true)
+                            modelReceiveShadows(true)
+                            modelRoughness(0.1)
                         }
                     }
                 )
+
             }
 
 
