@@ -97,6 +97,7 @@ fun DetailsScreen(
         }
     }
 
+
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
