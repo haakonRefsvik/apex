@@ -39,8 +39,8 @@ fun NewPointAnnotation(
     lat: Double,
     lon: Double,
     drawableId: Int,
-    onClick: (PointAnnotation) -> Unit)
-{
+    onClick: (PointAnnotation) -> Unit
+) {
     PointAnnotation(
         point = Point.fromLngLat(lon, lat),
         textField = text,
@@ -60,7 +60,8 @@ fun NewPointAnnotation(
 @Composable
 fun idToBitmap(id: Int): Bitmap {
     val context = LocalContext.current
-    val myImage: Drawable = ResourcesCompat.getDrawable(context.resources, id, null) ?: throw Exception("Drawable $id not found")
+    val myImage: Drawable = ResourcesCompat.getDrawable(context.resources, id, null)
+        ?: throw Exception("Drawable $id not found")
     return drawableToBitmap(myImage)
 }
 
@@ -69,7 +70,7 @@ fun idToBitmap(id: Int): Bitmap {
 fun NewViewAnnotation(
     lat: Double,
     lon: Double,
-){
+) {
     val context = LocalContext.current
     ViewAnnotation(
         options = viewAnnotationOptions {
@@ -92,9 +93,19 @@ fun Map(
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
     val cameraOptions by mapViewModel.cameraOptions
+    mapViewModel.updateCamera(lat, lon)
     val mapViewportState = mapViewModel.mapViewportState
     mapViewportState.setCameraOptions(cameraOptions)
-    var p by remember { mutableStateOf(viewAnnotationOptions { geometry(Point.fromLngLat(lon, lat)) })}
+    var p by remember {
+        mutableStateOf(viewAnnotationOptions {
+            geometry(
+                Point.fromLngLat(
+                    lon,
+                    lat
+                )
+            )
+        })
+    }
 
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
@@ -108,7 +119,7 @@ fun Map(
             drawableId = R.drawable.rakkettpin,
             onClick = { Log.d("PointClick", it.point.toString()) }
         )
-        
+
 
         MapEffect(Unit) { mapView ->
             mapView.mapboxMap.styleDataLoadedEvents

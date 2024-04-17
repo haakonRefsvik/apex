@@ -21,18 +21,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.R.string
+
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
-import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDatabase
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
-import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
 
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
@@ -50,28 +49,44 @@ import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
 
-    val internetConnectionViewModel by viewModels<InternetConnectionViewModel>()
 
-    val thresholdRepository = ThresholdRepository()
-    val gribRepository = GribRepository()
-    val weatherRepo = WeatherRepository(thresholdRepository, gribRepository)
+    private lateinit var db: AppDatabase // Change to lateinit var
 
-    val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
+    private lateinit var settingsRepository: SettingsRepository // Change to lateinit var
+    private val gribRepository = GribRepository()
+    private val weatherRepo: WeatherRepository by lazy {
+        WeatherRepository(settingsRepository, gribRepository)
+    }
+
+    private val detailsScreenViewModel by lazy {
+        DetailsScreenViewModel(weatherRepo)
+    }
 
     //val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
-    val mapViewModel = MapViewModel()
-    val thresholdViewModel = ThresholdViewModel(thresholdRepository)
+    private val mapViewModel by lazy {
+        MapViewModel()
+    }
 
+    /*
+    private val thresholdViewModel by lazy {
+        ThresholdViewModel(thresholdRepository)
+    }
 
-    private val db by lazy {
-        FavoriteDatabase.getInstance(this)
+     */
+    private val settingsViewModel by viewModels<SettingsViewModel> {
+        object : ViewModelProvider.Factory {
+
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return SettingsViewModel(settingsRepository, db.thresholdsDao) as T
+            }
+        }
     }
 
     private val viewModel by viewModels<HomeScreenViewModel> {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeScreenViewModel(weatherRepo, db.dao) as T
+                return HomeScreenViewModel(weatherRepo, db.favoriteDao) as T
             }
         }
     }
@@ -91,20 +106,16 @@ class MainActivity : ComponentActivity() {
         connectivityManager.unregisterConnectionObserver(this)
     }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @SuppressLint("CoroutineCreationDuringComposition")
     @RequiresApi(Build.VERSION_CODES.O)
-    @ExperimentalComposeUiApi
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
-                //connectivityObserver = NetworkConnectivityObserver(applicationContext)
 
-        ApiKeyHolder.in2000ProxyKey = resources.getString(string.in2000ProxyKey)
+        // Initialize db and thresholdRepository after context is available
+        db = AppDatabase.getInstance(this)
+        settingsRepository = SettingsRepository(db.thresholdsDao)
 
-        // Initialize the connectivityManager
+        ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
+
         connectivityManager = ConnectivityManager(application)
 
         setContent {
@@ -115,20 +126,18 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val state by viewModel.state.collectAsState()
-
-
+                    val thresholdState by settingsViewModel.state.collectAsState()
                     Navigation(
                         state = state,
                         onEvent = viewModel::onEvent,
                         homeScreenViewModel = viewModel,
                         detailsScreenViewModel = detailsScreenViewModel,
                         weatherRepo = weatherRepo,
-                        thresholdViewModel = thresholdViewModel,
+                        settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
-                        internetConnectionViewModel = internetConnectionViewModel
-
+                        thresholdState = thresholdState,
+                        onThresholdEvent  = settingsViewModel::onEvent
                     )
-
 
 
 
@@ -152,18 +161,9 @@ class MainActivity : ComponentActivity() {
                     }
 
 
-
-
-
-
-
-
-
                 }
             }
         }
     }
 }
-
-
 

@@ -8,19 +8,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import no.uio.ifi.in2000.rakettoppskytning.data.ThresholdRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
-import no.uio.ifi.in2000.rakettoppskytning.network.InternetConnectionViewModel
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdScreen
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -30,10 +29,11 @@ fun Navigation(
     onEvent: (FavoriteEvent) -> Unit,
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
-    thresholdViewModel: ThresholdViewModel,
+    settingsViewModel: SettingsViewModel,
     weatherRepo: WeatherRepository,
     detailsScreenViewModel: DetailsScreenViewModel,
-    internetConnectionViewModel: InternetConnectionViewModel
+    thresholdState: ThresholdState,
+    onThresholdEvent: (ThresholdsEvent) -> Unit,
 ) {
 
     val navController = rememberNavController()
@@ -47,8 +47,7 @@ fun Navigation(
                 state,
                 onEvent,
                 mapViewModel,
-                thresholdViewModel,
-                internetConnectionViewModel
+                settingsViewModel
             )
         }
         composable(
@@ -67,8 +66,10 @@ fun Navigation(
         composable("ThresholdScreen") {
             ThresholdScreen(
                 navController,
-                thresholdViewModel,
-                weatherRepo
+                settingsViewModel,
+                weatherRepo,
+                onThresholdEvent,
+                thresholdState
             )
         }
     }

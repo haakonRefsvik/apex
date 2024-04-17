@@ -13,7 +13,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -70,12 +70,16 @@ dependencies {
     val netcdfJavaVersion = "5.5.2"
     val slf4jVersion = "1.7.30"
 
-    implementation ("com.google.code.gson:gson:2.8.7")
+    implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.14")
+    implementation("com.patrykandpatrick.vico:compose-m2:2.0.0-alpha.14")
+    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-alpha.14")
+    implementation("com.patrykandpatrick.vico:core:2.0.0-alpha.14")
+    implementation("com.patrykandpatrick.vico:views:2.0.0-alpha.14")
 
+    implementation ("com.google.code.gson:gson:2.8.7")
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
     runtimeOnly("org.slf4j:slf4j-jdk14:${slf4jVersion}")
-
     implementation("io.insert-koin:koin-android:3.0.1")
     implementation("io.insert-koin:koin-core:3.0.1")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")

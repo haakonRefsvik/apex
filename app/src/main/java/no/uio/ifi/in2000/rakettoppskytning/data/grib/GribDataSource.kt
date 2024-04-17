@@ -69,14 +69,19 @@ class GribDataSource{
     }
 
     suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
-        val inputStream: InputStream = client.get(grib.uri).body()?: throw Exception("Could not access the latest grib file")
-        val file = File.createTempFile(fileName, ".grib2")
+        try {
+            val inputStream: InputStream = client.get(grib.uri).body()
+            val file = File.createTempFile(fileName, ".grib2")
 
-        FileOutputStream(file).use { outputStream ->
-            inputStream.copyTo(outputStream)
+            FileOutputStream(file).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+
+            cachedFiles[fileName] = file
+        }catch (e: Exception){
+            Log.d("Grib", "Klarte ikke å laste ned gribfil ${grib.uri}")
         }
 
-        cachedFiles[fileName] = file
     }
 
     /** This function makes sure that there is a upper limit of how many
