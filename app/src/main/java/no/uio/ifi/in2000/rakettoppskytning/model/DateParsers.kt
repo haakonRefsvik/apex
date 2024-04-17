@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.model
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import org.joda.time.Hours
 import java.text.SimpleDateFormat
@@ -72,13 +73,11 @@ fun getDayName(dateString: String, dayOffset: Int): String{
 fun formatDate(date: String): String {
     val daysAhead = getNumberOfDaysAhead(date)
     val formattedDate: String = when{
-        daysAhead == 1 -> "Tomorrow"
-        daysAhead == 0 -> "Today"
-        daysAhead in 2..6 -> getDayName(date, daysAhead)
+        daysAhead <= 6-> getDayName(date, 0)
         daysAhead > 6 -> getDayAndMonth(date)
-
         else -> ""
     }
+    Log.d("mais", "$date, dager foran nå: $daysAhead, dagen idag: ${getDayName(date, 0)}")
 
     return formattedDate
 }

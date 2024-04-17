@@ -70,7 +70,6 @@ dependencies {
     val netcdfJavaVersion = "5.5.2"
     val slf4jVersion = "1.7.30"
 
-    implementation ("co.yml:ycharts:2.1.0")
     implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.14")
     implementation("com.patrykandpatrick.vico:compose-m2:2.0.0-alpha.14")
     implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-alpha.14")

@@ -196,23 +196,18 @@ fun WeatherList(
                                             fontSize = 20.sp,
                                                 color = weatherCard0
                                         )
-                                        if (daysAhead > 0) {
-                                            Text(
-                                                text = formatDate(input.series.time),
-                                                fontSize = 13.sp,
-                                                softWrap = true,
-                                                maxLines = 1,
-                                                    color = weatherCard0
-                                            )
-
-                                        }
+                                        Text(
+                                            text = formatDate(input.series.time),
+                                            fontSize = 13.sp,
+                                            softWrap = true,
+                                            maxLines = 1,
+                                                color = weatherCard0.copy(alpha = 0.7F)
+                                        )
                                     }
                                     Spacer(modifier = Modifier.width(40.dp))
                                     Column {
                                         when (homeScreenViewModel.markedCardIndex.intValue) {
                                             0 -> {
-
-
                                                 Text(
                                                     "${input.series.data.instant.details.windSpeed} m/s",
                                                     fontSize = 20.sp,
