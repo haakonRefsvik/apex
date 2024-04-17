@@ -156,7 +156,7 @@ fun ThresholdScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigate("HomeScreen") }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
