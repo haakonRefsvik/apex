@@ -103,6 +103,7 @@ fun DetailsScreen(
         if (it.date == time) {
             weatherAtPosHour = listOf(it)
         }
+
     }
 
 
