@@ -77,6 +77,7 @@ fun WeatherList(
 //            modifier = Modifier.fillMaxSize(),
 //            contentAlignment = Alignment.Center
 //        ) {
+        Spacer(modifier = Modifier.height(10.dp))
         when {
 
             openFilterDialog.value -> {
@@ -110,14 +111,15 @@ fun WeatherList(
         Row {
 
             Button(modifier = Modifier.width(155.dp),
-                    colors = ButtonColors(
+                colors = ButtonColors(
                     containerColor = secondButton0,
                     contentColor = secondButton100,
                     disabledContainerColor = secondButton0,
-                    disabledContentColor = secondButton100),
-                    onClick = {
-                openTimeDialog.value = true
-            }) {
+                    disabledContentColor = secondButton100
+                ),
+                onClick = {
+                    openTimeDialog.value = true
+                }) {
                 Icon(
                     modifier = Modifier.size(15.dp),
                     imageVector = Icons.Default.Edit,
@@ -129,15 +131,16 @@ fun WeatherList(
             }
             Spacer(modifier = Modifier.width(25.dp))
             Button(modifier = Modifier.width(155.dp),
-                    colors = ButtonColors(
-                            containerColor = secondButton0,
-                            contentColor = secondButton100,
-                            disabledContainerColor = secondButton0,
-                            disabledContentColor = secondButton100),
-                    onClick = {
-                openFilterDialog.value = true
+                colors = ButtonColors(
+                    containerColor = secondButton0,
+                    contentColor = secondButton100,
+                    disabledContainerColor = secondButton0,
+                    disabledContentColor = secondButton100
+                ),
+                onClick = {
+                    openFilterDialog.value = true
 
-            }) {
+                }) {
                 Icon(
                     modifier = Modifier
                         .size(20.dp),
@@ -170,11 +173,12 @@ fun WeatherList(
                             modifier = Modifier
                                 .height(80.dp)
                                 .width(340.dp),
-                                colors = CardColors(
-                                        containerColor = weatherCard50,
-                                        contentColor = weatherCard0,
-                                        disabledContainerColor = weatherCard50,
-                                        disabledContentColor = weatherCard0),
+                            colors = CardColors(
+                                containerColor = weatherCard50,
+                                contentColor = weatherCard0,
+                                disabledContainerColor = weatherCard50,
+                                disabledContentColor = weatherCard0
+                            ),
                             onClick = {
                                 navController.navigate("DetailsScreen/${input.date}")
                             }
@@ -199,14 +203,14 @@ fun WeatherList(
                                         Text(
                                             input.series.time.substring(11, 16),
                                             fontSize = 20.sp,
-                                                color = weatherCard0
+                                            color = weatherCard0
                                         )
                                         Text(
                                             text = formatDate(input.series.time),
                                             fontSize = 13.sp,
                                             softWrap = true,
                                             maxLines = 1,
-                                                color = weatherCard0.copy(alpha = 0.7F)
+                                            color = weatherCard0.copy(alpha = 0.7F)
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(40.dp))
@@ -218,7 +222,7 @@ fun WeatherList(
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
-                                                        color = weatherCard0,
+                                                    color = weatherCard0,
                                                 )
                                             }
 
@@ -233,7 +237,7 @@ fun WeatherList(
                                                         modifier = Modifier
                                                             .size(30.dp)
                                                             .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
-                                                            tint = weatherCard0,
+                                                        tint = weatherCard0,
                                                         contentDescription = "Location"
                                                     )
 
@@ -249,7 +253,7 @@ fun WeatherList(
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
-                                                        color = weatherCard0
+                                                    color = weatherCard0
                                                 )
 
                                             3 -> {
@@ -267,7 +271,7 @@ fun WeatherList(
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
-                                                        color = weatherCard0
+                                                    color = weatherCard0
                                                 )
                                             }
 
@@ -278,7 +282,7 @@ fun WeatherList(
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
-                                                        color = weatherCard0
+                                                    color = weatherCard0
                                                 )
 
                                             5 ->
@@ -287,7 +291,7 @@ fun WeatherList(
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
-                                                        color = weatherCard0
+                                                    color = weatherCard0
                                                 )
 
                                             else ->
@@ -296,7 +300,7 @@ fun WeatherList(
                                                     fontSize = 20.sp,
                                                     fontWeight = FontWeight.Bold,
                                                     modifier = Modifier.width(75.dp),
-                                                        color = weatherCard0
+                                                    color = weatherCard0
                                                 )
                                         }
 
@@ -330,7 +334,7 @@ fun WeatherList(
                                         modifier = Modifier.size(20.dp),
                                         imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                                         contentDescription = "Arrow",
-                                            tint = weatherCard0
+                                        tint = weatherCard0
                                     )
                                 }
                             }
