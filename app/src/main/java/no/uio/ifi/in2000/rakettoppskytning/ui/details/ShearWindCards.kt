@@ -136,7 +136,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                             verticalProfile.getMaxSheerWind().altitude.roundToInt()} m",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
-                            color = details0
+                            color = details0.copy(alpha = 0.7F)
                     )
 
                 }
@@ -234,8 +234,8 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                                     rememberTextComponent(
                                         textSize = 13.sp,
                                         color = details0,
-                                        textAlignment = Layout.Alignment.ALIGN_CENTER,
-                                        padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
+                                        //textAlignment = Layout.Alignment.ALIGN_CENTER,
+                                        padding = dimensionsOf(horizontal = 2.dp, vertical = 0.dp),
                                         margins = dimensionsOf(end = 10.dp),
                                         typeface = android.graphics.Typeface.DEFAULT,
                                     ),

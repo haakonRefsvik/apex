@@ -228,7 +228,7 @@ fun ThresholdScreen(
                     },
                     shape = RoundedCornerShape(percent = 50),
                 ) {
-                    Text("Adjust weather values")
+                    Text("Weather values")
 
                 }
                 Spacer(modifier = Modifier.width(15.dp))
@@ -240,7 +240,7 @@ fun ThresholdScreen(
                     },
                     shape = RoundedCornerShape(percent = 50)
                 ) {
-                    Text("Adjust rocket profile")
+                    Text("Rocket profile")
 
                 }
 
@@ -300,16 +300,7 @@ fun ThresholdScreen(
                             suffix = "mm",
                         )
                     }
-                    item {
-                        ThresholdCard(
-                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_HUMIDITY.ordinal],
-                            title = "Max air humidity",
-                            drawableId = R.drawable.luftfuktighet,
-                            suffix = "%",
-                            highestInput = 100.0,
-                            numberOfIntegers = 3
-                        )
-                    }
+
                     item {
                         ThresholdCard(
                             mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_WIND.ordinal],

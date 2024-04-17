@@ -85,7 +85,7 @@ fun WeatherCard(
                         modifier = Modifier.padding(vertical = 5.dp),
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
-                            color = details0
+                            color = details0.copy(alpha = 0.7F)
                     )
                 }
             }

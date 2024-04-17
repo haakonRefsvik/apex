@@ -340,22 +340,12 @@ fun DetailsScreen(
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 
-                                    val combinedStatus: Double
-                                    val d = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
-                                    val h = statusMap[ThresholdType.MAX_HUMIDITY.name] ?: 0.0
-
-                                    combinedStatus = if (d == 1.0 || h == 1.0) {
-                                        1.0
-                                    } else {
-                                        (d + h) / 2
-                                    }
-
                                     WeatherCard(
                                         iconId = R.drawable.luftfuktighet,
-                                        desc = "Humidity",
-                                        value = "${fcData.instant.details.relativeHumidity.roundToInt()} %",
-                                        info = "Relative humidity.\nThe dew point is ${fcData.instant.details.dewPointTemperature} ℃",
-                                        statusCode = combinedStatus
+                                        desc = "Dew Point",
+                                        value = "${fcData.instant.details.dewPointTemperature} ℃",
+                                        info = "The relative humidity is ${fcData.instant.details.relativeHumidity.roundToInt()} %",
+                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))

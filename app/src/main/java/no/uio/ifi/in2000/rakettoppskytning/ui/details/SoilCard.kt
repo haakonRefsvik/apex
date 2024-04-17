@@ -97,7 +97,7 @@ fun SoilCard(soilPercentage: Int) {
                         text = getSoilCategory(soilPercentage),
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
-                            color = details0
+                            color = details0.copy(alpha = 0.7F)
                     )
 
                 }
@@ -122,7 +122,7 @@ fun SoilCard(soilPercentage: Int) {
                             modifier = Modifier
                                 .padding(top = 55.dp)
                                 .width(100.dp),
-                                color = details0
+                                color = details0.copy(alpha = 0.5F)
                         )
                     }
                 }

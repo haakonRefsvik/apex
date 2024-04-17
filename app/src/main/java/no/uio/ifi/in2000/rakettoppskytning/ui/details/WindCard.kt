@@ -93,7 +93,7 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
                         text = "Max speed of gust is ${details.windSpeedOfGust} m/s",
                         fontSize = 14.sp,
                         lineHeight = 16.sp,
-                            color = details0
+                            color = details0.copy(alpha = 0.7F)
                     )
 
                 }
