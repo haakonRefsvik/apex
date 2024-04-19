@@ -26,6 +26,8 @@ import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -79,6 +81,8 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionabl
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
@@ -256,7 +260,7 @@ fun DetailsScreen(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                    LazyColumn(state = listState) {
+                        LazyColumn(state = listState) {
 
 
 
@@ -377,19 +381,25 @@ fun DetailsScreen(
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
+                                Button(modifier = Modifier.width(360.dp),
+                                    colors = ButtonColors(
+                                        containerColor = firstButton0,
+                                        contentColor = firstButton100,
+                                        disabledContainerColor = firstButton0,
+                                        disabledContentColor = firstButton100
+                                    ),
+                                    onClick = { /*TODO*/ }
+                                ) {
+                                    Text("Calculate ballistic trajectory")
+                                }
                             }
                             item {
-                                Spacer(modifier = Modifier.height(100.dp))
+                                Spacer(modifier = Modifier.height(50.dp))
                             }
                         }
-
                     }
-
                 }
-
-
             }
         }
     }
-
 }
