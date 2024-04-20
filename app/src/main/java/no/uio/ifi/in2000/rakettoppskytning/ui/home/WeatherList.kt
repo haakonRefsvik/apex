@@ -133,7 +133,7 @@ fun WeatherList(
                 }) {
                 Icon(
                     modifier = Modifier.size(15.dp),
-                    imageVector = Icons.Default.Edit,
+                    painter = painterResource(R.drawable.outline_access_time_24),
                     contentDescription = "Edit",
                 )
                 Spacer(modifier = Modifier.width(5.dp))
