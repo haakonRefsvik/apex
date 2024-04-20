@@ -25,6 +25,7 @@ import com.mapbox.maps.plugin.animation.flyTo
 import com.mapbox.maps.viewannotation.ViewAnnotationManager
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
@@ -65,18 +66,16 @@ class MapViewModel() : ViewModel() {
 
     @OptIn(MapboxExperimental::class)
     fun moveMapCamera(lat: Double, lon: Double) {
-        Log.d("moveMap 1: ", "$lat og $lon")
-
+        val flyTime: Long = 200
         val newCameraPosition = CameraOptions.Builder()
             .center(Point.fromLngLat(lon, lat))
             .build()
 
         val mapAnimationOptions = MapAnimationOptions.Builder()
-            .duration(1000) // 1 sekund flyvetid
+            .duration(flyTime) // 1 sekund flyvetid
             .build()
 
         mapViewportState.flyTo(newCameraPosition, mapAnimationOptions)
-        Log.d("moveMap 2: ", "$lat og $lon")
 
     }
 

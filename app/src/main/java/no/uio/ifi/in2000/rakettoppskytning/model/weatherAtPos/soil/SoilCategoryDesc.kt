@@ -1,5 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil
 
+import no.uio.ifi.in2000.rakettoppskytning.R
+
 
 /**
  * From chat-GPT:
@@ -37,5 +39,18 @@ fun getSoilCategory(soilPercentage: Int): String{
         soilPercentage < 90 -> "The ground is pretty moist"
         soilPercentage >= 90 -> "The ground is very moist"
         else -> ""
+    }
+}
+
+fun getSoilScore(soilPercentage: Int?): Double{
+    if (soilPercentage == null){
+        return -1.0
+    }
+
+    return if(soilPercentage < 10){
+        1.0
+    }
+    else{
+        -1.0
     }
 }

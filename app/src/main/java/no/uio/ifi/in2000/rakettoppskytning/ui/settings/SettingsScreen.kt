@@ -36,6 +36,7 @@ import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -79,6 +80,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 
 /*
@@ -219,8 +221,22 @@ fun ThresholdScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            MultiChoiceSegmentedButtonRow(modifier = Modifier.width(375.dp)) {
+            MultiChoiceSegmentedButtonRow(modifier = Modifier.width(330.dp)) {
                 SegmentedButton(
+                    colors =  SegmentedButtonColors(
+                        activeContainerColor = settings25,
+                        activeContentColor= settings50,
+                        activeBorderColor= settings50,
+                        inactiveContainerColor= settings100,
+                        inactiveContentColor= settings50,
+                        inactiveBorderColor= settings50,
+                        disabledActiveContainerColor= settings50,
+                        disabledActiveContentColor= settings50,
+                        disabledActiveBorderColor= settings50,
+                        disabledInactiveContainerColor= settings50,
+                        disabledInactiveContentColor= settings50,
+                        disabledInactiveBorderColor= settings50,
+                        ),
                     checked = settings1check.value,
                     onCheckedChange = {
                         settings1check.value = true
@@ -231,8 +247,22 @@ fun ThresholdScreen(
                     Text("Weather values")
 
                 }
-                Spacer(modifier = Modifier.width(15.dp))
+                Spacer(modifier = Modifier.width(30.dp))
                 SegmentedButton(
+                    colors =  SegmentedButtonColors(
+                        activeContainerColor = settings25,
+                        activeContentColor= settings50,
+                        activeBorderColor= settings50,
+                        inactiveContainerColor= settings100,
+                        inactiveContentColor= settings50,
+                        inactiveBorderColor= settings50,
+                        disabledActiveContainerColor= settings50,
+                        disabledActiveContentColor= settings50,
+                        disabledActiveBorderColor= settings50,
+                        disabledInactiveContainerColor= settings50,
+                        disabledInactiveContentColor= settings50,
+                        disabledInactiveBorderColor= settings50,
+                    ),
                     checked = settings2check.value,
                     onCheckedChange = {
                         settings2check.value = true
@@ -323,6 +353,15 @@ fun ThresholdScreen(
                             title = "Max dew point",
                             drawableId = R.drawable.luftfuktighet,
                             suffix = "°C",
+                        )
+
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_HUMIDITY.ordinal],
+                            title = "Max humidity",
+                            drawableId = R.drawable.luftfuktighet,
+                            suffix = "%",
                         )
 
                     }
@@ -514,7 +553,7 @@ fun ThresholdCard(
                     text = desc,
                     lineHeight = 16.sp,
                     fontSize = 13.sp,
-                    color = settings50
+                    color = settings50.copy(alpha = 0.7F)
                 )
             }
         }
@@ -552,13 +591,16 @@ fun ThresholdCard(
         )
         Column(
             modifier = Modifier.width(50.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = suffix,
-                color = settings50
-            )
-
+            Row {
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    fontSize = 13.sp,
+                    text = suffix,
+                    color = settings50.copy(alpha = 0.7F)
+                )
+            }
         }
     }
 

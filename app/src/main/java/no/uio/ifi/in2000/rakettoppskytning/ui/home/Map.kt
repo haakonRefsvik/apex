@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +30,11 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 
@@ -96,16 +103,6 @@ fun Map(
     mapViewModel.updateCamera(lat, lon)
     val mapViewportState = mapViewModel.mapViewportState
     mapViewportState.setCameraOptions(cameraOptions)
-    var p by remember {
-        mutableStateOf(viewAnnotationOptions {
-            geometry(
-                Point.fromLngLat(
-                    lon,
-                    lat
-                )
-            )
-        })
-    }
 
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
@@ -116,18 +113,27 @@ fun Map(
             "",
             lat = lat,
             lon = lon,
-            drawableId = R.drawable.rakkettpin,
+            drawableId = R.drawable.pin,
             onClick = { Log.d("PointClick", it.point.toString()) }
         )
-
 
         MapEffect(Unit) { mapView ->
             mapView.mapboxMap.styleDataLoadedEvents
 
             mapView.mapboxMap.addOnMapClickListener {
-                Log.d("s", "${it.latitude()},${it.longitude()}")
-                mapViewModel.lat.value = it.latitude()
-                mapViewModel.lon.value = it.longitude()
+                mapViewModel.moveMapCamera(it.latitude(), it.longitude())
+
+                mapView.postDelayed(
+                    {
+                    // Lets the camera move before updating the pin
+                    mapViewModel.lat.value = it.latitude()
+                    mapViewModel.lon.value = it.longitude()},
+                    200
+                )
+
+
+
+
                 true
             }
         }

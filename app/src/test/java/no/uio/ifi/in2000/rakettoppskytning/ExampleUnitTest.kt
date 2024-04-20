@@ -1,11 +1,12 @@
 package no.uio.ifi.in2000.rakettoppskytning
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getLevelRatios
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
-import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
-import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -112,6 +113,53 @@ class ExampleUnitTest {
         val expected = "15.08"
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun testTri(){
+        val levelDatas = hashMapOf<Double, LevelData>()
+        levelDatas[850.0] = LevelData(850.0)
+
+        val tra: List<Point> = simulateTrajectory(
+            burnTime = 12.0,
+            launchAngle = 80.0,
+            launchDir = 0.0,
+            altitude = 0.0,
+            thrust = 4500.0,
+            apogee = 3500.0,
+            mass = 100.0,
+            dt = 0.1,
+            levelData = levelDatas
+        )
+
+        assertEquals(565, tra.size)
+    }
+
+    @Test
+    fun testRatios(){
+        val l1 = 600.0
+        val l2 = 1400.0
+
+        val res = getLevelRatios(l1, l2, 800.0)
+        assertEquals(Pair(0.75, 0.25), res)
+    }
+
+
+    @Test
+    fun findLayers(){
+        val l1 = LevelData(85000.0)
+        l1.tempValueKelvin = 273.0
+        val l0 = LevelData(101325.5)
+        l0.tempValueKelvin = 273.0
+        val l2 = LevelData(75000.0)
+        l2.tempValueKelvin = 273.0
+        val list = listOf(l0, l1, l2)
+
+        val res = findLowerUpperLevel(list, 1500.0)
+
+        list.forEach { println(it.pressurePascal) }
+
+        assertEquals(Pair(l1, l2), res)
     }
 
 }

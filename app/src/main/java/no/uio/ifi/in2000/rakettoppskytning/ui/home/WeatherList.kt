@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -163,7 +164,7 @@ fun WeatherList(
 
 
         }
-        Spacer(modifier = Modifier.height(5.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
 
         val listState = rememberLazyListState()
@@ -173,10 +174,10 @@ fun WeatherList(
             modifier = Modifier,
             rightSide = true,
             alwaysShowScrollBar = false,
-            thickness = 6.dp,
-            padding = 8.dp,
+            thickness = 5.dp,
+            padding = 10.dp,
             thumbMinHeight = 0.1f,
-            thumbColor = Color.White,
+            thumbColor = Color.White.copy(alpha = 0.4F),
             thumbSelectedColor = Color.White,
             thumbShape = CircleShape,
             selectionMode = ScrollbarSelectionMode.Thumb,
