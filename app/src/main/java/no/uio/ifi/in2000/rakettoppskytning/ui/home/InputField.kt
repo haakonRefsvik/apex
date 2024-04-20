@@ -315,14 +315,14 @@ fun InputField(
                                 verticalAlignment = Alignment.CenterVertically
 
                             ) {
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Icon(
                                     modifier = Modifier.size(25.dp),
                                     imageVector = Icons.Default.Place,
                                     contentDescription = "Location",
                                     tint = Color(216, 64, 64, 255)
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Text(favorite.name, fontSize = 18.sp, color = favoriteCard100)
 
                             }
@@ -349,11 +349,7 @@ fun InputField(
                                 }
 
                             }
-
-
                         }
-
-
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                 }

@@ -37,6 +37,8 @@ val favoriteCard0 = Color(0xFF000000) // FavoriteCard-content
 val settings100 = Color(0xFF14213D)
 val settings50 = Color(0xFFFFFFFF) // Tekst+prefix
 val settings0 = Color(0xFFFCA311) //"Arrowback"-ikon, Tittel og Divider
+val settings25 = Color(0xFF0E172B)
+
 
 val time100 = Color(0xFF14213D)// TimeDialog-container, button-content og InputField-container
 val time65 = Color(0xFFFFC86E) // Mellom-datoer-markør

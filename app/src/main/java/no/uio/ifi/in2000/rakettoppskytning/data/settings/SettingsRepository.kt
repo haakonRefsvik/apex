@@ -21,7 +21,7 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao) {
 
             Thresholds(
                 nedbor = getThresholdValue(ThresholdType.MAX_PRECIPITATION).toString(),
-                luftfuktighet = getThresholdValue(ThresholdType.MAX_DEW_POINT).toString(),
+                luftfuktighet = getThresholdValue(ThresholdType.MAX_HUMIDITY).toString(),
                 vind = getThresholdValue(ThresholdType.MAX_WIND).toString(),
                 shearWind = getThresholdValue(ThresholdType.MAX_SHEAR_WIND).toString(),
                 duggpunkt = getThresholdValue(ThresholdType.MAX_DEW_POINT).toString(),

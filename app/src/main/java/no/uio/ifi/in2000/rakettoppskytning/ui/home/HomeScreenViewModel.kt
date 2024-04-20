@@ -186,11 +186,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
 
     init {
-
         initialSelectedStartDateMillis.value.time = Date()
-
         initialSelectedEndDateMillis.value.time = Date()
-
         initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
         startISOtime =
             sdf.format(initialSelectedStartDateMillis.value.timeInMillis)

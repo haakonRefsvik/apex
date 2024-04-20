@@ -73,6 +73,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescri
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilScore
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
@@ -231,10 +232,10 @@ fun DetailsScreen(
                     modifier = Modifier,
                     rightSide = true,
                     alwaysShowScrollBar = false,
-                    thickness = 6.dp,
-                    padding = 8.dp,
+                    thickness = 5.dp,
+                    padding = 10.dp,
                     thumbMinHeight = 0.1f,
-                    thumbColor = Color.White,
+                    thumbColor = Color.White.copy(alpha = 0.4F),
                     thumbSelectedColor = Color.White,
                     thumbShape = CircleShape,
                     selectionMode = ScrollbarSelectionMode.Thumb,
@@ -257,10 +258,9 @@ fun DetailsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                     LazyColumn(state = listState) {
-
-
-
                             item {
+                                Spacer(modifier = Modifier.height(50.dp))
+
                                 weatherNow.verticalProfile?.let {
                                     ShearWindCard(
                                         verticalProfile = it,
@@ -286,7 +286,24 @@ fun DetailsScreen(
                                 Spacer(modifier = Modifier.height(30.dp))
                             }
                             item {
-                                weatherNow.soilMoisture?.let { SoilCard(soilPercentage = it) }
+                                Row {
+                                    WeatherCard(
+                                        iconId = R.drawable.luftfuktighet,
+                                        desc = "Humidity",
+                                        value = "${fcData.instant.details.relativeHumidity} %",
+                                        info = "Relative humidity at 2m above the ground in",
+                                        statusCode = statusMap[ThresholdType.MAX_HUMIDITY.name]?: 0.0
+                                    )
+                                    Spacer(modifier = Modifier.width(20.dp))
+
+                                    WeatherCard(
+                                        iconId = R.drawable.luftfuktighet,
+                                        desc = "Dew Point",
+                                        value = "${fcData.instant.details.dewPointTemperature} ℃",
+                                        info = "Temperature where dew starts to form",
+                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
+                                    )
+                                }
                                 Spacer(modifier = Modifier.height(30.dp))
                             }
                             item {
@@ -340,13 +357,20 @@ fun DetailsScreen(
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 
+                                    var info = "Moisture in the ground"
+
+                                    if(weatherNow.soilMoisture != null){
+                                        info = getSoilDescription(weatherNow.soilMoisture)
+                                    }
+
                                     WeatherCard(
-                                        iconId = R.drawable.luftfuktighet,
-                                        desc = "Dew Point",
-                                        value = "${fcData.instant.details.dewPointTemperature} ℃",
-                                        info = "The relative humidity is ${fcData.instant.details.relativeHumidity.roundToInt()} %",
-                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
+                                        iconId = R.drawable.vann,
+                                        desc = "Soil moisture",
+                                        value = "${weatherNow.soilMoisture} %",
+                                        info = info,
+                                        statusCode = getSoilScore(weatherNow.soilMoisture)
                                     )
+
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
                             }
