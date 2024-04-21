@@ -184,6 +184,10 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     }
 
+    fun resetList() {
+        foreCastRep.resetFilter()
+    }
+
 
     init {
         initialSelectedStartDateMillis.value.time = Date()
