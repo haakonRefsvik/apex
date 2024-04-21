@@ -78,6 +78,7 @@ fun TimeDialog(
                     time100
                 ),
                 onClick = {
+                    homeScreenViewModel.resetList()
                     homeScreenViewModel.startISOtime = sdf.format(dtrpState.selectedStartDateMillis)
                         .replaceRange(
                             11,
