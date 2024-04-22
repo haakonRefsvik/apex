@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getLevelRatios
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
@@ -129,10 +130,29 @@ class ExampleUnitTest {
             apogee = 3500.0,
             mass = 100.0,
             dt = 0.1,
-            levelData = levelDatas
+            allLevels = levelDatas
         )
 
         assertEquals(565, tra.size)
+    }
+
+    @Test
+    fun testGetNearestLevel(){
+        val l0 = LevelData(101325.5)
+        l0.tempValueKelvin = 273.0
+        val l1 = LevelData(85000.0)
+        l1.tempValueKelvin = 273.0
+        val l2 = LevelData(75000.0)
+        l2.tempValueKelvin = 273.0
+        val h = hashMapOf<Double, LevelData>(Pair(101325.5, l0), Pair(85000.0, l1), Pair(75000.0, l2))
+
+        val res1 = getNearestLevelData(h, 0.0)
+
+        assertEquals(l0, res1)
+
+        val res2 = getNearestLevelData(h, 1500.0)
+
+        assertEquals(l1, res2)
     }
 
     @Test
