@@ -1,7 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.ballistic
 
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import java.lang.Math.pow
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -49,6 +49,35 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
 
     return null
 }
+
+fun convertMetersToLatLon(xMeters: Double, yMeters: Double, zMeters: Double, startsPos: Pair<Double, Double>): Pair<Double, Double>{
+    // THIS FUNCTION IS INACCURATE BUT WORKS
+    val latDegreesPerMeter = 1 / 111111
+    val lonDegreesPerMeter = 1 / (111111 * 1 / (abs(startsPos.first) / 90))
+
+    val lat = startsPos.first + (yMeters * latDegreesPerMeter)
+    val lon = startsPos.second + (xMeters * lonDegreesPerMeter)
+
+    return Pair(lat, lon)
+}
+
+fun getNearestLevelData(allLevels: HashMap<Double, LevelData>, altitudeMeters: Double): LevelData?{
+    var nearest: LevelData = allLevels[(allLevels.keys.max())]?: return null    // Gets the highest level as nearest
+    var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
+
+    allLevels.forEach {
+        val levelAlt = it.value.getLevelHeightInMeters()
+        val d = abs(levelAlt - altitudeMeters)
+
+        if(d < nearestAlt){
+            nearest = it.value
+            nearestAlt = d
+        }
+    }
+
+    return nearest
+}
+
 fun simulateTrajectory(
     burnTime: Double,
     launchAngle: Double,
@@ -58,14 +87,14 @@ fun simulateTrajectory(
     apogee: Double,
     mass: Double,
     dt: Double,
-    levelData: HashMap<Double, LevelData>,
+    allLevels: HashMap<Double, LevelData>,
     vAfterParachute: Double = 8.6
 ): List<Point>{
     val g = 9.81
     val rho = 1.225
     val cd = 0.5
-    val launchAngle_rad = Math.toRadians(launchAngle)
-    val launchDir_rad = Math.toRadians(launchDir)
+    val launchAngleRad = Math.toRadians(launchAngle)
+    val launchDirRad = Math.toRadians(launchDir)
 
     var x = 0.0
     var y = 0.0
@@ -93,9 +122,9 @@ fun simulateTrajectory(
         secondsUsed += timeStep
 
         if(burnTimeLeft >= 0 && z <= apogee){
-            ax = thrust * cos(launchAngle_rad) * sin(launchDir_rad) / mass
-            ay = thrust * cos(launchAngle_rad) * cos(launchDir_rad) / mass
-            az = thrust * sin(launchAngle_rad) / mass - g
+            ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / mass
+            ay = thrust * cos(launchAngleRad) * cos(launchDirRad) / mass
+            az = thrust * sin(launchAngleRad) / mass - g
             burnTimeLeft -= timeStep
         }
         else{
@@ -119,8 +148,8 @@ fun simulateTrajectory(
 
         if(parachuteDeployed){
             vz = ( - vAfterParachute ) * timeStep
-            vx = 0.0    // WINDDATA HERE
-            vy = 0.0
+            vx = getNearestLevelData(altitudeMeters = z, allLevels = allLevels)?.vComponentValue ?: 0.0
+            vy = getNearestLevelData(altitudeMeters = z, allLevels = allLevels)?.uComponentValue ?: 0.0
         }
 
         x += vx * timeStep

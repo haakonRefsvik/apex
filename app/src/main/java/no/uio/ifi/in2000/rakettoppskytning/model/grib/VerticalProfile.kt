@@ -110,23 +110,6 @@ class VerticalProfile(
         return getAllSheerWinds().maxBy { it.windSpeed }
     }
 
-    fun getNearestLevelData(altitudeMeters: Double): LevelData?{
-        var nearest: LevelData = verticalProfileMap[(verticalProfileMap.keys.max())]?: return null
-        var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
-
-        verticalProfileMap.forEach {
-            val levelAlt = it.value.getLevelHeightInMeters()
-            val d = abs(levelAlt - altitudeMeters)
-
-            if(d < nearestAlt){
-                nearest = it.value
-                nearestAlt = d
-            }
-        }
-
-        return nearest
-    }
-
     override fun toString(): String {
 
         var r = "---    Vertical profile for lat: $lat, lon: $lon     ---\n"
