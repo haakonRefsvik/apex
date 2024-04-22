@@ -71,13 +71,18 @@ fun getDayName(dateString: String, dayOffset: Int): String{
 /** Returns an appropriate display of the date*/
 
 fun formatDate(date: String): String {
-    val daysAhead = getNumberOfDaysAhead(date)
-    val formattedDate: String = when{
-        daysAhead <= 6-> getDayName(date, 0)
-        daysAhead > 6 -> getDayAndMonth(date)
-        else -> ""
+    return try {
+        val daysAhead = getNumberOfDaysAhead(date)
+        val formattedDate: String = when{
+            daysAhead <= 6-> getDayName(date, 0)
+            daysAhead > 6 -> getDayAndMonth(date)
+            else -> ""
+        }
+
+        formattedDate
+    }catch (e: Exception){
+        date
     }
 
-    return formattedDate
 }
 

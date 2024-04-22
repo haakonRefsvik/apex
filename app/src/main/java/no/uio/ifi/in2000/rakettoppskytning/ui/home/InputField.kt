@@ -63,7 +63,7 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
-import no.uio.ifi.in2000.rakettoppskytning.ui.favorite.AddFavoriteDialog
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100

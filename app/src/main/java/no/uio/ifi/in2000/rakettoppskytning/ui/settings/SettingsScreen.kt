@@ -503,7 +503,6 @@ fun ThresholdScreen(
             }
         }
     }
-
 }
 
 @SuppressLint("SuspiciousIndentation")

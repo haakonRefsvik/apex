@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.ui.favorite
+package no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite
 
 import android.content.Context
 import android.util.Log
