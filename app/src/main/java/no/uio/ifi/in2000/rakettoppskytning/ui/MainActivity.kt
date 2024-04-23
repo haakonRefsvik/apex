@@ -1,53 +1,26 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
@@ -67,11 +40,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
 
-import kotlin.time.toDuration
-
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -109,7 +79,7 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SettingsViewModel(settingsRepository, db.thresholdsDao) as T
+                return SettingsViewModel(settingsRepository, db.thresholdsDao, db.rocketSpecsDao) as T
             }
         }
     }
@@ -144,7 +114,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize db and thresholdRepository after context is available
         db = AppDatabase.getInstance(this)
-        settingsRepository = SettingsRepository(db.thresholdsDao)
+        settingsRepository = SettingsRepository(db.thresholdsDao, db.rocketSpecsDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
 
@@ -157,24 +127,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                        val state by viewModel.state.collectAsState()
-                        val thresholdState by settingsViewModel.state.collectAsState()
-                        Navigation(
-                            state = state,
-                            onEvent = viewModel::onEvent,
-                            homeScreenViewModel = viewModel,
-                            detailsScreenViewModel = detailsScreenViewModel,
-                            weatherRepo = weatherRepo,
-                            settingsViewModel = settingsViewModel,
-                            mapViewModel = mapViewModel,
-                            thresholdState = thresholdState,
-                            onThresholdEvent = settingsViewModel::onEvent,
-                            context = context
-                        )
-
-
-
+                    val state by viewModel.state.collectAsState()
+                    val thresholdState by settingsViewModel.thresholdState.collectAsState()
+                    val rocketSpecsState by settingsViewModel.rocketspecsState.collectAsState()
+                    Navigation(
+                        state = state,
+                        onEvent = viewModel::onEvent,
+                        homeScreenViewModel = viewModel,
+                        detailsScreenViewModel = detailsScreenViewModel,
+                        weatherRepo = weatherRepo,
+                        settingsViewModel = settingsViewModel,
+                        mapViewModel = mapViewModel,
+                        thresholdState = thresholdState,
+                        onThresholdEvent = settingsViewModel::onThresholdsEvent,
+                        rocketSpecState = rocketSpecsState,
+                        onRocketSpecsEvent = settingsViewModel::onRocketSpecsEvent,
+                        context = context
+                    )
 
 
                        val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
