@@ -67,7 +67,7 @@ fun NewPointAnnotation(
         textRadialOffset = 2.0,
         textColorInt = Color.RED,
         textEmissiveStrength = 20.0,
-        iconSize = 0.06,
+        iconSize = 0.04,
         iconImageBitmap = idToBitmap(id = drawableId),
         onClick = {
             onClick(it)
@@ -149,6 +149,132 @@ fun Map(
 
                 true
             }
+            val SOURCE_ID1 = "source1"
+            val SAMPLE_MODEL_URI_1 = "asset://whatball.glb"
+            val MODEL_ID_KEY = "model-id-key"
+            val MODEL_ID_2 = "model-id-2"
+            val SAMPLE_MODEL_URI_2 = "asset://portalrocketV7.glb"
+            val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
+
+
+            val levelDatas = hashMapOf<Double, LevelData>()
+            levelDatas[850.0] = LevelData(850.0)
+
+            val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
+                simulateTrajectory(
+                    burnTime = 12.0,
+                    launchAngle = 80.0,
+                    launchDir = 0.0,
+                    altitude = 0.0,
+                    thrust = 4500.0,
+                    apogee = 3500.0,
+                    mass = 100.0,
+                    dt = 0.1,
+                    allLevels = levelDatas
+                )
+            mapView.mapboxMap.apply {
+
+                loadStyle(
+                    style(Style.OUTDOORS) {
+                        tra.forEachIndexed { index, point ->
+                            if (point.z < 0) {
+                                return@forEachIndexed
+                            } else if (index % 2 == 0 && index > 15) {
+
+
+                                val MODEL_ID_1 = "model-id${index}"
+                                val SOURCE_ID = "source-id$${index}"
+                                val points = convertMetersToLatLon(
+                                    point.x,
+                                    point.y,
+                                    Pair(mapViewModel.lon.value, mapViewModel.lat.value)
+                                )
+                                val MODEL1_COORDINATES = Point.fromLngLat(
+                                    mapViewModel.lon.value, mapViewModel.lat.value
+                                )
+                                +model(MODEL_ID_1) {
+                                    uri(SAMPLE_MODEL_URI_1)
+                                }
+                                +geoJsonSource(SOURCE_ID) {
+                                    featureCollection(
+                                        FeatureCollection.fromFeatures(
+
+                                            listOf(
+                                                Feature.fromGeometry(MODEL1_COORDINATES)
+                                                    .also {
+                                                        it.addStringProperty(
+                                                            MODEL_ID_KEY,
+                                                            MODEL_ID_1
+                                                        )
+                                                    },
+
+                                                )
+                                        )
+                                    )
+                                }
+                                +modelLayer(MODEL_ID_1, SOURCE_ID) {
+                                    modelId(get(MODEL_ID_KEY))
+                                    modelType(ModelType.LOCATION_INDICATOR)
+                                    modelScale(listOf(4.0, 4.0, 4.0))
+                                    modelTranslation(
+                                        listOf(
+                                            point.x,
+                                            point.y,
+                                            point.z
+                                        )
+                                    ) // Translation for Model 1
+                                    modelRotation(listOf(0.0, 0.0, 90.0))
+                                    modelCastShadows(false)
+                                    modelReceiveShadows(false)
+                                    modelRoughness(0.1)
+                                }
+                            }
+
+
+                        }
+
+                        +model(MODEL_ID_2) {
+                            uri(SAMPLE_MODEL_URI_2)
+                        }
+
+
+                        +geoJsonSource(SOURCE_ID1) {
+                            featureCollection(
+                                FeatureCollection.fromFeatures(
+
+                                    listOf(
+
+                                        Feature.fromGeometry(cords)
+                                            .also {
+                                                it.addStringProperty(
+                                                    MODEL_ID_KEY,
+                                                    MODEL_ID_2,
+                                                )
+                                            },
+
+                                        )
+                                )
+                            )
+                        }
+
+
+
+
+                        +modelLayer(MODEL_ID_2, SOURCE_ID1) {
+                            modelId(get(MODEL_ID_KEY))
+                            modelType(ModelType.COMMON_3D)
+                            modelScale(listOf(10.0, 10.0, 10.0))
+                            modelTranslation(listOf(0.0, 0.0, 0.0)) // Translation for Model 2
+                            modelRotation(listOf(0.0, 0.0, 180.0))
+                            modelCastShadows(true)
+                            modelReceiveShadows(true)
+                            modelRoughness(0.1)
+                        }
+
+                    }
+                )
+
+            }
         }
         Make3dtrajectory(Unit, mapViewModel)
     }
@@ -157,134 +283,10 @@ fun Map(
 @OptIn(MapboxExperimental::class)
 @Composable
 fun Make3dtrajectory(unit: Unit, mapViewModel: MapViewModel) {
-    val SOURCE_ID1 = "source1"
-    val SAMPLE_MODEL_URI_1 = "asset://notball.glb"
-    val MODEL_ID_KEY = "model-id-key"
-    val MODEL_ID_2 = "model-id-2"
-    val SAMPLE_MODEL_URI_2 = "asset://portalrocketV7.glb"
-    val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
-
-
-    val levelDatas = hashMapOf<Double, LevelData>()
-    levelDatas[850.0] = LevelData(850.0)
-
-    val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> = simulateTrajectory(
-        burnTime = 12.0,
-        launchAngle = 80.0,
-        launchDir = 0.0,
-        altitude = 0.0,
-        thrust = 4500.0,
-        apogee = 3500.0,
-        mass = 100.0,
-        dt = 0.1,
-        allLevels = levelDatas
-    )
 
 
     MapEffect(unit) { mapView ->
-        mapView.mapboxMap.apply {
 
-            loadStyle(
-                style(Style.OUTDOORS) {
-                    tra.forEachIndexed { index, point ->
-                        if (point.z < 0) {
-                            return@forEachIndexed
-                        } else if (index % 2 == 0) {
-
-
-                            val MODEL_ID_1 = "model-id${index}"
-                            val SOURCE_ID = "source-id$${index}"
-                            val points = convertMetersToLatLon(
-                                point.x,
-                                point.y,
-                                Pair(mapViewModel.lon.value, mapViewModel.lat.value)
-                            )
-                            val MODEL1_COORDINATES = Point.fromLngLat(
-                                mapViewModel.lon.value, mapViewModel.lat.value
-                            )
-                            +model(MODEL_ID_1) {
-                                uri(SAMPLE_MODEL_URI_1)
-                            }
-                            +geoJsonSource(SOURCE_ID) {
-                                featureCollection(
-                                    FeatureCollection.fromFeatures(
-
-                                        listOf(
-                                            Feature.fromGeometry(MODEL1_COORDINATES)
-                                                .also {
-                                                    it.addStringProperty(
-                                                        MODEL_ID_KEY,
-                                                        MODEL_ID_1
-                                                    )
-                                                },
-
-                                            )
-                                    )
-                                )
-                            }
-                            +modelLayer(MODEL_ID_1, SOURCE_ID) {
-                                modelId(get(MODEL_ID_KEY))
-                                modelType(ModelType.LOCATION_INDICATOR)
-                                modelScale(listOf(8.0, 8.0, 8.0))
-                                modelTranslation(
-                                    listOf(
-                                        point.x,
-                                        point.y,
-                                        point.z
-                                    )
-                                ) // Translation for Model 1
-                                modelRotation(listOf(0.0, 0.0, 90.0))
-                                modelCastShadows(true)
-                                modelReceiveShadows(true)
-                                modelRoughness(0.1)
-                            }
-                        }
-
-
-                    }
-
-                    +model(MODEL_ID_2) {
-                        uri(SAMPLE_MODEL_URI_2)
-                    }
-
-
-                    +geoJsonSource(SOURCE_ID1) {
-                        featureCollection(
-                            FeatureCollection.fromFeatures(
-
-                                listOf(
-
-                                    Feature.fromGeometry(cords)
-                                        .also {
-                                            it.addStringProperty(
-                                                MODEL_ID_KEY,
-                                                MODEL_ID_2,
-                                            )
-                                        },
-
-                                    )
-                            )
-                        )
-                    }
-
-
-
-
-                    +modelLayer(MODEL_ID_2, SOURCE_ID1) {
-                        modelId(get(MODEL_ID_KEY))
-                        modelType(ModelType.COMMON_3D)
-                        modelScale(listOf(10.0, 10.0, 10.0))
-                        modelTranslation(listOf(0.0, 0.0, 0.0)) // Translation for Model 2
-                        modelRotation(listOf(0.0, 0.0, 180.0))
-                        modelCastShadows(true)
-                        modelReceiveShadows(true)
-                        modelRoughness(0.1)
-                    }
-
-                }
-            )
-
-        }
 
     }
 

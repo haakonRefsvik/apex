@@ -56,7 +56,7 @@ class MapViewModel() : ViewModel() {
     fun updateCamera(lat: Double, lon: Double) {
         val newCameraState = CameraOptions.Builder()
             .center(Point.fromLngLat(lon, lat))
-            .pitch(80.0)
+            .pitch(50.0)
             .build()
         _cam.value = newCameraState
     }
