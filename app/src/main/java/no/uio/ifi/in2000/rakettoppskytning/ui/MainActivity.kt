@@ -1,8 +1,11 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -10,13 +13,41 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
@@ -40,8 +71,8 @@ import kotlin.time.toDuration
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import javax.inject.Inject
-
 
 @ExperimentalCoroutinesApi
 
@@ -126,46 +157,63 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val state by viewModel.state.collectAsState()
-                    val thresholdState by settingsViewModel.state.collectAsState()
-                    Navigation(
-                        state = state,
-                        onEvent = viewModel::onEvent,
-                        homeScreenViewModel = viewModel,
-                        detailsScreenViewModel = detailsScreenViewModel,
-                        weatherRepo = weatherRepo,
-                        settingsViewModel = settingsViewModel,
-                        mapViewModel = mapViewModel,
-                        thresholdState = thresholdState,
-                        onThresholdEvent = settingsViewModel::onEvent,
-                        context = context
-                    )
+
+                        val state by viewModel.state.collectAsState()
+                        val thresholdState by settingsViewModel.state.collectAsState()
+                        Navigation(
+                            state = state,
+                            onEvent = viewModel::onEvent,
+                            homeScreenViewModel = viewModel,
+                            detailsScreenViewModel = detailsScreenViewModel,
+                            weatherRepo = weatherRepo,
+                            settingsViewModel = settingsViewModel,
+                            mapViewModel = mapViewModel,
+                            thresholdState = thresholdState,
+                            onThresholdEvent = settingsViewModel::onEvent,
+                            context = context
+                        )
 
 
 
-                    val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
-                    // Use the isNetworkAvailable value to update the UI based on network availability
-                    if (!isNetworkAvailable) {
-                        val toast = Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG)
-                        val toastLayout = layoutInflater.inflate(R.layout.toast, null)
 
-                        toast.view = toastLayout
-                        toast.duration = Toast.LENGTH_LONG
+                       val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
-                        val toastIcon = toastLayout.findViewById<ImageView>(R.id.toast_icon)
-                        toastIcon.setImageResource(R.drawable.info_24)
 
-                        val toastText = toastLayout.findViewById<TextView>(R.id.toast_text)
-                        toastText.text = "No internet connection"
-
-                        toast.show()
-                    }
-
+                    // Conditional display of NetworkSnackbar only when the network is unavailable
+                        if (!isNetworkAvailable) {
+                            NetworkSnackbar()
+                        }
 
                 }
             }
         }
     }
 }
+
+
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun NetworkSnackbar() {
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            snackbar = { data ->
+                Snackbar(
+                    snackbarData = data
+                )
+            }
+        )
+
+        LaunchedEffect(true) {
+            snackbarHostState.showSnackbar(message = "No internet connection")
+        }
+    }
+}
+
 
