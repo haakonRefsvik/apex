@@ -74,7 +74,7 @@ fun AddFavoriteDialogCorrect(
     AlertDialog(
         containerColor = main100,
         title = {
-            Text(text = "Legg til favoritt", color = favorite100)
+            Text(text = "Add favorite", color = favorite100)
         },
         text = {
             Column(
@@ -148,7 +148,7 @@ fun AddFavoriteDialogCorrect(
                     )
                 )
                 if (isNameAlreadyUsed) {
-                    Text("Dette navnet er allerede i bruk", color = Color.Red)
+                    Text("This name is already in use", color = Color.Red)
                 }
             }
         },
@@ -207,12 +207,12 @@ fun AddFavoriteDialogError(
             )
         },
         title = {
-            Text(text = "Legg til favoritt", color = favorite100)
+            Text(text = "Add favorite", color = favorite100)
         },
         text = {
             if (favorite != null) {
                 Text(
-                    "Denne lokasjonen er allerede lagret under navnet ${favorite.name}",
+                    "This location is already saved under the name ${favorite.name}",
                     color = favorite100
                 )
             }

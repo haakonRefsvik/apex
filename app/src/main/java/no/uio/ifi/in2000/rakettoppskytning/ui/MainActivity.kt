@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
@@ -15,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -35,8 +33,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
-
-import kotlin.time.toDuration
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -78,7 +74,7 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SettingsViewModel(settingsRepository, db.thresholdsDao) as T
+                return SettingsViewModel(settingsRepository, db.thresholdsDao, db.rocketSpecsDao) as T
             }
         }
     }
@@ -113,7 +109,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize db and thresholdRepository after context is available
         db = AppDatabase.getInstance(this)
-        settingsRepository = SettingsRepository(db.thresholdsDao)
+        settingsRepository = SettingsRepository(db.thresholdsDao, db.rocketSpecsDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
 
@@ -127,7 +123,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val state by viewModel.state.collectAsState()
-                    val thresholdState by settingsViewModel.state.collectAsState()
+                    val thresholdState by settingsViewModel.thresholdState.collectAsState()
+                    val rocketSpecsState by settingsViewModel.rocketspecsState.collectAsState()
                     Navigation(
                         state = state,
                         onEvent = viewModel::onEvent,
@@ -137,7 +134,9 @@ class MainActivity : ComponentActivity() {
                         settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
                         thresholdState = thresholdState,
-                        onThresholdEvent = settingsViewModel::onEvent,
+                        onThresholdEvent = settingsViewModel::onThresholdsEvent,
+                        rocketSpecState = rocketSpecsState,
+                        onRocketSpecsEvent = settingsViewModel::onRocketSpecsEvent,
                         context = context
                     )
 
