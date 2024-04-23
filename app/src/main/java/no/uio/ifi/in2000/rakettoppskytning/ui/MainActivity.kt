@@ -1,19 +1,25 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -37,7 +43,6 @@ import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
-
 
 @ExperimentalCoroutinesApi
 
@@ -141,30 +146,43 @@ class MainActivity : ComponentActivity() {
                     )
 
 
+                       val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
-                    val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
-                    // Use the isNetworkAvailable value to update the UI based on network availability
-                    if (!isNetworkAvailable) {
-                        val toast = Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG)
-                        val toastLayout = layoutInflater.inflate(R.layout.toast, null)
-
-                        toast.view = toastLayout
-                        toast.duration = Toast.LENGTH_LONG
-
-                        val toastIcon = toastLayout.findViewById<ImageView>(R.id.toast_icon)
-                        toastIcon.setImageResource(R.drawable.info_24)
-
-                        val toastText = toastLayout.findViewById<TextView>(R.id.toast_text)
-                        toastText.text = "No internet connection"
-
-                        toast.show()
-                    }
-
+                    // Conditional display of NetworkSnackbar only when the network is unavailable
+                        if (!isNetworkAvailable) {
+                            NetworkSnackbar()
+                        }
 
                 }
             }
         }
     }
 }
+
+
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun NetworkSnackbar() {
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            snackbar = { data ->
+                Snackbar(
+                    snackbarData = data
+                )
+            }
+        )
+
+        LaunchedEffect(true) {
+            snackbarHostState.showSnackbar(message = "No internet connection")
+        }
+    }
+}
+
 
