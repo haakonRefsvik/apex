@@ -150,10 +150,10 @@ fun Map(
                 true
             }
             val SOURCE_ID1 = "source1"
-            val SAMPLE_MODEL_URI_1 = "asset://whatball.glb"
+            val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
             val MODEL_ID_KEY = "model-id-key"
             val MODEL_ID_2 = "model-id-2"
-            val SAMPLE_MODEL_URI_2 = "asset://portalrocketV7.glb"
+            val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
             val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
 
 
@@ -163,10 +163,10 @@ fun Map(
             val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
                 simulateTrajectory(
                     burnTime = 12.0,
-                    launchAngle = 80.0,
+                    launchAngle = 90.0,
                     launchDir = 0.0,
                     altitude = 0.0,
-                    thrust = 4500.0,
+                    thrust = 5000.0,
                     apogee = 3500.0,
                     mass = 100.0,
                     dt = 0.1,
@@ -215,7 +215,7 @@ fun Map(
                                 +modelLayer(MODEL_ID_1, SOURCE_ID) {
                                     modelId(get(MODEL_ID_KEY))
                                     modelType(ModelType.LOCATION_INDICATOR)
-                                    modelScale(listOf(4.0, 4.0, 4.0))
+                                    modelScale(listOf(1.0, 1.0, 1.0))
                                     modelTranslation(
                                         listOf(
                                             point.x,
