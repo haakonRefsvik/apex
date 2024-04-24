@@ -119,7 +119,10 @@ class ExampleUnitTest {
     @Test
     fun testTri(){
         val levelDatas = hashMapOf<Double, LevelData>()
-        levelDatas[850.0] = LevelData(850.0)
+        val l1 = LevelData(850.0)
+        l1.uComponentValue = 10.0
+        l1.vComponentValue = -2.0
+        levelDatas[850.0] = l1
 
         val tra: List<Point> = simulateTrajectory(
             burnTime = 12.0,
@@ -128,12 +131,13 @@ class ExampleUnitTest {
             altitude = 0.0,
             thrust = 4500.0,
             apogee = 3500.0,
-            mass = 100.0,
+            mass = 200.0,
+            massDry = 100.0,
             dt = 0.1,
-            allLevels = levelDatas
+            allLevels = levelDatas,
         )
 
-        assertEquals(565, tra.size)
+        assertEquals(398, tra.size)
     }
 
     @Test
