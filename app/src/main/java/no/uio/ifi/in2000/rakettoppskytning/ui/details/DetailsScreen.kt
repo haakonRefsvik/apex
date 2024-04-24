@@ -422,6 +422,20 @@ fun DetailsScreen(
                                 ) {
                                     Text("Calculate ballistic trajectory")
                                 }
+                                Spacer(modifier = Modifier.height(30.dp))
+                                Button(
+                                    modifier = Modifier.width(360.dp),
+                                    colors = ButtonColors(
+                                        containerColor = firstButton0,
+                                        contentColor = firstButton100,
+                                        disabledContainerColor = firstButton0,
+                                        disabledContentColor = firstButton100
+                                    ),
+                                    onClick = { mapViewModel.makeTra.value = false },
+                                    enabled = mapViewModel.makeTra.value
+                                ) {
+                                    Text("Remove ballistic trajectory")
+                                }
                             }
                             item {
                                 Spacer(modifier = Modifier.height(50.dp))

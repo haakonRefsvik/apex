@@ -185,12 +185,13 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
 
 //    val levelDatas = hashMapOf<Double, LevelData>()
 //    levelDatas[850.0] = LevelData(850.0)
-
+    val launchDir = 60.0
+    val launchAngle = 85.0
     val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
         simulateTrajectory(
             burnTime = 12.0,
-            launchAngle = 85.0,
-            launchDir = 180.0,
+            launchAngle = launchAngle,
+            launchDir = launchDir,
             altitude = 0.0,
             thrust = 5000.0,
             apogee = 3500.0,
@@ -209,7 +210,7 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % 2 == 0) {
+                        } else if (index % 1 == 0) {
 
 
                             val MODEL_ID_1 = "model-id${index}"
@@ -248,7 +249,7 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                                         point.z
                                     )
                                 ) // Translation for Model 1
-                                modelRotation(listOf(0.0, 0.0, 90.0))
+                                modelRotation(listOf(0.0, 0.0, 0.0))
                                 modelCastShadows(false)
                                 modelReceiveShadows(false)
                                 modelRoughness(0.1)
@@ -286,14 +287,14 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
 
 
                     +modelLayer(MODEL_ID_2, SOURCE_ID1) {
-                        val s = tra.find { it.z in 1000.0..1100.0 }
+                        val s = tra.find { it.z in 600.0..700.0 }
                         modelId(get(MODEL_ID_KEY))
                         modelType(ModelType.COMMON_3D)
                         modelScale(listOf(200.0, 200.0, 200.0))
                         if (s != null) {
                             modelTranslation(listOf(s.x, s.y, s.z))
                         } // Translation for Model 2
-                        modelRotation(listOf(-6.5, 0.0, 0.0))
+                        modelRotation(listOf(0.0, 0.0, launchDir))
                         modelCastShadows(true)
                         modelReceiveShadows(true)
                         modelRoughness(0.1)
