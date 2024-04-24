@@ -53,6 +53,7 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
 fun convertMetersToLatLon(
     xMeters: Double,
     yMeters: Double,
+    zMeters: Pair<Double, Double>,
     startsPos: Pair<Double, Double>
 ): Pair<Double, Double> {
     // THIS FUNCTION IS INACCURATE BUT WORKS
@@ -83,6 +84,10 @@ fun getNearestLevelData(allLevels: HashMap<Double, LevelData>, altitudeMeters: D
     return nearest
 }
 
+fun isCloseToZero(number: Double, threshold: Double = 1e-10): Boolean {
+    return abs(number) < threshold
+}
+
 fun simulateTrajectory(
     burnTime: Double,
     launchAngle: Double,
@@ -91,6 +96,7 @@ fun simulateTrajectory(
     thrust: Double,
     apogee: Double,
     mass: Double,
+    massDry: Double,
     dt: Double,
     allLevels: HashMap<Double, LevelData>,
     vAfterParachute: Double = 8.6
@@ -113,6 +119,10 @@ fun simulateTrajectory(
     var parachuteDeployed = false
     var timeStep = dt
 
+    val massDifference = mass - massDry
+    var massLossPerSecond = (massDifference / burnTime)
+    var currentMass = mass
+
     var burnTimeLeft = burnTime
     var ax: Double
     var ay: Double
@@ -121,19 +131,37 @@ fun simulateTrajectory(
     val list = mutableListOf<Point>()
 
     while (z >= altitude) {
+
+        val p = Point(x, y, z)
+        println(p)
+        list.add(p)
+
         if (parachuteDeployed) {
             timeStep = 1.0  // only calculate each second after parachute is deployed
         }
         secondsUsed += timeStep
 
         if (burnTimeLeft >= 0 && z <= apogee) {
-            ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / mass
-            ay = thrust * cos(launchAngleRad) * cos(launchDirRad) / mass
-            az = thrust * sin(launchAngleRad) / mass - g
+            ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / currentMass
+            if (isCloseToZero(ax)) {
+                ax = 0.0
+            }
+            ay = thrust * cos(launchAngleRad) * cos(launchDirRad) / currentMass
+            if (isCloseToZero(ay)) {
+                ay = 0.0
+            }
+            az = thrust * sin(launchAngleRad) / currentMass - g
             burnTimeLeft -= timeStep
+
+            if (burnTime > 0) {
+                currentMass -= (massLossPerSecond * dt) // decrease mass
+            }
+
         } else {
-            ax = 0.0
-            ay = 0.0
+            ax = getNearestLevelData(altitudeMeters = z, allLevels = allLevels)?.vComponentValue
+                ?: 0.0
+            ay = getNearestLevelData(altitudeMeters = z, allLevels = allLevels)?.uComponentValue
+                ?: 0.0
             az = -g
 
             val v = sqrt(vx.pow(2.0) + vy.pow(2.0) + vz.pow(2.0))
@@ -141,9 +169,9 @@ fun simulateTrajectory(
             val fDragY = -0.5 * rho * cd * v * vy
             val fDragZ = -0.5 * rho * cd * v * vz
 
-            ax += fDragX / mass
-            ay += fDragY / mass
-            az += fDragZ / mass
+            ax += fDragX / currentMass
+            ay += fDragY / currentMass
+            az += fDragZ / currentMass
         }
 
         vx += ax * timeStep
@@ -170,11 +198,7 @@ fun simulateTrajectory(
             z = apogee
         }
 
-        val p = Point(x, y, z)
-        println(p)
-        list.add(p)
     }
 
     return list
 }
-

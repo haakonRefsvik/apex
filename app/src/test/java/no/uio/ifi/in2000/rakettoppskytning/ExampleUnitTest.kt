@@ -1,9 +1,15 @@
 package no.uio.ifi.in2000.rakettoppskytning
+
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getLevelRatios
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.getForecast
+import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
@@ -24,7 +30,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun altitudeTest(){
+    fun altitudeTest() {
 
         val level = LevelData(10000.0)
         level.tempValueKelvin = (-1.4 + 273.15)
@@ -36,7 +42,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testShearWind(){
+    fun testShearWind() {
 
         val expected = 19.9483
 
@@ -50,6 +56,11 @@ class ExampleUnitTest {
         val result = getShearWind(upperLevel, lowerLevel)
 
         assertEquals(expected, result, 0.1)
+    }
+
+    @Test
+    fun testFavoriteCard() {
+        assertEquals(true, true)
     }
 
     /*
@@ -100,7 +111,7 @@ class ExampleUnitTest {
      */
 
     @Test
-    fun testWeekDayName(){
+    fun testWeekDayName() {
         val result = getDayName("2024-04-10", 0)
         val expected = "Wednesday"
 
@@ -108,7 +119,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testDayAndMonth(){
+    fun testDayAndMonth() {
         val date = "2022-08-15T12:34:56Z"
         val result = getDayAndMonth(date)
         val expected = "15.08"
@@ -117,7 +128,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testTri(){
+    fun testTri() {
         val levelDatas = hashMapOf<Double, LevelData>()
         levelDatas[850.0] = LevelData(850.0)
 
@@ -137,14 +148,15 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testGetNearestLevel(){
+    fun testGetNearestLevel() {
         val l0 = LevelData(101325.5)
         l0.tempValueKelvin = 273.0
         val l1 = LevelData(85000.0)
         l1.tempValueKelvin = 273.0
         val l2 = LevelData(75000.0)
         l2.tempValueKelvin = 273.0
-        val h = hashMapOf<Double, LevelData>(Pair(101325.5, l0), Pair(85000.0, l1), Pair(75000.0, l2))
+        val h =
+            hashMapOf<Double, LevelData>(Pair(101325.5, l0), Pair(85000.0, l1), Pair(75000.0, l2))
 
         val res1 = getNearestLevelData(h, 0.0)
 
@@ -156,7 +168,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testRatios(){
+    fun testRatios() {
         val l1 = 600.0
         val l2 = 1400.0
 
@@ -166,7 +178,7 @@ class ExampleUnitTest {
 
 
     @Test
-    fun findLayers(){
+    fun findLayers() {
         val l1 = LevelData(85000.0)
         l1.tempValueKelvin = 273.0
         val l0 = LevelData(101325.5)

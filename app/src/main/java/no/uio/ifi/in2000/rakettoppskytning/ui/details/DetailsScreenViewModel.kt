@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -11,6 +12,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.HistoricalDataUIState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 
 class DetailsScreenViewModel(repo: WeatherRepository) : ViewModel() {
+    val time = mutableStateOf("")
 
     val weatherUiState: StateFlow<WeatherUiState> =
         repo.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(

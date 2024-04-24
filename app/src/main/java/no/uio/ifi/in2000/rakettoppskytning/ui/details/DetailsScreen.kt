@@ -80,6 +80,7 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
@@ -99,9 +100,11 @@ fun DetailsScreen(
     navController: NavHostController,
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
+    mapViewModel: MapViewModel
 ) {
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val time: String = backStackEntry ?: ""
+    detailsScreenViewModel.time.value = backStackEntry ?: ""
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
 
     weatherUiState.weatherAtPos.weatherList.forEach {
@@ -228,7 +231,6 @@ fun DetailsScreen(
                 }
 
 
-
                 val listState = rememberLazyListState()
 
                 LazyColumnScrollbar(
@@ -261,14 +263,15 @@ fun DetailsScreen(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                    LazyColumn(state = listState) {
+                        LazyColumn(state = listState) {
                             item {
                                 Spacer(modifier = Modifier.height(50.dp))
 
                                 weatherNow.verticalProfile?.let {
                                     ShearWindCard(
                                         verticalProfile = it,
-                                        statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0
+                                        statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name]
+                                            ?: 0.0
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
@@ -296,7 +299,8 @@ fun DetailsScreen(
                                         desc = "Humidity",
                                         value = "${fcData.instant.details.relativeHumidity} %",
                                         info = "Relative humidity at 2m above the ground in",
-                                        statusCode = statusMap[ThresholdType.MAX_HUMIDITY.name]?: 0.0
+                                        statusCode = statusMap[ThresholdType.MAX_HUMIDITY.name]
+                                            ?: 0.0
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 
@@ -305,7 +309,8 @@ fun DetailsScreen(
                                         desc = "Dew Point",
                                         value = "${fcData.instant.details.dewPointTemperature} ℃",
                                         info = "Temperature where dew starts to form",
-                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
+                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name]
+                                            ?: 0.0
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
@@ -348,7 +353,8 @@ fun DetailsScreen(
                                     var descText = "Amount of surrounding area covered in fog"
                                     var titleText = "Fog"
                                     if (fcData.instant.details.fogAreaFraction == null) {
-                                        valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
+                                        valueText =
+                                            "${fcData.instant.details.cloudAreaFractionLow} %"
                                         descText = "Cloud cover lower than 2000m altitude"
                                         titleText = "Low clouds"
                                     }
@@ -363,7 +369,7 @@ fun DetailsScreen(
 
                                     var info = "Moisture in the ground"
 
-                                    if(weatherNow.soilMoisture != null){
+                                    if (weatherNow.soilMoisture != null) {
                                         info = getSoilDescription(weatherNow.soilMoisture)
                                     }
 
@@ -412,7 +418,7 @@ fun DetailsScreen(
                                         disabledContainerColor = firstButton0,
                                         disabledContentColor = firstButton100
                                     ),
-                                    onClick = { /*TODO*/ }
+                                    onClick = { mapViewModel.makeTra.value = true }
                                 ) {
                                     Text("Calculate ballistic trajectory")
                                 }

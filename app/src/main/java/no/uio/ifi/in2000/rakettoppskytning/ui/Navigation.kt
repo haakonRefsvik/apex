@@ -50,6 +50,7 @@ fun Navigation(
                 onEvent,
                 mapViewModel,
                 settingsViewModel,
+                detailsScreenViewModel,
                 context
             )
         }
@@ -62,7 +63,8 @@ fun Navigation(
                 DetailsScreen(
                     navController = navController,
                     backStackEntry = data,
-                    detailsScreenViewModel = detailsScreenViewModel
+                    detailsScreenViewModel = detailsScreenViewModel,
+                    mapViewModel = mapViewModel
                 )
             }
         }
