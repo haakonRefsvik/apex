@@ -51,30 +51,10 @@ private const val oneHundredPercentDecimal = 1f
 
 private const val isEmpty = 0
 
-/**
- * A custom scrollbar implementation for `LazyColumn` in Jetpack Compose, supporting various customization options.
- *
- * This Composable function adds a customizable scrollbar to a LazyColumn, with features like dynamic visibility,
- * drag to scroll, customizable thumb size, and appearance.
- *
- * @param listState The state object of the LazyList this scrollbar is connected to. This is used to synchronize
- * the scrollbar's position and size with the list's current scroll state.
- * @param modifier [Modifier] to apply to this scrollbar.
- * @param rightSide Determines if the scrollbar is to be displayed on the right side. Default is `true`.
- * @param alwaysShowScrollBar When `true`, the scrollbar remains visible at all times. Otherwise, it shows only
- * during scrolling.
- * @param thickness The thickness of the scrollbar.
- * @param padding Padding around the scrollbar.
- * @param thumbMinHeight The minimum height of the thumb within the scrollbar to ensure it's always touch-friendly.
- * @param thumbColor The color of the scrollbar thumb.
- * @param thumbSelectedColor The color of the scrollbar thumb when it is being dragged.
- * @param thumbShape The shape of the scrollbar thumb.
- * @param selectionMode Specifies how the thumb can be selected or dragged. Can be one of [ScrollbarSelectionMode].
- * @param selectionActionable Determines when the scrollbar is actionable, controlled by [ScrollbarSelectionActionable].
- * @param hideDelay The delay duration before the scrollbar fades out after interaction. Relevant when
- * [alwaysShowScrollBar] is `false`.
- * @param indicatorContent Optional Composable content displayed alongside the thumb, allowing for custom indicators
- * at the thumb's position.
+/*
+Kerry Bisset
+
+Jetpack Compose Multiplatform Scrollbar/Scrolling
  */
 @Composable
 fun LazyColumnScrollbar(
@@ -521,11 +501,7 @@ private fun determineVisibilityState(
     else VisibilityState.PartiallyVisible
 }
 
-/**
- * Shows a scroll arrow.
- *
- * @param upIndication Whether the arrow should be displayed point up; True for pointing up.
- */
+
 @Composable
 internal fun DisplayIndicator(
     upIndication: Boolean,
@@ -541,33 +517,8 @@ internal fun DisplayIndicator(
         modifier = modifier
             .fillMaxWidth(1f)
             .height(IntrinsicSize.Max),
-        //contentAlignment = if (upIndication) Alignment.TopCenter else Alignment.BottomCenter,
     ) {
-        //Box(
-            /*Modifier.height(indicatorHeight).fillMaxWidth().background(
-                if (upIndication) {
-                    Brush.verticalGradient(
-                        listOf(
-                            indicatorColor.copy(alpha = alpha),
-                            indicatorColor.copy(alpha = alpha * .75f),
-                            //
-                            // Color.Transparent
-                        ),
-                        startY = indicatorHeight.value * (ratio)
-                    )
-                } else {
-                    Brush.verticalGradient(
-                        listOf(
-                            //Color.Transparent,
-                            indicatorColor.copy(alpha = alpha * .75f),
-                            indicatorColor.copy(alpha = alpha)
-                        ),
-                        startY = indicatorHeight.value * ratio
-                    )
-                }
-            )
-        )*/
-        //graphicIndicator.invoke(graphicModifier, alpha)
+
     }
 }
 

@@ -71,6 +71,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
@@ -110,7 +112,9 @@ fun ThresholdScreen(
     settingsViewModel: SettingsViewModel,
     weatherRepository: WeatherRepository,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
-    thresholdState: ThresholdState
+    onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
+    thresholdState: ThresholdState,
+    rocketSpecState: RocketSpecState
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.settingscheck1
@@ -178,7 +182,7 @@ fun ThresholdScreen(
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket",
+                            contentDescription = "Rocket",
                             tint = main0,
 
                             )
@@ -298,7 +302,7 @@ fun ThresholdScreen(
                                     modifier = Modifier
                                         .size(30.dp),
                                     painter = painterResource(R.drawable.trykk),
-                                    contentDescription = "trykk",
+                                    contentDescription = "tap",
                                     tint = settings0
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -382,7 +386,7 @@ fun ThresholdScreen(
                                     modifier = Modifier
                                         .size(30.dp),
                                     painter = painterResource(R.drawable.rakett_pin2),
-                                    contentDescription = "trykk",
+                                    contentDescription = "tap",
                                     tint = settings0
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -453,7 +457,7 @@ fun ThresholdScreen(
 
                     item {
                         ThresholdCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.BURN_TIME.ordinal],
                             title = "Burn time",
                             drawableId = R.drawable.rakett_pin2,
                             desc = "Duration of engine burn",
@@ -465,8 +469,8 @@ fun ThresholdScreen(
                     }
                     item {
                         ThresholdCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
-                            title = "Weight",
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.DRY_WEIGHT.ordinal],
+                            title = "Dry weight",
                             drawableId = R.drawable.rakett_pin2,
                             desc = "",
                             suffix = "Kg",
@@ -477,7 +481,19 @@ fun ThresholdScreen(
                     }
                     item {
                         ThresholdCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.WET_WEIGHT.ordinal],
+                            title = "Wet weight",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "",
+                            suffix = "Kg",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.DROP_TIME.ordinal],
                             title = "Drop time",
                             drawableId = R.drawable.rakett_pin2,
                             desc = "",
@@ -498,7 +514,7 @@ fun ThresholdScreen(
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
                 settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
-                settingsViewModel.updateRocketSpecValues()
+                settingsViewModel.updateRocketSpecValues(onRocketSpecsEvent)
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
             }
         }

@@ -12,6 +12,9 @@ import androidx.navigation.navArgument
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
@@ -35,6 +38,8 @@ fun Navigation(
     detailsScreenViewModel: DetailsScreenViewModel,
     thresholdState: ThresholdState,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
+    rocketSpecState: RocketSpecState,
+    onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
     context: Context
 ) {
 
@@ -74,7 +79,9 @@ fun Navigation(
                 settingsViewModel,
                 weatherRepo,
                 onThresholdEvent,
-                thresholdState
+                onRocketSpecsEvent,
+                thresholdState,
+                rocketSpecState
             )
         }
     }
