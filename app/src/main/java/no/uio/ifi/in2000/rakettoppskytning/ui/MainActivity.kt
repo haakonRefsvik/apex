@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -72,6 +74,7 @@ import kotlin.time.toDuration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import no.uio.ifi.in2000.rakettoppskytning.network.NetworkSnackbar
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -89,6 +92,7 @@ class MainActivity : ComponentActivity() {
     private val weatherRepo: WeatherRepository by lazy {
         WeatherRepository(settingsRepository, gribRepository)
     }
+
 
     private val detailsScreenViewModel by lazy {
         DetailsScreenViewModel(weatherRepo)
@@ -153,14 +157,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
+                val openFullDialogCustom = remember { mutableStateOf(true) }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
-                        val state by viewModel.state.collectAsState()
-                        val thresholdState by settingsViewModel.state.collectAsState()
-                        Navigation(
+                    val state by viewModel.state.collectAsState()
+                    val thresholdState by settingsViewModel.state.collectAsState()
+
+                    Navigation(
                             state = state,
                             onEvent = viewModel::onEvent,
                             homeScreenViewModel = viewModel,
@@ -171,19 +179,16 @@ class MainActivity : ComponentActivity() {
                             thresholdState = thresholdState,
                             onThresholdEvent = settingsViewModel::onEvent,
                             context = context
+
                         )
 
 
 
 
-
-                       val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
-
-
-                    // Conditional display of NetworkSnackbar only when the network is unavailable
-                        if (!isNetworkAvailable) {
+                      if (!isNetworkAvailable) {
                             NetworkSnackbar()
                         }
+
 
                 }
             }
@@ -192,28 +197,5 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun NetworkSnackbar() {
-
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter),
-            snackbar = { data ->
-                Snackbar(
-                    snackbarData = data
-                )
-            }
-        )
-
-        LaunchedEffect(true) {
-            snackbarHostState.showSnackbar(message = "No internet connection")
-        }
-    }
-}
 
 
