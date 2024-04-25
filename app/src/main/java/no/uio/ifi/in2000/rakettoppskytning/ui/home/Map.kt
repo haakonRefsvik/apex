@@ -251,7 +251,7 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                                         point.y,
                                         point.z
                                     )
-                                ) // Translation for Model 1
+                                )
                                 modelRotation(listOf(0.0, 0.0, 0.0))
                                 modelCastShadows(true)
                                 modelReceiveShadows(true)

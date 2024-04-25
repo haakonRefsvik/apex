@@ -47,6 +47,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -77,6 +78,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
@@ -113,12 +115,14 @@ fun ThresholdScreen(
     weatherRepository: WeatherRepository,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
     onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
     thresholdState: ThresholdState,
     rocketSpecState: RocketSpecState
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.settingscheck1
     val settings2check = settingsViewModel.settingscheck2
+    val scope = rememberCoroutineScope()
 
     Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
@@ -169,7 +173,10 @@ fun ThresholdScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
@@ -179,7 +186,10 @@ fun ThresholdScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.expand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rocket",
@@ -227,20 +237,20 @@ fun ThresholdScreen(
 
             MultiChoiceSegmentedButtonRow(modifier = Modifier.width(330.dp)) {
                 SegmentedButton(
-                    colors =  SegmentedButtonColors(
+                    colors = SegmentedButtonColors(
                         activeContainerColor = settings25,
-                        activeContentColor= settings50,
-                        activeBorderColor= settings50,
-                        inactiveContainerColor= settings100,
-                        inactiveContentColor= settings50,
-                        inactiveBorderColor= settings50,
-                        disabledActiveContainerColor= settings50,
-                        disabledActiveContentColor= settings50,
-                        disabledActiveBorderColor= settings50,
-                        disabledInactiveContainerColor= settings50,
-                        disabledInactiveContentColor= settings50,
-                        disabledInactiveBorderColor= settings50,
-                        ),
+                        activeContentColor = settings50,
+                        activeBorderColor = settings50,
+                        inactiveContainerColor = settings100,
+                        inactiveContentColor = settings50,
+                        inactiveBorderColor = settings50,
+                        disabledActiveContainerColor = settings50,
+                        disabledActiveContentColor = settings50,
+                        disabledActiveBorderColor = settings50,
+                        disabledInactiveContainerColor = settings50,
+                        disabledInactiveContentColor = settings50,
+                        disabledInactiveBorderColor = settings50,
+                    ),
                     checked = settings1check.value,
                     onCheckedChange = {
                         settings1check.value = true
@@ -253,19 +263,19 @@ fun ThresholdScreen(
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 SegmentedButton(
-                    colors =  SegmentedButtonColors(
+                    colors = SegmentedButtonColors(
                         activeContainerColor = settings25,
-                        activeContentColor= settings50,
-                        activeBorderColor= settings50,
-                        inactiveContainerColor= settings100,
-                        inactiveContentColor= settings50,
-                        inactiveBorderColor= settings50,
-                        disabledActiveContainerColor= settings50,
-                        disabledActiveContentColor= settings50,
-                        disabledActiveBorderColor= settings50,
-                        disabledInactiveContainerColor= settings50,
-                        disabledInactiveContentColor= settings50,
-                        disabledInactiveBorderColor= settings50,
+                        activeContentColor = settings50,
+                        activeBorderColor = settings50,
+                        inactiveContainerColor = settings100,
+                        inactiveContentColor = settings50,
+                        inactiveBorderColor = settings50,
+                        disabledActiveContainerColor = settings50,
+                        disabledActiveContentColor = settings50,
+                        disabledActiveBorderColor = settings50,
+                        disabledInactiveContainerColor = settings50,
+                        disabledInactiveContentColor = settings50,
+                        disabledInactiveBorderColor = settings50,
                     ),
                     checked = settings2check.value,
                     onCheckedChange = {

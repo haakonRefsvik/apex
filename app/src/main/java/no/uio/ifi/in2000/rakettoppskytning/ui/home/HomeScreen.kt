@@ -63,7 +63,7 @@ fun HomeScreen(
             TopAppBar(navController)
         },
         bottomBar = {
-            BottomAppBar(navController)
+            BottomAppBar(navController, homeScreenViewModel)
         }
     ) { innerPadding ->
         Box(

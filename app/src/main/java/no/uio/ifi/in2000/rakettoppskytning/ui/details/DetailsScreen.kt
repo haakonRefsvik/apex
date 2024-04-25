@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -44,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -61,6 +63,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
@@ -80,6 +83,7 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
@@ -94,12 +98,14 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
+@SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     navController: NavHostController,
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
+    homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel
 
 ) {
@@ -116,7 +122,7 @@ fun DetailsScreen(
 
     }
 
-
+    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
@@ -167,7 +173,10 @@ fun DetailsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
@@ -176,7 +185,10 @@ fun DetailsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.expand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
@@ -420,7 +432,11 @@ fun DetailsScreen(
                                         disabledContainerColor = firstButton0,
                                         disabledContentColor = firstButton100
                                     ),
-                                    onClick = { mapViewModel.makeTra.value = true }
+                                    onClick = {
+                                        mapViewModel.makeTra.value = true
+                                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                                        navController.popBackStack("HomeScreen", false)
+                                    }
                                 ) {
                                     Text("Calculate ballistic trajectory")
                                 }

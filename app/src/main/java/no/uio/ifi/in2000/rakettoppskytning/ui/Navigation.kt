@@ -69,6 +69,7 @@ fun Navigation(
                     navController = navController,
                     backStackEntry = data,
                     detailsScreenViewModel = detailsScreenViewModel,
+                    homeScreenViewModel = homeScreenViewModel,
                     mapViewModel = mapViewModel
                 )
             }
@@ -80,6 +81,7 @@ fun Navigation(
                 weatherRepo,
                 onThresholdEvent,
                 onRocketSpecsEvent,
+                homeScreenViewModel,
                 thresholdState,
                 rocketSpecState
             )
