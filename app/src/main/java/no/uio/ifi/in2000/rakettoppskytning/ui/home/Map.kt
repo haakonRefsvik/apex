@@ -181,10 +181,14 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
 
     }
     val allLevels: HashMap<Double, LevelData> =
-        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: hashMapOf()
+        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: hashMapOf(
+            Pair(
+                850.0,
+                LevelData(850.0)
+            )
+        )
 
-//    val levelDatas = hashMapOf<Double, LevelData>()
-//    levelDatas[850.0] = LevelData(850.0)
+
     val launchDir = 0.0
     val launchAngle = 85.0
     val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
@@ -336,28 +340,17 @@ fun calculatePitch(
     start: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point,
     end: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 ): Pair<Double, Double> {
-    // Calculate differences between end and start points
     val dx = end.x - start.x
     val dy = end.y - start.y
     val dz = end.z - start.z
-
-
     val distance = sqrt(dx * dx + dy * dy + dz * dz)
-
-
     val pitchX = atan2(dy, distance)
-
-
-    val projection = sqrt(dx * dx + dz * dz)
-
-
     val pitchY = atan2(-dx, dz)
-    Log.d("asd", Pair(pitchX, pitchY).toString())
     return Pair(pitchX, pitchY)
 }
 
 fun yay(number: Double): Double {
-    if (number in 85.0..100.0) {
+    if (number in 85.0..95.0) {
         return -.68
     } else if (number in 80.0..85.0) {
         return -.73
@@ -365,8 +358,22 @@ fun yay(number: Double): Double {
         return -.81
     } else if (number in 70.0..75.0) {
         return -.91
+    } else if (number in 65.0..70.0) {
+        return -1.01
+    } else if (number in 60.0..65.0) {
+        return -1.18
+    } else if (number in 55.0..60.0) {
+        return -1.36
+    } else if (number in 50.0..55.0) {
+        return -1.46
+    } else if (number in 45.0..50.0) {
+        return -1.86
+    } else if (number in 40.0..45.0) {
+        return -2.23
+    } else if (number in 35.0..40.0) {
+        return -2.73
     }
 
 
-    return -2.0
+    return -0.0
 }
