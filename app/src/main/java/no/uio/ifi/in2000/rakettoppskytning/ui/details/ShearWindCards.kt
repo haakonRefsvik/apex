@@ -283,7 +283,7 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
     val lineColor: Int = Color.Black.copy(alpha = 0.2f).toArgb()
     val modelProducer = remember { CartesianChartModelProducer.build() }
     LaunchedEffect(Unit) { modelProducer.tryRunTransaction {
-        lineSeries { series(x = xData, yData) }
+        lineSeries { series(x = xData, y= yData) }
     }
     }
 
