@@ -55,8 +55,8 @@ class VerticalProfile(
         return verticalProfileMap.keys.sortedDescending().toDoubleArray()
     }
 
-    fun getAllLevelDatas(): HashMap<Double, LevelData> {
-        return verticalProfileMap
+    fun getAllLevelDatas(): List<LevelData> {
+        return verticalProfileMap.values.toList()
     }
 
     private fun findLevel(level: Double): LevelData {

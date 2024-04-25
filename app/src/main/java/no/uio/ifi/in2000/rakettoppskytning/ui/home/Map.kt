@@ -180,12 +180,11 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
         }
 
     }
-    val allLevels: HashMap<Double, LevelData> =
-        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: hashMapOf(
-            Pair(
-                850.0,
-                LevelData(850.0)
-            )
+    val allLevels: List<LevelData> =
+        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: listOf(
+
+            LevelData(850.0)
+
         )
 
 
@@ -199,15 +198,13 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
             altitude = 0.0,
             thrust = 5000.0,
             apogee = 3500.0,
-            mass = 200.0,
+            mass = 130.0,
             dt = 0.1,
             allLevels = allLevels,
             massDry = 100.0
         )
     val s = tra.find { it.z in 600.0..1000.0 }
     val hep = tra.indexOf(s)
-    Log.d("asfds", s.toString())
-    Log.d("asfd", tra[hep + 20].toString())
     var pitch = Pair(0.0, 0.0)
     if (s != null) {
         pitch = calculatePitch(s, tra[hep + 20])
