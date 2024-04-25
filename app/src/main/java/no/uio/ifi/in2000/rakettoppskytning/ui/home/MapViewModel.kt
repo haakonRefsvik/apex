@@ -70,7 +70,7 @@ class MapViewModel() : ViewModel() {
             val newCameraState = CameraOptions.Builder()
                 .center(Point.fromLngLat(lon, lat))
                 .pitch(70.0)
-                .zoom(11.0)
+                .zoom(12.0)
                 .build()
             _cam.value = newCameraState
 
