@@ -127,19 +127,8 @@ fun Map(
             mapView.mapboxMap.styleDataLoadedEvents
 
             mapView.mapboxMap.addOnMapClickListener {
-                mapViewModel.moveMapCamera(it.latitude(), it.longitude())
-
-                mapView.postDelayed(
-                    {
-                        // Lets the camera move before updating the pin
-                        mapViewModel.lat.value = it.latitude()
-                        mapViewModel.lon.value = it.longitude()
-                    },
-                    0
-                )
-
-
-
+                mapViewModel.lat.value = it.latitude()
+                mapViewModel.lon.value = it.longitude()
 
                 true
             }
@@ -174,12 +163,6 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
-    mapViewModel.mapViewportState.flyTo(
-        cameraOptions = CameraOptions.Builder()
-            .pitch(70.0)
-            .zoom(12.0)
-
-            .build())
 
     weatherUiState.weatherAtPos.weatherList.forEach {
         if (it.date == time) {
@@ -231,7 +214,6 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                         if (point.z < 0) {
                             return@forEachIndexed
                         } else if (index % 2 == 0) {
-                            Log.d("what is", point.toString())
 
 
                             val MODEL_ID_1 = "model-id${index}"
@@ -271,8 +253,8 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                                     )
                                 ) // Translation for Model 1
                                 modelRotation(listOf(0.0, 0.0, 0.0))
-                                modelCastShadows(false)
-                                modelReceiveShadows(false)
+                                modelCastShadows(true)
+                                modelReceiveShadows(true)
                                 modelRoughness(0.1)
                             }
                         }

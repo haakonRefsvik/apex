@@ -205,7 +205,7 @@ fun InputField(
         Spacer(modifier = Modifier.height(20.dp))
         Row {
             Log.d("moveCam -1: ", "lat: ${lat} og lon: ${lon}")
-            mapViewModel.moveMapCamera(lat, lon)
+
 
             OutlinedButton(modifier = Modifier.width(155.dp),
                 border = BorderStroke(2.dp, firstButton0),
@@ -243,7 +243,7 @@ fun InputField(
                 onClick = {
                     controller?.hide()
                     homeScreenViewModel.getWeatherByCord(lat, lon)
-                    mapViewModel.moveMapCamera(lat, lon)
+
 
                     scope.launch {
                         delay(1000)
@@ -294,7 +294,7 @@ fun InputField(
 
                             controller?.hide()
                             homeScreenViewModel.getWeatherByCord(lat, lon)
-                            mapViewModel.moveMapCamera(lat, lon)
+
 
                             scope.launch {
                                 delay(1000)
