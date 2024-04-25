@@ -43,6 +43,7 @@ class MapViewModel() : ViewModel() {
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
     val favorite = _favorite
+    val makeTra = mutableStateOf(false)
 
     private val cam: CameraOptions = CameraOptions.Builder()
         .center(Point.fromLngLat(initLon, initLat))

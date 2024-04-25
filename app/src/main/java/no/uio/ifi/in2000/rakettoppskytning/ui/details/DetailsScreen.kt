@@ -99,6 +99,7 @@ fun DetailsScreen(
     navController: NavHostController,
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
+    mapViewModel: MapViewModel
 
 ) {
         val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
@@ -406,21 +407,35 @@ fun DetailsScreen(
                                         )
                                     }
                                     Spacer(modifier = Modifier.height(30.dp))
-                                    Button(modifier = Modifier.width(360.dp),
-                                        colors = ButtonColors(
-                                            containerColor = firstButton0,
-                                            contentColor = firstButton100,
-                                            disabledContainerColor = firstButton0,
-                                            disabledContentColor = firstButton100
-                                        ),
-                                        onClick = { /*TODO*/ }
-                                    ) {
-                                        Text("Calculate ballistic trajectory")
-                                    }
+                                Button(modifier = Modifier.width(360.dp),
+                                    colors = ButtonColors(
+                                        containerColor = firstButton0,
+                                        contentColor = firstButton100,
+                                        disabledContainerColor = firstButton0,
+                                        disabledContentColor = firstButton100
+                                    ),
+                                    onClick = { mapViewModel.makeTra.value = true }
+                                ) {
+                                    Text("Calculate ballistic trajectory")
                                 }
-                                item {
-                                    Spacer(modifier = Modifier.height(50.dp))
+                                Spacer(modifier = Modifier.height(30.dp))
+                                Button(
+                                    modifier = Modifier.width(360.dp),
+                                    colors = ButtonColors(
+                                        containerColor = firstButton0,
+                                        contentColor = firstButton100,
+                                        disabledContainerColor = firstButton0,
+                                        disabledContentColor = firstButton100
+                                    ),
+                                    onClick = { mapViewModel.makeTra.value = false },
+                                    enabled = mapViewModel.makeTra.value
+                                ) {
+                                    Text("Remove ballistic trajectory")
                                 }
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(50.dp))
+                            }
                             }
                         }
                     }

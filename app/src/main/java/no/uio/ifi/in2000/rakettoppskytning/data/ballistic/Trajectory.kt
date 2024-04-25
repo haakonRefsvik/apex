@@ -255,4 +255,3 @@ fun simulateTrajectory(
 
     return list
 }
-

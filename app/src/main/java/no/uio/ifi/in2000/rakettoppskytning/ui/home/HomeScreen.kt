@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
@@ -44,6 +45,7 @@ fun HomeScreen(
     onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel,
+    detailsScreenViewModel: DetailsScreenViewModel,
     context: Context
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
@@ -111,7 +113,7 @@ fun HomeScreen(
                         })
                 }) {
 
-                Map(homeScreenViewModel, mapViewModel)
+                Map(detailsScreenViewModel = detailsScreenViewModel, mapViewModel)
 
             }
         }

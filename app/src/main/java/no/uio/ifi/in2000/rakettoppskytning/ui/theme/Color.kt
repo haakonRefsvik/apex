@@ -30,7 +30,7 @@ val weatherCard0 = Color(0xFFFFFFFF) // WeatherCard-content
 val favorite100 = Color(0xFFFFFFFF) // addFavoriteDialog-container og AlertDialog-container
 val favorite0 = Color(0xFF000000) // AddFavoriteDialog-content og AlertDialog-content
 
-val favoriteCard100 = Color(0xFFFCA311) // FavoriteCard-border
+val favoriteCard100 = Color(0xFFFFFFFF) // FavoriteCard-border
 val favoriteCard50 = Color(0xFF494B5E) // FavoriteCard-container
 val favoriteCard0 = Color(0xFF000000) // FavoriteCard-content
 
