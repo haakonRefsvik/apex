@@ -17,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
@@ -173,6 +174,12 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
+    mapViewModel.mapViewportState.flyTo(
+        cameraOptions = CameraOptions.Builder()
+            .pitch(70.0)
+            .zoom(12.0)
+
+            .build())
 
     weatherUiState.weatherAtPos.weatherList.forEach {
         if (it.date == time) {
@@ -180,6 +187,9 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
         }
 
     }
+
+    Log.d("mais", detailsScreenViewModel.time.value)
+
     val allLevels: List<LevelData> =
         weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: listOf(
 

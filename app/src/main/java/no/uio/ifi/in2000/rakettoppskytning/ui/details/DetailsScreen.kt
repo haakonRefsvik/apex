@@ -106,6 +106,7 @@ fun DetailsScreen(
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val time: String = backStackEntry ?: ""
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
+    detailsScreenViewModel.time.value = time
 
     weatherUiState.weatherAtPos.weatherList.forEach {
         if (it.date == time) {
