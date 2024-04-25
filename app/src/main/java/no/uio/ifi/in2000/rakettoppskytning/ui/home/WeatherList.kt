@@ -199,12 +199,15 @@ fun WeatherList(
 
                     item {
                         forecast.weatherAtPos.weatherList.forEach { input ->
-                            val daysAhead = getNumberOfDaysAhead(input.date)
                             var precipText =
                                 "${input.series.data.next1Hours?.details?.precipitationAmount} mm"
                             if (input.series.data.next1Hours == null) {
                                 precipText =
                                     "${input.series.data.next6Hours?.details?.precipitationAmount} mm"
+
+                                if (input.series.data.next6Hours?.details?.precipitationAmount == null){
+                                    precipText = "N/A"
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(7.5.dp))

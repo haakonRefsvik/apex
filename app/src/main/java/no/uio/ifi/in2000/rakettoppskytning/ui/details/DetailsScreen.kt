@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
@@ -62,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
@@ -124,7 +126,7 @@ fun DetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Default.KeyboardArrowLeft,
                             contentDescription = "ArrowBack",
                             tint = main0
                         )
@@ -167,11 +169,11 @@ fun DetailsScreen(
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
-                            tint = main0
+                            tint = main100
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick =  { navController.navigate(Routes.favCards) }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
@@ -179,7 +181,7 @@ fun DetailsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(onClick = { navController.navigate("ThresholdScreen") }) {
+                    IconButton(onClick = { navController.navigate(Routes.settings) }) {
                         Icon(
                             Icons.Sharp.Settings,
                             modifier = Modifier.size(40.dp),
@@ -207,7 +209,6 @@ fun DetailsScreen(
 
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
-                val daysAhead = getNumberOfDaysAhead(weatherNow.date)
                 val datePrefix = formatDate(weatherNow.date)
                 Column(
                     modifier = Modifier.width(340.dp),
@@ -221,13 +222,8 @@ fun DetailsScreen(
                         fontSize = 30.sp,
                         color = main0
                     )
-
                     Spacer(modifier = Modifier.height(20.dp))
-
-
                 }
-
-
 
                 val listState = rememberLazyListState()
 
@@ -316,19 +312,29 @@ fun DetailsScreen(
                                         iconId = R.drawable.temp,
                                         desc = "Temperature",
                                         value = "${fcData.instant.details.airTemperature} ℃",
-                                        info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin} ℃",
+                                        info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin?: "N/A"} ℃",
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
                                     var valueText =
                                         "${fcData.next1Hours?.details?.precipitationAmount} mm"
                                     var descText =
                                         "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
+
+                                    if(fcData.next12Hours?.details?.probabilityOfPrecipitation == null){
+                                        descText = "Rain in the next hour"
+                                    }
+
                                     if (fcData.next1Hours == null) {
                                         valueText =
                                             "${fcData.next6Hours?.details?.precipitationAmount} mm"
                                         descText = "Rain in the next 6 hours"
-
+                                        if(fcData.next6Hours?.details?.precipitationAmount == null){
+                                            valueText =
+                                                "N/A"
+                                            descText = "There is no data for this period"
+                                        }
                                     }
+
 
                                     WeatherCard(
                                         iconId = R.drawable.vann,
@@ -349,7 +355,7 @@ fun DetailsScreen(
                                     var titleText = "Fog"
                                     if (fcData.instant.details.fogAreaFraction == null) {
                                         valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
-                                        descText = "Cloud cover lower than 2000m altitude"
+                                        descText = "Cloud cover below 2000m altitude"
                                         titleText = "Low clouds"
                                     }
 

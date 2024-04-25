@@ -19,5 +19,4 @@ class DetailsScreenViewModel(repo: WeatherRepository) : ViewModel() {
             initialValue = WeatherUiState()
         )
 
-
 }

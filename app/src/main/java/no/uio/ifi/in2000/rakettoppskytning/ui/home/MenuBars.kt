@@ -28,9 +28,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
+import okhttp3.Route
 
 @Composable
 fun BottomAppBar(navController: NavController) {
@@ -57,19 +59,19 @@ fun BottomAppBar(navController: NavController) {
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Location",
-                    tint = main0
+                    tint = main100
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
-            IconButton(onClick = {/* TODO */ }) {
+            IconButton(onClick = { navController.navigate(Routes.favCards) }) {
                 Icon(
                     painter = painterResource(R.drawable.rakket),
                     contentDescription = "Rakket",
-                    tint = main100,
+                    tint = main0,
                 )
             }
             Spacer(modifier = Modifier.width(95.dp))
-            IconButton(onClick = { navController.navigate("ThresholdScreen") }) {
+            IconButton(onClick = { navController.navigate(Routes.settings) }) {
                 Icon(
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),

@@ -50,7 +50,6 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     val context = this;
 
-
     private lateinit var db: AppDatabase // Change to lateinit var
 
     private lateinit var settingsRepository: SettingsRepository // Change to lateinit var
@@ -68,12 +67,6 @@ class MainActivity : ComponentActivity() {
         MapViewModel()
     }
 
-    /*
-    private val thresholdViewModel by lazy {
-        ThresholdViewModel(thresholdRepository)
-    }
-
-     */
     private val settingsViewModel by viewModels<SettingsViewModel> {
         object : ViewModelProvider.Factory {
 
@@ -141,8 +134,6 @@ class MainActivity : ComponentActivity() {
                         context = context
                     )
 
-
-
                     val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
                     // Use the isNetworkAvailable value to update the UI based on network availability
@@ -158,11 +149,8 @@ class MainActivity : ComponentActivity() {
 
                         val toastText = toastLayout.findViewById<TextView>(R.id.toast_text)
                         toastText.text = "No internet connection"
-
                         toast.show()
                     }
-
-
                 }
             }
         }

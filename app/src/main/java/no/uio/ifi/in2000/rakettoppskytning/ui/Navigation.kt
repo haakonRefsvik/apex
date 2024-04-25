@@ -16,10 +16,11 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdScreen
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 
@@ -66,13 +67,18 @@ fun Navigation(
                 )
             }
         }
-        composable("ThresholdScreen") {
-            ThresholdScreen(
+        composable("SettingsScreen") {
+            SettingsScreen(
                 navController,
                 settingsViewModel,
                 weatherRepo,
                 onThresholdEvent,
                 thresholdState
+            )
+        }
+        composable("FavoriteCardScreen") {
+            FavoriteCardScreen(
+                navController,
             )
         }
     }

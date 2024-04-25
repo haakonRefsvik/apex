@@ -48,12 +48,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,6 +71,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao_Impl
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
@@ -144,7 +147,6 @@ fun FavPreview(){
 
     FavoriteCardScreen(
         navController = rememberNavController(),
-        listOf(p1, f1)
     )
 
 }
@@ -153,7 +155,6 @@ fun FavPreview(){
 @Composable
 fun FavoriteCardScreen(
     navController: NavHostController,
-    favorites: List<FavCard>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -206,7 +207,7 @@ fun FavoriteCardScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = { navController.navigate(Routes.home) }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
@@ -216,17 +217,17 @@ fun FavoriteCardScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = { }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rakket",
-                            tint = main0,
+                            tint = main100,
 
                             )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate(Routes.settings) },
 
                         ) {
                         Icon(
@@ -234,10 +235,9 @@ fun FavoriteCardScreen(
                             modifier = Modifier
                                 .size(40.dp),
                             contentDescription = "Settings",
-                            tint = main100,
+                            tint = main0,
 
-
-                            )
+                        )
                     }
                 }
             }
@@ -258,22 +258,41 @@ fun FavoriteCardScreen(
                 fontSize = 35.sp,
                 color = settings0
             )
+            Spacer(modifier = Modifier.height(15.dp))
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Spacer(modifier = Modifier.height(20.dp))
+            HorizontalDivider(
+                modifier = Modifier.width(340.dp),
+                thickness = 1.dp, color = settings0
+            )
+            Spacer(modifier = Modifier.height(15.dp))
 
             LazyColumn(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                item{
 
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(text = "No cards were found...", color = Color.White)
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = "Remember, expired cards\n will be removed automatically", 
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+
+                    }
+                }
+                /*
                 favorites.forEach { input ->
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                         FavoriteCard(name = input.name, input = input, navController = navController)
                     }
                 }
+
+                 */
             }
         }
     }
