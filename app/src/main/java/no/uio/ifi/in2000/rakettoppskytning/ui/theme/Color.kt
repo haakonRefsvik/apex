@@ -41,7 +41,8 @@ val settings25 = Color(0xFF0E172B)
 
 
 val time100 = Color(0xFF14213D)// TimeDialog-container, button-content og InputField-container
-val time65 = Color(0xFFFFC86E) // Mellom-datoer-markør
+val time65 = Color(0xFFFFC86E)
+val time50 = Color(0xFF494B5E)// Mellom-datoer-markør
 val time35 = Color(0xFFFCA311) // "Todays date"-border
 val time0 = Color(0xFFFFFFFF) // Valgte datoer, generelt nummer+tekst, knapp, InputField-tall
 

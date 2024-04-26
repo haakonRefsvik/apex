@@ -73,6 +73,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
@@ -259,10 +260,10 @@ fun InputField(
         if (state.favorites.isNotEmpty()) {
             Row(modifier = Modifier.width(340.dp)) {
                 if (state.favorites.size == 1) {
-                    Text("Favorite location:", fontSize = 14.sp, color = main0)
+                    Text("Favorite location:", fontSize = 14.sp, color = main50)
 
                 } else {
-                    Text("Favorite locations:", fontSize = 14.sp, color = main0)
+                    Text("Favorite locations:", fontSize = 14.sp, color = main50)
                 }
 
 

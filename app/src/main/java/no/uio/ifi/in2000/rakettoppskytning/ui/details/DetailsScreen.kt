@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
@@ -272,32 +273,71 @@ fun DetailsScreen(
                     }
                 ) {
 
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Button(modifier = Modifier.width(360.dp),
+                            colors = ButtonColors(
+                                containerColor = firstButton0,
+                                contentColor = firstButton100,
+                                disabledContainerColor = firstButton0,
+                                disabledContentColor = firstButton100
+                            ),
+                            onClick = {
+                                mapViewModel.makeTra.value = true
+                                scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                                navController.popBackStack("HomeScreen", false)
+                            }
+                        ) {
+                            Text("Calculate ballistic trajectory")
+                        }
+                        if (weatherNow.verticalProfile == null) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Calculated ballistic trajectory wont be affected by weather data ",
+                                    color = main0
+                                )
+
+                            }
+
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+
                         LazyColumn(state = listState) {
+
                             item {
-                                Spacer(modifier = Modifier.height(50.dp))
+
 
                                 weatherNow.verticalProfile?.let {
+                                    Spacer(modifier = Modifier.height(20.dp))
                                     ShearWindCard(
                                         verticalProfile = it,
                                         statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name]
                                             ?: 0.0
                                     )
+                                    Spacer(modifier = Modifier.height(30.dp))
                                 }
-                                Spacer(modifier = Modifier.height(30.dp))
+
                             }
 
                             item {
-                                weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
-                                Spacer(modifier = Modifier.height(30.dp))
+                                weatherNow.verticalProfile?.let {
+                                    ShearWindSpeedCard(verticalProfile = it)
+                                    Spacer(modifier = Modifier.height(30.dp))
+                                }
+
                             }
                             item {
-                                weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
-                                Spacer(modifier = Modifier.height(30.dp))
+                                weatherNow.verticalProfile?.let {
+                                    ShearWindDirCard(verticalProfile = it)
+                                    Spacer(modifier = Modifier.height(30.dp))
+                                }
+
                             }
                             item {
                                 WindCard(
@@ -425,35 +465,8 @@ fun DetailsScreen(
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
-                                Button(modifier = Modifier.width(360.dp),
-                                    colors = ButtonColors(
-                                        containerColor = firstButton0,
-                                        contentColor = firstButton100,
-                                        disabledContainerColor = firstButton0,
-                                        disabledContentColor = firstButton100
-                                    ),
-                                    onClick = {
-                                        mapViewModel.makeTra.value = true
-                                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
-                                        navController.popBackStack("HomeScreen", false)
-                                    }
-                                ) {
-                                    Text("Calculate ballistic trajectory")
-                                }
-                                Spacer(modifier = Modifier.height(30.dp))
-                                Button(
-                                    modifier = Modifier.width(360.dp),
-                                    colors = ButtonColors(
-                                        containerColor = firstButton0,
-                                        contentColor = firstButton100,
-                                        disabledContainerColor = firstButton0,
-                                        disabledContentColor = firstButton100
-                                    ),
-                                    onClick = { mapViewModel.makeTra.value = false },
-                                    enabled = mapViewModel.makeTra.value
-                                ) {
-                                    Text("Remove ballistic trajectory")
-                                }
+
+
                             }
                             item {
                                 Spacer(modifier = Modifier.height(50.dp))
