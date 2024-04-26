@@ -219,15 +219,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     )
     val validateHour = { x: Int -> if (x == 23) 0 else x }
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    val tiState = mutableStateOf(
-        TimePickerState(
-            initialHour = validateHour(initialSelectedStartDateMillis.value.time.hours),
-            0,
-            true
-        )
-    )
-
 
     private val _favorites =
         dao.getFavorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
