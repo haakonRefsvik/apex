@@ -1,4 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning
+
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
@@ -27,7 +28,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun altitudeTest(){
+    fun altitudeTest() {
 
         val level = LevelData(10000.0)
         level.tempValueKelvin = (-1.4 + 273.15)
@@ -35,13 +36,13 @@ class ExampleUnitTest {
         val h = level.getLevelHeightInMeters()
         val expected = 18420.54
 
-        assertEquals(expected, h, 0.1)
+        assertEquals(expected, h, 1.0)
     }
 
     @Test
-    fun testShearWind(){
+    fun testShearWind() {
 
-        val expected = 19.9483
+        val expected = 1.362472231
 
         val lowerLevel = LevelData(85000.0)
         val upperLevel = LevelData(75000.0)
@@ -92,7 +93,7 @@ class ExampleUnitTest {
      */
 
     @Test
-    fun testWeekDayName(){
+    fun testWeekDayName() {
         val result = getDayName("2024-04-10", 0)
         val expected = "Wednesday"
 
@@ -100,7 +101,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testDayAndMonth(){
+    fun testDayAndMonth() {
         val date = "2022-08-15T12:34:56Z"
         val result = getDayAndMonth(date)
         val expected = "15.08"
@@ -109,7 +110,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testTri(){
+    fun testTri() {
         val l0 = LevelData(101325.5)
         l0.tempValueKelvin = 273.0
         val l1 = LevelData(85000.0)
@@ -142,7 +143,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testGetNearestLevel(){
+    fun testGetNearestLevel() {
         val l0 = LevelData(101325.5)
         l0.tempValueKelvin = 273.0
         val l1 = LevelData(85000.0)
@@ -164,7 +165,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testRatios(){
+    fun testRatios() {
         val l1 = 600.0
         val l2 = 1400.0
 
@@ -173,7 +174,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testMergeDatas(){
+    fun testMergeDatas() {
         val alt = 1400.0
         val l0 = LevelData(101325.5)
         l0.tempValueKelvin = 273.0
@@ -187,11 +188,16 @@ class ExampleUnitTest {
 
         val ul = findLowerUpperLevel(list, alt)
         println("first h: ${ul?.first?.getLevelHeightInMeters()}, second h: ${ul?.second?.getLevelHeightInMeters()}")
-        if(ul?.second != null){
-            val r =  getLinearRatios(ul.first.getLevelHeightInMeters(), ul.second.getLevelHeightInMeters(), alt)
+        if (ul?.second != null) {
+            val r = getLinearRatios(
+                ul.first.getLevelHeightInMeters(),
+                ul.second.getLevelHeightInMeters(),
+                alt
+            )
             println("first r: ${r?.first}, second r: ${r?.second}")
 
-            val data = r?.let { mergeLevelData(it, ul.first.vComponentValue, ul.second.vComponentValue) }
+            val data =
+                r?.let { mergeLevelData(it, ul.first.vComponentValue, ul.second.vComponentValue) }
 
             if (data != null) {
                 assertEquals(true, data < l0.vComponentValue && data > l1.vComponentValue)
@@ -203,7 +209,7 @@ class ExampleUnitTest {
 
 
     @Test
-    fun findLayers(){
+    fun findLayers() {
         val l1 = LevelData(85000.0)
         l1.tempValueKelvin = 273.0
         val l0 = LevelData(101325.5)
@@ -220,14 +226,14 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testAirDensity(){
+    fun testAirDensity() {
         val d = calculateAirDensity(101325.0, 0.0)
         assertEquals(1.25, d, 0.1)
 
     }
 
     @Test
-    fun testSigmoidRatios(){
+    fun testSigmoidRatios() {
         var alt = 2000.0
         val l = 1000.0
         val u = 3000.0

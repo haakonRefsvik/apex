@@ -244,7 +244,7 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                             +modelLayer(MODEL_ID_1, SOURCE_ID) {
                                 modelId(get(MODEL_ID_KEY))
                                 modelType(ModelType.LOCATION_INDICATOR)
-                                modelScale(listOf(1.0, 1.0, 1.0))
+                                modelScale(listOf(3.0, 3.0, 3.0))
                                 modelTranslation(
                                     listOf(
                                         point.x,
@@ -292,7 +292,7 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                     +modelLayer(MODEL_ID_2, SOURCE_ID1) {
                         modelId(get(MODEL_ID_KEY))
                         modelType(ModelType.COMMON_3D)
-                        modelScale(listOf(150.0, 150.0, 150.0))
+                        modelScale(listOf(350.0, 350.0, 350.0))
                         if (s != null) {
                             modelTranslation(listOf(s.x, s.y, s.z))
                         }
