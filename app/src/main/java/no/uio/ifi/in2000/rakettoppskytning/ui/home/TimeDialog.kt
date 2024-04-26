@@ -24,6 +24,7 @@ import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TimeInput
@@ -50,6 +51,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time35
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time65
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -68,7 +70,6 @@ fun TimeDialog(
 
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val dtrpState = homeScreenViewModel.dtrpState.value
-    val tiState = homeScreenViewModel.tiState.value
     val hourcheck = { x: Int -> if (x in 0..9) "0${x}" else x.toString() }
 
     DatePickerDialog(
@@ -92,12 +93,19 @@ fun TimeDialog(
                 ),
                 onClick = {
                     homeScreenViewModel.resetList()
-                    homeScreenViewModel.startISOtime = sdf.format(dtrpState.selectedStartDateMillis)
-                        .replaceRange(
-                            11,
-                            16,
-                            "${hourcheck(homeScreenViewModel.startHour.value.toInt())}:00"
-                        )
+                    if (homeScreenViewModel.startHour.value == "") {
+                        homeScreenViewModel.startHour.value = "0"
+                    }
+                    if (homeScreenViewModel.endHour.value == "") {
+                        homeScreenViewModel.endHour.value = "0"
+                    }
+                    homeScreenViewModel.startISOtime =
+                        sdf.format(dtrpState.selectedStartDateMillis)
+                            .replaceRange(
+                                11,
+                                16,
+                                "${hourcheck(homeScreenViewModel.startHour.value.toInt())}:00"
+                            )
                     if (dtrpState.selectedEndDateMillis == null) {
                         homeScreenViewModel.endISOtime =
                             sdf.format(dtrpState.selectedStartDateMillis)
@@ -276,30 +284,12 @@ fun TimeDialog(
 
             )
             Spacer(modifier = Modifier.height(20.dp))
-//            TimeInput(
-//                state = tiState,
-//                colors = TimePickerColors(
-//                    time0,
-//                    time65,
-//                    time100,
-//                    time0,
-//                    Color.Magenta,
-//                    Color.Green,
-//                    time0,
-//                    time0,
-//                    time0,
-//                    time0,
-//                    time100,
-//                    time100,
-//                    time0,
-//                    time0
-//                )
-//            )
             Row {
                 InputFiled(homeScreenViewModel, "Start hour")
                 Spacer(modifier = Modifier.width(20.dp))
                 InputFiled(homeScreenViewModel, "End hour")
             }
+            Spacer(modifier = Modifier.height(20.dp))
 
 
         }
@@ -324,11 +314,19 @@ fun InputFiled(
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     OutlinedTextField(
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedBorderColor = time0,
+            focusedBorderColor = time65,
+            cursorColor = time0,
+            focusedTrailingIconColor = time65,
+            unfocusedLabelColor = time0,
+            focusedLabelColor = time65,
+        ),
         modifier = Modifier
             .width(90.dp)
             .height(90.dp),
         textStyle = TextStyle(fontSize = 34.sp, textAlign = TextAlign.Center, color = settings50),
-        value = mutableValue.value,
+        value = (mutableValue.value),
         onValueChange = { input ->
             if (input == "") {
                 mutableValue.value = ""
