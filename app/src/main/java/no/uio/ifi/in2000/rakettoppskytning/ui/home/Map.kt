@@ -41,6 +41,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 import kotlin.math.*
 
@@ -101,7 +102,8 @@ fun NewViewAnnotation(
 @Composable
 fun Map(
     detailsScreenViewModel: DetailsScreenViewModel,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    settingsViewModel: SettingsViewModel
 ) {
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
@@ -135,7 +137,7 @@ fun Map(
 
         }
         if (mapViewModel.makeTra.value) {
-            Make3dtrajectory(mapViewModel, detailsScreenViewModel)
+            Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
         } else {
             MapEffect() { mapView ->
                 mapView.mapboxMap.apply {
@@ -153,7 +155,11 @@ fun Map(
 
 @OptIn(MapboxExperimental::class)
 @Composable
-fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: DetailsScreenViewModel) {
+fun Make3dtrajectory(
+    mapViewModel: MapViewModel,
+    detailsScreenViewModel: DetailsScreenViewModel,
+    settingsViewModel: SettingsViewModel
+) {
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
     val MODEL_ID_KEY = "model-id-key"
@@ -170,8 +176,8 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
         }
 
     }
+    val rocketSpecs = settingsViewModel.getRocketSpec()
 
-    Log.d("mais", detailsScreenViewModel.time.value)
 
     val allLevels: List<LevelData> =
         weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: listOf(
@@ -181,20 +187,20 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
         )
 
 
-    val launchDir = 0.0
-    val launchAngle = 85.0
+    val launchDir = rocketSpecs.launchDirection.toDouble()
+    val launchAngle = rocketSpecs.launchAngle.toDouble()
     val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
         simulateTrajectory(
-            burnTime = 12.0,
+            burnTime = rocketSpecs.burntime.toDouble(),
             launchAngle = launchAngle,
             launchDir = launchDir,
             altitude = 0.0,
-            thrust = 5000.0,
-            apogee = 3500.0,
-            mass = 130.0,
+            thrust = rocketSpecs.thrust.toDouble(),
+            apogee = rocketSpecs.apogee.toDouble(),
+            mass = rocketSpecs.dryWeight.toDouble(),
             dt = 0.1,
             allLevels = allLevels,
-            massDry = 100.0
+            massDry = rocketSpecs.wetWeight.toDouble()
         )
     val s = tra.find { it.z in 600.0..1000.0 }
     val hep = tra.indexOf(s)
@@ -248,7 +254,7 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                                 modelTranslation(
                                     listOf(
                                         point.x,
-                                        point.y,
+                                        point.y * -1,
                                         point.z
                                     )
                                 )
@@ -294,14 +300,14 @@ fun Make3dtrajectory(mapViewModel: MapViewModel, detailsScreenViewModel: Details
                         modelType(ModelType.COMMON_3D)
                         modelScale(listOf(150.0, 150.0, 150.0))
                         if (s != null) {
-                            modelTranslation(listOf(s.x, s.y, s.z))
+                            modelTranslation(listOf(s.x, s.y * -1, s.z))
                         }
 
 
 
                         modelRotation(
                             listOf(
-                                pitch.first * (launchAngle * yay(launchAngle)),
+                                pitch.first * (launchAngle * yay(launchAngle)) * -1,
                                 pitch.second * (launchAngle * yay(launchAngle)),
                                 0.0
                             )
@@ -354,11 +360,11 @@ fun yay(number: Double): Double {
     } else if (number in 55.0..60.0) {
         return -1.36
     } else if (number in 50.0..55.0) {
-        return -1.46
+        return -1.4
     } else if (number in 45.0..50.0) {
-        return -1.86
+        return -1.8
     } else if (number in 40.0..45.0) {
-        return -2.23
+        return -2.15
     } else if (number in 35.0..40.0) {
         return -2.73
     }

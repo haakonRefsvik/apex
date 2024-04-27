@@ -128,7 +128,11 @@ fun HomeScreen(
                         })
                 }) {
 
-                Map(detailsScreenViewModel = detailsScreenViewModel, mapViewModel)
+                Map(
+                    detailsScreenViewModel = detailsScreenViewModel,
+                    mapViewModel,
+                    settingsViewModel
+                )
                 if (mapViewModel.makeTra.value) {
                     FloatingActionButton(
                         modifier = Modifier

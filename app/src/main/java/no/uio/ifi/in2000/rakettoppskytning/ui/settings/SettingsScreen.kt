@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -158,13 +159,15 @@ fun ThresholdScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = main50,
-                modifier = Modifier.shadow(
-                    10.dp,
-                    RectangleShape,
-                    false,
-                    DefaultShadowColor,
-                    DefaultShadowColor
-                )
+                modifier = Modifier
+                    .shadow(
+                        10.dp,
+                        RectangleShape,
+                        false,
+                        DefaultShadowColor,
+                        DefaultShadowColor
+                    )
+                    .heightIn(max = 50.dp)
             ) {
                 Row(
                     modifier = Modifier

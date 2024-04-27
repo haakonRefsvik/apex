@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -24,7 +25,11 @@ import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 
 
-class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: ThresholdsDao, private val rocketSpecsDao: RocketSpecsDao) :
+class SettingsViewModel(
+    repo: SettingsRepository,
+    private val thresholdsDao: ThresholdsDao,
+    private val rocketSpecsDao: RocketSpecsDao
+) :
     ViewModel() {
     private val settingsRepo = repo
 
@@ -171,6 +176,10 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RocketSpecState())
 
+    fun getRocketSpec(): RocketSpecState {
+        return rocketspecsState.value
+    }
+
     fun onRocketSpecsEvent(event: RocketSpecsEvent) {
         when (event) {
             is RocketSpecsEvent.SaveRocketSpecs -> {
@@ -242,6 +251,7 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
                     )
                 }
             }
+
             is RocketSpecsEvent.SetDryWeight -> {
                 _rocketspecsState.update {
                     it.copy(
@@ -249,6 +259,7 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
                     )
                 }
             }
+
             is RocketSpecsEvent.SetWetWeight -> {
                 _rocketspecsState.update {
                     it.copy(
@@ -256,6 +267,7 @@ class SettingsViewModel(repo: SettingsRepository, private val thresholdsDao: Thr
                     )
                 }
             }
+
             is RocketSpecsEvent.SetDropTime -> {
                 _rocketspecsState.update {
                     it.copy(
