@@ -1,16 +1,11 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,22 +13,19 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,9 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
@@ -60,26 +50,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
-import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
-import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.ShearWind
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilScore
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
@@ -87,11 +67,8 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionabl
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
@@ -228,7 +205,6 @@ fun DetailsScreen(
 
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
-                val daysAhead = getNumberOfDaysAhead(weatherNow.date)
                 val datePrefix = formatDate(weatherNow.date)
                 Column(
                     modifier = Modifier.width(340.dp),
@@ -270,10 +246,6 @@ fun DetailsScreen(
                         Color.Gray
                     ),
                     enabled = true,
-                    indicatorContent = { index, isThumbSelected ->
-                        // Indicator content composable
-                        // Replace with your own implementation
-                    }
                 ) {
 
                     Column(
@@ -302,7 +274,8 @@ fun DetailsScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "Calculated ballistic trajectory wont be affected by weather data ",
+                                    modifier = Modifier.widthIn(max = 360.dp),
+                                    text = "Calculated ballistic trajectory won't be affected by weather data ",
                                     color = main0
                                 )
 
