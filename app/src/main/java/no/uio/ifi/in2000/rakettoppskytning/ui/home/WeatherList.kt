@@ -184,21 +184,25 @@ fun WeatherList(
             LazyColumn(state = listState, modifier = Modifier.background(main100),
                 content = {
                     if (forecast.weatherAtPos.weatherList.isEmpty() && homeScreenViewModel.hasBeenFiltered.value) {
-                        for (i in 0..12) {
-                            item {
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Filter or time made list empty ¯\\_(ツ)_/¯",
-                                        fontSize = 15.sp,
-                                        color = main50
-                                    )
+                        item {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    modifier = Modifier.fillMaxSize(0.5f),
 
-                                }
+                                    painter = painterResource(R.drawable.data_not_found),
+                                    contentDescription = "Filter"
+                                )
+                                Text(
+                                    text = "We are not able to show the desired data ",
+                                    fontSize = 18.sp, color = main50
+                                )
 
                             }
+
+
                         }
 
 
