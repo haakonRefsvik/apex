@@ -1,23 +1,19 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.util.Log
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -30,15 +26,12 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material.icons.sharp.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,11 +46,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
@@ -65,26 +57,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
-import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
-import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.ShearWind
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilCategory
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilScore
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
@@ -93,9 +77,10 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
@@ -103,12 +88,14 @@ import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.setValue
+import androidx.media3.common.util.Log
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogCorrect
 
 
-@SuppressLint("ShowToast")
+@SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
@@ -116,14 +103,18 @@ fun DetailsScreen(
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
     favoriteCardViewModel: FavoriteCardViewModel,
-    context: Context
+    context: Context,
+    homeScreenViewModel: HomeScreenViewModel,
+    mapViewModel: MapViewModel
 ) {
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
 
     val time: String = backStackEntry ?: ""
+    detailsScreenViewModel.time.value = backStackEntry ?: ""
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
     val duration = Toast.LENGTH_SHORT
+    detailsScreenViewModel.time.value = time
 
     if(time.last() == 'f'){
         favoriteUiState.weatherAtPos.weatherList.forEach {
@@ -140,6 +131,7 @@ fun DetailsScreen(
         }
     }
 
+    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -176,13 +168,15 @@ fun DetailsScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = main50,
-                modifier = Modifier.shadow(
-                    10.dp,
-                    RectangleShape,
-                    false,
-                    DefaultShadowColor,
-                    DefaultShadowColor
-                )
+                modifier = Modifier
+                    .shadow(
+                        10.dp,
+                        RectangleShape,
+                        false,
+                        DefaultShadowColor,
+                        DefaultShadowColor
+                    )
+                    .heightIn(max = 50.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -191,7 +185,10 @@ fun DetailsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigate(Routes.home)}) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
@@ -200,12 +197,13 @@ fun DetailsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick =  { navController.navigate(Routes.favCards) }) {
+                    IconButton(onClick = {
+                        navController.navigate(Routes.favCards) }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket",
-                            tint = main0
-                        )
+                            contentDescription = "Rocket",
+                            tint = main0,
+                            )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
                     IconButton(onClick = { navController.navigate(Routes.settings) }) {
@@ -249,7 +247,6 @@ fun DetailsScreen(
                         )
                         Spacer(modifier = Modifier.width(60.dp))
                         IconButton(onClick = {
-                            Log.d("mais", "the fav was ${weatherNow.favorite.value}")
                             detailsScreenViewModel.toggleFavorite(
                                 lat = weatherNow.lat,
                                 lon = weatherNow.lon,
@@ -310,37 +307,74 @@ fun DetailsScreen(
                         Color.Gray
                     ),
                     enabled = true,
-                    indicatorContent = { index, isThumbSelected ->
-                        // Indicator content composable
-                        // Replace with your own implementation
-                    }
                 ) {
 
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                    LazyColumn(state = listState) {
+                        Button(modifier = Modifier.width(360.dp),
+                            colors = ButtonColors(
+                                containerColor = firstButton0,
+                                contentColor = firstButton100,
+                                disabledContainerColor = firstButton0,
+                                disabledContentColor = firstButton100
+                            ),
+                            onClick = {
+                                mapViewModel.makeTra.value = true
+                                scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                                navController.popBackStack("HomeScreen", false)
+                            }
+                        ) {
+                            Text("Calculate ballistic trajectory")
+                        }
+                        if (weatherNow.verticalProfile == null) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    modifier = Modifier.widthIn(max = 360.dp),
+                                    text = "Calculated ballistic trajectory won't be affected by weather data ",
+                                    color = main0
+                                )
+
+                            }
+
+                        }
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        LazyColumn(state = listState) {
+
                             item {
-                                Spacer(modifier = Modifier.height(50.dp))
+
 
                                 weatherNow.verticalProfile?.let {
+                                    Spacer(modifier = Modifier.height(20.dp))
                                     ShearWindCard(
                                         verticalProfile = it,
-                                        statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name] ?: 0.0
+                                        statusCode = statusMap[ThresholdType.MAX_SHEAR_WIND.name]
+                                            ?: 0.0
                                     )
+                                    Spacer(modifier = Modifier.height(30.dp))
                                 }
-                                Spacer(modifier = Modifier.height(30.dp))
+
                             }
 
                             item {
-                                weatherNow.verticalProfile?.let { ShearWindSpeedCard(verticalProfile = it) }
-                                Spacer(modifier = Modifier.height(30.dp))
+                                weatherNow.verticalProfile?.let {
+                                    ShearWindSpeedCard(verticalProfile = it)
+                                    Spacer(modifier = Modifier.height(30.dp))
+                                }
+
                             }
                             item {
-                                weatherNow.verticalProfile?.let { ShearWindDirCard(verticalProfile = it) }
-                                Spacer(modifier = Modifier.height(30.dp))
+                                weatherNow.verticalProfile?.let {
+                                    ShearWindDirCard(verticalProfile = it)
+                                    Spacer(modifier = Modifier.height(30.dp))
+                                }
+
                             }
                             item {
                                 WindCard(
@@ -356,7 +390,8 @@ fun DetailsScreen(
                                         desc = "Humidity",
                                         value = "${fcData.instant.details.relativeHumidity} %",
                                         info = "Relative humidity at 2m above the ground in",
-                                        statusCode = statusMap[ThresholdType.MAX_HUMIDITY.name]?: 0.0
+                                        statusCode = statusMap[ThresholdType.MAX_HUMIDITY.name]
+                                            ?: 0.0
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 
@@ -365,7 +400,8 @@ fun DetailsScreen(
                                         desc = "Dew Point",
                                         value = "${fcData.instant.details.dewPointTemperature} ℃",
                                         info = "Temperature where dew starts to form",
-                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name] ?: 0.0
+                                        statusCode = statusMap[ThresholdType.MAX_DEW_POINT.name]
+                                            ?: 0.0
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
@@ -433,7 +469,7 @@ fun DetailsScreen(
 
                                     var info = "Moisture in the ground"
 
-                                    if(weatherNow.soilMoisture != null){
+                                    if (weatherNow.soilMoisture != null) {
                                         info = getSoilDescription(weatherNow.soilMoisture)
                                     }
 
@@ -475,17 +511,8 @@ fun DetailsScreen(
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(30.dp))
-                                Button(modifier = Modifier.width(360.dp),
-                                    colors = ButtonColors(
-                                        containerColor = firstButton0,
-                                        contentColor = firstButton100,
-                                        disabledContainerColor = firstButton0,
-                                        disabledContentColor = firstButton100
-                                    ),
-                                    onClick = { /*TODO*/ }
-                                ) {
-                                    Text("Calculate ballistic trajectory")
-                                }
+
+
                             }
                             item {
                                 Spacer(modifier = Modifier.height(50.dp))
@@ -496,4 +523,6 @@ fun DetailsScreen(
             }
         }
     }
+
+
 }

@@ -17,7 +17,6 @@ interface ThresholdsDao {
     @Update
     suspend fun updateThreshold(thresholds: Thresholds)
 
-
     @Query("SELECT * FROM threshold WHERE id = :id")
     fun getThresholdById(id: Int): Flow<Thresholds?>
 }

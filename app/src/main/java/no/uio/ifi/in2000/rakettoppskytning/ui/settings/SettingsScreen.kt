@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,6 +44,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -67,10 +69,13 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
@@ -78,24 +83,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
-
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ThresholdPreview() {
-    val navController = rememberNavController()
-    ThresholdScreen(
-        navController = navController,
-        SettingsViewModel(ThresholdsDao()),
-        WeatherRepository(ThresholdRepository(), GribRepository())
-    )
-}
-
-
- */
-
-
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -106,11 +93,15 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel,
     weatherRepository: WeatherRepository,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
-    thresholdState: ThresholdState
+    onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
+    thresholdState: ThresholdState,
+    rocketSpecState: RocketSpecState
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.settingscheck1
     val settings2check = settingsViewModel.settingscheck2
+    val scope = rememberCoroutineScope()
 
     Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
@@ -146,13 +137,15 @@ fun SettingsScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = main50,
-                modifier = Modifier.shadow(
-                    10.dp,
-                    RectangleShape,
-                    false,
-                    DefaultShadowColor,
-                    DefaultShadowColor
-                )
+                modifier = Modifier
+                    .shadow(
+                        10.dp,
+                        RectangleShape,
+                        false,
+                        DefaultShadowColor,
+                        DefaultShadowColor
+                    )
+                    .heightIn(max = 50.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -161,7 +154,10 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigate(Routes.home)}) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
@@ -171,17 +167,18 @@ fun SettingsScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { navController.navigate(Routes.favCards) }) {
+                    IconButton(onClick = {
+                        navController.navigate(Routes.favCards) }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket",
+                            contentDescription = "Rocket",
                             tint = main0,
 
                             )
                     }
                     Spacer(modifier = Modifier.width(95.dp))
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate(Routes.settings) },
                         ) {
                         Icon(
                             Icons.Sharp.Settings,
@@ -218,20 +215,20 @@ fun SettingsScreen(
 
             MultiChoiceSegmentedButtonRow(modifier = Modifier.width(330.dp)) {
                 SegmentedButton(
-                    colors =  SegmentedButtonColors(
+                    colors = SegmentedButtonColors(
                         activeContainerColor = settings25,
-                        activeContentColor= settings50,
-                        activeBorderColor= settings50,
-                        inactiveContainerColor= settings100,
-                        inactiveContentColor= settings50,
-                        inactiveBorderColor= settings50,
-                        disabledActiveContainerColor= settings50,
-                        disabledActiveContentColor= settings50,
-                        disabledActiveBorderColor= settings50,
-                        disabledInactiveContainerColor= settings50,
-                        disabledInactiveContentColor= settings50,
-                        disabledInactiveBorderColor= settings50,
-                        ),
+                        activeContentColor = settings50,
+                        activeBorderColor = settings50,
+                        inactiveContainerColor = settings100,
+                        inactiveContentColor = settings50,
+                        inactiveBorderColor = settings50,
+                        disabledActiveContainerColor = settings50,
+                        disabledActiveContentColor = settings50,
+                        disabledActiveBorderColor = settings50,
+                        disabledInactiveContainerColor = settings50,
+                        disabledInactiveContentColor = settings50,
+                        disabledInactiveBorderColor = settings50,
+                    ),
                     checked = settings1check.value,
                     onCheckedChange = {
                         settings1check.value = true
@@ -244,19 +241,19 @@ fun SettingsScreen(
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 SegmentedButton(
-                    colors =  SegmentedButtonColors(
+                    colors = SegmentedButtonColors(
                         activeContainerColor = settings25,
-                        activeContentColor= settings50,
-                        activeBorderColor= settings50,
-                        inactiveContainerColor= settings100,
-                        inactiveContentColor= settings50,
-                        inactiveBorderColor= settings50,
-                        disabledActiveContainerColor= settings50,
-                        disabledActiveContentColor= settings50,
-                        disabledActiveBorderColor= settings50,
-                        disabledInactiveContainerColor= settings50,
-                        disabledInactiveContentColor= settings50,
-                        disabledInactiveBorderColor= settings50,
+                        activeContentColor = settings50,
+                        activeBorderColor = settings50,
+                        inactiveContainerColor = settings100,
+                        inactiveContentColor = settings50,
+                        inactiveBorderColor = settings50,
+                        disabledActiveContainerColor = settings50,
+                        disabledActiveContentColor = settings50,
+                        disabledActiveBorderColor = settings50,
+                        disabledInactiveContainerColor = settings50,
+                        disabledInactiveContentColor = settings50,
+                        disabledInactiveBorderColor = settings50,
                     ),
                     checked = settings2check.value,
                     onCheckedChange = {
@@ -293,7 +290,7 @@ fun SettingsScreen(
                                     modifier = Modifier
                                         .size(30.dp),
                                     painter = painterResource(R.drawable.trykk),
-                                    contentDescription = "trykk",
+                                    contentDescription = "tap",
                                     tint = settings0
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -377,7 +374,7 @@ fun SettingsScreen(
                                     modifier = Modifier
                                         .size(30.dp),
                                     painter = painterResource(R.drawable.rakett_pin2),
-                                    contentDescription = "trykk",
+                                    contentDescription = "tap",
                                     tint = settings0
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -448,7 +445,7 @@ fun SettingsScreen(
 
                     item {
                         ThresholdCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.BURN_TIME.ordinal],
                             title = "Burn time",
                             drawableId = R.drawable.rakett_pin2,
                             desc = "Duration of engine burn",
@@ -460,8 +457,8 @@ fun SettingsScreen(
                     }
                     item {
                         ThresholdCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
-                            title = "Weight",
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.DRY_WEIGHT.ordinal],
+                            title = "Dry weight",
                             drawableId = R.drawable.rakett_pin2,
                             desc = "",
                             suffix = "Kg",
@@ -472,7 +469,19 @@ fun SettingsScreen(
                     }
                     item {
                         ThresholdCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.WET_WEIGHT.ordinal],
+                            title = "Wet weight",
+                            drawableId = R.drawable.rakett_pin2,
+                            desc = "",
+                            suffix = "Kg",
+                            numberOfDecimals = 0,
+                            numberOfIntegers = 5,
+                            lowestInput = 0.0
+                        )
+                    }
+                    item {
+                        ThresholdCard(
+                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.DROP_TIME.ordinal],
                             title = "Drop time",
                             drawableId = R.drawable.rakett_pin2,
                             desc = "",
@@ -493,7 +502,7 @@ fun SettingsScreen(
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
                 settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
-                settingsViewModel.updateRocketSpecValues()
+                settingsViewModel.updateRocketSpecValues(onRocketSpecsEvent)
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
             }
         }

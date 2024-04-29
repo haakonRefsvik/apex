@@ -7,16 +7,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,11 +37,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
@@ -44,6 +59,7 @@ fun HomeScreen(
     onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel,
+    detailsScreenViewModel: DetailsScreenViewModel,
     context: Context
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
@@ -61,7 +77,7 @@ fun HomeScreen(
             TopAppBar(navController)
         },
         bottomBar = {
-            BottomAppBar(navController)
+            BottomAppBar(navController, homeScreenViewModel)
         }
     ) { innerPadding ->
         Box(
@@ -70,6 +86,7 @@ fun HomeScreen(
                 .background(color = main100)
                 .fillMaxSize()
         ) {
+
             BottomSheetScaffold(
                 sheetContainerColor = main100,
                 containerColor = main100,
@@ -111,7 +128,41 @@ fun HomeScreen(
                         })
                 }) {
 
-                Map(homeScreenViewModel, mapViewModel)
+                Map(
+                    detailsScreenViewModel = detailsScreenViewModel,
+                    mapViewModel,
+                    settingsViewModel
+                )
+                if (mapViewModel.makeTra.value) {
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .padding(start = 5.dp, top = 30.dp)
+                            .heightIn(max = 35.dp),
+                        contentColor = filter0,
+                        containerColor = filter50,
+                        onClick = { mapViewModel.makeTra.value = false }) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(2.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Remove trajectory",
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(5.dp)
+                            )
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+
+                    }
+                }
+
 
             }
         }

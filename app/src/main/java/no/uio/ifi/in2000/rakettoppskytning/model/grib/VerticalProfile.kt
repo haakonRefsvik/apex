@@ -22,7 +22,7 @@ fun getTime(file: File): String {
         val referenceDate = record.id.referenceDate
         val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
         referenceDate.add(hourOffset).toString() // leverer riktig forecast tid
-    }catch (e: Exception){
+    } catch (e: Exception) {
         ""
     }
 
@@ -36,9 +36,9 @@ class VerticalProfile(
     val file: File
 ) {
 
-    private val verticalProfileMap = try{
+    private val verticalProfileMap = try {
         getVerticalProfileMap(lat, lon, file, heightLimitMeters)
-    }catch (e: Exception){
+    } catch (e: Exception) {
         hashMapOf()
     }
 
@@ -46,6 +46,7 @@ class VerticalProfile(
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
     val heightLimit = heightLimitMeters
+
     /** Shows the the max altitude the VerticalProfile can reach (in meters) */
     val actualHeight = getAllLevels().lastOrNull()?.let { findLevel(it).getLevelHeightInMeters() }
 
@@ -54,15 +55,21 @@ class VerticalProfile(
         return verticalProfileMap.keys.sortedDescending().toDoubleArray()
     }
 
+    fun getAllLevelDatas(): List<LevelData> {
+        return verticalProfileMap.values.toList()
+    }
+
     private fun findLevel(level: Double): LevelData {
         return verticalProfileMap[level] ?: throw Exception("Level not found")
     }
 
     fun addGroundInfo(series: Series) {
-        if (groundLevel != null){
+        if (groundLevel != null) {
             return
         }
-        if(verticalProfileMap.isEmpty()){return}
+        if (verticalProfileMap.isEmpty()) {
+            return
+        }
         val data = series.data.instant.details
         val pressurePascal =
             data.airPressureAtSeaLevel * 100 // forecast-pressure is in hecto-pascal
@@ -108,23 +115,6 @@ class VerticalProfile(
 
     fun getMaxSheerWind(): ShearWind {
         return getAllSheerWinds().maxBy { it.windSpeed }
-    }
-
-    fun getNearestLevelData(altitudeMeters: Double): LevelData?{
-        var nearest: LevelData = verticalProfileMap[(verticalProfileMap.keys.max())]?: return null
-        var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
-
-        verticalProfileMap.forEach {
-            val levelAlt = it.value.getLevelHeightInMeters()
-            val d = abs(levelAlt - altitudeMeters)
-
-            if(d < nearestAlt){
-                nearest = it.value
-                nearestAlt = d
-            }
-        }
-
-        return nearest
     }
 
     override fun toString(): String {
@@ -184,7 +174,7 @@ fun getVerticalProfileMap(
 
     val raf = try {
         RandomAccessFile(file.absolutePath, "r")
-    }catch (e: Exception){
+    } catch (e: Exception) {
         throw Exception(e.stackTraceToString())
     }
     val scan = Grib2RecordScanner(raf)
@@ -210,10 +200,9 @@ fun getVerticalProfileMap(
             gr2.gds ?: throw Exception("Grib Definition Section not found")
         )
 
-        val value= try {
+        val value = try {
             data[index].toDouble()
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             0.0
         }
 

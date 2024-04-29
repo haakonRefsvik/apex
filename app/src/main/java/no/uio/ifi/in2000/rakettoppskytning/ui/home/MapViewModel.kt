@@ -43,6 +43,11 @@ class MapViewModel() : ViewModel() {
     val lat: MutableState<Double> = _lat
     val lon: MutableState<Double> = _lon
     val favorite = _favorite
+    val makeTra = mutableStateOf(false)
+
+    @OptIn(MapboxExperimental::class)
+    val mapViewportState: MapViewportState = MapViewportState()
+
 
     private val cam: CameraOptions = CameraOptions.Builder()
         .center(Point.fromLngLat(initLon, initLat))
@@ -54,30 +59,26 @@ class MapViewModel() : ViewModel() {
     val cameraOptions: MutableState<CameraOptions> = _cam
 
     fun updateCamera(lat: Double, lon: Double) {
-        val newCameraState = CameraOptions.Builder()
-            .center(Point.fromLngLat(lon, lat))
-            .pitch(0.0)
-            .build()
-        _cam.value = newCameraState
-    }
+        if (!makeTra.value) {
+            val newCameraState = CameraOptions.Builder()
+                .center(Point.fromLngLat(lon, lat))
+                .pitch(0.0)
+                .build()
+            _cam.value = newCameraState
 
-    @OptIn(MapboxExperimental::class)
-    val mapViewportState: MapViewportState = MapViewportState()
+        } else {
+            val newCameraState = CameraOptions.Builder()
+                .center(Point.fromLngLat(lon, lat))
+                .pitch(70.0)
+                .zoom(12.0)
+                .build()
+            _cam.value = newCameraState
 
-    @OptIn(MapboxExperimental::class)
-    fun moveMapCamera(lat: Double, lon: Double) {
-        val flyTime: Long = 200
-        val newCameraPosition = CameraOptions.Builder()
-            .center(Point.fromLngLat(lon, lat))
-            .build()
-
-        val mapAnimationOptions = MapAnimationOptions.Builder()
-            .duration(flyTime) // 1 sekund flyvetid
-            .build()
-
-        mapViewportState.flyTo(newCameraPosition, mapAnimationOptions)
+        }
 
     }
+
 
 }
+
 

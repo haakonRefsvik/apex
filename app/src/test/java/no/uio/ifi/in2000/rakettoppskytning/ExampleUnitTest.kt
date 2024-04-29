@@ -8,6 +8,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.flow.map
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getLinearRatios
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
+import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getSigmoidRatios
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
@@ -78,23 +83,17 @@ class ExampleUnitTest {
         val repo = SettingsRepository(db.thresholdsDao)
         val d1 = "2024-03-19T00:00:00Z"
         val d2 = "2024-03-20T00:00:00Z"
-
         val expected = 24
-
         val result = calculateHoursBetweenDates(d1, d2)
-
         assertEquals(expected, result)
     }
-
     @Test
     fun testClosenessMinLimit(){
         val repo = SettingsRepository(db.thresholdsDao)
         val v = -1.4
         val l = -2.0
-
         val result = repo.getCloseness(v, l, max = false)
         val expected = 0.7
-
         assertEquals(expected, result, 0.01)
     }
     @Test
@@ -102,21 +101,16 @@ class ExampleUnitTest {
         val repo = SettingsRepository(db.thresholdsDao)
         val v = 2.2
         val l = 0.0
-
         val result = repo.getCloseness(v, l)
         val expected = 1.0
-
         assertEquals(expected, result, 0.01)
     }
     @Test
     fun testDaysAHead(){
-
         val result = getNumberOfDaysAhead("2024-03-20T18:00:00Z")
         val expected = 1
-
         assertEquals(result, expected)
     }
-
      */
 
     @Test
@@ -182,6 +176,7 @@ class ExampleUnitTest {
         }
     }
 
+     */
 
     @Test
     fun testTri(){
@@ -338,6 +333,5 @@ class ExampleUnitTest {
         assertEquals(null, r7)
     }
 
-     */
 
 }

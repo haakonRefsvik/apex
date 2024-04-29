@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -18,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
@@ -34,17 +37,21 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import okhttp3.Route
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomAppBar(navController: NavController) {
+fun BottomAppBar(navController: NavController, homeScreenViewModel: HomeScreenViewModel) {
+    val scope = rememberCoroutineScope()
     BottomAppBar(
         containerColor = main50,
-        modifier = Modifier.shadow(
-            10.dp,
-            RectangleShape,
-            false,
-            DefaultShadowColor,
-            DefaultShadowColor
-        )
+        modifier = Modifier
+            .shadow(
+                10.dp,
+                RectangleShape,
+                false,
+                DefaultShadowColor,
+                DefaultShadowColor
+            )
+            .heightIn(max = 50.dp)
     ) {
         Row(
             modifier = Modifier
@@ -53,7 +60,7 @@ fun BottomAppBar(navController: NavController) {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() } }) {
                 Icon(
 
                     Icons.Sharp.LocationOn,
@@ -63,7 +70,7 @@ fun BottomAppBar(navController: NavController) {
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
-            IconButton(onClick = { navController.navigate(Routes.favCards) }) {
+            IconButton(onClick = {   navController.navigate(Routes.favCards) }) {
                 Icon(
                     painter = painterResource(R.drawable.rakket),
                     contentDescription = "Rakket",

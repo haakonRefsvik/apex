@@ -73,6 +73,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
@@ -205,7 +206,7 @@ fun InputField(
         Spacer(modifier = Modifier.height(20.dp))
         Row {
             Log.d("moveCam -1: ", "lat: ${lat} og lon: ${lon}")
-            mapViewModel.moveMapCamera(lat, lon)
+
 
             OutlinedButton(modifier = Modifier.width(155.dp),
                 border = BorderStroke(2.dp, firstButton0),
@@ -243,7 +244,7 @@ fun InputField(
                 onClick = {
                     controller?.hide()
                     homeScreenViewModel.getWeatherByCord(lat, lon)
-                    mapViewModel.moveMapCamera(lat, lon)
+
 
                     scope.launch {
                         delay(1000)
@@ -259,10 +260,10 @@ fun InputField(
         if (state.favorites.isNotEmpty()) {
             Row(modifier = Modifier.width(340.dp)) {
                 if (state.favorites.size == 1) {
-                    Text("Favorite location:", fontSize = 14.sp, color = main0)
+                    Text("Favorite location:", fontSize = 14.sp, color = main50)
 
                 } else {
-                    Text("Favorite locations:", fontSize = 14.sp, color = main0)
+                    Text("Favorite locations:", fontSize = 14.sp, color = main50)
                 }
 
 
@@ -294,7 +295,7 @@ fun InputField(
 
                             controller?.hide()
                             homeScreenViewModel.getWeatherByCord(lat, lon)
-                            mapViewModel.moveMapCamera(lat, lon)
+
 
                             scope.launch {
                                 delay(1000)

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,6 +49,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -62,6 +64,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatter
@@ -69,6 +72,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.getCurrentDate
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
@@ -85,12 +89,13 @@ import java.time.ZonedDateTime
 fun FavoriteCardScreen(
     navController: NavHostController,
     favoriteCardViewModel: FavoriteCardViewModel,
-    detailsScreenViewModel: DetailsScreenViewModel
+    detailsScreenViewModel: DetailsScreenViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val favorites by favoriteCardViewModel.favoriteUiState.collectAsState()
     val favoriteWeatherData by favoriteCardViewModel.weatherDataUiState.collectAsState()
-
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         favoriteCardViewModel.getFavoritesFromDatabase()
         favoriteCardViewModel.removeExpiredCards()
@@ -131,13 +136,15 @@ fun FavoriteCardScreen(
         bottomBar = {
             BottomAppBar(
                 containerColor = main50,
-                modifier = Modifier.shadow(
-                    10.dp,
-                    RectangleShape,
-                    false,
-                    DefaultShadowColor,
-                    DefaultShadowColor
-                )
+                modifier = Modifier
+                    .shadow(
+                        10.dp,
+                        RectangleShape,
+                        false,
+                        DefaultShadowColor,
+                        DefaultShadowColor
+                    )
+                    .heightIn(max = 50.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -146,7 +153,10 @@ fun FavoriteCardScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { navController.navigate(Routes.home) }) {
+                    IconButton(onClick = {
+                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                        navController.popBackStack("HomeScreen", false)
+                    }) {
                         Icon(
 
                             Icons.Sharp.LocationOn,
@@ -156,10 +166,11 @@ fun FavoriteCardScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        navController.navigate(Routes.favCards) }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rakket",
+                            contentDescription = "Rocket",
                             tint = main100,
 
                             )
@@ -167,16 +178,14 @@ fun FavoriteCardScreen(
                     Spacer(modifier = Modifier.width(95.dp))
                     IconButton(
                         onClick = { navController.navigate(Routes.settings) },
-
-                        ) {
+                    ) {
                         Icon(
                             Icons.Sharp.Settings,
                             modifier = Modifier
                                 .size(40.dp),
                             contentDescription = "Settings",
                             tint = main0,
-
-                        )
+                            )
                     }
                 }
             }

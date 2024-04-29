@@ -3,19 +3,31 @@ package no.uio.ifi.in2000.rakettoppskytning.ui
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -36,14 +48,13 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
 
-import kotlin.time.toDuration
-
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
+import kotlinx.coroutines.delay
+import no.uio.ifi.in2000.rakettoppskytning.network.NetworkSnackbar
 import javax.inject.Inject
-
 
 @ExperimentalCoroutinesApi
 
@@ -62,6 +73,7 @@ class MainActivity : ComponentActivity() {
         WeatherRepository(settingsRepository, gribRepository)
     }
 
+
     private val detailsScreenViewModel by lazy {
         DetailsScreenViewModel(weatherRepo)
     }
@@ -76,7 +88,7 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SettingsViewModel(settingsRepository, db.thresholdsDao) as T
+                return SettingsViewModel(settingsRepository, db.thresholdsDao, db.rocketSpecsDao) as T
             }
         }
     }
@@ -120,7 +132,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize db and thresholdRepository after context is available
         db = AppDatabase.getInstance(this)
-        settingsRepository = SettingsRepository(db.thresholdsDao)
+        settingsRepository = SettingsRepository(db.thresholdsDao, db.rocketSpecsDao)
         favoriteCardRepository = FavoriteCardRepository(db.favoriteCardDao, db.favoriteDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
@@ -130,12 +142,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
+
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
                     val state by viewModel.state.collectAsState()
-                    val thresholdState by settingsViewModel.state.collectAsState()
+                    val thresholdState by settingsViewModel.thresholdState.collectAsState()
+                    val rocketSpecsState by settingsViewModel.rocketspecsState.collectAsState()
                     Navigation(
                         state = state,
                         onEvent = viewModel::onEvent,
@@ -145,31 +161,25 @@ class MainActivity : ComponentActivity() {
                         settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
                         thresholdState = thresholdState,
-                        onThresholdEvent = settingsViewModel::onEvent,
                         context = context,
-                        favoriteCardViewModel = favoriteCardViewModel
+                        favoriteCardViewModel = favoriteCardViewModel,
+                        onThresholdEvent = settingsViewModel::onThresholdsEvent,
+                        rocketSpecState = rocketSpecsState,
+                        onRocketSpecsEvent = settingsViewModel::onRocketSpecsEvent,
                     )
-
                     val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
-                    // Use the isNetworkAvailable value to update the UI based on network availability
+
+                    // Conditional display of NetworkSnackbar only when the network is unavailable
                     if (!isNetworkAvailable) {
-                        val toast = Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG)
-                        val toastLayout = layoutInflater.inflate(R.layout.toast, null)
-
-                        toast.view = toastLayout
-                        toast.duration = Toast.LENGTH_LONG
-
-                        val toastIcon = toastLayout.findViewById<ImageView>(R.id.toast_icon)
-                        toastIcon.setImageResource(R.drawable.info_24)
-
-                        val toastText = toastLayout.findViewById<TextView>(R.id.toast_text)
-                        toastText.text = "No internet connection"
-                        toast.show()
+                        NetworkSnackbar()
                     }
                 }
             }
         }
     }
 }
+
+
+
 

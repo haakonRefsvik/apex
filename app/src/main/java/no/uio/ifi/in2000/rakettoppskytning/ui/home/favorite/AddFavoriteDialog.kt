@@ -75,7 +75,7 @@ fun AddFavoriteDialogCorrect(
     AlertDialog(
         containerColor = main100,
         title = {
-            Text(text = displayText, color = favorite100)
+            Text(text = "Add favorite", color = favorite100)
         },
         text = {
             Column(
@@ -212,7 +212,7 @@ fun AddFavoriteDialogError(
         text = {
             if (favorite != null) {
                 Text(
-                    "This location already exits under the name ${favorite.name}",
+                    "This location is already saved under the name ${favorite.name}",
                     color = favorite100
                 )
             }

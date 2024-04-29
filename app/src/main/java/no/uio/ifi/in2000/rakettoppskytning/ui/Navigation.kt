@@ -12,6 +12,9 @@ import androidx.navigation.navArgument
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
@@ -38,7 +41,9 @@ fun Navigation(
     thresholdState: ThresholdState,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
     context: Context,
-    favoriteCardViewModel: FavoriteCardViewModel
+    favoriteCardViewModel: FavoriteCardViewModel,
+    rocketSpecState: RocketSpecState,
+    onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
 ) {
 
     val navController = rememberNavController()
@@ -53,6 +58,7 @@ fun Navigation(
                 onEvent,
                 mapViewModel,
                 settingsViewModel,
+                detailsScreenViewModel,
                 context
             )
         }
@@ -67,7 +73,9 @@ fun Navigation(
                     backStackEntry = data,
                     detailsScreenViewModel = detailsScreenViewModel,
                     favoriteCardViewModel = favoriteCardViewModel,
-                    context = context
+                    context = context,
+                    homeScreenViewModel = homeScreenViewModel,
+                    mapViewModel = mapViewModel
                 )
             }
         }
@@ -77,14 +85,18 @@ fun Navigation(
                 settingsViewModel,
                 weatherRepo,
                 onThresholdEvent,
-                thresholdState
+                onRocketSpecsEvent,
+                homeScreenViewModel,
+                thresholdState,
+                rocketSpecState
             )
         }
         composable("FavoriteCardScreen") {
             FavoriteCardScreen(
                 navController,
                 favoriteCardViewModel,
-                detailsScreenViewModel
+                detailsScreenViewModel,
+                homeScreenViewModel
             )
         }
     }
