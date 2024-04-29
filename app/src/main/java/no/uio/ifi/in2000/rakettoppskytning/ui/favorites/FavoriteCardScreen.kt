@@ -91,13 +91,11 @@ fun FavoriteCardScreen(
     val favorites by favoriteCardViewModel.favoriteUiState.collectAsState()
     val favoriteWeatherData by favoriteCardViewModel.weatherDataUiState.collectAsState()
 
-    // Function to run every time the screen is opened
     LaunchedEffect(Unit) {
         favoriteCardViewModel.getFavoritesFromDatabase()
         favoriteCardViewModel.removeExpiredCards()
         favoriteCardViewModel.refreshWeatherData()
     }
-
 
     Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
