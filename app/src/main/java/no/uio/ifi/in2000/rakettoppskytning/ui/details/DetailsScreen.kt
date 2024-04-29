@@ -1,7 +1,9 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +24,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.sharp.Favorite
+import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
+import androidx.compose.material.icons.sharp.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -44,6 +51,7 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +90,7 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
@@ -93,28 +102,46 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import android.content.Context
+import androidx.compose.runtime.setValue
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogCorrect
 
 
+@SuppressLint("ShowToast")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     navController: NavHostController,
     backStackEntry: String?,
     detailsScreenViewModel: DetailsScreenViewModel,
+    favoriteCardViewModel: FavoriteCardViewModel,
+    context: Context
 ) {
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
+    val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
+
     val time: String = backStackEntry ?: ""
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
+    val duration = Toast.LENGTH_SHORT
 
-    weatherUiState.weatherAtPos.weatherList.forEach {
-        if (it.date == time) {
-            weatherAtPosHour = listOf(it)
+    if(time.last() == 'f'){
+        favoriteUiState.weatherAtPos.weatherList.forEach {
+            if (it.date == time.dropLast(1)) {
+                weatherAtPosHour = listOf(it)
+            }
         }
+    }else {
+        weatherUiState.weatherAtPos.weatherList.forEach {
+            if (it.date == time) {
+                weatherAtPosHour = listOf(it)
+            }
 
+        }
     }
 
-
     val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
@@ -164,12 +191,12 @@ fun DetailsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigate(Routes.home)}) {
                         Icon(
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
-                            tint = main100
+                            tint = main0
                         )
                     }
                     Spacer(modifier = Modifier.width(94.dp))
@@ -206,7 +233,6 @@ fun DetailsScreen(
             }
 
             weatherAtPosHour.forEach { weatherNow ->
-
                 val fcData = weatherNow.series.data
                 val statusMap = weatherNow.valuesToLimitMap
                 val datePrefix = formatDate(weatherNow.date)
@@ -214,15 +240,53 @@ fun DetailsScreen(
                     modifier = Modifier.width(340.dp),
                 )
                 {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
+                        Text(
+                            text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 30.sp,
+                            color = main0
+                        )
+                        Spacer(modifier = Modifier.width(60.dp))
+                        IconButton(onClick = {
+                            Log.d("mais", "the fav was ${weatherNow.favorite.value}")
+                            detailsScreenViewModel.toggleFavorite(
+                                lat = weatherNow.lat,
+                                lon = weatherNow.lon,
+                                date = weatherNow.date,
+                                !weatherNow.favorite.value
 
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 30.sp,
-                        color = main0
-                    )
+                            )
+                            if(weatherNow.favorite.value){
+                                favoriteCardViewModel.addFavoriteCard(
+                                    lat = weatherNow.lat.toString(),
+                                    lon = weatherNow.lon.toString(),
+                                    date = weatherNow.date
+                                )
+                                val toast = Toast.makeText(context, "Added card to favorites", duration)
+                                toast.show()
+                            }
+                            else{
+                                favoriteCardViewModel.deleteFavoriteCard(
+                                    lat = weatherNow.lat.toString(),
+                                    lon = weatherNow.lon.toString(),
+                                    date = weatherNow.date
+                                )
+                                val toast = Toast.makeText(context, "Removed card from favorites", duration)
+                                toast.show()
+                            }
+                        }) {
+                            Icon(
+                                if (weatherNow.favorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                modifier = Modifier.size(30.dp),
+                                contentDescription = "favorited",
+                                tint = main0
+                            )
+                        }
+
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
+
                 }
 
                 val listState = rememberLazyListState()

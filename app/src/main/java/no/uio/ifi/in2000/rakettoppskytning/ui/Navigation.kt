@@ -17,6 +17,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardScreen
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
@@ -36,7 +37,8 @@ fun Navigation(
     detailsScreenViewModel: DetailsScreenViewModel,
     thresholdState: ThresholdState,
     onThresholdEvent: (ThresholdsEvent) -> Unit,
-    context: Context
+    context: Context,
+    favoriteCardViewModel: FavoriteCardViewModel
 ) {
 
     val navController = rememberNavController()
@@ -63,7 +65,9 @@ fun Navigation(
                 DetailsScreen(
                     navController = navController,
                     backStackEntry = data,
-                    detailsScreenViewModel = detailsScreenViewModel
+                    detailsScreenViewModel = detailsScreenViewModel,
+                    favoriteCardViewModel = favoriteCardViewModel,
+                    context = context
                 )
             }
         }
@@ -79,6 +83,8 @@ fun Navigation(
         composable("FavoriteCardScreen") {
             FavoriteCardScreen(
                 navController,
+                favoriteCardViewModel,
+                detailsScreenViewModel
             )
         }
     }

@@ -1,41 +1,38 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.favorites
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -43,10 +40,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
@@ -56,107 +59,45 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import androidx.room.RoomDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
-import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao_Impl
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Data
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Instant
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
-import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
-import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
+import no.uio.ifi.in2000.rakettoppskytning.model.formatter
+import no.uio.ifi.in2000.rakettoppskytning.model.getCurrentDate
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.ThresholdCard
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
-import java.io.File
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
-class FavCard(val data: WeatherAtPosHour, val name: String = "")
-@Preview
-@Composable
-fun FavPreview(){
-
-    val p = WeatherAtPosHour(
-        date = "2024-04-21T09:00:44Z",
-        hour = 1,
-        lat = 59.99,
-        lon =  11.11,
-        series = Series("2024-04-21T09:00:00Z", Data(Instant(Details(
-            0.0,
-            0.0,
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, )))),
-        verticalProfile = VerticalProfile(3000, 59.99, 11.11, File("")),
-        soilMoisture = 30,
-        valuesToLimitMap = hashMapOf(),
-        closeToLimitScore = 0.0
-    )
-
-    val f = WeatherAtPosHour(
-        date = "2024-04-21T11:00:44Z",
-        hour = 2,
-        lat = 52.99,
-        lon =  10.11,
-        series = Series("2024-04-21T09:00:00Z", Data(Instant(Details(
-            0.0,
-            0.0,
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, )))),
-        verticalProfile = VerticalProfile(3000, 59.99, 11.11, File("")),
-        soilMoisture = 30,
-        valuesToLimitMap = hashMapOf(),
-        closeToLimitScore = 0.0
-    )
-    val p1 = FavCard(p, "")
-    val f1 = FavCard(f, "Blindern")
-
-    FavoriteCardScreen(
-        navController = rememberNavController(),
-    )
-
-}
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteCardScreen(
     navController: NavHostController,
+    favoriteCardViewModel: FavoriteCardViewModel,
+    detailsScreenViewModel: DetailsScreenViewModel
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val favorites by favoriteCardViewModel.favoriteUiState.collectAsState()
+    val favoriteWeatherData by favoriteCardViewModel.weatherDataUiState.collectAsState()
+
+    // Function to run every time the screen is opened
+    LaunchedEffect(Unit) {
+        favoriteCardViewModel.getFavoritesFromDatabase()
+        favoriteCardViewModel.removeExpiredCards()
+        favoriteCardViewModel.refreshWeatherData()
+    }
+
 
     Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
@@ -258,42 +199,129 @@ fun FavoriteCardScreen(
                 fontSize = 35.sp,
                 color = settings0
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.width(60.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+            Row {
+                Button(modifier = Modifier.width(155.dp),
+                    colors = ButtonColors(
+                        containerColor = secondButton0,
+                        contentColor = secondButton100,
+                        disabledContainerColor = secondButton0,
+                        disabledContentColor = secondButton100
+                    ),
+                    onClick = {
+                        favoriteCardViewModel.refreshWeatherData()
+                    }) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        modifier = Modifier.size(15.dp),
+                        contentDescription = "Edit",
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text("Update cards")
+                }
+                Spacer(modifier = Modifier.width(25.dp))
 
-            HorizontalDivider(
-                modifier = Modifier.width(340.dp),
-                thickness = 1.dp, color = settings0
-            )
+                Button(modifier = Modifier.width(155.dp),
+                    colors = ButtonColors(
+                        containerColor = secondButton0,
+                        contentColor = secondButton100,
+                        disabledContainerColor = secondButton0,
+                        disabledContentColor = secondButton100
+                    ),
+                    onClick = {
+                        favorites.favorites.forEach {
+                            favoriteCardViewModel.deleteFavoriteCard(it.lat, it.lon, it.date)
+                        }
+                    }) {
+                        Icon(
+                            Icons.Default.Clear,
+                            modifier = Modifier.size(15.dp),
+                            contentDescription = "Edit",
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text("Remove all")
+                    }
+            }
             Spacer(modifier = Modifier.height(15.dp))
 
             LazyColumn(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                item{
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Text(text = "No cards were found...", color = Color.White)
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Text(
-                            text = "Remember, expired cards\n will be removed automatically", 
-                            color = Color.White,
-                            textAlign = TextAlign.Center
-                        )
+                if(favorites.favorites.isEmpty()){
+                    item{
 
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Text(text = "No cards were found...", color = Color.White)
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Text(
+                                text = "Remember, expired cards\n will be removed automatically",
+                                color = Color.White,
+                                textAlign = TextAlign.Center
+                            )
+
+                        }
                     }
                 }
-                /*
-                favorites.forEach { input ->
+                if (favoriteCardViewModel.isUpdatingWeatherData.value) {
                     item {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        FavoriteCard(name = input.name, input = input, navController = navController)
+                        CircularProgressIndicator(color = main0)
+                        Spacer(modifier = Modifier.height(30.dp))
                     }
                 }
+                else {
+                    favorites.favorites.sortedBy {
+                        ZonedDateTime.parse(it.date, formatter.withZone(ZoneOffset.UTC)) }
+                        .forEach { fav ->
+                        run {
+                            item {
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                 */
+                                val name = remember(fav) {
+                                    mutableStateOf("")
+                                }
+                                val weatherData = remember(favoriteCardViewModel.refreshKey) {
+                                    mutableStateOf(listOf<WeatherAtPosHour>())
+                                }
+
+                                LaunchedEffect(fav) {
+                                    name.value = favoriteCardViewModel.findNameByLatLon(
+                                        fav.lat.toDouble(), fav.lon.toDouble()
+                                    ) ?: name.value
+                                }
+
+                                LaunchedEffect(favoriteCardViewModel.refreshKey.intValue) {
+                                    val dataFromApi = favoriteCardViewModel.getFavoriteWeatherData(
+                                        fav.lat,
+                                        fav.lon,
+                                        fav.date
+                                    )
+
+                                    if (dataFromApi != null) {
+                                        weatherData.value = listOf(dataFromApi)
+                                    }
+
+                                    Log.d("update", "refreshing cards")
+                                }
+
+                                FavoriteCardElement(
+                                    name = name.value,
+                                    fav.lat,
+                                    fav.lon,
+                                    fav.date,
+                                    navController,
+                                    favoriteCardViewModel,
+                                    weatherData = weatherData.value.firstOrNull()
+                                )
+                            }
+                        }
+                    }
+                }
             }
+
         }
     }
 }

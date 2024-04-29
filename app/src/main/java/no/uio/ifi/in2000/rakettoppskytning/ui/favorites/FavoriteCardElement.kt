@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.favorites
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,13 +11,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,14 +30,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.model.extractHourAndMinutes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 
 @Composable
-fun FavoriteCard(name: String, input: FavCard, navController: NavController){
+fun FavoriteCardElement(
+    name: String,
+    lat: String,
+    lon: String,
+    date: String,
+    navController: NavController,
+    favoriteCardViewModel: FavoriteCardViewModel,
+    weatherData: WeatherAtPosHour?
+){
     Spacer(modifier = Modifier.height(7.5.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -51,7 +70,8 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
                 disabledContentColor = weatherCard0
             ),
             onClick = {
-                navController.navigate("DetailsScreen/${input.data.date}")
+                favoriteCardViewModel.getWeatherByFavorite(lat.toDouble(), lon.toDouble(), date)
+                navController.navigate("DetailsScreen/${date}f")
             }
         )
         {
@@ -60,15 +80,19 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
                     modifier = Modifier
                         .width(10.dp)
                         .fillMaxHeight()
-                        .background(getColorFromStatusValue(input.data.closeToLimitScore))
+                        .background(
+                            getColorFromStatusValue(weatherData?.closeToLimitScore?: -1.0)
+                        )
                 )
+                Spacer(modifier = Modifier.width(10.dp))
+
                 Row(
                     modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(
-                        modifier = Modifier.width(150.dp),
+                        modifier = Modifier.width(180.dp),
                         horizontalAlignment = Alignment.Start,
                     ) {
 
@@ -85,7 +109,7 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
                             }
 
                             Spacer(modifier = Modifier.width(13.dp))
-                            Column {
+                            Column(modifier = Modifier.fillMaxWidth()) {
                                 if(name != ""){
                                     Row {
 
@@ -97,9 +121,9 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
                                     }
                                 }
                                 else {
-                                    Row {
+                                    val formatString = "%.${5}f"
 
-
+                                    Row(modifier = Modifier.fillMaxWidth()) {
                                         Text(
                                             text = "Lat:",
                                             fontSize = 17.sp,
@@ -108,14 +132,14 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
                                         Spacer(modifier = Modifier.width(10.dp))
 
                                         Text(
-                                            text = input.data.lat.toString(),
+                                            text = String.format(formatString, lat.toDouble()),
                                             fontSize = 17.sp,
                                             color = weatherCard0
                                         )
                                     }
 
                                     Spacer(modifier = Modifier.height(3.dp))
-                                    Row {
+                                    Row(modifier = Modifier.fillMaxWidth()) {
                                         Text(
                                             text = "Lon:",
                                             fontSize = 17.sp,
@@ -124,7 +148,7 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
                                         Spacer(modifier = Modifier.width(7.dp))
 
                                         Text(
-                                            text = input.data.lon.toString(),
+                                            text = String.format(formatString, lon.toDouble()),
                                             fontSize = 17.sp,
                                             color = weatherCard0
                                         )
@@ -134,30 +158,43 @@ fun FavoriteCard(name: String, input: FavCard, navController: NavController){
 
                         }
                     }
-                    Spacer(modifier = Modifier.width(70.dp))
+                    Spacer(modifier = Modifier.width(30.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier.width(70.dp),
+                            horizontalAlignment = Alignment.Start
 
-                    Column() {
-                        Text(
-                            text = input.data.date.substring(11, 16),
-                            fontSize = 20.sp,
-                            color = weatherCard0.copy(alpha = 0.7F)
-                        )
-                        Text(
-                            text = formatDate(input.data.series.time),
-                            fontSize = 13.sp,
-                            softWrap = true,
-                            maxLines = 1,
-                            color = weatherCard0.copy(alpha = 0.7F)
-                        )
+                        ) {
+
+                            Text(
+                                text = extractHourAndMinutes(date),
+                                fontSize = 20.sp,
+                                color = weatherCard0.copy(alpha = 0.7F)
+                            )
+                            Text(
+                                text = formatDate(date),
+                                fontSize = 13.sp,
+                                softWrap = true,
+                                maxLines = 1,
+                                color = weatherCard0.copy(alpha = 0.7F)
+                            )
+                        }
+                        IconButton(modifier = Modifier
+                            .size(30.dp)
+                            .padding(end = 5.dp),
+                            onClick = {
+                                favoriteCardViewModel.deleteFavoriteCard(lat, lon, date)
+                            }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Delete favorite",
+                                tint = main50
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                        contentDescription = "Arrow",
-                        tint = weatherCard0
-                    )
                 }
 
             }

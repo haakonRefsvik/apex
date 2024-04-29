@@ -347,7 +347,6 @@ fun InputField(
                                     )
 
                                 }
-
                             }
                         }
                     }

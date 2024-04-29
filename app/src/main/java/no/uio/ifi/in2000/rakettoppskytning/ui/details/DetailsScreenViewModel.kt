@@ -7,10 +7,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.HistoricalDataUIState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 
-class DetailsScreenViewModel(repo: WeatherRepository) : ViewModel() {
+class DetailsScreenViewModel(val repo: WeatherRepository) : ViewModel() {
+
+    val favoriteUiState: StateFlow<WeatherUiState> =
+        repo.observeFavorites().map { WeatherUiState(weatherAtPos = it) }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = WeatherUiState()
+        )
 
     val weatherUiState: StateFlow<WeatherUiState> =
         repo.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(
@@ -19,4 +25,7 @@ class DetailsScreenViewModel(repo: WeatherRepository) : ViewModel() {
             initialValue = WeatherUiState()
         )
 
+    fun toggleFavorite(lat: Double, lon: Double, date: String, value: Boolean) {
+        repo.toggleFavorite(lat, lon, date, value)
+    }
 }

@@ -19,4 +19,7 @@ interface FavoriteDao {
 
     @Query("SELECT * FROM favorite")
     fun getFavorites(): Flow<List<Favorite>>
+
+    @Query("SELECT name FROM favorite WHERE lat = :lat AND lon = :lon")
+    fun getFavoriteByLatLon(lat: String, lon: String): String?
 }

@@ -55,7 +55,8 @@ fun AddFavoriteDialogCorrect(
     onEvent: (FavoriteEvent) -> Unit,
     lat: Double,
     lon: Double,
-    mapViewModel: MapViewModel, context: Context
+    context: Context,
+    displayText: String = "Add favorite"
 ) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -74,7 +75,7 @@ fun AddFavoriteDialogCorrect(
     AlertDialog(
         containerColor = main100,
         title = {
-            Text(text = "Legg til favoritt", color = favorite100)
+            Text(text = displayText, color = favorite100)
         },
         text = {
             Column(
@@ -148,7 +149,7 @@ fun AddFavoriteDialogCorrect(
                     )
                 )
                 if (isNameAlreadyUsed) {
-                    Text("Dette navnet er allerede i bruk", color = Color.Red)
+                    Text("This name is already in use", color = Color.Red)
                 }
             }
         },
@@ -194,7 +195,6 @@ fun AddFavoriteDialogError(
     onEvent: (FavoriteEvent) -> Unit,
     lat: Double,
     lon: Double,
-    mapViewModel: MapViewModel
 ) {
     val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
     AlertDialog(
@@ -207,12 +207,12 @@ fun AddFavoriteDialogError(
             )
         },
         title = {
-            Text(text = "Legg til favoritt", color = favorite100)
+            Text(text = "Add favorite", color = favorite100)
         },
         text = {
             if (favorite != null) {
                 Text(
-                    "Denne lokasjonen er allerede lagret under navnet ${favorite.name}",
+                    "This location already exits under the name ${favorite.name}",
                     color = favorite100
                 )
             }
@@ -249,7 +249,6 @@ fun AddFavoriteDialog(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            mapViewModel = mapViewModel
         )
     } else {
         AddFavoriteDialogCorrect(
@@ -257,7 +256,6 @@ fun AddFavoriteDialog(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            mapViewModel = mapViewModel,
             context = context
         )
     }

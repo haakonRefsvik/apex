@@ -40,6 +40,8 @@ import kotlin.time.toDuration
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import javax.inject.Inject
 
 
@@ -54,6 +56,8 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var settingsRepository: SettingsRepository // Change to lateinit var
     private val gribRepository = GribRepository()
+    private lateinit var favoriteCardRepository: FavoriteCardRepository
+
     private val weatherRepo: WeatherRepository by lazy {
         WeatherRepository(settingsRepository, gribRepository)
     }
@@ -61,6 +65,7 @@ class MainActivity : ComponentActivity() {
     private val detailsScreenViewModel by lazy {
         DetailsScreenViewModel(weatherRepo)
     }
+
 
     //val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
     private val mapViewModel by lazy {
@@ -81,6 +86,15 @@ class MainActivity : ComponentActivity() {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return HomeScreenViewModel(weatherRepo, db.favoriteDao) as T
+            }
+        }
+    }
+
+    private val favoriteCardViewModel by viewModels<FavoriteCardViewModel> {
+        object : ViewModelProvider.Factory {
+
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return FavoriteCardViewModel(weatherRepo, favoriteCardRepository) as T
             }
         }
     }
@@ -107,6 +121,7 @@ class MainActivity : ComponentActivity() {
         // Initialize db and thresholdRepository after context is available
         db = AppDatabase.getInstance(this)
         settingsRepository = SettingsRepository(db.thresholdsDao)
+        favoriteCardRepository = FavoriteCardRepository(db.favoriteCardDao, db.favoriteDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
 
@@ -131,7 +146,8 @@ class MainActivity : ComponentActivity() {
                         mapViewModel = mapViewModel,
                         thresholdState = thresholdState,
                         onThresholdEvent = settingsViewModel::onEvent,
-                        context = context
+                        context = context,
+                        favoriteCardViewModel = favoriteCardViewModel
                     )
 
                     val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
