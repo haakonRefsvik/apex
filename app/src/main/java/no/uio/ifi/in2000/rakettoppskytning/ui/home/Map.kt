@@ -41,6 +41,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.FavoriteViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 import kotlin.math.*
@@ -158,7 +159,7 @@ fun Map(
 fun Make3dtrajectory(
     mapViewModel: MapViewModel,
     detailsScreenViewModel: DetailsScreenViewModel,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
 ) {
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
@@ -167,14 +168,23 @@ fun Make3dtrajectory(
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
+    val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
 
-    weatherUiState.weatherAtPos.weatherList.forEach {
-        if (it.date == time) {
-            weatherAtPosHour = listOf(it)
+    if(time.last() == 'f'){
+        favoriteUiState.weatherAtPos.weatherList.forEach {
+            if (it.date == time.dropLast(1)) {
+                weatherAtPosHour = listOf(it)
+            }
         }
+    }else {
+        weatherUiState.weatherAtPos.weatherList.forEach {
+            if (it.date == time) {
+                weatherAtPosHour = listOf(it)
+            }
 
+        }
     }
     val rocketSpecs = settingsViewModel.getRocketSpec()
 

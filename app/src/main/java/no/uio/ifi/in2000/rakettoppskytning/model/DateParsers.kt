@@ -1,20 +1,21 @@
 package no.uio.ifi.in2000.rakettoppskytning.model
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
-import org.joda.time.Hours
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 
+
+/**
+ * DATES ARE ON ISO-STANDARD FORMAT LIKE 2024-04-27T14:00:00Z
+ * */
 
 fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
     return try {
@@ -26,6 +27,18 @@ fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
         -1
     }
 }
+
+val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT)
+
+
+/** Returns current time to the nearest hour */
+fun getCurrentDate(minusHours: Int = 0): String {
+    val currentDateTime = LocalDateTime.now().minusHours(minusHours.toLong())
+    val formatter = DateTimeFormatter.ISO_DATE_TIME
+    val str = currentDateTime.format(formatter)
+    return "${str.substring(0, 13)}:00:00Z"
+}
+
 
 fun getHourFromDate(date: String): Int {
     return try {
@@ -71,13 +84,26 @@ fun getDayName(dateString: String, dayOffset: Int): String{
 /** Returns an appropriate display of the date*/
 
 fun formatDate(date: String): String {
-    val daysAhead = getNumberOfDaysAhead(date)
-    val formattedDate: String = when{
-        daysAhead <= 6-> getDayName(date, 0)
-        daysAhead > 6 -> getDayAndMonth(date)
-        else -> ""
+    return try {
+        val daysAhead = getNumberOfDaysAhead(date)
+        val formattedDate: String = when{
+            daysAhead <= 6-> getDayName(date, 0)
+            daysAhead > 6 -> getDayAndMonth(date)
+            else -> ""
+        }
+
+        formattedDate
+    }catch (e: Exception){
+        date
     }
 
-    return formattedDate
 }
 
+fun extractHourAndMinutes(dateString: String): String {
+    return try {
+        val hourAndMinutes = dateString.substring(11, 16)
+        return hourAndMinutes
+    }catch (e: Exception){
+        dateString
+    }
+}

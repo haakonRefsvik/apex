@@ -63,12 +63,30 @@ android {
 
 dependencies {
     implementation("androidx.media3:media3-common:1.2.1")
+    implementation("androidx.test:core-ktx:1.5.0")
+    implementation("androidx.media3:media3-test-utils:1.3.1")
     val ktorVersion = "2.3.8"
     val navVersion = "2.7.7"
     val kotlinVersion = "1.9.22"
     val material3Version = "3:1.2.0"
     val netcdfJavaVersion = "5.5.2"
     val slf4jVersion = "1.7.30"
+
+    androidTestImplementation("androidx.test:core-ktx:1.4.0")
+
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
+
+    // JUnit4 Framework
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.3")
+
+    // Truth Assertions
+    androidTestImplementation("androidx.test.ext:truth:1.4.0")
+    androidTestImplementation("com.google.truth:truth:1.1.3")
+
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+
 
     implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.14")
     implementation("com.patrykandpatrick.vico:compose-m2:2.0.0-alpha.14")

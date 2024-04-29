@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.settings
 
+import android.util.Log
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
@@ -83,7 +84,10 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
             limit = thresholds[ThresholdType.MAX_WIND.name]?: 0.0,
         )
         val c4 = getCloseness(
-            value = fc1?.precipitationAmount?: Double.MAX_VALUE ,
+            value = fc1?.precipitationAmount?:
+            series.data.next6Hours?.details?.precipitationAmount?:
+            series.data.next12Hours?.details?.probabilityOfPrecipitation?: 0.0
+            ,
             limit = thresholds[ThresholdType.MAX_PRECIPITATION.name]?: 0.0,
         )
 

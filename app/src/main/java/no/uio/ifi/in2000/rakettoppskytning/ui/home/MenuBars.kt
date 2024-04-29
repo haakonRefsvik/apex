@@ -31,9 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
+import okhttp3.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,37 +61,24 @@ fun BottomAppBar(navController: NavController, homeScreenViewModel: HomeScreenVi
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() } }) {
-
-                val tint =
-                    if (homeScreenViewModel.scaffold.bottomSheetState.currentValue.toString() == "PartiallyExpanded") {
-                        main100
-                    } else {
-                        main0
-                    }
                 Icon(
 
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Location",
-                    tint = tint
+                    tint = main100
                 )
             }
             Spacer(modifier = Modifier.width(94.dp))
-            IconButton(onClick = { scope.launch { homeScreenViewModel.scaffold.bottomSheetState.expand() } }) {
-                val tint =
-                    if (homeScreenViewModel.scaffold.bottomSheetState.currentValue.toString() == "Expanded") {
-                        main100
-                    } else {
-                        main0
-                    }
+            IconButton(onClick = {   navController.navigate(Routes.favCards) }) {
                 Icon(
                     painter = painterResource(R.drawable.rakket),
                     contentDescription = "Rakket",
-                    tint = tint,
+                    tint = main0,
                 )
             }
             Spacer(modifier = Modifier.width(95.dp))
-            IconButton(onClick = { navController.navigate("ThresholdScreen") }) {
+            IconButton(onClick = { navController.navigate(Routes.settings) }) {
                 Icon(
                     Icons.Sharp.Settings,
                     modifier = Modifier.size(40.dp),

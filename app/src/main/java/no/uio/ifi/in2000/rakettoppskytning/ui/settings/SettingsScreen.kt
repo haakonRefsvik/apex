@@ -1,11 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material.icons.sharp.Menu
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,7 +48,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalFocusManager
@@ -73,6 +68,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
@@ -88,29 +84,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ThresholdPreview() {
-    val navController = rememberNavController()
-    ThresholdScreen(
-        navController = navController,
-        SettingsViewModel(ThresholdsDao()),
-        WeatherRepository(ThresholdRepository(), GribRepository())
-    )
-}
-
-
- */
-
-
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ThresholdScreen(
+fun SettingsScreen(
     navController: NavHostController,
     settingsViewModel: SettingsViewModel,
     weatherRepository: WeatherRepository,
@@ -190,9 +168,7 @@ fun ThresholdScreen(
                     }
                     Spacer(modifier = Modifier.width(94.dp))
                     IconButton(onClick = {
-                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.expand() }
-                        navController.popBackStack("HomeScreen", false)
-                    }) {
+                        navController.navigate(Routes.favCards) }) {
                         Icon(
                             painter = painterResource(R.drawable.rakket),
                             contentDescription = "Rocket",
@@ -202,8 +178,7 @@ fun ThresholdScreen(
                     }
                     Spacer(modifier = Modifier.width(95.dp))
                     IconButton(
-                        onClick = { /*TODO*/ },
-
+                        onClick = { navController.navigate(Routes.settings) },
                         ) {
                         Icon(
                             Icons.Sharp.Settings,
@@ -532,7 +507,6 @@ fun ThresholdScreen(
             }
         }
     }
-
 }
 
 @SuppressLint("SuspiciousIndentation")

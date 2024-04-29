@@ -1,4 +1,12 @@
 package no.uio.ifi.in2000.rakettoppskytning
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.compose.ui.platform.LocalContext
+import androidx.media3.test.utils.TestUtil
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.flow.map
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
@@ -7,13 +15,27 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getSigmoidRatios
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
+import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
+import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
+import no.uio.ifi.in2000.rakettoppskytning.model.getCurrentDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
+import org.junit.After
 import org.junit.Test
-
 import org.junit.Assert.*
+import org.junit.Before
+import org.junit.runner.RunWith
+import java.io.IOException
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -107,6 +129,54 @@ class ExampleUnitTest {
 
         assertEquals(expected, result)
     }
+
+    @Test
+    fun getTime(){
+        val exp = "2024-04-27T21:00:00Z"
+        val result = getCurrentDate()
+
+        assertEquals(exp, result)
+    }
+
+    /*
+    @RunWith(AndroidJUnit4::class)
+    class SimpleEntityReadWriteTest {
+        private lateinit var favoriteCardDao: FavoriteCardDao
+        private lateinit var favoriteDao: FavoriteDao
+        private lateinit var db: AppDatabase
+
+        @Before
+        fun createDb() {
+            val context = ApplicationProvider.getApplicationContext<Context>()
+            db = Room.inMemoryDatabaseBuilder(
+                context, AppDatabase::class.java).build()
+            favoriteCardDao = db.favoriteCardDao
+            favoriteDao = db.favoriteDao
+
+        }
+
+        @After
+        @Throws(IOException::class)
+        fun closeDb() {
+            db.close()
+        }
+
+        @Test
+        @Throws(Exception::class)
+        suspend fun writeUserAndReadInList() {
+            val card: FavoriteCard = FavoriteCard("59.0", "11.0", "Now")
+            val place: Favorite = Favorite("Blindern","59.0", "11.0", )
+
+            favoriteCardDao.insertFavoriteCard(card)
+            favoriteDao.upsertFavorite(place)
+
+            val byName = favoriteDao.getFavoriteByLatLon("59.0", "11.0")
+
+            assertEquals(byName.map { it?.name }.toString(), "Blindern")
+        }
+    }
+
+     */
 
     @Test
     fun testTri(){
@@ -262,5 +332,6 @@ class ExampleUnitTest {
         val r7 = getSigmoidRatios(l, u, alt)
         assertEquals(null, r7)
     }
+
 
 }

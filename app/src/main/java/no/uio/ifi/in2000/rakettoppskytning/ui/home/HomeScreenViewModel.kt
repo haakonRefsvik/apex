@@ -35,6 +35,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
 import java.text.SimpleDateFormat
@@ -43,7 +44,7 @@ import java.util.Date
 import kotlin.math.roundToInt
 
 data class WeatherUiState(
-    val weatherAtPos: WeatherAtPos = WeatherAtPos()
+    val weatherAtPos: WeatherData = WeatherAtPos()
 )
 
 data class HistoricalDataUIState(

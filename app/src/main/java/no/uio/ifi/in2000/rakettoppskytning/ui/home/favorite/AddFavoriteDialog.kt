@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.ui.favorite
+package no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite
 
 import android.content.Context
 import android.util.Log
@@ -55,7 +55,8 @@ fun AddFavoriteDialogCorrect(
     onEvent: (FavoriteEvent) -> Unit,
     lat: Double,
     lon: Double,
-    mapViewModel: MapViewModel, context: Context
+    context: Context,
+    displayText: String = "Add favorite"
 ) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -194,7 +195,6 @@ fun AddFavoriteDialogError(
     onEvent: (FavoriteEvent) -> Unit,
     lat: Double,
     lon: Double,
-    mapViewModel: MapViewModel
 ) {
     val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
     AlertDialog(
@@ -249,7 +249,6 @@ fun AddFavoriteDialog(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            mapViewModel = mapViewModel
         )
     } else {
         AddFavoriteDialogCorrect(
@@ -257,7 +256,6 @@ fun AddFavoriteDialog(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            mapViewModel = mapViewModel,
             context = context
         )
     }

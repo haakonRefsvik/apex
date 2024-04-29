@@ -1,8 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.forecast
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +21,12 @@ import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherFavorites
 import kotlin.math.roundToInt
 
 
@@ -33,11 +35,29 @@ class WeatherRepository(
     val gribRepository: GribRepository
 ) {
     private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
+    private val _weatherAtPosFavorite = MutableStateFlow(WeatherFavorites())
     private lateinit var _weatherAtPosCpy: WeatherAtPos
 
     fun observeWeather(): StateFlow<WeatherAtPos> = _weatherAtPos.asStateFlow()
+    fun observeFavorites(): StateFlow<WeatherFavorites> = _weatherAtPosFavorite.asStateFlow()
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    fun toggleFavorite(lat: Double, lon: Double, date: String, value: Boolean){
+        val weatherList = _weatherAtPos.value.weatherList.find {
+            it.date == date && it.lat == lat && it.lon == lon
+        }
+        if (weatherList != null) {
+            weatherList.favorite.value = value
+        }
+
+        val favoriteList = _weatherAtPosFavorite.value.weatherList.find {
+            it.date == date && it.lat == lat && it.lon == lon
+        }
+        if (favoriteList != null) {
+            favoriteList.favorite.value = value
+        }
+
+    }
+
     fun thresholdValuesUpdated() {
         val weatherAtPos = _weatherAtPos.value
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
@@ -73,14 +93,10 @@ class WeatherRepository(
     }
 
     /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun loadWeather(lat: Double, lon: Double) {
         try {
             val list = mutableListOf<WeatherAtPosHour>()
-
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
-            Log.d("mais", "updated: ${allForecasts?.properties?.meta?.updatedAt}" )
-
             val gribFiles: List<File> = loadGribFromDataSource()
             val allVerticalProfiles: List<VerticalProfile> =
                 makeVerticalProfilesFromGrib(gribFiles, lat, lon)
@@ -122,7 +138,70 @@ class WeatherRepository(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun loadAllFavoriteCards(favorites: List<FavoriteCard>, expiredData: Boolean){
+        val list = mutableListOf<WeatherAtPosHour>()
+        favorites.forEach {favCard ->
+            val match = _weatherAtPosFavorite.value.weatherList.find{it.date == favCard.date && it.lon == favCard.lon.toDouble() && it.lat == favCard.lat.toDouble()}
+            if(match != null && !expiredData){
+                Log.d("loadFavorites", "found existing card, skipping...")
+                list.add(match)
+                return@forEach
+            }
+            val weatherAtPos = loadFavoriteCard(favCard.lat.toDouble(), favCard.lon.toDouble(), favCard.date)
+            weatherAtPos.weatherList.firstOrNull()?.let { weatherHour -> list.add(weatherHour) }
+        }
+
+        val weatherData = WeatherFavorites(list)
+
+        _weatherAtPosFavorite.update { weatherData }
+    }
+
+    suspend fun loadFavoriteCard(lat: Double, lon: Double, desiredDate: String): WeatherAtPos {
+        try {
+            val list = mutableListOf<WeatherAtPosHour>()
+            val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
+            val gribFiles: List<File> = loadGribFromDataSource()
+            val allVerticalProfiles: List<VerticalProfile> =
+                makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+            makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+
+
+            val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
+            val soilIndex =
+                getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
+
+            allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
+                if (series.time != desiredDate){
+                    return@forEachIndexed
+                }
+                val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
+                val date = series.time
+                val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
+                val closenessMap = settingsRepository.getValueClosenessMap(series, vp)
+                val score = settingsRepository.getReadinessScore(closenessMap)
+                vp?.addGroundInfo(series)
+                val weatherAtPosHour = WeatherAtPosHour(
+                    date,
+                    getHourFromDate(date),
+                    lat,
+                    lon,
+                    series,
+                    vp,
+                    soilMoisture,
+                    closenessMap,
+                    score,
+                    favorite = mutableStateOf(true)
+                )
+                list.add(weatherAtPosHour)
+            }
+
+            return WeatherAtPos(list)
+
+        }catch (e: Exception) {
+            return WeatherAtPos()
+        }
+    }
+
     private fun getVerticalProfileNearestHour(
         allVp: List<VerticalProfile>,
         time: String
@@ -175,7 +254,6 @@ class WeatherRepository(
         return@coroutineScope deferredList.awaitAll<VerticalProfile>()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun loadGribFromDataSource(): List<File> {
         val gribFiles: List<File> = try {
             gribRepository.getGribFiles()

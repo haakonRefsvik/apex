@@ -6,14 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 
 @Database(
-    entities = [Favorite::class, Thresholds::class, RocketSpecs::class],
-    version = 4
+    entities = [Favorite::class, Thresholds::class, FavoriteCard::class, RocketSpecs::class],
+    version = 5
 )
 abstract class AppDatabase: RoomDatabase() {
 
+    abstract val favoriteCardDao: FavoriteCardDao
     abstract val favoriteDao: FavoriteDao
     abstract val thresholdsDao: ThresholdsDao
     abstract val rocketSpecsDao: RocketSpecsDao

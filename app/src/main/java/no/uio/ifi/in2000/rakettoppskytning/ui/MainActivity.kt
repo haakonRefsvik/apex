@@ -50,10 +50,10 @@ import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import kotlinx.coroutines.delay
 import no.uio.ifi.in2000.rakettoppskytning.network.NetworkSnackbar
-
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -63,11 +63,12 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     val context = this;
 
-
     private lateinit var db: AppDatabase // Change to lateinit var
 
     private lateinit var settingsRepository: SettingsRepository // Change to lateinit var
     private val gribRepository = GribRepository()
+    private lateinit var favoriteCardRepository: FavoriteCardRepository
+
     private val weatherRepo: WeatherRepository by lazy {
         WeatherRepository(settingsRepository, gribRepository)
     }
@@ -77,17 +78,12 @@ class MainActivity : ComponentActivity() {
         DetailsScreenViewModel(weatherRepo)
     }
 
+
     //val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
     private val mapViewModel by lazy {
         MapViewModel()
     }
 
-    /*
-    private val thresholdViewModel by lazy {
-        ThresholdViewModel(thresholdRepository)
-    }
-
-     */
     private val settingsViewModel by viewModels<SettingsViewModel> {
         object : ViewModelProvider.Factory {
 
@@ -102,6 +98,15 @@ class MainActivity : ComponentActivity() {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return HomeScreenViewModel(weatherRepo, db.favoriteDao) as T
+            }
+        }
+    }
+
+    private val favoriteCardViewModel by viewModels<FavoriteCardViewModel> {
+        object : ViewModelProvider.Factory {
+
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return FavoriteCardViewModel(weatherRepo, favoriteCardRepository) as T
             }
         }
     }
@@ -128,6 +133,7 @@ class MainActivity : ComponentActivity() {
         // Initialize db and thresholdRepository after context is available
         db = AppDatabase.getInstance(this)
         settingsRepository = SettingsRepository(db.thresholdsDao, db.rocketSpecsDao)
+        favoriteCardRepository = FavoriteCardRepository(db.favoriteCardDao, db.favoriteDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
 
@@ -155,13 +161,12 @@ class MainActivity : ComponentActivity() {
                         settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
                         thresholdState = thresholdState,
+                        context = context,
+                        favoriteCardViewModel = favoriteCardViewModel,
                         onThresholdEvent = settingsViewModel::onThresholdsEvent,
                         rocketSpecState = rocketSpecsState,
                         onRocketSpecsEvent = settingsViewModel::onRocketSpecsEvent,
-                        context = context
                     )
-
-
                     val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
 
@@ -169,10 +174,6 @@ class MainActivity : ComponentActivity() {
                     if (!isNetworkAvailable) {
                         NetworkSnackbar()
                     }
-
-
-
-
                 }
             }
         }
