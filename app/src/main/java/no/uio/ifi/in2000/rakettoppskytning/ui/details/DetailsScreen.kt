@@ -89,7 +89,9 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontStyle
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
@@ -123,7 +125,7 @@ fun DetailsScreen(
                 weatherAtPosHour = listOf(it)
             }
         }
-    }else {
+    } else {
         weatherUiState.weatherAtPos.weatherList.forEach {
             if (it.date == time) {
                 weatherAtPosHour = listOf(it)
@@ -187,6 +189,18 @@ fun DetailsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(modifier = Modifier.sizeIn(maxWidth = 38.dp), onClick = {
+                        navController.navigate(Routes.favCards)
+                    }) {
+                        Icon(
+                            Icons.Default.Favorite,
+                            modifier = Modifier.fillMaxSize(),
+                            contentDescription = "Favorite",
+                            tint = main0,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(110.dp))
                     IconButton(onClick = {
                         scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                         navController.popBackStack("HomeScreen", false)
@@ -198,16 +212,8 @@ fun DetailsScreen(
                             tint = main0
                         )
                     }
-                    Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = {
-                        navController.navigate(Routes.favCards) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rocket",
-                            tint = main0,
-                            )
-                    }
-                    Spacer(modifier = Modifier.width(95.dp))
+
+                    Spacer(modifier = Modifier.width(110.dp))
                     IconButton(onClick = { navController.navigate(Routes.settings) }) {
                         Icon(
                             Icons.Sharp.Settings,
@@ -240,10 +246,10 @@ fun DetailsScreen(
                     modifier = Modifier.width(340.dp),
                 )
                 {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
-                        Column {
-
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
                             text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
                             fontWeight = FontWeight.ExtraBold,
@@ -259,22 +265,23 @@ fun DetailsScreen(
                                 !weatherNow.favorite.value
 
                             )
-                            if(weatherNow.favorite.value){
+                            if (weatherNow.favorite.value) {
                                 favoriteCardViewModel.addFavoriteCard(
                                     lat = weatherNow.lat.toString(),
                                     lon = weatherNow.lon.toString(),
                                     date = weatherNow.date
                                 )
-                                val toast = Toast.makeText(context, "Added card to favorites", duration)
+                                val toast =
+                                    Toast.makeText(context, "Added card to favorites", duration)
                                 toast.show()
-                            }
-                            else{
+                            } else {
                                 favoriteCardViewModel.deleteFavoriteCard(
                                     lat = weatherNow.lat.toString(),
                                     lon = weatherNow.lon.toString(),
                                     date = weatherNow.date
                                 )
-                                val toast = Toast.makeText(context, "Removed card from favorites", duration)
+                                val toast =
+                                    Toast.makeText(context, "Removed card from favorites", duration)
                                 toast.show()
                             }
                         }) {
@@ -332,6 +339,7 @@ fun DetailsScreen(
                                 navController.popBackStack("HomeScreen", false)
                             }
                         ) {
+
                             Text("Calculate ballistic trajectory")
                         }
                         if (weatherNow.verticalProfile == null) {
@@ -339,11 +347,14 @@ fun DetailsScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                Spacer(modifier = Modifier.height(15.dp))
                                 Text(
                                     modifier = Modifier.widthIn(max = 360.dp),
-                                    text = "Calculated ballistic trajectory won't be affected by weather data ",
-                                    color = main0
+                                    text = "*Insufficient grib data, trajectroy will be inaccurate.",
+                                    color = main50,
+                                    fontStyle = FontStyle.Italic
                                 )
+                                Spacer(modifier = Modifier.height(15.dp))
 
                             }
 
@@ -425,7 +436,7 @@ fun DetailsScreen(
                                         iconId = R.drawable.temp,
                                         desc = "Temperature",
                                         value = "${fcData.instant.details.airTemperature} ℃",
-                                        info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin?: "N/A"} ℃",
+                                        info = "The temperature in 6 hours is min. ${fcData.next6Hours?.details?.airTemperatureMin ?: "N/A"} ℃",
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
                                     var valueText =
@@ -433,7 +444,7 @@ fun DetailsScreen(
                                     var descText =
                                         "${fcData.next12Hours?.details?.probabilityOfPrecipitation?.roundToInt()} % chance the next 12 hours"
 
-                                    if(fcData.next12Hours?.details?.probabilityOfPrecipitation == null){
+                                    if (fcData.next12Hours?.details?.probabilityOfPrecipitation == null) {
                                         descText = "Rain in the next hour"
                                     }
 
@@ -441,7 +452,7 @@ fun DetailsScreen(
                                         valueText =
                                             "${fcData.next6Hours?.details?.precipitationAmount} mm"
                                         descText = "Rain in the next 6 hours"
-                                        if(fcData.next6Hours?.details?.precipitationAmount == null){
+                                        if (fcData.next6Hours?.details?.precipitationAmount == null) {
                                             valueText =
                                                 "N/A"
                                             descText = "There is no data for this period"
@@ -467,7 +478,8 @@ fun DetailsScreen(
                                     var descText = "Amount of surrounding area covered in fog"
                                     var titleText = "Fog"
                                     if (fcData.instant.details.fogAreaFraction == null) {
-                                        valueText = "${fcData.instant.details.cloudAreaFractionLow} %"
+                                        valueText =
+                                            "${fcData.instant.details.cloudAreaFractionLow} %"
                                         descText = "Cloud cover below 2000m altitude"
                                         titleText = "Low clouds"
                                     }

@@ -13,13 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Settings
@@ -154,41 +157,38 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    IconButton(modifier = Modifier.sizeIn(maxWidth = 38.dp), onClick = {
+                        navController.navigate(Routes.favCards)
+                    }) {
+                        Icon(
+                            Icons.Default.Favorite,
+                            modifier = Modifier.fillMaxSize(),
+                            contentDescription = "Favorite",
+                            tint = main0,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.widthIn(110.dp))
                     IconButton(onClick = {
                         scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                         navController.popBackStack("HomeScreen", false)
                     }) {
                         Icon(
-
                             Icons.Sharp.LocationOn,
                             modifier = Modifier.size(40.dp),
                             contentDescription = "Location",
                             tint = main0
                         )
                     }
-                    Spacer(modifier = Modifier.width(94.dp))
-                    IconButton(onClick = {
-                        navController.navigate(Routes.favCards) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.rakket),
-                            contentDescription = "Rocket",
-                            tint = main0,
 
-                            )
-                    }
-                    Spacer(modifier = Modifier.width(95.dp))
-                    IconButton(
-                        onClick = { navController.navigate(Routes.settings) },
-                        ) {
+                    Spacer(modifier = Modifier.width(110.dp))
+                    IconButton(onClick = { navController.navigate(Routes.settings) }) {
                         Icon(
                             Icons.Sharp.Settings,
-                            modifier = Modifier
-                                .size(40.dp),
+                            modifier = Modifier.size(40.dp),
                             contentDescription = "Settings",
-                            tint = main100,
-
-
-                            )
+                            tint = main100
+                        )
                     }
                 }
             }
