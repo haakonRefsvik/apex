@@ -23,7 +23,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
@@ -38,7 +37,7 @@ class WeatherRepository(
 ) {
     private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
     private val _weatherAtPosFavorite = MutableStateFlow(WeatherFavorites())
-    private lateinit var _weatherAtPosCpy: WeatherAtPos
+    private lateinit var _weatherAtPosOriginal: WeatherAtPos
 
     fun observeWeather(): StateFlow<WeatherAtPos> = _weatherAtPos.asStateFlow()
     fun observeFavorites(): StateFlow<WeatherFavorites> = _weatherAtPosFavorite.asStateFlow()
@@ -80,12 +79,12 @@ class WeatherRepository(
         }
 
         val updatedWeatherAtPos = WeatherAtPos(updatedWeatherList)
-        _weatherAtPosCpy = updatedWeatherAtPos
+        _weatherAtPosOriginal = updatedWeatherAtPos
         _weatherAtPos.update { updatedWeatherAtPos }
     }
 
     fun resetFilter() {
-        _weatherAtPos.update { _weatherAtPosCpy }
+        _weatherAtPos.update { _weatherAtPosOriginal }
 
     }
 
@@ -127,10 +126,12 @@ class WeatherRepository(
             }
 
             val updatedWeatherAtPos = WeatherAtPos(list)
-            _weatherAtPosCpy = updatedWeatherAtPos
+            _weatherAtPosOriginal = updatedWeatherAtPos
             _weatherAtPos.update { updatedWeatherAtPos }
+            Log.d("grib", "UPDATING WEATHER_AT_POS")
+
         } catch (e: Exception) {
-            _weatherAtPosCpy = WeatherAtPos()
+            _weatherAtPosOriginal = WeatherAtPos()
             _weatherAtPos.update { WeatherAtPos() }
         }
     }

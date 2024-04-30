@@ -227,7 +227,7 @@ fun Make3dtrajectory(
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % 3 == 0) {
+                        } else if (index % 10 == 0) {
 
 
                             val MODEL_ID_1 = "model-id${index}"
@@ -258,7 +258,8 @@ fun Make3dtrajectory(
                             +modelLayer(MODEL_ID_1, SOURCE_ID) {
                                 modelId(get(MODEL_ID_KEY))
                                 modelType(ModelType.LOCATION_INDICATOR)
-                                modelScale(listOf(2.0, 2.0, 2.0))
+                                val size = 2.0
+                                modelScale(listOf(size, size, size))
                                 modelTranslation(
                                     listOf(
                                         point.x,

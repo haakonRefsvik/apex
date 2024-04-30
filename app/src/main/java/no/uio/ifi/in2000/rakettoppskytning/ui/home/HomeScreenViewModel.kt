@@ -15,6 +15,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
@@ -48,9 +50,6 @@ data class WeatherUiState(
     val weatherAtPos: WeatherData = WeatherAtPos()
 )
 
-data class HistoricalDataUIState(
-    val historicalData: List<HistoricalPrecipitation> = listOf()
-)
 
 class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
     private val foreCastRep = repo
@@ -162,17 +161,14 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon)
+            delay(100 )
             loading.value = false
-            delay(10)
             filterList()
         }
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
         foreCastRep.observeWeather()
-            .onEach { weather ->
-                Log.d("WeatherViewModel", "New weather data received: ${weather.weatherList.firstOrNull()?.verticalProfile?.heightLimit.toString()}")
-            }
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

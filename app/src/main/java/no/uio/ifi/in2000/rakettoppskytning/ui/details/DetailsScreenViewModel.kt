@@ -22,7 +22,7 @@ class DetailsScreenViewModel(val repo: WeatherRepository) : ViewModel() {
     val weatherUiState: StateFlow<WeatherUiState> =
         repo.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = WeatherUiState()
         )
 
