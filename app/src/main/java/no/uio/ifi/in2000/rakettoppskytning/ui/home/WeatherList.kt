@@ -74,9 +74,7 @@ fun WeatherList(
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
     val openFilterDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
-    Log.d("what", forecast.weatherAtPos.weatherList.size.toString())
 
-    if (forecast.weatherAtPos.weatherList.isNotEmpty() || homeScreenViewModel.hasBeenFiltered.value) {
         Spacer(modifier = Modifier.height(10.dp))
         when {
 
@@ -207,7 +205,6 @@ fun WeatherList(
                     } else {
                         item {
                             forecast.weatherAtPos.weatherList.forEach { input ->
-                                val daysAhead = getNumberOfDaysAhead(input.date)
                                 var precipText =
                                     "${input.series.data.next1Hours?.details?.precipitationAmount} mm"
                                 if (input.series.data.next1Hours == null) {
@@ -361,10 +358,7 @@ fun WeatherList(
 
                                                 }
 
-                                                Spacer(modifier = Modifier.width(27.5.dp))
-
-                                                Spacer(modifier = Modifier.width(15.dp))
-
+                                                Spacer(modifier = Modifier.width(42.dp))
 
                                                 var symbolId =
                                                     input.series.data.next1Hours?.summary?.symbolCode?.uppercase()
@@ -406,5 +400,5 @@ fun WeatherList(
                     }
                 })
         }
-    }
+
 }

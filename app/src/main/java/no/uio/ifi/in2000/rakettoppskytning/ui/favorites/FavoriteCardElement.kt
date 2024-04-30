@@ -70,8 +70,13 @@ fun FavoriteCardElement(
                 disabledContentColor = weatherCard0
             ),
             onClick = {
-                favoriteCardViewModel.getWeatherByFavorite(lat.toDouble(), lon.toDouble(), date)
+                /*
+                Sending a flag 'f' behind the date to detailscreen so
+                the detailscreen knows that the call came from a
+                favoriteCard and to use the FavoriteCard-stateflow instead
+                 */
                 navController.navigate("DetailsScreen/${date}f")
+
             }
         )
         {

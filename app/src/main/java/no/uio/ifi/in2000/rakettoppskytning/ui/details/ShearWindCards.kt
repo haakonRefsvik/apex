@@ -44,6 +44,7 @@ import com.patrykandpatrick.vico.compose.chart.layer.rememberColumnCartesianLaye
 import com.patrykandpatrick.vico.compose.chart.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.chart.layer.rememberLineSpec
 import com.patrykandpatrick.vico.compose.chart.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.chart.zoom.rememberVicoZoomState
 import com.patrykandpatrick.vico.compose.component.rememberLineComponent
 import com.patrykandpatrick.vico.compose.component.rememberShapeComponent
 import com.patrykandpatrick.vico.compose.component.rememberTextComponent
@@ -208,8 +209,6 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                         modifier = Modifier
                             .width(320.dp)
                             .height(130.dp)
-                        ,
-
                     ) {
                         CartesianChartHost(
                             rememberCartesianChart(
@@ -227,6 +226,7 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                                         minY = 0F,
                                         maxY = 360F
                                     )
+
                                 ),
                                 startAxis = rememberStartAxis(
 
@@ -259,7 +259,11 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                                     title = "altitude in meters",
                                     guideline = null,
                                     valueFormatter = { value, _, _ ->
-                                        "${shearList[value.toInt()].altitude.roundToInt()} m"
+                                        try {
+                                            "${shearList[value.toInt()].altitude.roundToInt()} m"
+                                        }catch (e: Exception){
+                                            ""
+                                        }
                                     },
                                 ),
                             ),
@@ -268,7 +272,6 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                     }
                 }
                 Spacer(modifier = Modifier.height(50.dp))
-
             }
 
         }
@@ -344,10 +347,12 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                                                 details0.copy(alpha = 0.1F)
                                             )
                                         ),
-                                        shader = DynamicShaders.color(details0.copy(alpha = 0.5F))),
-                                    )
+                                        shader = DynamicShaders.color(details0.copy(alpha = 0.5F)),
+                                        ),
 
                                     ),
+                                ),
+
                                 startAxis = rememberStartAxis(
                                     label =
                                     rememberTextComponent(
@@ -357,7 +362,6 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                                         margins = dimensionsOf(end = 10.dp),
                                         typeface = android.graphics.Typeface.DEFAULT,
                                     ),
-                                    //itemPlacer = AxisItemPlacer.Vertical.step({ _ -> 1F }, true),
                                     tickLength = 0.dp,
                                     valueFormatter = { value, _, _ ->
                                         "${value.roundToInt()} m/s"
@@ -377,7 +381,7 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                                     title = "altitude in meters",
                                     guideline = null,
                                     valueFormatter = { value, _, _ ->
-                                        "${shearList[value.toInt()].altitude.roundToInt()} m"
+                                        "${shearList[value.toInt() % 2].altitude.roundToInt()} m"
                                     },
                                 ),
                             ),
@@ -388,7 +392,6 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                 Spacer(modifier = Modifier.height(50.dp))
 
             }
-
         }
     }
 }

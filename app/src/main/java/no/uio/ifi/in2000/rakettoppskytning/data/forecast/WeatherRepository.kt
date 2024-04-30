@@ -20,6 +20,8 @@ import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getFirstSoilIndex
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
@@ -77,7 +79,6 @@ class WeatherRepository(
             )
         }
 
-
         val updatedWeatherAtPos = WeatherAtPos(updatedWeatherList)
         _weatherAtPosCpy = updatedWeatherAtPos
         _weatherAtPos.update { updatedWeatherAtPos }
@@ -98,11 +99,7 @@ class WeatherRepository(
             val list = mutableListOf<WeatherAtPosHour>()
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
             val gribFiles: List<File> = loadGribFromDataSource()
-            val allVerticalProfiles: List<VerticalProfile> =
-                makeVerticalProfilesFromGrib(gribFiles, lat, lon)
-            makeVerticalProfilesFromGrib(gribFiles, lat, lon)
-
-
+            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
             val soilIndex =
                 getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
@@ -225,14 +222,21 @@ class WeatherRepository(
         lon: Double
     ): List<VerticalProfile> = coroutineScope {
         val deferredList = mutableListOf<Deferred<VerticalProfile>>()
+        val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
         try {
             for (file in gribFiles) {
                 Log.d("gribThread", "Making verticalProfile on new thread up to ${settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE)} m")
                 val deferred = async(Dispatchers.IO) {
-                    VerticalProfile(heightLimitMeters = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt(), lat = lat, lon = lon, file = file)
+                    VerticalProfile(
+                        heightLimitMeters = heightLimit,
+                        lat = lat, lon = lon,
+                        verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimit),
+                        time = getTime(file)
+                    )
                 }
                 deferredList.add(deferred)
                 Log.d("gribThread", "Thread done")
+
             }
 
             deferredList.awaitAll()
@@ -241,9 +245,11 @@ class WeatherRepository(
         } catch (e: Exception) {
             Log.e(
                 "GribToVerticalProfile",
-                "Error occurred while processing vertical profiles: ${e.message}",
+                "Error occurred while processing vertical profiles, restarting...",
                 e
             )
+            val newFiles = loadGribFromDataSource()
+            makeVerticalProfilesFromGrib(newFiles, lat, lon)
         } finally {
             for (deferred in deferredList) {
                 if (!deferred.isCompleted) {

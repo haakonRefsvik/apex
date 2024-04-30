@@ -73,11 +73,9 @@ class MainActivity : ComponentActivity() {
         WeatherRepository(settingsRepository, gribRepository)
     }
 
-
     private val detailsScreenViewModel by lazy {
         DetailsScreenViewModel(weatherRepo)
     }
-
 
     //val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
     private val mapViewModel by lazy {

@@ -29,20 +29,23 @@ fun getTime(file: File): String {
 }
 
 /** Temperature, windspeed and wind-direction for a given isobaric layer*/
-class VerticalProfile(
-    heightLimitMeters: Int = Int.MAX_VALUE,
+data class VerticalProfile(
+    val heightLimitMeters: Int = Int.MAX_VALUE,
     val lat: Double,
     val lon: Double,
-    val file: File
+    val verticalProfileMap: HashMap<Double, LevelData>,
+    val time: String
 ) {
-
+    /*
     private val verticalProfileMap = try {
         getVerticalProfileMap(lat, lon, file, heightLimitMeters)
     } catch (e: Exception) {
         hashMapOf()
     }
 
-    val time = getTime(file)
+     */
+
+    //val time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
     val heightLimit = heightLimitMeters

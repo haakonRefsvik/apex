@@ -91,10 +91,12 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.setValue
 import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogCorrect
 
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,7 +117,6 @@ fun DetailsScreen(
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
     val duration = Toast.LENGTH_SHORT
     detailsScreenViewModel.time.value = time
-
     if(time.last() == 'f'){
         favoriteUiState.weatherAtPos.weatherList.forEach {
             if (it.date == time.dropLast(1)) {
@@ -130,6 +131,7 @@ fun DetailsScreen(
 
         }
     }
+
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -239,10 +241,13 @@ fun DetailsScreen(
                 )
                 {
                     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
+                        Column {
+
+                        }
                         Text(
                             text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 30.sp,
+                            fontSize = 25.sp,
                             color = main0
                         )
                         Spacer(modifier = Modifier.width(60.dp))
@@ -382,6 +387,14 @@ fun DetailsScreen(
                                     statusCode = statusMap[ThresholdType.MAX_WIND.name] ?: 0.0
                                 )
                                 Spacer(modifier = Modifier.height(30.dp))
+                            }
+                            item {
+                                weatherNow.verticalProfile?.let {
+                                    WindCardAltitude(
+                                        it.getAllLevelDatas().sortedBy { levelData ->  levelData.getLevelHeightInMeters() }
+                                        )
+                                    Spacer(modifier = Modifier.height(30.dp))
+                                }
                             }
                             item {
                                 Row {

@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
@@ -156,21 +157,23 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun getWeatherByCord(lat: Double, lon: Double) {
         Log.d("getWeather", "apicall")
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon)
             loading.value = false
-            delay(100)
+            delay(10)
             filterList()
-
         }
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
-        foreCastRep.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(
+        foreCastRep.observeWeather()
+            .onEach { weather ->
+                Log.d("WeatherViewModel", "New weather data received: ${weather.weatherList.firstOrNull()?.verticalProfile?.heightLimit.toString()}")
+            }
+            .map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = WeatherUiState()
@@ -183,8 +186,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         isReversed.value = false
         text.value = options[0]
         markedCardIndex.intValue = -1
-
-
     }
 
     fun resetList() {

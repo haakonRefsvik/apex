@@ -1,5 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
+import android.graphics.Typeface
+import android.text.Layout
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,19 +20,41 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mapbox.maps.plugin.logo.generated.LogoSettings
+import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
+import com.patrykandpatrick.vico.compose.chart.CartesianChartHost
+import com.patrykandpatrick.vico.compose.chart.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.chart.layer.rememberLineSpec
+import com.patrykandpatrick.vico.compose.chart.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.component.shape.shader.color
+import com.patrykandpatrick.vico.compose.component.shape.shader.verticalGradient
+import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
+import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
+import com.patrykandpatrick.vico.core.component.shape.LineComponent
+import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
+import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.model.lineSeries
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
+import kotlin.math.roundToInt
 
 @Composable
 fun WindCard(details: Details, statusCode: Double = 0.0) {
@@ -135,5 +160,119 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
             }
         }
 
+    }
+}
+
+@Composable
+fun WindCardAltitude(allLevels: List<LevelData>){
+    val lineColor: Int = Color.Black.copy(alpha = 0.2f).toArgb()
+    val modelProducer = remember { CartesianChartModelProducer.build() }
+    LaunchedEffect(Unit) { modelProducer.tryRunTransaction {
+        lineSeries { series(x =  List(allLevels.size) { index ->  index}, y= allLevels.map { it.getWindSpeed() }) }
+    }
+    }
+
+
+    ElevatedCard(
+        modifier = Modifier
+            .height(200.dp)
+            .width(360.dp)
+    ) {
+        Row(
+            modifier = Modifier.background(details50)
+        ){
+            Spacer(
+                modifier = Modifier
+                    .width(20.dp)
+                    .fillMaxHeight()
+            )
+            Row {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                    ,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(modifier = Modifier.height(0.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            modifier = Modifier
+                                .size(30.dp),
+                            painter = painterResource(R.drawable.vind2),
+                            contentDescription = "VindSymbol",
+                            tint = details0
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "Wind profile",
+                            modifier = Modifier.padding(vertical = 0.dp),
+                            fontSize = 15.sp,
+                            color = details0,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier
+                            .width(320.dp)
+                            .height(130.dp)
+                        ,
+
+                        ) {
+                        CartesianChartHost(
+                            rememberCartesianChart(
+                                rememberLineCartesianLayer(
+                                    lines = listOf( rememberLineSpec(
+                                        backgroundShader = DynamicShaders.verticalGradient(
+                                            arrayOf(
+                                                details0.copy(alpha = 0.3F),
+                                                details0.copy(alpha = 0.1F)
+                                            )
+                                        ),
+                                        shader = DynamicShaders.color(details0.copy(alpha = 0.5F))),
+                                    )
+
+                                ),
+                                startAxis = rememberStartAxis(
+                                    label =
+                                    rememberTextComponent(
+                                        textSize = 13.sp,
+                                        color = details0,
+                                        padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
+                                        margins = dimensionsOf(end = 10.dp),
+                                        typeface = android.graphics.Typeface.DEFAULT,
+                                    ),
+                                    tickLength = 0.dp,
+                                    valueFormatter = { value, _, _ ->
+                                        "${value.roundToInt()} m/s"
+                                    },
+                                    guideline = LineComponent(lineColor)
+                                ),
+                                bottomAxis = rememberBottomAxis(
+                                    rememberTextComponent(
+                                        textSize = 13.sp,
+                                        color = details0,
+                                        textAlignment = Layout.Alignment.ALIGN_CENTER,
+                                        padding = dimensionsOf(horizontal = 0.dp, vertical = 0.dp),
+                                        margins = dimensionsOf(end = 10.dp),
+                                        typeface = android.graphics.Typeface.DEFAULT,
+                                    ),
+                                    tickLength = 0.dp,
+                                    title = "altitude in meters",
+                                    guideline = null,
+                                    valueFormatter = { value, _, _ ->
+                                        "${allLevels[value.toInt()].getLevelHeightInMeters().toInt()} m"
+                                    },
+                                ),
+                            ),
+                            modelProducer,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(50.dp))
+
+            }
+        }
     }
 }

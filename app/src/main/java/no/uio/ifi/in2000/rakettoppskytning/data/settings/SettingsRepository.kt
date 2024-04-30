@@ -71,10 +71,16 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
         val fc1 = series.data.next1Hours?.details
         val closenessMap = HashMap<String, Double>()
 
-        val c1 = getCloseness(
-            value = verticalProfile?.getMaxSheerWind()?.windSpeed?: 0.0,
-            limit = thresholds[ThresholdType.MAX_SHEAR_WIND.name]?: 0.0,
-        )
+
+        val c1 = try {
+            getCloseness(
+                value = verticalProfile?.getMaxSheerWind()?.windSpeed?: 0.0,
+                limit = thresholds[ThresholdType.MAX_SHEAR_WIND.name]?: 0.0,
+            )
+            }catch (e: Exception){
+                0.0
+            }
+
         val c2 = getCloseness(
             value = fc.relativeHumidity,
             limit = thresholds[ThresholdType.MAX_HUMIDITY.name]?: 0.0,
