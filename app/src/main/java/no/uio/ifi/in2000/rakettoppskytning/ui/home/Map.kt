@@ -227,7 +227,7 @@ fun Make3dtrajectory(
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % 10 == 0) {
+                        } else if (index % 3 == 0) {
 
 
                             val MODEL_ID_1 = "model-id${index}"
