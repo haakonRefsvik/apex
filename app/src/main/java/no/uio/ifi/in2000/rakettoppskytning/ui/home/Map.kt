@@ -3,7 +3,6 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
-import kotlin.math.sqrt
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Card
@@ -17,7 +16,6 @@ import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
@@ -25,8 +23,8 @@ import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
-import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
+import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.ModelType
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
 import com.mapbox.maps.extension.style.model.model
@@ -41,10 +39,10 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.FavoriteViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
-import kotlin.math.*
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 
 @OptIn(MapboxExperimental::class)
@@ -229,7 +227,7 @@ fun Make3dtrajectory(
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % 2 == 0) {
+                        } else if (index % 3 == 0) {
 
 
                             val MODEL_ID_1 = "model-id${index}"
@@ -260,7 +258,7 @@ fun Make3dtrajectory(
                             +modelLayer(MODEL_ID_1, SOURCE_ID) {
                                 modelId(get(MODEL_ID_KEY))
                                 modelType(ModelType.LOCATION_INDICATOR)
-                                modelScale(listOf(1.0, 1.0, 1.0))
+                                modelScale(listOf(2.0, 2.0, 2.0))
                                 modelTranslation(
                                     listOf(
                                         point.x,
@@ -308,7 +306,7 @@ fun Make3dtrajectory(
                     +modelLayer(MODEL_ID_2, SOURCE_ID1) {
                         modelId(get(MODEL_ID_KEY))
                         modelType(ModelType.COMMON_3D)
-                        modelScale(listOf(150.0, 150.0, 150.0))
+                        modelScale(listOf(300.0, 300.0, 300.0))
                         if (s != null) {
                             modelTranslation(listOf(s.x, s.y * -1, s.z))
                         }
@@ -364,9 +362,9 @@ fun yay(number: Double): Double {
     } else if (number in 70.0..75.0) {
         return -.8
     } else if (number in 65.0..70.0) {
-        return -1.01
+        return -.888
     } else if (number in 60.0..65.0) {
-        return -1.18
+        return -.96
     } else if (number in 55.0..60.0) {
         return -1.36
     } else if (number in 50.0..55.0) {
