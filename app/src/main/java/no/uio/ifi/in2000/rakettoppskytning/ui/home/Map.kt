@@ -172,13 +172,13 @@ fun Make3dtrajectory(
     val time = detailsScreenViewModel.time.value
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
 
-    if(time.last() == 'f'){
+    if (time.last() == 'f') {
         favoriteUiState.weatherAtPos.weatherList.forEach {
             if (it.date == time.dropLast(1)) {
                 weatherAtPosHour = listOf(it)
             }
         }
-    }else {
+    } else {
         weatherUiState.weatherAtPos.weatherList.forEach {
             if (it.date == time) {
                 weatherAtPosHour = listOf(it)
@@ -362,7 +362,7 @@ fun yay(number: Double): Double {
     } else if (number in 75.0..80.0) {
         return -.81
     } else if (number in 70.0..75.0) {
-        return -.91
+        return -.8
     } else if (number in 65.0..70.0) {
         return -1.01
     } else if (number in 60.0..65.0) {
