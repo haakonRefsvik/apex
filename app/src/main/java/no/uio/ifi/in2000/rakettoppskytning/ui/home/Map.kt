@@ -188,36 +188,17 @@ fun Make3dtrajectory(
 
 
     val allLevels: List<LevelData> =
-        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: listOf(
+        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: listOf()
 
-            LevelData(850.0)
+    mapViewModel.loadTrajectory(allLevels, rocketSpecs)
+    val tra = mapViewModel.trajectory.value
 
-        )
-
-
-    val launchDir = rocketSpecs.launchDirection.toDouble()
-    val launchAngle = rocketSpecs.launchAngle.toDouble()
-
-    val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
-        simulateTrajectory(
-            burnTime = rocketSpecs.burntime.toDouble(),
-            launchAngle = launchAngle,
-            launchDir = launchDir,
-            altitude = 0.0,
-            thrust = rocketSpecs.thrust.toDouble(),
-            apogee = rocketSpecs.apogee.toDouble(),
-            mass = rocketSpecs.dryWeight.toDouble(),
-            dt = 0.1,
-            allLevels = allLevels,
-            massDry = rocketSpecs.wetWeight.toDouble()
-        )
     val s = tra.find { it.z in 600.0..1000.0 }
     val hep = tra.indexOf(s)
     var pitch = Pair(0.0, 0.0)
     if (s != null) {
         pitch = calculatePitch(s, tra[hep + 20])
     }
-
 
     MapEffect { mapView ->
 
@@ -317,8 +298,8 @@ fun Make3dtrajectory(
 
                         modelRotation(
                             listOf(
-                                pitch.first * (launchAngle * yay(launchAngle)) * -1,
-                                pitch.second * (launchAngle * yay(launchAngle)),
+                                pitch.first * (rocketSpecs.launchAngle.toDouble() * yay(rocketSpecs.launchAngle.toDouble())) * -1,
+                                pitch.second * (rocketSpecs.launchAngle.toDouble() * yay(rocketSpecs.launchAngle.toDouble())),
                                 0.0
                             )
                         )

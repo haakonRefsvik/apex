@@ -134,7 +134,7 @@ fun HomeScreen(
                         contentColor = filter0,
                         containerColor = filter50,
                         onClick = {
-                            mapViewModel.makeTrajectory.value = false
+                            mapViewModel.deleteTrajectory()
                         }) {
                         Row(
                             modifier = Modifier

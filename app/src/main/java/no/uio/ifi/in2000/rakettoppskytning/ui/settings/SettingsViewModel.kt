@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +50,14 @@ class SettingsViewModel(
      * */
     suspend fun updateThresholdValues(event: (ThresholdsEvent) -> Unit) {
         val updatedThresholdsMap = HashMap<String, Double>().apply {
-            thresholdMutableStates.forEachIndexed { index, mutableState ->
-                put(ThresholdType.entries[index].name, mutableState.doubleValue)
+            try {
+                thresholdMutableStates.forEachIndexed { index, mutableState ->
+                    put(ThresholdType.entries[index].name, mutableState.doubleValue)
+                }
+            }catch (e: Exception){
+                Log.d("settings", "Could not update thresholds\n ${e.stackTrace}")
             }
+
         }
 
         settingsRepo.updateThresholdValues(
