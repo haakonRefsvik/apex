@@ -321,6 +321,7 @@ fun DetailsScreen(
                                 disabledContentColor = firstButton100
                             ),
                             onClick = {
+                                mapViewModel.deleteTrajectory()
                                 mapViewModel.makeTrajectory.value = true
                                 scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                                 navController.popBackStack("HomeScreen", false)
@@ -337,7 +338,7 @@ fun DetailsScreen(
                                 Spacer(modifier = Modifier.height(15.dp))
                                 Text(
                                     modifier = Modifier.widthIn(max = 360.dp),
-                                    text = "*Insufficient grib data, trajectroy will be inaccurate.",
+                                    text = "*Insufficient grib data, trajectory will be inaccurate.",
                                     color = main50,
                                     fontStyle = FontStyle.Italic
                                 )

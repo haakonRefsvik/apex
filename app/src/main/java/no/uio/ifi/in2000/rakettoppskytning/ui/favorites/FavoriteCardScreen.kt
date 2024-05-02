@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.sharp.LocationOn
@@ -200,11 +201,12 @@ fun FavoriteCardScreen(
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
+
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = "Subscribed cards",
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 35.sp,
+                fontSize = 25.sp,
                 color = settings0
             )
             Spacer(modifier = Modifier.width(60.dp))
@@ -218,18 +220,29 @@ fun FavoriteCardScreen(
                         disabledContentColor = secondButton100
                     ),
                     onClick = {
+                        favoriteCardViewModel.removeExpiredCards()
                         favoriteCardViewModel.refreshWeatherData()
                     }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        modifier = Modifier.size(15.dp),
-                        contentDescription = "Edit",
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text("Update cards")
+                    if(favoriteCardViewModel.isUpdatingWeatherData.value){
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(15.dp),
+                            strokeWidth = 3.dp,
+                            color = main50
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text("Update cards")
+                    }else{
+                        Icon(
+                            Icons.Default.Info,
+                            modifier = Modifier.size(15.dp),
+                            contentDescription = "Edit",
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text("Update cards")
+                    }
+
                 }
                 Spacer(modifier = Modifier.width(25.dp))
-
                 Button(modifier = Modifier.width(155.dp),
                     colors = ButtonColors(
                         containerColor = secondButton0,
@@ -249,8 +262,16 @@ fun FavoriteCardScreen(
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text("Remove all")
+
                 }
             }
+            Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "Expired cards will be removed automatically",
+                    color = Color.White.copy(alpha = 0.7F),
+                    fontSize = 13.sp,
+                )
+
             Spacer(modifier = Modifier.height(15.dp))
 
             LazyColumn(
@@ -264,71 +285,58 @@ fun FavoriteCardScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Spacer(modifier = Modifier.height(30.dp))
                             Text(text = "No cards were found...", color = Color.White)
-                            Spacer(modifier = Modifier.height(30.dp))
-                            Text(
-                                text = "Remember, expired cards\n will be removed automatically",
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
-
                         }
                     }
                 }
-                if (favoriteCardViewModel.isUpdatingWeatherData.value) {
-                    item {
-                        CircularProgressIndicator(color = main0)
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
-                } else {
-                    favorites.favorites.sortedBy {
-                        ZonedDateTime.parse(it.date, formatter.withZone(ZoneOffset.UTC))
-                    }
-                        .forEach { fav ->
-                            run {
-                                item {
-                                    Spacer(modifier = Modifier.height(10.dp))
 
-                                    val name = remember(fav) {
-                                        mutableStateOf("")
-                                    }
-                                    val weatherData = remember(favoriteCardViewModel.refreshKey) {
-                                        mutableStateOf(listOf<WeatherAtPosHour>())
-                                    }
 
-                                    LaunchedEffect(fav) {
-                                        name.value = favoriteCardViewModel.findNameByLatLon(
-                                            fav.lat.toDouble(), fav.lon.toDouble()
-                                        ) ?: name.value
-                                    }
+                favorites.favorites.sortedBy {
+                    ZonedDateTime.parse(it.date, formatter.withZone(ZoneOffset.UTC))
+                }
+                    .forEach { fav ->
+                        run {
+                            item {
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                                    LaunchedEffect(favoriteCardViewModel.refreshKey.intValue) {
-                                        val dataFromApi =
-                                            favoriteCardViewModel.getFavoriteWeatherData(
-                                                fav.lat,
-                                                fav.lon,
-                                                fav.date
-                                            )
-
-                                        if (dataFromApi != null) {
-                                            weatherData.value = listOf(dataFromApi)
-                                        }
-
-                                        Log.d("update", "refreshing cards")
-                                    }
-
-                                    FavoriteCardElement(
-                                        name = name.value,
-                                        fav.lat,
-                                        fav.lon,
-                                        fav.date,
-                                        navController,
-                                        favoriteCardViewModel,
-                                        weatherData = weatherData.value.firstOrNull()
-                                    )
+                                val name = remember(fav) {
+                                    mutableStateOf("")
                                 }
+                                val weatherData = remember(favoriteCardViewModel.refreshKey) {
+                                    mutableStateOf(listOf<WeatherAtPosHour>())
+                                }
+
+                                LaunchedEffect(fav) {
+                                    name.value = favoriteCardViewModel.findNameByLatLon(
+                                        fav.lat.toDouble(), fav.lon.toDouble()
+                                    ) ?: name.value
+                                }
+
+                                LaunchedEffect(favoriteCardViewModel.refreshKey.intValue) {
+                                    val dataFromApi =
+                                        favoriteCardViewModel.getFavoriteWeatherData(
+                                            fav.lat,
+                                            fav.lon,
+                                            fav.date
+                                        )
+
+                                    if (dataFromApi != null) {
+                                        weatherData.value = listOf(dataFromApi)
+                                    }
+                                }
+
+                                FavoriteCardElement(
+                                    name = name.value,
+                                    fav.lat,
+                                    fav.lon,
+                                    fav.date,
+                                    navController,
+                                    favoriteCardViewModel,
+                                    weatherData = weatherData.value.firstOrNull()
+                                )
                             }
                         }
-                }
+
+                    }
             }
 
         }

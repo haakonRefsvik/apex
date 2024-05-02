@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -76,14 +77,27 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
     }
 
     fun refreshWeatherData() {
-        val expiredData = lastUpdated.value != getCurrentDate()
+        val dummyLoadDuration = (600).toLong()
+        val expiredData = (lastUpdated.value != getCurrentDate() && lastUpdated.value != "")
+        val noNewCards = (lastFavoritesUpdates.value.isNotEmpty() && lastFavoritesUpdates.value.containsAll(favoriteUiState.value.favorites))
+
+
         if (isUpdatingWeatherData.value){
-            Log.d("update", "Is loading. Update cancelled")
+            viewModelScope.launch {
+                isUpdatingWeatherData.value = true
+                delay(dummyLoadDuration)
+                isUpdatingWeatherData.value = false
+
+            }
             return
         }
 
-        if(expiredData && lastFavoritesUpdates.value.containsAll(favoriteUiState.value.favorites)){
-            Log.d("update", "favorites contains the same favorites as last update. Update cancelled")
+        if(!expiredData && noNewCards){
+            viewModelScope.launch {
+                isUpdatingWeatherData.value = true
+                delay(dummyLoadDuration)
+                isUpdatingWeatherData.value = false
+            }
             return
         }
 
