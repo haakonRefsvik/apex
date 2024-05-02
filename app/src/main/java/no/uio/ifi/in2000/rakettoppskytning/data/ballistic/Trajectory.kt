@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.ballistic
 
+import android.util.Log
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import kotlin.math.abs
 import kotlin.math.cos
@@ -124,6 +125,7 @@ fun simulateTrajectory(
     allLevels: List<LevelData>,
     vAfterParachute: Double = 8.6
 ): List<Point>{
+    Log.d("Ballistic", "Making new trajectory")
     val g = 9.81
     var rho = 1.225
     val cd = 0.5
