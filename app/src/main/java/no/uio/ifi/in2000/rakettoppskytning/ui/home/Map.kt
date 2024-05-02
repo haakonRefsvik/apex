@@ -135,7 +135,7 @@ fun Map(
             }
 
         }
-        if (mapViewModel.makeTra.value) {
+        if (mapViewModel.makeTrajectory.value) {
             Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
         } else {
             MapEffect() { mapView ->
@@ -197,6 +197,7 @@ fun Make3dtrajectory(
 
     val launchDir = rocketSpecs.launchDirection.toDouble()
     val launchAngle = rocketSpecs.launchAngle.toDouble()
+
     val tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point> =
         simulateTrajectory(
             burnTime = rocketSpecs.burntime.toDouble(),
@@ -335,8 +336,6 @@ fun Make3dtrajectory(
 
 
     }
-
-
 }
 
 

@@ -94,6 +94,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     fun filterList() {
         hasBeenFiltered.value = true
         foreCastRep.resetFilter()
+
         var weatherAtPos: List<WeatherAtPosHour> = if (checkedGreen.value && !checkedRed.value) {
             weatherUiState.value.weatherAtPos.weatherList.filter { it.closeToLimitScore < 1 }
 
@@ -162,8 +163,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon)
             delay(100 )
-            loading.value = false
             filterList()
+            loading.value = false
         }
     }
 
@@ -171,7 +172,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         foreCastRep.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = WeatherUiState()
         )
 

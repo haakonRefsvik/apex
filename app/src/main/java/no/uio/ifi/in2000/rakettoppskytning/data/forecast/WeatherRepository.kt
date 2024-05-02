@@ -128,7 +128,6 @@ class WeatherRepository(
             val updatedWeatherAtPos = WeatherAtPos(list)
             _weatherAtPosOriginal = updatedWeatherAtPos
             _weatherAtPos.update { updatedWeatherAtPos }
-            Log.d("grib", "UPDATING WEATHER_AT_POS")
 
         } catch (e: Exception) {
             _weatherAtPosOriginal = WeatherAtPos()

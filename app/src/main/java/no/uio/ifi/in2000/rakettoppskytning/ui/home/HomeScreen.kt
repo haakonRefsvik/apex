@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.BottomSheetScaffold
@@ -27,15 +26,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -63,8 +58,6 @@ fun HomeScreen(
     context: Context
 ) {
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
-
-    /*** HUSKE Å LEGGE TIL UISATE SLIK AT TING BLIR HUSKET NÅR MAN NAVIGERER!!***/
     val snackbarHostState = remember { scaffoldState.snackbarHostState }
     val loading = homeScreenViewModel.loading
 
@@ -133,14 +126,16 @@ fun HomeScreen(
                     mapViewModel,
                     settingsViewModel
                 )
-                if (mapViewModel.makeTra.value) {
+                if (mapViewModel.makeTrajectory.value) {
                     FloatingActionButton(
                         modifier = Modifier
                             .padding(start = 5.dp, top = 30.dp)
                             .heightIn(max = 35.dp),
                         contentColor = filter0,
                         containerColor = filter50,
-                        onClick = { mapViewModel.makeTra.value = false }) {
+                        onClick = {
+                            mapViewModel.makeTrajectory.value = false
+                        }) {
                         Row(
                             modifier = Modifier
                                 .fillMaxHeight()

@@ -19,15 +19,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.sharp.Favorite
-import androidx.compose.material.icons.sharp.FavoriteBorder
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Settings
-import androidx.compose.material.icons.sharp.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -44,7 +40,6 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -53,7 +48,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +57,6 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
-import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
@@ -75,8 +68,6 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details100
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
@@ -90,12 +81,8 @@ import kotlin.time.toDuration
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.font.FontStyle
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogCorrect
 
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -334,7 +321,7 @@ fun DetailsScreen(
                                 disabledContentColor = firstButton100
                             ),
                             onClick = {
-                                mapViewModel.makeTra.value = true
+                                mapViewModel.makeTrajectory.value = true
                                 scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                                 navController.popBackStack("HomeScreen", false)
                             }
