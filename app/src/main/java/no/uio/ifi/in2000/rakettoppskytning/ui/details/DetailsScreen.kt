@@ -323,7 +323,7 @@ fun DetailsScreen(
                             ),
                             onClick = {
                                 mapViewModel.deleteTrajectory()
-                                mapViewModel.makeTrajectory = true
+                                mapViewModel.updateMakeTrajectory(true)
                                 scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                                 navController.popBackStack("HomeScreen", false)
                             }

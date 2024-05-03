@@ -508,7 +508,7 @@ fun SettingsScreen(
                 settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
                 settingsViewModel.updateRocketSpecValues(onRocketSpecsEvent)
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
-                if(mapViewModel.makeTrajectory.value){
+                if (mapViewModel.makeTrajectory) {
                     mapViewModel.deleteTrajectory()
                 }
             }

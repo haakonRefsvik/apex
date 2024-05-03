@@ -113,8 +113,8 @@ fun InputField(
 
     val showDecimals = 5
 
-    val lat by mapViewModel.lat
-    val lon by mapViewModel.lon
+    val lat = mapViewModel.latitude
+    val lon = mapViewModel.longitude
 
 
     val controller = LocalSoftwareKeyboardController.current
@@ -155,7 +155,7 @@ fun InputField(
                     lat
                 ), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
-                    mapViewModel.lat.value = formatNewValue(input)
+                    mapViewModel.updateLatLon(formatNewValue(input), lon)
                 },
                 Modifier
                     .width(130.dp)
@@ -181,7 +181,7 @@ fun InputField(
                     lon
                 ), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
-                    mapViewModel.lon.value = formatNewValue(input)
+                    mapViewModel.updateLatLon(lat, formatNewValue(input))
                 },
                 Modifier
                     .width(130.dp)
@@ -212,8 +212,8 @@ fun InputField(
                 border = BorderStroke(2.dp, firstButton0),
                 onClick = {
                     controller?.hide()
-                    mapViewModel.lat.value = lat
-                    mapViewModel.lon.value = lon
+                    mapViewModel.updateLatLon(lat, lon)
+
 
                     //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                     mapViewModel.updateCamera(lat, lon)
@@ -290,8 +290,11 @@ fun InputField(
                         ),
                         border = BorderStroke(1.dp, color = favoriteCard100),
                         onClick = {
-                            mapViewModel.lat.value = favorite.lat.toDouble()
-                            mapViewModel.lon.value = favorite.lon.toDouble()
+                            mapViewModel.updateLatLon(
+                                favorite.lat.toDouble(),
+                                favorite.lon.toDouble()
+                            )
+
 
                             controller?.hide()
                             homeScreenViewModel.getWeatherByCord(lat, lon)

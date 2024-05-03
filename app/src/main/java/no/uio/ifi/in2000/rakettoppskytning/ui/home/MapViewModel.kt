@@ -19,7 +19,7 @@ class MapViewModel() : ViewModel() {
         const val INIT_LAT = 59.94363
         const val INIT_LON = 10.71830
         const val DEFAULT_ZOOM = 10.0
-        const val MAXIMUM_PITCH = 70.0
+        const val MAXIMUM_PITCH = 0.0
         const val TRAJECTORY_UPDATE_THRESHOLD = 0.0001 // Adjust as needed based on actual use case
     }
 
@@ -35,6 +35,10 @@ class MapViewModel() : ViewModel() {
         _lat = lat
         _lon = lon
 
+    }
+
+    fun updateMakeTrajectory(state: Boolean) {
+        _makeTrajectory = state
     }
 
     val latitude get() = _lat
