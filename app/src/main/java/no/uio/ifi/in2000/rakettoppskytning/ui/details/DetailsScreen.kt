@@ -106,7 +106,7 @@ fun DetailsScreen(
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
     val duration = Toast.LENGTH_SHORT
     detailsScreenViewModel.time.value = time
-    if(time.last() == 'f'){
+    if (time.last() == 'f') {
         favoriteUiState.weatherAtPos.weatherList.forEach {
             if (it.date == time.dropLast(1)) {
                 weatherAtPosHour = listOf(it)
@@ -323,7 +323,7 @@ fun DetailsScreen(
                             ),
                             onClick = {
                                 mapViewModel.deleteTrajectory()
-                                mapViewModel.makeTrajectory.value = true
+                                mapViewModel.makeTrajectory = true
                                 scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                                 navController.popBackStack("HomeScreen", false)
                             }
@@ -391,8 +391,9 @@ fun DetailsScreen(
                             item {
                                 weatherNow.verticalProfile?.let {
                                     WindCardAltitude(
-                                        it.getAllLevelDatas().sortedBy { levelData ->  levelData.getLevelHeightInMeters() }
-                                        )
+                                        it.getAllLevelDatas()
+                                            .sortedBy { levelData -> levelData.getLevelHeightInMeters() }
+                                    )
                                     Spacer(modifier = Modifier.height(30.dp))
                                 }
                             }

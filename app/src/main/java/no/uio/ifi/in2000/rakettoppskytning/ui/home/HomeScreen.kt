@@ -126,7 +126,7 @@ fun HomeScreen(
                     mapViewModel,
                     settingsViewModel
                 )
-                if (mapViewModel.makeTrajectory.value) {
+                if (mapViewModel.makeTrajectory) {
                     FloatingActionButton(
                         modifier = Modifier
                             .padding(start = 5.dp, top = 30.dp)

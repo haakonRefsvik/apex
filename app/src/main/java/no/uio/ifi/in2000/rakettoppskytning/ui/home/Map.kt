@@ -104,9 +104,9 @@ fun Map(
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel
 ) {
-    val lat by mapViewModel.lat
-    val lon by mapViewModel.lon
-    val cameraOptions by mapViewModel.cameraOptions
+    val lat = mapViewModel.latitude
+    val lon = mapViewModel.longitude
+    val cameraOptions = mapViewModel.cameraOptions
     mapViewModel.updateCamera(lat, lon)
     val mapViewportState = mapViewModel.mapViewportState
     mapViewportState.setCameraOptions(cameraOptions)
@@ -128,14 +128,14 @@ fun Map(
             mapView.mapboxMap.styleDataLoadedEvents
 
             mapView.mapboxMap.addOnMapClickListener {
-                mapViewModel.lat.value = it.latitude()
-                mapViewModel.lon.value = it.longitude()
+                mapViewModel.updateLatLon(it.latitude(), it.longitude())
+
 
                 true
             }
 
         }
-        if (mapViewModel.makeTrajectory.value) {
+        if (mapViewModel.makeTrajectory) {
             Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
         } else {
             MapEffect() { mapView ->
@@ -164,7 +164,7 @@ fun Make3dtrajectory(
     val MODEL_ID_KEY = "model-id-key"
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
-    val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
+    val cords = Point.fromLngLat(mapViewModel.longitude, mapViewModel.latitude)
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
@@ -215,7 +215,7 @@ fun Make3dtrajectory(
                             val MODEL_ID_1 = "model-id${index}"
                             val SOURCE_ID = "source-id$${index}"
                             val MODEL1_COORDINATES = Point.fromLngLat(
-                                mapViewModel.lon.value, mapViewModel.lat.value
+                                mapViewModel.longitude, mapViewModel.latitude
                             )
                             +model(MODEL_ID_1) {
                                 uri(SAMPLE_MODEL_URI_1)

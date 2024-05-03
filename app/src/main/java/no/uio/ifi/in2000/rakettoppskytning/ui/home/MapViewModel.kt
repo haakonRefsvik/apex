@@ -28,7 +28,14 @@ class MapViewModel() : ViewModel() {
     private var _favorite by mutableStateOf(Favorite("", "", ""))
     private var _cameraOptions by mutableStateOf(createDefaultCameraOptions(_lat, _lon))
     private var _makeTrajectory by mutableStateOf(false)
-    private var _trajectory = mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>())
+    private var _trajectory =
+        mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>())
+
+    fun updateLatLon(lat: Double, lon: Double) {
+        _lat = lat
+        _lon = lon
+
+    }
 
     val latitude get() = _lat
     val longitude get() = _lon
@@ -36,6 +43,7 @@ class MapViewModel() : ViewModel() {
     val makeTrajectory get() = _makeTrajectory
     val trajectory get() = _trajectory
     val cameraOptions get() = _cameraOptions
+
     /*
     private val initLat = 59.94363
     private val initLon = 10.71830
@@ -50,8 +58,8 @@ class MapViewModel() : ViewModel() {
     val makeTrajectory = mutableStateOf(false)
     val trajectory = mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>())
 */
-    fun loadTrajectory(allLevels: List<LevelData>, rocketSpecs: RocketSpecState){
-        if(trajectory.value.isEmpty()){
+    fun loadTrajectory(allLevels: List<LevelData>, rocketSpecs: RocketSpecState) {
+        if (trajectory.value.isEmpty()) {
             trajectory.value =
                 simulateTrajectory(
                     burnTime = rocketSpecs.burntime.toDouble(),
@@ -73,7 +81,7 @@ class MapViewModel() : ViewModel() {
         .zoom(DEFAULT_ZOOM)
         .build()
 
-    fun deleteTrajectory(){
+    fun deleteTrajectory() {
         trajectory.value = listOf()
         _makeTrajectory = false
     }
