@@ -235,7 +235,8 @@ fun DetailsScreen(
                 {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Text(
                             text = "$datePrefix at ${weatherNow.date.subSequence(11, 16)}",

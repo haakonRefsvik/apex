@@ -95,8 +95,10 @@ dependencies {
     implementation("com.patrykandpatrick.vico:views:2.0.0-alpha.14")
 
     implementation ("com.google.code.gson:gson:2.8.7")
+
     implementation("edu.ucar:cdm-core:${netcdfJavaVersion}")
     implementation("edu.ucar:grib:${netcdfJavaVersion}")
+
     runtimeOnly("org.slf4j:slf4j-jdk14:${slf4jVersion}")
     implementation("io.insert-koin:koin-android:3.0.1")
     implementation("io.insert-koin:koin-core:3.0.1")
