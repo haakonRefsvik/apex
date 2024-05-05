@@ -64,6 +64,7 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
@@ -75,6 +76,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
+/*
 fun formatNewValue(input: String): Double {
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
 
@@ -97,6 +99,8 @@ fun formatNewValue(input: String): Double {
 
     return (r).toDouble()
 }
+
+ */
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
 
@@ -155,7 +159,18 @@ fun InputField(
                     lat
                 ), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
-                    mapViewModel.lat.value = formatNewValue(input)
+                    try {
+                        mapViewModel.lat.value = formatNewValue(
+                            input,
+                            2,
+                            5,
+                            highestInput = 90.0,
+                            lowestInput = -90.0,
+                            oldValue = mapViewModel.lat.value.toString()
+                        )
+                    }catch (e: Exception){
+                        Log.d("inputFormatter", "input was $input and caused exception ${e.cause}")
+                    }
                 },
                 Modifier
                     .width(130.dp)
@@ -181,7 +196,19 @@ fun InputField(
                     lon
                 ), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
-                    mapViewModel.lon.value = formatNewValue(input)
+                    try {
+                        mapViewModel.lon.value = formatNewValue(
+                            input,
+                            4,
+                            5,
+                            highestInput = 180.0,
+                            lowestInput = -180.0,
+                            oldValue = mapViewModel.lon.value.toString()
+                        )
+                    }catch (e: Exception){
+                        Log.d("inputFormatter", "input was $input and caused exception ${e.message}")
+                    }
+
                 },
                 Modifier
                     .width(130.dp)

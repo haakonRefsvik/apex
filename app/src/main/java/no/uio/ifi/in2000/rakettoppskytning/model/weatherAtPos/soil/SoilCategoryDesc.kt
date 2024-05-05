@@ -23,6 +23,7 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 fun getSoilDescription(soilPercentage: Int): String{
     return when {
         soilPercentage < 10 -> "Very high fire risk"
+        soilPercentage < 15 -> "High fire risk"
         soilPercentage < 30 -> "Moderate fire risk"
         soilPercentage < 60 -> "Lower fire risk"
         soilPercentage < 90 -> "Low fire risk"
@@ -47,7 +48,7 @@ fun getSoilScore(soilPercentage: Int?): Double{
         return -1.0
     }
 
-    return if(soilPercentage < 10){
+    return if(soilPercentage < 15){
         1.0
     }
     else{

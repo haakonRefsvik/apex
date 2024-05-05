@@ -9,13 +9,13 @@ import kotlin.math.sqrt
  * Gets height approximate height at a temperature of -60 c
  * and referencePressure of 101325.5 Pa */
 fun getApproximateHeight(pressure: Double): Double{
-    val standrardSeaPressure = 101325.5
+    val standardSeaPressure = 101325.5
     val m = 0.0289644
     val r = 8.31432
     val g = 9.8066
 
     val c = (r * (-60 + 273.15)) / (m * g)
-    val a = ln((standrardSeaPressure / pressure))
+    val a = ln((standardSeaPressure / pressure))
     return c * a
 }
 /** Values for each isobaric layer, takes in a pressureLevel*/

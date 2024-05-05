@@ -8,7 +8,6 @@ import ucar.nc2.grib.grib2.Grib2RecordScanner
 import ucar.nc2.time.CalendarPeriod
 import ucar.unidata.io.RandomAccessFile
 import java.io.File
-import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -36,19 +35,9 @@ data class VerticalProfile(
     val verticalProfileMap: HashMap<Double, LevelData>,
     val time: String
 ) {
-    /*
-    private val verticalProfileMap = try {
-        getVerticalProfileMap(lat, lon, file, heightLimitMeters)
-    } catch (e: Exception) {
-        hashMapOf()
-    }
 
-     */
-
-    //val time = getTime(file)
     var groundLevel: LevelData? = null
     var allShearWinds: List<ShearWind> = getAllSheerWinds()
-    val heightLimit = heightLimitMeters
 
     /** Shows the the max altitude the VerticalProfile can reach (in meters) */
     val actualHeight = getAllLevels().lastOrNull()?.let { findLevel(it).getLevelHeightInMeters() }
@@ -206,7 +195,7 @@ fun getVerticalProfileMap(
         val value = try {
             data[index].toDouble()
         } catch (e: Exception) {
-            0.0
+            return hashMapOf()
         }
 
         addLevelToMap(verticalMap, value, levelPa, parameterNumber)
@@ -259,12 +248,5 @@ fun getDataIndexFromLatLon(lat: Double, lon: Double, gds: Grib2Gds): Int {
     val ix: Int = ((lon - startX) / dx).roundToInt()
     val iy: Int = ((lat - startY) / dy).roundToInt()
 
-    val index = ix + (iy * nx)
-
-    if (index >= numGridPoints) {
-        throw IndexOutOfBoundsException("You have to be inside of $startX, $startY and ${gridDef.endX}, ${gridDef.endY}")
-    }
-
-
-    return index// returns the correct index
+    return ix + (iy * nx)// returns the correct index
 }
