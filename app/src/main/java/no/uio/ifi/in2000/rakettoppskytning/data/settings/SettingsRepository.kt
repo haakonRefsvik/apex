@@ -13,6 +13,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecValues
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdValues
+import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 
 
 class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDao: RocketSpecsDao) {
@@ -65,7 +66,7 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
     /**
      * Returns a hashmap of how close each parameter is to the limit. If a "closeness-value" is negative, its over the limit
      * */
-    fun getValueClosenessMap(series: Series, verticalProfile: VerticalProfile?): HashMap<String, Double> {
+    fun getValueClosenessMap(series: Series, verticalProfile: VerticalProfile?, soilMoisture: Int?): HashMap<String, Double> {
         val thresholds = thresholds.valueMap
         val fc = series.data.instant.details
         val fc1 = series.data.next1Hours?.details
@@ -103,11 +104,19 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
             lowerLimit = -20.0
         )
 
+        val c6 = getCloseness(
+            value = soilMoisture?.toDouble()?: 0.0,
+            limit = 100.0,
+            lowerLimit = 15.0,
+            max = false
+        )
+
         closenessMap[ThresholdType.MAX_SHEAR_WIND.name] = c1
         closenessMap[ThresholdType.MAX_HUMIDITY.name] = c2
         closenessMap[ThresholdType.MAX_WIND.name] = c3
         closenessMap[ThresholdType.MAX_PRECIPITATION.name] = c4
         closenessMap[ThresholdType.MAX_DEW_POINT.name] = c5
+        closenessMap["SOIL_MOISTURE"] = c6
 
         return closenessMap
     }

@@ -30,6 +30,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.formatNewValue
 import org.junit.After
 import org.junit.Test
 import org.junit.Assert.*
@@ -331,6 +332,21 @@ class ExampleUnitTest {
         alt = 900.0
         val r7 = getSigmoidRatios(l, u, alt)
         assertEquals(null, r7)
+    }
+
+    @Test
+    fun testValueFormatter(){
+
+        val exp = 39.0
+        val act = formatNewValue("39.0",
+            3,
+            1,
+            360.0,
+            0.0,
+            "309.0"
+        )
+
+        assertEquals(exp, act, 0.0)
     }
 
 

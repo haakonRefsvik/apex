@@ -40,6 +40,7 @@ suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
     return try {
         listOf(client.get(url).body<LocationForecast>())
     }catch (e: Exception){
+        Log.d("mais", "dataSource")
         listOf()
     }
 

@@ -67,6 +67,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,6 +90,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
+import okio.utf8Size
+import kotlin.math.abs
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -425,10 +428,15 @@ fun SettingsScreen(
                         )
                     }
                     item {
+                        val deg = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue
+                        val string = findClosestDegree(deg)
+
+
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal],
                             title = "Launch direction",
                             drawableId = R.drawable.rakett_pin2,
+                            desc = "Currently $string",
                             suffix = "Deg",
                             numberOfDecimals = 1,
                             numberOfIntegers = 3,
@@ -485,18 +493,6 @@ fun SettingsScreen(
                             lowestInput = 0.0
                         )
                     }
-                    item {
-                        SettingsCard(
-                            mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.DROP_TIME.ordinal],
-                            title = "Drop time",
-                            drawableId = R.drawable.rakett_pin2,
-                            desc = "",
-                            suffix = "Sec",
-                            numberOfDecimals = 0,
-                            numberOfIntegers = 5,
-                            lowestInput = 0.0
-                        )
-                    }
                 }
             }
         }
@@ -539,24 +535,25 @@ fun SettingsCard(
         horizontalArrangement = Arrangement.Center
 
     ) {
-        Spacer(modifier = Modifier.width(10.dp))
-        Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.width(20.dp))
-
-        }
-
         Column(
             modifier = Modifier.width(210.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                color = settings50
-            )
+            Row {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    color = settings50
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    fontSize = 13.sp,
+                    text = "($suffix)",
+                    color = settings50.copy(alpha = 0.7F)
+                )
+            }
+
+
             if (desc != "") {
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(
@@ -565,9 +562,10 @@ fun SettingsCard(
                     fontSize = 13.sp,
                     color = settings50.copy(alpha = 0.7F)
                 )
+
             }
         }
-        Spacer(modifier = Modifier.width(20.dp))
+        Spacer(modifier = Modifier.width(40.dp))
         OutlinedTextField(
             modifier = Modifier
                 .width(80.dp)
@@ -576,17 +574,22 @@ fun SettingsCard(
             value = String.format("%.${numberOfDecimals}f", mutableValue.value),
             onValueChange = { input ->
                 val newValue = try {
-                    formatNewValue(input, numberOfIntegers)
+                    val formatNewValue = formatNewValue(
+                        input,
+                        numberOfIntegers,
+                        numberOfDecimals,
+                        highestInput = highestInput,
+                        lowestInput = lowestInput,
+                        oldValue = mutableValue.value.toString()
+                    )
+                    formatNewValue
 
                 } catch (e: Exception) {
                     mutableValue.value
                 }
 
+                mutableValue.value = newValue
 
-                if (newValue in lowestInput..highestInput) {
-                    mutableValue.value = newValue
-
-                }
             },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
@@ -600,19 +603,7 @@ fun SettingsCard(
             ),
             singleLine = true,
         )
-        Column(
-            modifier = Modifier.width(50.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Row {
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    fontSize = 13.sp,
-                    text = suffix,
-                    color = settings50.copy(alpha = 0.7F)
-                )
-            }
-        }
+
     }
 
 
@@ -623,12 +614,22 @@ fun SettingsCard(
 fun formatNewValue(
     input: String,
     numberOfIntegers: Int,
-): Double {
+    numberOfDecimals: Int,
+    highestInput: Double = Double.POSITIVE_INFINITY,
+    lowestInput: Double = Double.NEGATIVE_INFINITY,
+    oldValue: String = ""
+    ): Double {
+
+    Log.d("inputFormatter", "input: $input")
+
+    val isPositive = input.first() != '-'
+
     if (input == "") {
         return 0.0
     }
 
     val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
+    val oldValueIntegers = oldValue.filter { it.isDigit() || it == '.'}.split(".")[0].length
 
     val decimalParts = onlyDigitsAndDot.split(".")
     val integerPart = decimalParts.getOrNull(0) ?: ""
@@ -638,23 +639,82 @@ fun formatNewValue(
     }
 
     if (decimalParts.size > 1 && decimalParts[1] == "") {
+        Log.d("inputFormatter", "decimal part gone, returning x.0")
         return ("$integerPart.0").toDouble()
     }
 
 
     var formattedIntegerValue = integerPart
 
-    while (formattedIntegerValue.length > numberOfIntegers) {
+    while (formattedIntegerValue.filter { it.isDigit() }.length > numberOfIntegers) {
+        Log.d("inputFormatter", "Too many integers, dropping the last integer")
         formattedIntegerValue = formattedIntegerValue.dropLast(1)
     }
 
-    val decimalPart = if (decimalParts.size > 1) {
+
+    var decimalPart = if (decimalParts.size > 1) {
         "." + decimalParts[1]  // Reconstruct the decimal part, if present
     } else {
         ""
     }
 
-    val r = (formattedIntegerValue + decimalPart)
+    Log.d("inputFormatter", "old: ${oldValueIntegers}, numints: $numberOfIntegers")
+    if(oldValueIntegers < numberOfIntegers && (input.toDouble() > highestInput || input.toDouble() < lowestInput)){
+        Log.d("inputFormatter", "Not changing the last integer, dropping the last because total is over the limit")
+        formattedIntegerValue = formattedIntegerValue.dropLast(1)
+    }
 
+    while (decimalPart.length > numberOfDecimals + 1) {
+        Log.d("inputFormatter", "Dropping the last number in the decimal-part")
+        decimalPart = decimalPart.dropLast(1)
+    }
+
+    var r = (formattedIntegerValue + decimalPart)
+    Log.d("inputFormatter", "output: $r")
+
+
+    if (r.toDouble() > highestInput){
+        r = highestInput.toString()
+    }
+
+    if (r.toDouble() < lowestInput){
+        r = lowestInput.toString()
+    }
+
+    Log.d("inputFormatter", "output2: $r")
     return (r).toDouble()
+}
+
+fun findClosestDegree(degree: Double): String {
+    val degreeToString: Map<Double, String> =
+        mapOf(
+            Pair(0.0, "North"),
+            Pair(45.0, "North-East"),
+            Pair(90.0, "East"),
+            Pair(135.0, "South-East"),
+            Pair(180.0, "South"),
+            Pair(225.0, "South-West"),
+            Pair(270.0, "West"),
+            Pair(315.0, "North-West"),
+            Pair(360.0, "North"),
+            )
+
+    var closestDegree = 0.0
+    var closestString = ""
+    var shortestDistance = Double.MAX_VALUE
+
+    for ((key, value) in degreeToString) {
+        val distance = abs(degree - key)
+        if (distance < shortestDistance) {
+            shortestDistance = distance
+            closestDegree = key
+            closestString = value
+        }
+    }
+
+    if(shortestDistance != 0.0){
+        return "$closestString (ish)"
+    }
+
+    return closestString
 }

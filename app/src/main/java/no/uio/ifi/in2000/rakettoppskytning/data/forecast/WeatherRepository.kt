@@ -63,7 +63,7 @@ class WeatherRepository(
         val weatherAtPos = _weatherAtPos.value
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
             val closenessMap =
-                settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile)
+                settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile, weather.soilMoisture)
             val score = settingsRepository.getReadinessScore(closenessMap)
             WeatherAtPosHour(
                 weather.date,
@@ -103,12 +103,14 @@ class WeatherRepository(
             val soilIndex =
                 getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
 
+            Log.d("mais", "${allVerticalProfiles.size}")
+
             allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
 
                 val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
                 val date = series.time
                 val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
-                val closenessMap = settingsRepository.getValueClosenessMap(series, vp)
+                val closenessMap = settingsRepository.getValueClosenessMap(series, vp, soilMoisture)
                 val score = settingsRepository.getReadinessScore(closenessMap)
                 vp?.addGroundInfo(series)
                 val weatherAtPosHour = WeatherAtPosHour(
@@ -122,6 +124,7 @@ class WeatherRepository(
                     closenessMap,
                     score
                 )
+
                 list.add(weatherAtPosHour)
             }
 
@@ -130,6 +133,7 @@ class WeatherRepository(
             _weatherAtPos.update { updatedWeatherAtPos }
 
         } catch (e: Exception) {
+            Log.d("loadWeather", "${e.stackTrace}")
             _weatherAtPosOriginal = WeatherAtPos()
             _weatherAtPos.update { WeatherAtPos() }
         }
@@ -174,7 +178,7 @@ class WeatherRepository(
                 val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
                 val date = series.time
                 val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
-                val closenessMap = settingsRepository.getValueClosenessMap(series, vp)
+                val closenessMap = settingsRepository.getValueClosenessMap(series, vp, soilMoisture)
                 val score = settingsRepository.getReadinessScore(closenessMap)
                 vp?.addGroundInfo(series)
                 val weatherAtPosHour = WeatherAtPosHour(
@@ -206,6 +210,10 @@ class WeatherRepository(
         val gribTimeIntervals = 3
 
         allVp.forEach { vp ->
+            if(vp.verticalProfileMap.isEmpty()){
+                Log.d("grib", "verticalProfile was empty, likely because position is out of range")
+                return null
+            }
             val timeDifference = calculateHoursBetweenDates(vp.time, time)
 
             if (timeDifference in 0..gribTimeIntervals) {
@@ -248,8 +256,6 @@ class WeatherRepository(
                 "Error occurred while processing vertical profiles, restarting...",
                 e
             )
-            val newFiles = loadGribFromDataSource()
-            makeVerticalProfilesFromGrib(newFiles, lat, lon)
         } finally {
             for (deferred in deferredList) {
                 if (!deferred.isCompleted) {
