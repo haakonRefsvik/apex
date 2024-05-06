@@ -75,7 +75,9 @@ fun Navigation(
                     favoriteCardViewModel = favoriteCardViewModel,
                     context = context,
                     homeScreenViewModel = homeScreenViewModel,
-                    mapViewModel = mapViewModel
+                    mapViewModel = mapViewModel,
+                    onEvent = onEvent,
+                    state = state
                 )
             }
         }

@@ -5,6 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -56,7 +58,7 @@ fun AddFavoriteDialogCorrect(
     lat: Double,
     lon: Double,
     context: Context,
-    displayText: String = "Add favorite"
+    displayText: String = "Add location to favorite"
 ) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -81,7 +83,8 @@ fun AddFavoriteDialogCorrect(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
+                Text(text = displayText, color = favorite100.copy(0.7F))
+                Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     value = inputName, // viser lat, verdien som maks 5 desimaler
                     onValueChange = {
@@ -159,7 +162,7 @@ fun AddFavoriteDialogCorrect(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (!isNameAlreadyUsed) {
+                    if (!isNameAlreadyUsed && inputName != "") {
                         CoroutineScope(Dispatchers.Default).launch {
                             onEvent(FavoriteEvent.SetName(inputName))
                             onEvent(FavoriteEvent.SetLat(lat.toString()))
@@ -188,7 +191,6 @@ fun AddFavoriteDialogCorrect(
 }
 
 
-@OptIn(MapboxExperimental::class)
 @Composable
 fun AddFavoriteDialogError(
     state: FavoriteState,
@@ -236,8 +238,8 @@ fun AddFavoriteDialog(
     onEvent: (FavoriteEvent) -> Unit,
     lat: Double,
     lon: Double,
-    mapViewModel: MapViewModel,
-    context: Context
+    context: Context,
+    displayText: String = ""
 ) {
 
     val isLocationFavorited =
@@ -256,7 +258,8 @@ fun AddFavoriteDialog(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            context = context
+            context = context,
+            displayText = displayText
         )
     }
 }

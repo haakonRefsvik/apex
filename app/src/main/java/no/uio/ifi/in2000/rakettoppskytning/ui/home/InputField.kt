@@ -114,7 +114,6 @@ fun InputField(
             onEvent = onEvent,
             lat = lat,
             lon = lon,
-            mapViewModel,
             context
         )
     }
