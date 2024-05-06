@@ -20,7 +20,7 @@ suspend fun getForecast(lat: Double, lon: Double, apiKey: String): List<Location
 
         defaultRequest {
             url("https://gw-uio.intark.uh-it.no/in2000/")
-            header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
+            header("X-Gravitee-API-Key", apiKey)
         }
 
         install(ContentNegotiation) {

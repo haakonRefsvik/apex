@@ -44,7 +44,7 @@ class GribDataSource{
 
             defaultRequest {
                 url("https://gw-uio.intark.uh-it.no/in2000/")
-                header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
+                header("X-Gravitee-API-Key", apiKey)
             }
 
             install(ContentNegotiation){
