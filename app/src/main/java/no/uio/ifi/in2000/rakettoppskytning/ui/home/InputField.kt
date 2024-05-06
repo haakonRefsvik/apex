@@ -369,6 +369,7 @@ fun InputField(
                                     .size(30.dp)
                                     .padding(end = 5.dp),
                                     onClick = {
+                                        Log.d("Favorite: ", "${favorite.name}, ${favorite.lat}, ${favorite.lon}" )
                                         homeScreenViewModel.deleteFavoriteLocation(favorite.name, favorite.lat, favorite.lon)
 
                                     }) {

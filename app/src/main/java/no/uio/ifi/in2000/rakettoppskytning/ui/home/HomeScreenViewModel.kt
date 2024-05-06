@@ -212,8 +212,8 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     )
     val validateHour = { x: Int -> if (x == 23) 0 else x }
 
-    private val _favoriteState = MutableStateFlow(FavoriteLocationUiState())
-    val favoriteState: StateFlow<FavoriteLocationUiState> = _favoriteState
+    //private val _favoriteState = MutableStateFlow(FavoriteLocationUiState())
+    //val favoriteState: StateFlow<FavoriteLocationUiState> = _favoriteState
 
     val favoriteUiState: StateFlow<FavoriteLocationUiState> =
         favoriteRepo.observeFavoriteLocations().map {
@@ -229,12 +229,6 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     fun addFavorite(name: String, lat: String, lon: String) {
         viewModelScope.launch {
             favoriteRepo.insertFavoriteLocation(name, lat, lon)
-        }
-    }
-
-    fun deleteFavorite(name: String, lat: String, lon: String) {
-        viewModelScope.launch {
-            favoriteRepo.deleteFavorite(name, lat, lon)
         }
     }
 

@@ -61,7 +61,7 @@ class FavoriteCardRepository(
         getFavoriteLocation()
     }
 
-    suspend fun deleteFavorite(name: String, lat: String, lon: String){
+    suspend fun deleteFavoriteLocations(name: String, lat: String, lon: String){
         favoriteDao.deleteFavorite(Favorite(name, lat, lon))
         getFavoriteLocation()
     }
@@ -77,9 +77,4 @@ class FavoriteCardRepository(
         }
 
     }
-
-    suspend fun deleteFavoriteLocations(name: String, lat: String, lon: String){
-        favoriteDao.deleteFavorite(Favorite(name, lat, lon))
-    }
-
 }
