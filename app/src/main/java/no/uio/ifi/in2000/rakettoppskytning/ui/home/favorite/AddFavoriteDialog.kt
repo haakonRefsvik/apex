@@ -58,7 +58,8 @@ fun AddFavoriteDialogCorrect(
     lat: Double,
     lon: Double,
     context: Context,
-    displayText: String = "Add location to favorite"
+    displayText: String = "Add location to favorite",
+    dismissText: String = "Dismiss"
 ) {
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -152,7 +153,7 @@ fun AddFavoriteDialogCorrect(
                     )
                 )
                 if (isNameAlreadyUsed) {
-                    Text("This name is already in use", color = Color.Red)
+                    Text("This name is already in use", color = favorite100.copy(0.7F))
                 }
             }
         },
@@ -184,7 +185,7 @@ fun AddFavoriteDialogCorrect(
                     onEvent(FavoriteEvent.HideDialog)
                 }
             ) {
-                Text("Dismiss", color = Color.Red)
+                Text(dismissText, color = favorite100.copy(0.7F))
             }
         }
     )
@@ -239,7 +240,6 @@ fun AddFavoriteDialog(
     lat: Double,
     lon: Double,
     context: Context,
-    displayText: String = ""
 ) {
 
     val isLocationFavorited =
@@ -259,7 +259,6 @@ fun AddFavoriteDialog(
             lat = lat,
             lon = lon,
             context = context,
-            displayText = displayText
         )
     }
 }
