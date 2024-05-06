@@ -1,5 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning
 
+
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
@@ -8,13 +11,18 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getSigmoidRatios
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
 import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
+import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import org.junit.Test
 
 import org.junit.Assert.*
+import java.io.File
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -268,5 +276,43 @@ class ExampleUnitTest {
         val r7 = getSigmoidRatios(l, u, alt)
         assertEquals(null, r7)
     }
+
+    @Test
+    fun testSoilApi() {
+        val soilForecastList: List<SoilMoistureHourly> = runBlocking {
+            getSoilForecast(59.91, 10.75)
+        }
+        assert(soilForecastList.isNotEmpty())
+    }
+
+    @Test
+    fun testMapViewModel() {
+        val mapViewModel = MapViewModel()
+        var lat = 59.94363
+        var lon = 10.71830
+
+        assertEquals(lat.toString(), mapViewModel.lat.value.toString())
+        assertEquals(lon.toString(), mapViewModel.lon.value.toString())
+
+        lat = 60.0
+        lon = 11.0
+        mapViewModel.updateCamera(lat, lon)
+        assertEquals(lat.toString(), mapViewModel.cameraOptions.value.center!!.latitude().toString())
+        assertEquals(lon.toString(), mapViewModel.cameraOptions.value.center!!.longitude().toString())
+
+    }
+
+    @Test
+    fun testGribRepository() {
+         runBlocking {
+             val gribRepo = GribRepository()
+             gribRepo.loadGribFiles()
+             delay(100000)
+             val test: List<File> = gribRepo.getGribFiles()
+             assert(test.isNotEmpty())
+        }
+
+    }
+
 
 }

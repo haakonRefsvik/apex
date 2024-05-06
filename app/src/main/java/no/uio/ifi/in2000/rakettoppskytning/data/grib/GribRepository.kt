@@ -19,12 +19,11 @@ class GribRepository {
     private val dataSource = GribDataSource()
     suspend fun loadGribFiles(){
         dataSource.getGrib()
-        Log.d("Grib", "Done! Loaded ${dataSource.cachedFiles.size} grib-files")
+        //Log.d("Grib", "Done! Loaded ${dataSource.cachedFiles.size} grib-files")
     }
 
     suspend fun getGribFiles(): List<File> {
         dataSource.getGrib()
-
         return dataSource.cachedFiles.values.toList()
     }
 

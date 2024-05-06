@@ -32,7 +32,6 @@ suspend fun getSoilForecast(lat: Double, lon: Double): List<SoilMoistureHourly> 
         Log.d("feil i historisk-dataSource", e.toString())
         listOf()
     }
-
 }
 
 
