@@ -1,12 +1,4 @@
 package no.uio.ifi.in2000.rakettoppskytning
-import android.content.Context
-import android.content.ContextWrapper
-import androidx.compose.ui.platform.LocalContext
-import androidx.media3.test.utils.TestUtil
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.flow.map
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
@@ -15,28 +7,18 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getSigmoidRatios
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
-import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
-import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
-import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
 import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.getCurrentDate
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.getCloseness
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getCurrentDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
-import no.uio.ifi.in2000.rakettoppskytning.model.getDayAndMonth
-import no.uio.ifi.in2000.rakettoppskytning.model.getDayName
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
-import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.formatNewValue
-import org.junit.After
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayAndMonth
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayName
 import org.junit.Test
 import org.junit.Assert.*
-import org.junit.Before
-import org.junit.runner.RunWith
-import java.io.IOException
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -348,6 +330,39 @@ class ExampleUnitTest {
 
         assertEquals(exp, act, 0.0)
     }
+
+    @Test
+    fun testClosenessSoil(){
+
+        val s1 = getCloseness(
+            value = 0.16,
+            limit = 1.0,
+            lowerLimit = 0.15,
+            max = false
+        )
+
+        assertEquals(0.9, s1, 0.1)
+
+        val s2 = getCloseness(
+            value = 0.14,
+            limit = 1.0,
+            lowerLimit = 0.15,
+            max = false
+        )
+
+        assertEquals(1.0, s2, 0.0)
+
+        val s3 = getCloseness(
+            value = 0.99,
+            limit = 1.0,
+            lowerLimit = 0.15,
+            max = false
+        )
+
+        assertEquals(0.1, s3, 0.1)
+
+    }
+
 
 
 }

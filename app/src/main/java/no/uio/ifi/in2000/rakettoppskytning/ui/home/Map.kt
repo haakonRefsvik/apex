@@ -42,6 +42,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 import kotlin.math.atan2
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 
@@ -209,9 +210,7 @@ fun Make3dtrajectory(
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % 3 == 0) {
-
-
+                        } else if (index % settingsViewModel.sliderPosition.value.roundToInt() == 0) {
                             val MODEL_ID_1 = "model-id${index}"
                             val SOURCE_ID = "source-id$${index}"
                             val MODEL1_COORDINATES = Point.fromLngLat(

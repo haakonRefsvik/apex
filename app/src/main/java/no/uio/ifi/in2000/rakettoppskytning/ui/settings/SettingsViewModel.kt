@@ -3,6 +3,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,6 +37,7 @@ class SettingsViewModel(
 
     val settingscheck1 = mutableStateOf(true)
     val settingscheck2 = mutableStateOf(false)
+    val sliderPosition = mutableFloatStateOf(1.0F)
 
     val thresholdMutableStates = ThresholdType.entries.map {
         mutableDoubleStateOf(settingsRepo.getThresholdValue(it))

@@ -1,9 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,8 +22,8 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
@@ -36,9 +34,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonColors
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -67,7 +68,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,14 +75,15 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
@@ -90,8 +91,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
-import okio.utf8Size
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -104,15 +105,12 @@ fun SettingsScreen(
     onThresholdEvent: (ThresholdsEvent) -> Unit,
     onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
     homeScreenViewModel: HomeScreenViewModel,
-    thresholdState: ThresholdState,
-    rocketSpecState: RocketSpecState,
     mapViewModel: MapViewModel,
-    context: Context
 ) {
-    val duration = Toast.LENGTH_SHORT
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.settingscheck1
     val settings2check = settingsViewModel.settingscheck2
+
     val scope = rememberCoroutineScope()
 
     Scaffold(modifier = Modifier.background(settings100),
@@ -126,7 +124,7 @@ fun SettingsScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "ArrowBack",
                             tint = settings0
                         )
@@ -493,6 +491,9 @@ fun SettingsScreen(
                             lowestInput = 0.0
                         )
                     }
+                    item{
+                        SliderCard(settingsViewModel)
+                    }
                 }
             }
         }
@@ -510,6 +511,69 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+@Composable
+fun SliderCard(settingsViewModel: SettingsViewModel){
+    val sliderPosition = settingsViewModel.sliderPosition
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+
+    ) {
+        Column(
+            modifier = Modifier.width(170.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row {
+                Text(
+                    text = "Trajectory resolution",
+                    fontSize = 16.sp,
+                    color = settings50
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+
+            }
+
+
+            Spacer(modifier = Modifier.height(7.dp))
+            Text(
+                text = "Load every ${findPointSuffix(sliderPosition.floatValue.roundToInt())}point" +
+                        "\n${findPerformance(sliderPosition.floatValue.roundToInt())}",
+                lineHeight = 16.sp,
+                fontSize = 13.sp,
+                color = settings50.copy(alpha = 0.7F)
+            )
+
+
+        }
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(modifier = Modifier.width(150.dp)){
+            Slider(
+                value = sliderPosition.floatValue,
+                onValueChange = { sliderPosition.floatValue = it },
+                colors = SliderColors(
+                    activeTickColor = filter0,
+                    activeTrackColor = filter0,
+                    inactiveTickColor = filter50,
+                    inactiveTrackColor = filter50,
+                    disabledInactiveTickColor = filter50,
+                    disabledActiveTickColor = filter50,
+                    disabledActiveTrackColor = filter50,
+                    disabledInactiveTrackColor = filter50,
+                    thumbColor = filter0,
+                    disabledThumbColor = filter50
+                ),
+                steps = 8,
+                valueRange = 1f..10f
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(27.dp))
 }
 
 @SuppressLint("SuspiciousIndentation")
@@ -606,83 +670,29 @@ fun SettingsCard(
 
     }
 
-
     Spacer(modifier = Modifier.height(27.dp))
 
 }
 
-fun formatNewValue(
-    input: String,
-    numberOfIntegers: Int,
-    numberOfDecimals: Int,
-    highestInput: Double = Double.POSITIVE_INFINITY,
-    lowestInput: Double = Double.NEGATIVE_INFINITY,
-    oldValue: String = ""
-    ): Double {
+fun findPointSuffix(res: Int): String{
+    val result = when {
+        res == 1 -> ""
+        res == 2 -> "2nd "
+        res == 3 -> "3rd "
+        else -> "${res}th "
+    }
+    return result
+}
 
-    Log.d("inputFormatter", "input: $input")
-
-    val isPositive = input.first() != '-'
-
-    if (input == "") {
-        return 0.0
+fun findPerformance(res: Int): String{
+    val result = when {
+        res <= 2 -> "Low performance"
+        res in 3..6 -> "Medium performace"
+        res > 6 -> "High performance"
+        else -> "unknown"
     }
 
-    val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
-    val oldValueIntegers = oldValue.filter { it.isDigit() || it == '.'}.split(".")[0].length
-
-    val decimalParts = onlyDigitsAndDot.split(".")
-    val integerPart = decimalParts.getOrNull(0) ?: ""
-
-    if (integerPart == "") {
-        return ("0." + decimalParts[1]).toDouble()
-    }
-
-    if (decimalParts.size > 1 && decimalParts[1] == "") {
-        Log.d("inputFormatter", "decimal part gone, returning x.0")
-        return ("$integerPart.0").toDouble()
-    }
-
-
-    var formattedIntegerValue = integerPart
-
-    while (formattedIntegerValue.filter { it.isDigit() }.length > numberOfIntegers) {
-        Log.d("inputFormatter", "Too many integers, dropping the last integer")
-        formattedIntegerValue = formattedIntegerValue.dropLast(1)
-    }
-
-
-    var decimalPart = if (decimalParts.size > 1) {
-        "." + decimalParts[1]  // Reconstruct the decimal part, if present
-    } else {
-        ""
-    }
-
-    Log.d("inputFormatter", "old: ${oldValueIntegers}, numints: $numberOfIntegers")
-    if(oldValueIntegers < numberOfIntegers && (input.toDouble() > highestInput || input.toDouble() < lowestInput)){
-        Log.d("inputFormatter", "Not changing the last integer, dropping the last because total is over the limit")
-        formattedIntegerValue = formattedIntegerValue.dropLast(1)
-    }
-
-    while (decimalPart.length > numberOfDecimals + 1) {
-        Log.d("inputFormatter", "Dropping the last number in the decimal-part")
-        decimalPart = decimalPart.dropLast(1)
-    }
-
-    var r = (formattedIntegerValue + decimalPart)
-    Log.d("inputFormatter", "output: $r")
-
-
-    if (r.toDouble() > highestInput){
-        r = highestInput.toString()
-    }
-
-    if (r.toDouble() < lowestInput){
-        r = lowestInput.toString()
-    }
-
-    Log.d("inputFormatter", "output2: $r")
-    return (r).toDouble()
+    return result
 }
 
 fun findClosestDegree(degree: Double): String {
@@ -699,7 +709,6 @@ fun findClosestDegree(degree: Double): String {
             Pair(360.0, "North"),
             )
 
-    var closestDegree = 0.0
     var closestString = ""
     var shortestDistance = Double.MAX_VALUE
 
@@ -707,7 +716,6 @@ fun findClosestDegree(degree: Double): String {
         val distance = abs(degree - key)
         if (distance < shortestDistance) {
             shortestDistance = distance
-            closestDegree = key
             closestString = value
         }
     }

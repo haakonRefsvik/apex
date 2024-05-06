@@ -2,7 +2,6 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,17 +44,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
-import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.getNumberOfDaysAhead
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.getCurrentDate
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getCurrentDate
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState

@@ -48,7 +48,7 @@ fun getSoilScore(soilPercentage: Int?): Double{
         return -1.0
     }
 
-    return if(soilPercentage < 15){
+    return if(soilPercentage <= 15){
         1.0
     }
     else{

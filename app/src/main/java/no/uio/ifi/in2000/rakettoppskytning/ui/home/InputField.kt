@@ -61,10 +61,10 @@ import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
@@ -76,31 +76,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
-/*
-fun formatNewValue(input: String): Double {
-    val onlyDigitsAndDot = input.filter { it.isDigit() || it == '.' || it == '-' }
-
-    val decimalParts = onlyDigitsAndDot.split(".")
-    val integerPart = decimalParts.getOrNull(0) ?: ""
-
-    var formattedIntegerValue = integerPart
-
-    while (formattedIntegerValue.length > 2) {
-        formattedIntegerValue = formattedIntegerValue.dropLast(1)
-    }
-
-    val decimalPart = if (decimalParts.size > 1) {
-        "." + decimalParts[1]  // Reconstruct the decimal part, if present
-    } else {
-        ""
-    }
-
-    val r = (formattedIntegerValue + decimalPart)
-
-    return (r).toDouble()
-}
-
- */
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
 

@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.favorites
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
@@ -30,15 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.model.extractHourAndMinutes
-import no.uio.ifi.in2000.rakettoppskytning.model.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.extractHourAndMinutes
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
