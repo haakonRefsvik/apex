@@ -38,6 +38,7 @@ class SettingsViewModel(
     val settingscheck1 = mutableStateOf(true)
     val settingscheck2 = mutableStateOf(false)
     val sliderPosition = mutableFloatStateOf(1.0F)
+    val ippcOnMap = mutableStateOf(false)
 
     val thresholdMutableStates = ThresholdType.entries.map {
         mutableDoubleStateOf(settingsRepo.getThresholdValue(it))
@@ -56,7 +57,7 @@ class SettingsViewModel(
                 thresholdMutableStates.forEachIndexed { index, mutableState ->
                     put(ThresholdType.entries[index].name, mutableState.doubleValue)
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d("settings", "Could not update thresholds\n ${e.stackTrace}")
             }
 

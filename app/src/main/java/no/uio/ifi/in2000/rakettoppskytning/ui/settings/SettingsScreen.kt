@@ -42,6 +42,9 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -82,6 +85,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
@@ -364,6 +368,21 @@ fun SettingsScreen(
                         )
 
                     }
+                    item {
+                        Row(modifier = Modifier.fillMaxSize()) {
+                            Text(text = "Show ippc on map", color = main50)
+                            Switch(
+                                checked = settingsViewModel.ippcOnMap.value,
+                                onCheckedChange = {
+                                    settingsViewModel.ippcOnMap.value =
+                                        !settingsViewModel.ippcOnMap.value
+                                },
+                                colors = SwitchDefaults.colors(checkedTrackColor = main0),
+                            )
+
+                        }
+
+                    }
 
                 } else {
                     item {
@@ -426,7 +445,8 @@ fun SettingsScreen(
                         )
                     }
                     item {
-                        val deg = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue
+                        val deg =
+                            settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue
                         val string = findClosestDegree(deg)
 
 
@@ -491,7 +511,7 @@ fun SettingsScreen(
                             lowestInput = 0.0
                         )
                     }
-                    item{
+                    item {
                         SliderCard(settingsViewModel)
                     }
                 }
@@ -505,7 +525,7 @@ fun SettingsScreen(
                 settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
                 settingsViewModel.updateRocketSpecValues(onRocketSpecsEvent)
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
-                if(mapViewModel.makeTrajectory.value){
+                if (mapViewModel.makeTrajectory.value) {
                     mapViewModel.deleteTrajectory()
                 }
             }
@@ -514,7 +534,7 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SliderCard(settingsViewModel: SettingsViewModel){
+fun SliderCard(settingsViewModel: SettingsViewModel) {
     val sliderPosition = settingsViewModel.sliderPosition
 
     Row(
@@ -551,7 +571,7 @@ fun SliderCard(settingsViewModel: SettingsViewModel){
 
         }
         Spacer(modifier = Modifier.width(10.dp))
-        Column(modifier = Modifier.width(150.dp)){
+        Column(modifier = Modifier.width(150.dp)) {
             Slider(
                 value = sliderPosition.floatValue,
                 onValueChange = { sliderPosition.floatValue = it },
@@ -674,7 +694,7 @@ fun SettingsCard(
 
 }
 
-fun findPointSuffix(res: Int): String{
+fun findPointSuffix(res: Int): String {
     val result = when {
         res == 1 -> ""
         res == 2 -> "2nd "
@@ -684,7 +704,7 @@ fun findPointSuffix(res: Int): String{
     return result
 }
 
-fun findPerformance(res: Int): String{
+fun findPerformance(res: Int): String {
     val result = when {
         res <= 2 -> "Low performance"
         res in 3..6 -> "Medium performace"
@@ -707,7 +727,7 @@ fun findClosestDegree(degree: Double): String {
             Pair(270.0, "West"),
             Pair(315.0, "North-West"),
             Pair(360.0, "North"),
-            )
+        )
 
     var closestString = ""
     var shortestDistance = Double.MAX_VALUE
@@ -720,7 +740,7 @@ fun findClosestDegree(degree: Double): String {
         }
     }
 
-    if(shortestDistance != 0.0){
+    if (shortestDistance != 0.0) {
         return "$closestString (ish)"
     }
 
