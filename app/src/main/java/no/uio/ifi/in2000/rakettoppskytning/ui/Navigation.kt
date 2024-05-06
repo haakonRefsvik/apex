@@ -87,10 +87,7 @@ fun Navigation(
                 onThresholdEvent,
                 onRocketSpecsEvent,
                 homeScreenViewModel,
-                thresholdState,
-                rocketSpecState,
                 mapViewModel,
-                context
             )
         }
         composable("FavoriteCardScreen") {

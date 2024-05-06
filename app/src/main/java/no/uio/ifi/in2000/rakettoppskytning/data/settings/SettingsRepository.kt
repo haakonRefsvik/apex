@@ -118,33 +118,8 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
         closenessMap[ThresholdType.MAX_DEW_POINT.name] = c5
         closenessMap["SOIL_MOISTURE"] = c6
 
+        Log.d("mais", c2.toString())
         return closenessMap
-    }
-
-    fun getCloseness(value: Double, limit: Double, lowerLimit: Double = 0.0, max: Boolean = true): Double{
-        if(limit == -1.0){
-            return -1.0
-        }
-
-        if(!max){
-            //TODO() NOT IMPLEMENTED
-            return 1.0
-        }
-
-        val v = value - lowerLimit
-        val d = limit - lowerLimit
-
-        val r = v/d
-
-        if(r > 1){
-            return 1.0
-        }
-
-        if(r.isNaN()){  // if we get a 0 division
-            return 0.0
-        }
-
-        return r
     }
 
     fun getReadinessScore(map: HashMap<String, Double>): Double {
@@ -261,3 +236,33 @@ fun getDefaultRocketSpecs(): RocketSpecValues {
     return RocketSpecValues(map)
 }
 
+fun getCloseness(value: Double, limit: Double, lowerLimit: Double = 0.0, max: Boolean = true): Double{
+    if(limit == -1.0){
+        return -1.0
+    }
+
+    if(!max){
+        val r = lowerLimit/value
+
+        if(r > 1){
+            return 1.0
+        }
+
+        return r
+    }
+
+    val v = value - lowerLimit
+    val d = limit - lowerLimit
+
+    val r = v/d
+
+    if(r > 1){
+        return 1.0
+    }
+
+    if(r.isNaN()){  // if we get a 0 division
+        return 0.0
+    }
+
+    return r
+}

@@ -1,11 +1,9 @@
-package no.uio.ifi.in2000.rakettoppskytning.model
+package no.uio.ifi.in2000.rakettoppskytning.model.formatting
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
-import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit

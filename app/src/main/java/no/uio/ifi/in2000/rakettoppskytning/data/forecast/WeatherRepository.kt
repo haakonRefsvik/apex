@@ -18,8 +18,8 @@ import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.errorCheckSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getFirstSoilIndex
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
-import no.uio.ifi.in2000.rakettoppskytning.model.calculateHoursBetweenDates
-import no.uio.ifi.in2000.rakettoppskytning.model.getHourFromDate
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.calculateHoursBetweenDates
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getHourFromDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
 import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
