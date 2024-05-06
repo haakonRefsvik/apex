@@ -24,6 +24,7 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
+import com.mapbox.maps.extension.style.expressions.dsl.generated.id
 import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.ModelType
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
@@ -32,6 +33,7 @@ import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import no.uio.ifi.in2000.rakettoppskytning.R
@@ -117,28 +119,18 @@ fun Map(
         mapViewportState = mapViewModel.mapViewportState,
     ) {
 
-        NewPointAnnotation(
-            "",
-            lat = lat,
-            lon = lon,
-            drawableId = R.drawable.pin,
-            onClick = { Log.d("PointClick", it.point.toString()) }
-        )
 
-        MapEffect { mapView ->
-            mapView.mapboxMap.styleDataLoadedEvents
-
-            mapView.mapboxMap.addOnMapClickListener {
-                mapViewModel.lat.value = it.latitude()
-                mapViewModel.lon.value = it.longitude()
-
-                true
-            }
-
-        }
         if (mapViewModel.makeTrajectory.value) {
             Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
+
         } else {
+            NewPointAnnotation(
+                "",
+                lat = lat,
+                lon = lon,
+                drawableId = R.drawable.pin,
+                onClick = { Log.d("PointClick", it.point.toString()) }
+            )
             MapEffect() { mapView ->
                 mapView.mapboxMap.apply {
 
@@ -146,6 +138,17 @@ fun Map(
                         style(Style.OUTDOORS) {}
                     )
                 }
+            }
+            MapEffect { mapView ->
+                mapView.mapboxMap.styleDataLoadedEvents
+
+                mapView.mapboxMap.addOnMapClickListener {
+                    mapViewModel.lat.value = it.latitude()
+                    mapViewModel.lon.value = it.longitude()
+
+                    false
+                }
+
             }
 
         }
@@ -202,6 +205,11 @@ fun Make3dtrajectory(
     }
 
     MapEffect { mapView ->
+        mapView.mapboxMap.removeOnMapClickListener() {
+
+
+            true
+        }
 
         mapView.mapboxMap.apply {
 
@@ -210,7 +218,7 @@ fun Make3dtrajectory(
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % settingsViewModel.sliderPosition.value.roundToInt() == 0) {
+                        } else if (index % settingsViewModel.sliderPosition.floatValue.roundToInt() == 0) {
                             val MODEL_ID_1 = "model-id${index}"
                             val SOURCE_ID = "source-id$${index}"
                             val MODEL1_COORDINATES = Point.fromLngLat(

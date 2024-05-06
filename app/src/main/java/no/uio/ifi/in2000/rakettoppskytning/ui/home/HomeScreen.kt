@@ -127,35 +127,62 @@ fun HomeScreen(
                     settingsViewModel
                 )
                 if (mapViewModel.makeTrajectory.value) {
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .padding(start = 5.dp, top = 30.dp)
-                            .heightIn(max = 35.dp),
-                        contentColor = filter0,
-                        containerColor = filter50,
-                        onClick = {
-                            mapViewModel.deleteTrajectory()
-                        }) {
-                        Row(
+                    Column {
+                        FloatingActionButton(
                             modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "Remove trajectory",
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Close",
-                                modifier = Modifier.size(20.dp)
-                            )
+                                .padding(start = 5.dp, top = 30.dp)
+                                .heightIn(max = 35.dp),
+                            contentColor = filter0,
+                            containerColor = filter50,
+                            onClick = {
+                                mapViewModel.deleteTrajectory()
+                            }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(2.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Close",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+
+                        }
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .padding(start = 5.dp, top = 5.dp)
+                                .heightIn(max = 35.dp),
+                            contentColor = filter0,
+                            containerColor = filter50,
+                            onClick = {
+                                mapViewModel.threeD.value = !mapViewModel.threeD.value
+                            }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(2.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (!mapViewModel.threeD.value) {
+
+                                    Text(text = "3D")
+                                } else {
+                                    Text("2D")
+                                }
+
+
+                            }
+
+
                         }
 
-
                     }
+
                 }
 
 
