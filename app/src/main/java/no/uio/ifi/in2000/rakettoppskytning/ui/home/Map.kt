@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -24,6 +25,8 @@ import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
+import com.mapbox.maps.extension.style.layers.generated.fillLayer
+import com.mapbox.maps.extension.style.layers.generated.lineLayer
 import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.ModelType
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
@@ -138,15 +141,36 @@ fun Map(
         if (mapViewModel.makeTrajectory.value) {
             Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
         } else {
+            val IMAGE_ID = "stripe-pattern"
+            val LAYER_ID = "layer-id"
+            val SOURCE_ID = "source-id"
+            val TOP_LAYER_ID = "line-layer"
+            val SETTLEMENT_LABEL = "settlement-major-label"
+            val SOURCE_URL =
+                "https://raw.githubusercontent.com/relet/pg-xc/master/geojson/luftrom.geojson"
             MapEffect() { mapView ->
                 mapView.mapboxMap.apply {
 
                     loadStyle(
-                        style(Style.OUTDOORS) {}
-                    )
+                        style(Style.OUTDOORS) {
+                            +geoJsonSource(SOURCE_ID) {
+                                data(SOURCE_URL)
+                            }
+                            +layerAtPosition(
+                                fillLayer(LAYER_ID, SOURCE_ID) {
+                                    fillColor(Color.parseColor("#0080ff")).fillOpacity(0.7)
+                                },
+                                below = SETTLEMENT_LABEL
+                            )
+                            +lineLayer(
+                                TOP_LAYER_ID, SOURCE_ID
+                            ) {
+
+                                lineWidth(.5)
+                            }
+                        })
                 }
             }
-
         }
 
     }
