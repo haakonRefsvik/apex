@@ -17,6 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.FavoriteLocationUiState
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite100
@@ -51,11 +54,12 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 @Composable
 fun AddFavoriteDialogCorrect(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
     lat: Double,
     lon: Double,
     context: Context,
+    isAddingFavorite: Boolean,
+    onDismiss: () -> Unit,
     displayText: String = "Add favorite"
 ) {
     val controller = LocalSoftwareKeyboardController.current
@@ -65,198 +69,217 @@ fun AddFavoriteDialogCorrect(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
-    var inputName by remember { mutableStateOf(state.name) }
+    var inputName by remember { mutableStateOf("")}
     var isNameAlreadyUsed by remember { mutableStateOf(false) }
+   // var isDialogVisible by remember { mutableStateOf(true) }
+
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
 
     val duration = Toast.LENGTH_LONG
 
     val toast = Toast.makeText(context, "Added $inputName to favorites", duration) // in Activity
 
-    AlertDialog(
-        containerColor = main100,
-        title = {
-            Text(text = "Add favorite", color = favorite100)
-        },
-        text = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+    if(isAddingFavorite) {
+        AlertDialog(
+            containerColor = main100,
+            title = {
+                Text(text = "Add favorite", color = favorite100)
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
 
-                OutlinedTextField(
-                    value = inputName, // viser lat, verdien som maks 5 desimaler
-                    onValueChange = {
-                        inputName = it
-                        isNameAlreadyUsed = state.favorites.any { favorite -> favorite.name == it }
-                    },
+                    OutlinedTextField(
+                        value = inputName, // viser lat, verdien som maks 5 desimaler
+                        onValueChange = {
+                            inputName = it
+                            isNameAlreadyUsed = favoriteLocations.favorites.any { favorite -> favorite.name == it }
+                        },
 
-                    textStyle = TextStyle(fontSize = 18.sp),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            controller?.hide()
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    label = { Text("Name") },
-                    singleLine = true,
-                    modifier = Modifier.focusRequester(focusRequester),
-                    colors = TextFieldColors(
-                        focusedTextColor = favorite100,
-                        cursorColor = favorite100,
-                        disabledContainerColor = favorite100,
-                        disabledIndicatorColor = favorite100,
-                        disabledLabelColor = favorite100,
-                        disabledLeadingIconColor = favorite100,
-                        disabledPlaceholderColor = favorite100,
-                        disabledPrefixColor = favorite100,
-                        disabledSuffixColor = favorite100,
-                        disabledSupportingTextColor = favorite100,
-                        disabledTextColor = favorite100,
-                        disabledTrailingIconColor = favorite100,
-                        errorContainerColor = favorite100,
-                        errorCursorColor = favorite100,
-                        errorIndicatorColor = favorite100,
-                        errorLabelColor = favorite100,
-                        errorLeadingIconColor = favorite100,
-                        errorPlaceholderColor = favorite100,
-                        errorPrefixColor = favorite100,
-                        errorSuffixColor = favorite100,
-                        errorSupportingTextColor = favorite100,
-                        errorTextColor = favorite100,
-                        errorTrailingIconColor = favorite100,
-                        focusedContainerColor = main100,
-                        focusedIndicatorColor = favorite100,
-                        focusedLabelColor = favorite100,
-                        focusedLeadingIconColor = favorite100,
-                        focusedPlaceholderColor = favorite100,
-                        focusedPrefixColor = favorite100,
-                        focusedSuffixColor = favorite100,
-                        focusedSupportingTextColor = favorite100,
-                        focusedTrailingIconColor = favorite100,
-                        textSelectionColors = TextSelectionColors(favorite100, favorite100),
-                        unfocusedContainerColor = main100,
-                        unfocusedIndicatorColor = favorite100,
-                        unfocusedLabelColor = favorite100,
-                        unfocusedLeadingIconColor = favorite100,
-                        unfocusedPlaceholderColor = favorite100,
-                        unfocusedPrefixColor = favorite100,
-                        unfocusedSuffixColor = favorite100,
-                        unfocusedSupportingTextColor = favorite100,
-                        unfocusedTextColor = favorite100,
-                        unfocusedTrailingIconColor = favorite100
+                        textStyle = TextStyle(fontSize = 18.sp),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done,
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                controller?.hide()
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        label = { Text("Name") },
+                        singleLine = true,
+                        modifier = Modifier.focusRequester(focusRequester),
+                        colors = TextFieldColors(
+                            focusedTextColor = favorite100,
+                            cursorColor = favorite100,
+                            disabledContainerColor = favorite100,
+                            disabledIndicatorColor = favorite100,
+                            disabledLabelColor = favorite100,
+                            disabledLeadingIconColor = favorite100,
+                            disabledPlaceholderColor = favorite100,
+                            disabledPrefixColor = favorite100,
+                            disabledSuffixColor = favorite100,
+                            disabledSupportingTextColor = favorite100,
+                            disabledTextColor = favorite100,
+                            disabledTrailingIconColor = favorite100,
+                            errorContainerColor = favorite100,
+                            errorCursorColor = favorite100,
+                            errorIndicatorColor = favorite100,
+                            errorLabelColor = favorite100,
+                            errorLeadingIconColor = favorite100,
+                            errorPlaceholderColor = favorite100,
+                            errorPrefixColor = favorite100,
+                            errorSuffixColor = favorite100,
+                            errorSupportingTextColor = favorite100,
+                            errorTextColor = favorite100,
+                            errorTrailingIconColor = favorite100,
+                            focusedContainerColor = main100,
+                            focusedIndicatorColor = favorite100,
+                            focusedLabelColor = favorite100,
+                            focusedLeadingIconColor = favorite100,
+                            focusedPlaceholderColor = favorite100,
+                            focusedPrefixColor = favorite100,
+                            focusedSuffixColor = favorite100,
+                            focusedSupportingTextColor = favorite100,
+                            focusedTrailingIconColor = favorite100,
+                            textSelectionColors = TextSelectionColors(favorite100, favorite100),
+                            unfocusedContainerColor = main100,
+                            unfocusedIndicatorColor = favorite100,
+                            unfocusedLabelColor = favorite100,
+                            unfocusedLeadingIconColor = favorite100,
+                            unfocusedPlaceholderColor = favorite100,
+                            unfocusedPrefixColor = favorite100,
+                            unfocusedSuffixColor = favorite100,
+                            unfocusedSupportingTextColor = favorite100,
+                            unfocusedTextColor = favorite100,
+                            unfocusedTrailingIconColor = favorite100
+                        )
                     )
-                )
-                if (isNameAlreadyUsed) {
-                    Text("This name is already in use", color = Color.Red)
-                }
-            }
-        },
-        onDismissRequest = {
-            onEvent(FavoriteEvent.HideDialog)
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    if (!isNameAlreadyUsed) {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            onEvent(FavoriteEvent.SetName(inputName))
-                            onEvent(FavoriteEvent.SetLat(lat.toString()))
-                            onEvent(FavoriteEvent.SetLon(lon.toString()))
-                            delay(500L)
-                            onEvent(FavoriteEvent.SaveFavorite)
-                            toast.show()
-                        }
+                    if (isNameAlreadyUsed) {
+                        Text("This name is already in use", color = Color.Red)
                     }
                 }
+            },
+            onDismissRequest = {
+                inputName = ""
+                onDismiss()
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (!isNameAlreadyUsed) {
+                            CoroutineScope(Dispatchers.Default).launch {
+                                homeScreenViewModel.addFavorite(inputName, lat.toString(), lon.toString())
+                                toast.show()
+                                onDismiss()
+                            }
+                        }
+                    }
 
-            ) {
-                Text("Confirm", color = favorite100)
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onEvent(FavoriteEvent.HideDialog)
+                ) {
+                    Text("Confirm", color = favorite100)
                 }
-            ) {
-                Text("Dismiss", color = Color.Red)
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        onDismiss()
+                    }
+                ) {
+                    Text("Dismiss", color = Color.Red)
+                }
             }
-        }
-    )
+        )
+
+    }
+
 }
 
 
 @OptIn(MapboxExperimental::class)
 @Composable
 fun AddFavoriteDialogError(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
     lat: Double,
     lon: Double,
+    isAddingFavorite: Boolean,
+    onDismiss: () -> Unit
 ) {
-    val favorite = state.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
-    AlertDialog(
-        containerColor = main100,
-        icon = {
-            androidx.compose.material3.Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = "Warning Icon",
-                tint = Color.Red
-            )
-        },
-        title = {
-            Text(text = "Add favorite", color = favorite100)
-        },
-        text = {
-            if (favorite != null) {
-                Text(
-                    "This location is already saved under the name ${favorite.name}",
-                    color = favorite100
+    //var isDialogVisible by remember { mutableStateOf(true) }
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
+
+    val favorite = favoriteLocations.favorites.find { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
+
+    if(isAddingFavorite) {
+        AlertDialog(
+            containerColor = main100,
+            icon = {
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Default.Warning,
+                    contentDescription = "Warning Icon",
+                    tint = Color.Red
                 )
-            }
-        },
-        onDismissRequest = {},
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onEvent(FavoriteEvent.HideDialog)
+            },
+            title = {
+                Text(text = "Add favorite", color = favorite100)
+            },
+            text = {
+                if (favorite != null) {
+                    Text(
+                        "This location is already saved under the name ${favorite.name}",
+                        color = favorite100
+                    )
                 }
-            ) {
-                Text("OK", color = favorite100)
+            },
+            onDismissRequest = {
+                onDismiss()
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDismiss()
+                    }
+                ) {
+                    Text("OK", color = favorite100)
+                }
             }
-        }
-    )
+        )
+
+    }
+
 }
 
 @Composable
 fun AddFavoriteDialog(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
     lat: Double,
     lon: Double,
-    mapViewModel: MapViewModel,
-    context: Context
+    context: Context,
+    isAddingFavorite: Boolean,
+    onDismiss: () -> Unit
 ) {
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
 
     val isLocationFavorited =
-        state.favorites.any { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
+        favoriteLocations.favorites.any { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
 
     if (isLocationFavorited) {
         AddFavoriteDialogError(
-            state = state,
-            onEvent = onEvent,
+            homeScreenViewModel = homeScreenViewModel,
             lat = lat,
             lon = lon,
+            isAddingFavorite = isAddingFavorite,
+            onDismiss = onDismiss
         )
     } else {
         AddFavoriteDialogCorrect(
-            state = state,
-            onEvent = onEvent,
+            homeScreenViewModel = homeScreenViewModel,
             lat = lat,
             lon = lon,
-            context = context
+            context = context,
+            isAddingFavorite = isAddingFavorite,
+            onDismiss = onDismiss
         )
     }
 }

@@ -31,8 +31,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel,
@@ -54,8 +52,6 @@ fun Navigation(
             HomeScreen(
                 navController,
                 homeScreenViewModel = homeScreenViewModel,
-                state,
-                onEvent,
                 mapViewModel,
                 settingsViewModel,
                 detailsScreenViewModel,

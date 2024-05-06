@@ -19,7 +19,11 @@ class FavoriteCardRepository(
 {
 
     private val _allFavoriteCards = MutableStateFlow(listOf<FavoriteCard>())
+    private val _allFavoriteLocations = MutableStateFlow(listOf<Favorite>())
+
     fun observeFavorites(): StateFlow<List<FavoriteCard>> = _allFavoriteCards.asStateFlow()
+    fun observeFavoriteLocations(): StateFlow<List<Favorite>> = _allFavoriteLocations.asStateFlow()
+
 
     suspend fun insertFavoriteCard(date: String, lat: String, lon: String){
         favoriteCardDao.insertFavoriteCard(FavoriteCard(lat, lon, date))
@@ -50,5 +54,32 @@ class FavoriteCardRepository(
 
     fun getFavoriteByLatLon( lat: String, lon: String): String? =
         favoriteDao.getFavoriteByLatLon(lat, lon)
+
+
+    suspend fun insertFavoriteLocation(name: String, lat: String, lon: String){
+        favoriteDao.insertFavorite(Favorite(name, lat, lon))
+        getFavoriteLocation()
+    }
+
+    suspend fun deleteFavorite(name: String, lat: String, lon: String){
+        favoriteDao.deleteFavorite(Favorite(name, lat, lon))
+        getFavoriteLocation()
+    }
+
+    suspend fun getFavoriteLocation(){
+        try {
+            val flow = favoriteDao.getFavorites()
+            flow.collect{ sublist ->
+                _allFavoriteLocations.update { sublist }
+            }
+        }catch (e: Exception){
+            Log.d("FavoriteLocations", e.stackTraceToString())
+        }
+
+    }
+
+    suspend fun deleteFavoriteLocations(name: String, lat: String, lon: String){
+        favoriteDao.deleteFavorite(Favorite(name, lat, lon))
+    }
 
 }

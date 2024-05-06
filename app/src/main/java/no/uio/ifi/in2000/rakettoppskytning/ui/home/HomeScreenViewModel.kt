@@ -1,21 +1,16 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -26,32 +21,31 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import kotlin.math.roundToInt
 
 data class WeatherUiState(
     val weatherAtPos: WeatherData = WeatherAtPos()
 )
 
+data class FavoriteLocationUiState(
+    val favorites: List<Favorite> = emptyList()
+)
 
-class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
+class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     private val foreCastRep = repo
     private val gribRepo = foreCastRep.gribRepository
     val loading = mutableStateOf(false)
@@ -162,7 +156,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon)
-            delay(100 )
+            delay(100)
             filterList()
             loading.value = false
         }
@@ -171,10 +165,10 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     val weatherUiState: StateFlow<WeatherUiState> =
         foreCastRep.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = WeatherUiState()
-        )
+                viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = WeatherUiState()
+            )
 
     fun resetFilter() {
         checkedGreen.value = true
@@ -218,6 +212,50 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     )
     val validateHour = { x: Int -> if (x == 23) 0 else x }
 
+    private val _favoriteState = MutableStateFlow(FavoriteLocationUiState())
+    val favoriteState: StateFlow<FavoriteLocationUiState> = _favoriteState
+
+    val favoriteUiState: StateFlow<FavoriteLocationUiState> =
+        favoriteRepo.observeFavoriteLocations().map {
+            FavoriteLocationUiState(
+                favorites = it
+            )
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = FavoriteLocationUiState()
+        )
+
+    fun addFavorite(name: String, lat: String, lon: String) {
+        viewModelScope.launch {
+            favoriteRepo.insertFavoriteLocation(name, lat, lon)
+        }
+    }
+
+    fun deleteFavorite(name: String, lat: String, lon: String) {
+        viewModelScope.launch {
+            favoriteRepo.deleteFavorite(name, lat, lon)
+        }
+    }
+
+    fun getFavoriteLocations() {
+        try {
+            viewModelScope.launch {
+                favoriteRepo.getFavoriteLocation()
+            }
+        } catch (e: Exception) {
+            Log.d("FavoriteLocation", e.stackTraceToString())
+        }
+    }
+
+    fun deleteFavoriteLocation(name: String, lat: String, lon: String) {
+        viewModelScope.launch {
+            favoriteRepo.deleteFavoriteLocations(name, lat, lon)
+        }
+    }
+}
+
+    /*
 
     private val _favorites =
         dao.getFavorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
@@ -263,7 +301,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
                     lon = lon
                 )
                 viewModelScope.launch {
-                    dao.upsertFavorite(favorite)
+                    dao.insertFavorite(favorite)
                 }
                 _state.update {
                     it.copy(
@@ -308,6 +346,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             }
         }
     }
-
-
 }
+     */
+

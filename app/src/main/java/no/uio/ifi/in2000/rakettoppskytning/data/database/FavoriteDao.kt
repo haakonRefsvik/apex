@@ -12,7 +12,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 interface FavoriteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertFavorite(favorite: Favorite)
+    suspend fun insertFavorite(favorite: Favorite)
 
     @Delete
     suspend fun deleteFavorite(favorite: Favorite)

@@ -55,7 +55,7 @@ class FavoriteViewModel(
                     lon = lon
                 )
                 viewModelScope.launch {
-                    dao.upsertFavorite(favorite)
+                    dao.insertFavorite(favorite)
                 }
                 _state.update { it.copy(
                     isAddingFavorite = false,

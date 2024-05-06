@@ -39,6 +39,8 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +63,7 @@ import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
@@ -110,8 +113,6 @@ fun formatNewValue(input: String): Double {
 fun InputField(
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     context: Context
 ) {
 
@@ -120,6 +121,11 @@ fun InputField(
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
 
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeScreenViewModel.getFavoriteLocations()
+    }
 
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -129,18 +135,18 @@ fun InputField(
 
     Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
 
-    val isAddingFavorite by remember(state.isAddingFavorite) { mutableStateOf(state.isAddingFavorite) }
+    var isAddingFavorite by remember{ mutableStateOf(false) }
 
 
     if (isAddingFavorite) {
         Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
         AddFavoriteDialog(
-            state = state,
-            onEvent = onEvent,
+            homeScreenViewModel = homeScreenViewModel,
             lat = lat,
             lon = lon,
-            mapViewModel,
-            context
+            context = context,
+            isAddingFavorite = isAddingFavorite, // Pass the state to AddFavoriteDialog
+            onDismiss = { isAddingFavorite = false } // Callback to dismiss the dialog
         )
     }
 
@@ -242,10 +248,9 @@ fun InputField(
                     mapViewModel.lat.value = lat
                     mapViewModel.lon.value = lon
 
-                    //TODO: HER SKAL POSISJONEN TIL KARTET OPPDATERES
                     mapViewModel.updateCamera(lat, lon)
                     scope.launch {
-                        onEvent(FavoriteEvent.ShowDialog)
+                        isAddingFavorite = true
                     }
 
                 }) {
@@ -284,9 +289,9 @@ fun InputField(
 
         }
         Spacer(modifier = Modifier.height(2.5.dp))
-        if (state.favorites.isNotEmpty()) {
+        if (favoriteLocations.favorites.isNotEmpty()) {
             Row(modifier = Modifier.width(340.dp)) {
-                if (state.favorites.size == 1) {
+                if (favoriteLocations.favorites.size == 1) {
                     Text("Favorite location:", fontSize = 14.sp, color = main50)
 
                 } else {
@@ -303,7 +308,7 @@ fun InputField(
         )
         {
 
-            state.favorites.reversed().forEach { favorite ->
+            favoriteLocations.favorites.reversed().forEach { favorite ->
                 item {
                     OutlinedCard(
                         modifier = Modifier
@@ -364,7 +369,7 @@ fun InputField(
                                     .size(30.dp)
                                     .padding(end = 5.dp),
                                     onClick = {
-                                        onEvent(FavoriteEvent.DeleteFavorite(favorite))
+                                        homeScreenViewModel.deleteFavoriteLocation(favorite.name, favorite.lat, favorite.lon)
 
                                     }) {
                                     Icon(

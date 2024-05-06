@@ -50,8 +50,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel,
     detailsScreenViewModel: DetailsScreenViewModel,
@@ -99,8 +97,6 @@ fun HomeScreen(
                             InputField(
                                 homeScreenViewModel = homeScreenViewModel,
                                 mapViewModel,
-                                state,
-                                onEvent,
                                 context = context
                             )
 

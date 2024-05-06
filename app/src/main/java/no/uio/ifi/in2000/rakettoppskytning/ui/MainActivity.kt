@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeScreenViewModel(weatherRepo, db.favoriteDao) as T
+                return HomeScreenViewModel(weatherRepo, favoriteCardRepository) as T
             }
         }
     }
@@ -147,12 +147,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    val state by viewModel.state.collectAsState()
+                    //val state by viewModel.state.collectAsState()
                     val thresholdState by settingsViewModel.thresholdState.collectAsState()
                     val rocketSpecsState by settingsViewModel.rocketspecsState.collectAsState()
                     Navigation(
-                        state = state,
-                        onEvent = viewModel::onEvent,
                         homeScreenViewModel = viewModel,
                         detailsScreenViewModel = detailsScreenViewModel,
                         weatherRepo = weatherRepo,
