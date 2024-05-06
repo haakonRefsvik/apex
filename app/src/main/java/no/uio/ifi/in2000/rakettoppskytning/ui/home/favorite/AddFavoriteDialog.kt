@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,25 +31,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
-import com.mapbox.maps.dsl.cameraOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.FavoriteLocationUiState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
-
-//Lag funksjonen slik at den ikke leser inn mer enn 1 gang per lokasjon
-@OptIn(MapboxExperimental::class)
 
 @Composable
 fun AddFavoriteDialogCorrect(

@@ -14,12 +14,6 @@ interface FavoriteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorite(favorite: Favorite)
 
-    /*
-    @Delete
-    suspend fun deleteFavorite(favorite: Favorite)
-
-     */
-
     @Query("SELECT * FROM favorite")
     fun getFavorites(): Flow<List<Favorite>>
 
