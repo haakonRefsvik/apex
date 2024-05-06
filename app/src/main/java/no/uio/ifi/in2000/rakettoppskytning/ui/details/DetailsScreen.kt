@@ -132,13 +132,12 @@ fun DetailsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     if(isAddingFavorite){
-        AddFavoriteDialog(
+        AddFavoriteLocationDialog(
             state = state,
             onEvent = onEvent,
             lat = weatherAtPosHour.firstOrNull()!!.lat,
             lon = weatherAtPosHour.firstOrNull()!!.lon,
             context,
-            displayText = "This position does not have a name, do you want to give it a name?"
         )
     }
 

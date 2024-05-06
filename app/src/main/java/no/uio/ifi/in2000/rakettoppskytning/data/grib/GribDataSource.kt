@@ -38,7 +38,7 @@ data class Params(
 class GribDataSource{
 
     val cachedFiles = LinkedHashMap<String, File>()
-    suspend fun getGrib(){
+    suspend fun getGrib(apiKey: String){
 
         val client = HttpClient(CIO){
 
@@ -68,7 +68,7 @@ class GribDataSource{
         updateGribCache(client, latestGribs)
     }
 
-    suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
+    private suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
         try {
             val inputStream: InputStream = client.get(grib.uri).body()
             val file = File.createTempFile(fileName, ".grib2")
@@ -117,7 +117,7 @@ class GribDataSource{
         asyncTasks.filterNotNull().map { it.await() }
     }
 
-    fun getOldestDate(dates: List<String>): String{
+    private fun getOldestDate(dates: List<String>): String{
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
         var oldestDate = format.parse(dates[0])
 

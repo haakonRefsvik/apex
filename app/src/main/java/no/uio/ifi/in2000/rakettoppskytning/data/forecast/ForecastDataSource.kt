@@ -14,10 +14,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
 
-suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
-    if(ApiKeyHolder.in2000ProxyKey == ""){
-        throw Exception("Api-key not found")
-    }
+suspend fun getForecast(lat: Double, lon: Double, apiKey: String): List<LocationForecast> {
 
     val client = HttpClient(CIO) {
 

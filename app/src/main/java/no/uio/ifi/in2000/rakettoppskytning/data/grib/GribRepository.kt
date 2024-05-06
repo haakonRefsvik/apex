@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.update
+import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
@@ -18,12 +19,12 @@ import java.util.concurrent.ConcurrentHashMap
 class GribRepository {
     private val dataSource = GribDataSource()
     suspend fun loadGribFiles(){
-        dataSource.getGrib()
+        dataSource.getGrib(ApiKeyHolder.in2000ProxyKey)
         Log.d("Grib", "Done! Loaded ${dataSource.cachedFiles.size} grib-files")
     }
 
     suspend fun getGribFiles(): List<File> {
-        dataSource.getGrib()
+        dataSource.getGrib(ApiKeyHolder.in2000ProxyKey)
 
         return dataSource.cachedFiles.values.toList()
     }

@@ -83,7 +83,7 @@ fun AddFavoriteDialogCorrect(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(text = displayText, color = favorite100.copy(0.7F))
+                Text(text = "Add location to favorite", color = favorite100.copy(0.7F))
                 Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     value = inputName, // viser lat, verdien som maks 5 desimaler
@@ -184,7 +184,7 @@ fun AddFavoriteDialogCorrect(
                     onEvent(FavoriteEvent.HideDialog)
                 }
             ) {
-                Text("Dismiss", color = Color.Red)
+                Text("Dismiss", color = favorite100.copy(0.7F))
             }
         }
     )
@@ -239,7 +239,6 @@ fun AddFavoriteDialog(
     lat: Double,
     lon: Double,
     context: Context,
-    displayText: String = ""
 ) {
 
     val isLocationFavorited =
@@ -259,7 +258,6 @@ fun AddFavoriteDialog(
             lat = lat,
             lon = lon,
             context = context,
-            displayText = displayText
         )
     }
 }

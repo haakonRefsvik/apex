@@ -14,6 +14,7 @@ import java.io.File
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.*
+import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.errorCheckSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getFirstSoilIndex
@@ -282,7 +283,7 @@ class WeatherRepository(
         lon: Double
     ): List<LocationForecast> {
         val forecast: List<LocationForecast> = try {
-            getForecast(lat, lon)
+            getForecast(lat, lon, ApiKeyHolder.in2000ProxyKey)
         } catch (exception: Exception) {
             listOf()
         }
