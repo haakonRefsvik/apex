@@ -51,7 +51,6 @@ class FavoriteCardRepository(
         favoriteCardDao.removeExpiredCards(date)
     }
 
-
     fun getFavoriteByLatLon( lat: String, lon: String): String? =
         favoriteDao.getFavoriteByLatLon(lat, lon)
 
@@ -61,8 +60,8 @@ class FavoriteCardRepository(
         getFavoriteLocation()
     }
 
-    suspend fun deleteFavoriteLocations(name: String, lat: String, lon: String){
-        favoriteDao.deleteFavorite(Favorite(name, lat, lon))
+    suspend fun deleteFavoriteLocation(name: String, lat: String, lon: String){
+        favoriteDao.deleteFavorite(name, lat, lon)
         getFavoriteLocation()
     }
 

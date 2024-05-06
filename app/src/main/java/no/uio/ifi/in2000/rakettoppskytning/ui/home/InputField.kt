@@ -123,9 +123,12 @@ fun InputField(
 
     val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
 
+
     LaunchedEffect(Unit) {
         homeScreenViewModel.getFavoriteLocations()
     }
+
+
 
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -136,6 +139,9 @@ fun InputField(
     Log.d("Før addingFav: ", "lat: ${lat} og lon: ${lon}")
 
     var isAddingFavorite by remember{ mutableStateOf(false) }
+    var clickDelete by remember {
+        mutableStateOf(false)
+    }
 
 
     if (isAddingFavorite) {
@@ -371,7 +377,6 @@ fun InputField(
                                     onClick = {
                                         Log.d("Favorite: ", "${favorite.name}, ${favorite.lat}, ${favorite.lon}" )
                                         homeScreenViewModel.deleteFavoriteLocation(favorite.name, favorite.lat, favorite.lon)
-
                                     }) {
                                     Icon(
                                         imageVector = Icons.Default.Close,

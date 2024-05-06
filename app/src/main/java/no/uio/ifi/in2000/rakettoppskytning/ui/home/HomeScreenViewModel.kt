@@ -244,7 +244,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
 
     fun deleteFavoriteLocation(name: String, lat: String, lon: String) {
         viewModelScope.launch {
-            favoriteRepo.deleteFavoriteLocations(name, lat, lon)
+            favoriteRepo.deleteFavoriteLocation(name, lat, lon)
         }
     }
 }
