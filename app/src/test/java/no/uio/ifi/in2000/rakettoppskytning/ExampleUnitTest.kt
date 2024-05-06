@@ -307,7 +307,7 @@ class ExampleUnitTest {
          runBlocking {
              val gribRepo = GribRepository()
              gribRepo.loadGribFiles()
-             delay(100000)
+             //delay(1000)
              val test: List<File> = gribRepo.getGribFiles()
              assert(test.isNotEmpty())
         }
