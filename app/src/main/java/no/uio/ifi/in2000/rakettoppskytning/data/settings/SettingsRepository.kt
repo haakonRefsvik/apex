@@ -118,7 +118,6 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
         closenessMap[ThresholdType.MAX_DEW_POINT.name] = c5
         closenessMap["SOIL_MOISTURE"] = c6
 
-        Log.d("mais", c2.toString())
         return closenessMap
     }
 

@@ -81,8 +81,12 @@ import kotlin.time.toDuration
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.font.FontStyle
 import androidx.media3.common.util.UnstableApi
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
 
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -96,10 +100,13 @@ fun DetailsScreen(
     favoriteCardViewModel: FavoriteCardViewModel,
     context: Context,
     homeScreenViewModel: HomeScreenViewModel,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    state: FavoriteState,
+    onEvent: (FavoriteEvent) -> Unit
 ) {
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
+    val isAddingFavorite by remember(state.isAddingFavorite) { mutableStateOf(state.isAddingFavorite) }
 
     val time: String = backStackEntry ?: ""
     detailsScreenViewModel.time.value = backStackEntry ?: ""
@@ -121,9 +128,19 @@ fun DetailsScreen(
         }
     }
 
-
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    if(isAddingFavorite){
+        AddFavoriteDialog(
+            state = state,
+            onEvent = onEvent,
+            lat = weatherAtPosHour.firstOrNull()!!.lat,
+            lon = weatherAtPosHour.firstOrNull()!!.lon,
+            context,
+            displayText = "This position does not have a name, do you want to give it a name?"
+        )
+    }
 
     Scaffold(
         snackbarHost = {
@@ -262,6 +279,9 @@ fun DetailsScreen(
                                 val toast =
                                     Toast.makeText(context, "Added card to favorites", duration)
                                 toast.show()
+                                scope.launch {
+                                    onEvent(FavoriteEvent.ShowDialog)
+                                }
                             } else {
                                 favoriteCardViewModel.deleteFavoriteCard(
                                     lat = weatherNow.lat.toString(),
