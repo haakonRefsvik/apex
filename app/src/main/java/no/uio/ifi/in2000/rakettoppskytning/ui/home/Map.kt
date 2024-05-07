@@ -5,8 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,10 +19,12 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
-import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.PolygonAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.PolylineAnnotation
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
-import com.mapbox.maps.extension.style.expressions.dsl.generated.id
+import com.mapbox.maps.extension.style.layers.generated.fillLayer
+import com.mapbox.maps.extension.style.layers.generated.lineLayer
 import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.ModelType
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
@@ -34,19 +34,18 @@ import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
-import com.mapbox.maps.viewannotation.geometry
-import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
-import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecValues
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
+import kotlin.math.PI
 import kotlin.math.atan2
-import kotlin.math.roundToInt
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 
@@ -57,10 +56,12 @@ fun NewPointAnnotation(
     lat: Double,
     lon: Double,
     drawableId: Int,
-    onClick: (PointAnnotation) -> Unit
+    onClick: (PointAnnotation) -> Unit,
+    alt: Double = 0.0
 ) {
+
     PointAnnotation(
-        point = Point.fromLngLat(lon, lat),
+        point = Point.fromLngLat(lon, lat, alt),
         textField = text,
         textAnchor = TextAnchor.BOTTOM,
         textRadialOffset = 2.0,
@@ -81,25 +82,6 @@ fun idToBitmap(id: Int): Bitmap {
     val myImage: Drawable = ResourcesCompat.getDrawable(context.resources, id, null)
         ?: throw Exception("Drawable $id not found")
     return drawableToBitmap(myImage)
-}
-
-@OptIn(MapboxExperimental::class)
-@Composable
-fun NewViewAnnotation(
-    lat: Double,
-    lon: Double,
-) {
-    val context = LocalContext.current
-    ViewAnnotation(
-        options = viewAnnotationOptions {
-            geometry(Point.fromLngLat(lon, lat))
-            allowOverlap(false)
-        }
-    ) {
-        Card {
-            Text(text = "ViewAnnotation")
-        }
-    }
 }
 
 @OptIn(MapboxExperimental::class)
@@ -125,23 +107,52 @@ fun Map(
         if (mapViewModel.makeTrajectory.value) {
             Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
 
+        } else if (settingsViewModel.ippcOnMap.value) {
+            val LAYER_ID = "layer-id"
+            val SOURCE_ID = "source-id"
+            val TOP_LAYER_ID = "line-layer"
+            val SETTLEMENT_LABEL = "settlement-major-label"
+            val SOURCE_URL =
+                "https://raw.githubusercontent.com/relet/pg-xc/master/geojson/luftrom.geojson"
+            MapEffect() { mapView ->
+                mapView.mapboxMap.apply {
+
+                    loadStyle(
+                        style(Style.OUTDOORS) {
+                            +geoJsonSource(SOURCE_ID) {
+                                data(SOURCE_URL)
+                            }
+                            +layerAtPosition(
+                                fillLayer(LAYER_ID, SOURCE_ID) {
+                                    fillColor(Color.parseColor("#0080ff")).fillOpacity(0.7)
+                                },
+                                below = SETTLEMENT_LABEL
+                            )
+                            +lineLayer(
+                                TOP_LAYER_ID, SOURCE_ID
+                            ) {
+
+                                lineWidth(.5)
+                            }
+                        })
+                }
+            }
         } else {
             NewPointAnnotation(
                 "",
                 lat = lat,
                 lon = lon,
                 drawableId = R.drawable.pin,
-                onClick = { Log.d("PointClick", it.point.toString()) }
+                onClick = { }
             )
-            MapEffect() { mapView ->
+
+            MapEffect { mapView ->
                 mapView.mapboxMap.apply {
 
                     loadStyle(
                         style(Style.OUTDOORS) {}
                     )
                 }
-            }
-            MapEffect { mapView ->
                 mapView.mapboxMap.styleDataLoadedEvents
 
                 mapView.mapboxMap.addOnMapClickListener {
@@ -152,6 +163,7 @@ fun Map(
                 }
 
             }
+
 
         }
 
@@ -165,12 +177,15 @@ fun Make3dtrajectory(
     detailsScreenViewModel: DetailsScreenViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
+
+
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
     val MODEL_ID_KEY = "model-id-key"
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
+
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
@@ -205,12 +220,60 @@ fun Make3dtrajectory(
     if (s != null) {
         pitch = calculatePitch(s, tra[hep + 20])
     }
+    val lastPoint = tra.last()
+    val highestPoint = tra.maxBy { it.z }
+    val lastCord =
+        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
+    val highestCord =
+        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, highestPoint.x, highestPoint.y)
+
+    val linePoints = listOf(
+        Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
+        Point.fromLngLat(lastCord.second, lastCord.first)
+    )
+    val cordStart = Coordinates(mapViewModel.lon.value, mapViewModel.lat.value)
+    val cordEnd = Coordinates(lastCord.second, lastCord.first)
+    val middleCord = calculateMidpoint(cordStart, cordEnd)
+    val distance =
+        calcDistance(cordStart.latitude, cordStart.longitude, cordEnd.latitude, cordEnd.longitude)
+    Log.d("Distance", distance.toString())
+
+    PolygonAnnotation(
+        points = listOf(
+            generateCirclePoints(cordEnd.longitude, cordEnd.latitude, 150.0, 250)
+        ), fillColorInt = Color.RED, fillOpacity = 0.5,
+        onClick = {
+            Log.d("Clicked on", "Red")
+            true
+        }
+    )
+    PolygonAnnotation(
+        points = listOf(
+            generateCirclePoints(highestCord.first, highestCord.second, 150.0, 250)
+        ), fillColorInt = Color.GREEN, fillOpacity = 0.5,
+        onClick = {
+            Log.d("Clicked on", "Green")
+            true
+        }
+
+    )
+
+
+    PolylineAnnotation(points = linePoints, lineWidth = 2.0)
+    PointAnnotation(
+        point = Point.fromLngLat(middleCord.latitude, middleCord.longitude),
+        textField = "${String.format("%.2f", distance)} km",
+        textAnchor = TextAnchor.TOP_RIGHT,
+
+        )
+
+
 
     MapEffect { mapView ->
         mapView.mapboxMap.removeOnMapClickListener() {
 
 
-            true
+            false
         }
 
         mapView.mapboxMap.apply {
@@ -262,7 +325,9 @@ fun Make3dtrajectory(
                                 modelCastShadows(true)
                                 modelReceiveShadows(true)
                                 modelRoughness(0.1)
+
                             }
+
                         }
 
 
@@ -319,6 +384,7 @@ fun Make3dtrajectory(
                         modelRoughness(0.1)
                     }
 
+
                 }
             )
 
@@ -369,4 +435,66 @@ fun yay(number: Double): Double {
 
 
     return -0.0
+}
+
+fun offsetLatLon(
+    lat: Double,
+    lon: Double,
+    x_offset: Double,
+    y_offset: Double,
+): Pair<Double, Double> {
+    // Earth's radius in meters
+    val R = 6378137.0 // approximate radius of Earth in meters
+
+    // Offset in radians
+    val lat_offset = y_offset / R
+    val lon_offset = x_offset / (R * cos(Math.PI * lat / 180))
+
+    // New latitude and longitude
+    val new_lat = lat + (lat_offset * 180 / Math.PI)
+    val new_lon = lon + (lon_offset * 180 / Math.PI)
+
+    return Pair(new_lat, new_lon)
+}
+
+data class Coordinates(val latitude: Double, val longitude: Double)
+
+fun calculateMidpoint(coord1: Coordinates, coord2: Coordinates): Coordinates {
+    val x1 = Math.toRadians(coord1.latitude)
+    val x2 = Math.toRadians(coord2.latitude)
+    val x3 = Math.toRadians(coord2.longitude - coord1.longitude)
+
+    val x4 = cos(x2) * cos(x3)
+    val x5 = cos(x2) * sin(x3)
+    val x6 = atan2(sin(x1) + sin(x2), sqrt((cos(x1) + x4).pow(2.0) + x5.pow(2.0)))
+    val x7 = Math.toRadians(coord1.longitude) + atan2(x5, cos(x1) + x4)
+
+    val latitude = Math.toDegrees(x6)
+    val longitude = Math.toDegrees(x7)
+
+    return Coordinates(latitude, longitude)
+}
+
+fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val R = 6371 // Earth radius in kilometers
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+    val a = sin(dLat / 2) * sin(dLat / 2) +
+            cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+            sin(dLon / 2) * sin(dLon / 2)
+    val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c
+}
+
+fun generateCirclePoints(lat: Double, lon: Double, radius: Double, numPoints: Int): List<Point> {
+    val circlePoints = mutableListOf<Point>()
+    for (i in 0 until numPoints) {
+        val angle = Math.toRadians(i * (360.0 / numPoints))
+        val dx = radius * cos(angle)
+        val dy = radius * sin(angle)
+        val circleLat = lat + (180 / PI) * (dy / 6378137.0)
+        val circleLon = lon + (180 / PI) * (dx / 6378137.0) / cos(Math.toRadians(lat))
+        circlePoints.add(Point.fromLngLat(circleLon, circleLat))
+    }
+    return circlePoints
 }
