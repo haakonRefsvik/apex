@@ -4,21 +4,47 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material3.CardColors
+
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.allViews
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.sp
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
+import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
+import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PolygonAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PolylineAnnotation
@@ -31,16 +57,29 @@ import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
 import com.mapbox.maps.extension.style.model.model
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
+import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
+import com.mapbox.maps.viewannotation.OnViewAnnotationUpdatedListener
+import com.mapbox.maps.viewannotation.annotationAnchor
+import com.mapbox.maps.viewannotation.geometry
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -220,52 +259,8 @@ fun Make3dtrajectory(
     if (s != null) {
         pitch = calculatePitch(s, tra[hep + 20])
     }
-    val lastPoint = tra.last()
-    val highestPoint = tra.maxBy { it.z }
-    val lastCord =
-        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
-    val highestCord =
-        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, highestPoint.x, highestPoint.y)
-
-    val linePoints = listOf(
-        Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
-        Point.fromLngLat(lastCord.second, lastCord.first)
-    )
-    val cordStart = Coordinates(mapViewModel.lon.value, mapViewModel.lat.value)
-    val cordEnd = Coordinates(lastCord.second, lastCord.first)
-    val middleCord = calculateMidpoint(cordStart, cordEnd)
-    val distance =
-        calcDistance(cordStart.latitude, cordStart.longitude, cordEnd.latitude, cordEnd.longitude)
-    Log.d("Distance", distance.toString())
-
-    PolygonAnnotation(
-        points = listOf(
-            generateCirclePoints(cordEnd.longitude, cordEnd.latitude, 150.0, 250)
-        ), fillColorInt = Color.RED, fillOpacity = 0.5,
-        onClick = {
-            Log.d("Clicked on", "Red")
-            true
-        }
-    )
-    PolygonAnnotation(
-        points = listOf(
-            generateCirclePoints(highestCord.first, highestCord.second, 150.0, 250)
-        ), fillColorInt = Color.GREEN, fillOpacity = 0.5,
-        onClick = {
-            Log.d("Clicked on", "Green")
-            true
-        }
-
-    )
 
 
-    PolylineAnnotation(points = linePoints, lineWidth = 2.0)
-    PointAnnotation(
-        point = Point.fromLngLat(middleCord.latitude, middleCord.longitude),
-        textField = "${String.format("%.2f", distance)} km",
-        textAnchor = TextAnchor.TOP_RIGHT,
-
-        )
 
 
 
@@ -277,6 +272,7 @@ fun Make3dtrajectory(
         }
 
         mapView.mapboxMap.apply {
+
 
             loadStyle(
                 style(Style.OUTDOORS) {
@@ -392,6 +388,150 @@ fun Make3dtrajectory(
 
 
     }
+
+    if (mapViewModel.showTraDetails.value) {
+        val lastPoint = tra.last()
+        val highestPoint = tra.maxBy { it.z }
+        val lastCord =
+            offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
+        val highestCord =
+            offsetLatLon(
+                mapViewModel.lat.value,
+                mapViewModel.lon.value,
+                highestPoint.x,
+                highestPoint.y
+            )
+
+        val linePoints = listOf(
+            Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
+            Point.fromLngLat(lastCord.second, lastCord.first)
+        )
+        val cordStart = Coordinates(mapViewModel.lon.value, mapViewModel.lat.value)
+        val cordEnd = Coordinates(lastCord.second, lastCord.first)
+        val middleCord = calculateMidpoint(cordStart, cordEnd)
+        val distance =
+            calcDistance(
+                cordStart.latitude,
+                cordStart.longitude,
+                cordEnd.latitude,
+                cordEnd.longitude
+            )
+        Log.d("Distance", distance.toString())
+
+        PolygonAnnotation(
+            points = listOf(
+                generateCirclePoints(cordEnd.longitude, cordEnd.latitude, 150.0, 250)
+            ), fillColorInt = Color.RED, fillOpacity = 0.5,
+            onClick = {
+                Log.d("Clicked on", "Red")
+                true
+            }
+        )
+        PolygonAnnotation(
+            points = listOf(
+                generateCirclePoints(highestCord.first, highestCord.second, 150.0, 250)
+            ), fillColorInt = Color.GREEN, fillOpacity = 0.5,
+            onClick = {
+                Log.d("Clicked on", "Green")
+                true
+            }
+
+        )
+        /**Dette må gjøre på en annet måte**/
+
+//        val yep = viewAnnotationOptions {
+//            annotationAnchor {
+//
+//                anchor(ViewAnnotationAnchor.TOP)
+//                offsetX(-5.0)
+//                offsetY(20.0)
+//            }
+//
+//
+//            geometry(Point.fromLngLat(cordEnd.latitude, cordEnd.longitude))
+//            allowOverlap(false)
+//                .build()
+//        }
+//
+//        ViewAnnotation(
+//            options = yep
+//
+//        ) {
+//            OutlinedCard(
+//                modifier = Modifier
+//                    .height(55.dp)
+//                    .width(200.dp),
+//                colors = CardColors(
+//                    containerColor = favoriteCard50,
+//                    contentColor = favoriteCard0,
+//                    disabledContentColor = favoriteCard50,
+//                    disabledContainerColor = favoriteCard0
+//                ),
+//                border = BorderStroke(1.dp, color = favoriteCard100),
+//                onClick = {
+//
+//                }
+//            ) {
+//                Row(
+//                    modifier = Modifier.fillMaxSize()
+//
+//
+//                ) {
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxHeight()
+//                            .width(175.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//
+//                    ) {
+//                        Spacer(modifier = Modifier.width(10.dp))
+//                        Icon(
+//                            modifier = Modifier.size(25.dp),
+//                            imageVector = Icons.Default.Place,
+//                            contentDescription = "Location",
+//
+//                            )
+//                        Spacer(modifier = Modifier.width(10.dp))
+//                        Text("Hei", fontSize = 18.sp, color = favoriteCard100)
+//
+//                    }
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.End
+//                    )
+//
+//                    {
+//                        IconButton(modifier = Modifier
+//                            .size(30.dp)
+//                            .padding(end = 5.dp),
+//                            onClick = {
+//
+//                            }) {
+//                            Icon(
+//                                imageVector = Icons.Default.Close,
+//                                contentDescription = "Delete favorite",
+//                                tint = favoriteCard100
+//
+//                            )
+//
+//                        }
+//                    }
+//                }
+//            }
+//
+//        }
+
+
+        PolylineAnnotation(points = linePoints, lineWidth = 2.0)
+        PointAnnotation(
+            point = Point.fromLngLat(middleCord.latitude, middleCord.longitude),
+            textField = "${String.format("%.2f", distance)} km",
+            textAnchor = TextAnchor.TOP_RIGHT,
+
+            )
+
+    }
+
 }
 
 

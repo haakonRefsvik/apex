@@ -58,6 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
+import getRestrictedAirspace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
@@ -142,7 +143,7 @@ fun InputField(
                             lowestInput = -90.0,
                             oldValue = mapViewModel.lat.value.toString()
                         )
-                    }catch (e: Exception){
+                    } catch (e: Exception) {
                         Log.d("inputFormatter", "input was $input and caused exception ${e.cause}")
                     }
                 },
@@ -179,8 +180,11 @@ fun InputField(
                             lowestInput = -180.0,
                             oldValue = mapViewModel.lon.value.toString()
                         )
-                    }catch (e: Exception){
-                        Log.d("inputFormatter", "input was $input and caused exception ${e.message}")
+                    } catch (e: Exception) {
+                        Log.d(
+                            "inputFormatter",
+                            "input was $input and caused exception ${e.message}"
+                        )
                     }
 
                 },
@@ -248,7 +252,7 @@ fun InputField(
 
 
                     scope.launch {
-                        delay(1000)
+                        delay(200)
                         scaffoldState.bottomSheetState.expand()
                     }
                 }) {
@@ -299,7 +303,7 @@ fun InputField(
 
 
                             scope.launch {
-                                delay(1000)
+                                delay(200)
                                 scaffoldState.bottomSheetState.expand()
                             }
 

@@ -1,44 +1,50 @@
-package no.uio.ifi.in2000.rakettoppskytning.data.aviation
-
-import android.util.Log
-import io.ktor.client.HttpClient
+import com.mapbox.geojson.GeoJson
+import io.ktor.client.*
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.call.receive
+import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.statement.HttpResponse
-import io.ktor.serialization.kotlinx.json.json
+
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.serialization.json.Json
-import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
-val client = HttpClient(CIO) {
-
-    if(ApiKeyHolder.in2000ProxyKey == ""){
-        throw Exception("Api-key not found")
+suspend fun getRestrictedAirspace(): JsonArray? {
+    val client = HttpClient(CIO) {
+        install(ContentNegotiation)
     }
 
-    defaultRequest {
-        url("https://gw-uio.intark.uh-it.no/in2000/")
-        header("X-Gravitee-API-Key", ApiKeyHolder.in2000ProxyKey)
+    try {
+        val httpResponse: HttpResponse =
+            client.get("https://raw.githubusercontent.com/relet/pg-xc/master/geojson/luftrom.geojson")
+        val stringBody: String = httpResponse.body<String>()
+
+
+        val jsonObject = Json.parseToJsonElement(stringBody).jsonObject
+
+
+        val features = jsonObject["features"]?.jsonArray
+
+
+        features?.forEach { feature ->
+            val properties = feature.jsonObject["properties"]?.jsonObject
+            val color = properties?.get("color")?.jsonPrimitive?.content
+            println("Color: $color")
+        }
+
+
+        println("Successfully retrieved and parsed GeoJSON data.")
+        return features
+    } catch (e: Exception) {
+        println("Error occurred: ${e.message}")
+        return null
+    } finally {
+        client.close() // Close the HttpClient
     }
-
-    install(ContentNegotiation) {
-        json(Json {
-            ignoreUnknownKeys = true
-
-        })
-    }
-}
-
-
-suspend fun hentFly() {
-    val httpResponse: HttpResponse = client.get("https://api.opensky-network.org/api/states/all?lamin=58.0274&lomin=5.0328&lamax=70.66336&lomax=29.74943")
-
-
-    val stringBody: String = httpResponse.body()
-    Log.d("SKyJANNE",stringBody)
-
-
 }
