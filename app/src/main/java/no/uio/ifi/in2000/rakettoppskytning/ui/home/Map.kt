@@ -16,15 +16,16 @@ import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
+import com.mapbox.maps.extension.compose.annotation.generated.CircleAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
-import com.mapbox.maps.extension.style.expressions.dsl.generated.id
 import com.mapbox.maps.extension.style.layers.generated.fillLayer
 import com.mapbox.maps.extension.style.layers.generated.lineLayer
 import com.mapbox.maps.extension.style.layers.generated.modelLayer
@@ -34,18 +35,20 @@ import com.mapbox.maps.extension.style.model.model
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PolylineAnnotationOptions
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -163,6 +166,12 @@ fun Map(
                 drawableId = R.drawable.pin,
                 onClick = { Log.d("PointClick", it.point.toString()) }
             )
+            CircleAnnotation(
+                point = Point.fromLngLat(
+                    mapViewModel.lon.value,
+                    mapViewModel.lat.value
+                )
+            )
 
             MapEffect { mapView ->
                 mapView.mapboxMap.apply {
@@ -195,12 +204,15 @@ fun Make3dtrajectory(
     detailsScreenViewModel: DetailsScreenViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
+
+
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
     val MODEL_ID_KEY = "model-id-key"
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
+
     val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
@@ -235,12 +247,27 @@ fun Make3dtrajectory(
     if (s != null) {
         pitch = calculatePitch(s, tra[hep + 20])
     }
+    val lastpoint = tra.last()
+    val asdf =
+        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastpoint.x, lastpoint.y)
+
+    val points = listOf(
+        Point.fromLngLat(mapViewModel.lat.value, mapViewModel.lon.value),
+        Point.fromLngLat(asdf.first, asdf.second)
+    )
+// Set options for the resulting line layer.
+    val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
+        .withPoints(points)
+        // Style the line that will be added to the map.
+        .withLineColor("#ee4e8b")
+    PolylineAnnotation
+
 
     MapEffect { mapView ->
         mapView.mapboxMap.removeOnMapClickListener() {
 
 
-            true
+            false
         }
 
         mapView.mapboxMap.apply {
@@ -349,6 +376,7 @@ fun Make3dtrajectory(
                         modelRoughness(0.1)
                     }
 
+
                 }
             )
 
@@ -400,3 +428,24 @@ fun yay(number: Double): Double {
 
     return -0.0
 }
+
+fun offsetLatLon(
+    lat: Double,
+    lon: Double,
+    x_offset: Double,
+    y_offset: Double,
+): Pair<Double, Double> {
+    // Earth's radius in meters
+    val R = 6378137.0 // approximate radius of Earth in meters
+
+    // Offset in radians
+    val lat_offset = y_offset / R
+    val lon_offset = x_offset / (R * cos(Math.PI * lat / 180))
+
+    // New latitude and longitude
+    val new_lat = lat + (lat_offset * 180 / Math.PI)
+    val new_lon = lon + (lon_offset * 180 / Math.PI)
+
+    return Pair(new_lat, new_lon)
+}
+
