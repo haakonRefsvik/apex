@@ -158,12 +158,8 @@ class MainActivity : ComponentActivity() {
                         weatherRepo = weatherRepo,
                         settingsViewModel = settingsViewModel,
                         mapViewModel = mapViewModel,
-                        thresholdState = thresholdState,
                         context = context,
                         favoriteCardViewModel = favoriteCardViewModel,
-                        onThresholdEvent = settingsViewModel::onThresholdsEvent,
-                        rocketSpecState = rocketSpecsState,
-                        onRocketSpecsEvent = settingsViewModel::onRocketSpecsEvent,
                     )
                     val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 

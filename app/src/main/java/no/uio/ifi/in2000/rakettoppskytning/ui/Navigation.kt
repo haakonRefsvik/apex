@@ -38,12 +38,8 @@ fun Navigation(
     settingsViewModel: SettingsViewModel,
     weatherRepo: WeatherRepository,
     detailsScreenViewModel: DetailsScreenViewModel,
-    thresholdState: ThresholdState,
-    onThresholdEvent: (ThresholdsEvent) -> Unit,
     context: Context,
     favoriteCardViewModel: FavoriteCardViewModel,
-    rocketSpecState: RocketSpecState,
-    onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
 ) {
 
     val navController = rememberNavController()
@@ -86,8 +82,6 @@ fun Navigation(
                 navController,
                 settingsViewModel,
                 weatherRepo,
-                onThresholdEvent,
-                onRocketSpecsEvent,
                 homeScreenViewModel,
                 mapViewModel,
             )

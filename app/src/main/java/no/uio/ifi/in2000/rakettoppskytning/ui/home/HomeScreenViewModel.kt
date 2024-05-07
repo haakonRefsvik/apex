@@ -1,21 +1,16 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -26,25 +21,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.HistoricalPrecipitation
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import kotlin.math.roundToInt
 
 data class WeatherUiState(
     val weatherAtPos: WeatherData = WeatherAtPos()
