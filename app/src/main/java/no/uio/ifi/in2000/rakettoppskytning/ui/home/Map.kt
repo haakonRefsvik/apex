@@ -60,10 +60,12 @@ fun NewPointAnnotation(
     lat: Double,
     lon: Double,
     drawableId: Int,
-    onClick: (PointAnnotation) -> Unit
+    onClick: (PointAnnotation) -> Unit,
+    alt: Double = 0.0
 ) {
+
     PointAnnotation(
-        point = Point.fromLngLat(lon, lat),
+        point = Point.fromLngLat(lon, lat, alt),
         textField = text,
         textAnchor = TextAnchor.BOTTOM,
         textRadialOffset = 2.0,
@@ -84,25 +86,6 @@ fun idToBitmap(id: Int): Bitmap {
     val myImage: Drawable = ResourcesCompat.getDrawable(context.resources, id, null)
         ?: throw Exception("Drawable $id not found")
     return drawableToBitmap(myImage)
-}
-
-@OptIn(MapboxExperimental::class)
-@Composable
-fun NewViewAnnotation(
-    lat: Double,
-    lon: Double,
-) {
-    val context = LocalContext.current
-    ViewAnnotation(
-        options = viewAnnotationOptions {
-            geometry(Point.fromLngLat(lon, lat))
-            allowOverlap(false)
-        }
-    ) {
-        Card {
-            Text(text = "ViewAnnotation")
-        }
-    }
 }
 
 @OptIn(MapboxExperimental::class)
@@ -164,7 +147,7 @@ fun Map(
                 lat = lat,
                 lon = lon,
                 drawableId = R.drawable.pin,
-                onClick = { Log.d("PointClick", it.point.toString()) }
+                onClick = { }
             )
             CircleAnnotation(
                 point = Point.fromLngLat(
@@ -248,19 +231,25 @@ fun Make3dtrajectory(
         pitch = calculatePitch(s, tra[hep + 20])
     }
     val lastpoint = tra.last()
-    val asdf =
+    val highestPoint = tra.maxBy { it.z }
+    val lastCord =
         offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastpoint.x, lastpoint.y)
+    val highestCord =
+        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, highestPoint.x, highestPoint.y)
 
     val points = listOf(
         Point.fromLngLat(mapViewModel.lat.value, mapViewModel.lon.value),
-        Point.fromLngLat(asdf.first, asdf.second)
+        Point.fromLngLat(lastCord.first, lastCord.second)
     )
-// Set options for the resulting line layer.
-    val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
-        .withPoints(points)
-        // Style the line that will be added to the map.
-        .withLineColor("#ee4e8b")
-    PolylineAnnotation
+    NewPointAnnotation(
+        "asd",
+        lat = highestCord.first,
+        lon = highestCord.second,
+        drawableId = R.drawable.pin,
+        onClick = { },
+
+
+        )
 
 
     MapEffect { mapView ->
