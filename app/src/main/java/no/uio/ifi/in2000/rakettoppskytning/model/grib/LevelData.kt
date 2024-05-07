@@ -25,7 +25,7 @@ class LevelData(val pressurePascal: Double){
     var uComponentValue: Double = 0.0
     var vComponentValue: Double = 0.0
     var seaPressurePa: Double = 0.0
-    fun convertKelvinToCelsius(kelvin: Double): Double {
+    private fun convertKelvinToCelsius(kelvin: Double): Double {
         return kelvin - 273.15
     }
 
@@ -51,11 +51,11 @@ class LevelData(val pressurePascal: Double){
         return c * a
     }
 
-    fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {
+    private fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {
         return sqrt(uComponent.pow(2) + vComponent.pow(2))
     }
 
-    fun calculateWindDirection(uComponent: Double, vComponent: Double): Double {
+    private fun calculateWindDirection(uComponent: Double, vComponent: Double): Double {
         var windDirInDegrees = Math.toDegrees(atan2(uComponent, vComponent))
         if (windDirInDegrees < 0) {
             windDirInDegrees += 360  // Ensure the direction is in the range [0, 360)

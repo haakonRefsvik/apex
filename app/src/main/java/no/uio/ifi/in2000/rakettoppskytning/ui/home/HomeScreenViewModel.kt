@@ -216,8 +216,6 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis,
         )
     )
-    val validateHour = { x: Int -> if (x == 23) 0 else x }
-
 
     private val _favorites =
         dao.getFavorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())

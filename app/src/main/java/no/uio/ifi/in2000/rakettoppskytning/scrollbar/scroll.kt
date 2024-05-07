@@ -53,9 +53,9 @@ private const val isEmpty = 0
 
 /*
 Kerry Bisset
-
 Jetpack Compose Multiplatform Scrollbar/Scrolling
  */
+
 @Composable
 fun LazyColumnScrollbar(
     listState: LazyListState,

@@ -503,7 +503,7 @@ fun SettingsScreen(
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
                 settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
-                settingsViewModel.updateRocketSpecValues(onRocketSpecsEvent)
+                settingsViewModel.updateRocketSpecValues()
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
                 if(mapViewModel.makeTrajectory.value){
                     mapViewModel.deleteTrajectory()

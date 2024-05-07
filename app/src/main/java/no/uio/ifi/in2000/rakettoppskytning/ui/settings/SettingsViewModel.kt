@@ -72,7 +72,7 @@ class SettingsViewModel(
         }
     }
 
-    suspend fun updateRocketSpecValues(event: (RocketSpecsEvent) -> Unit) {
+    suspend fun updateRocketSpecValues() {
         val updatedRocketSpecMap = HashMap<String, Double>().apply {
             rocketSpecMutableStates.forEachIndexed { index, mutableState ->
                 put(RocketSpecType.entries[index].name, mutableState.doubleValue)
@@ -98,6 +98,7 @@ class SettingsViewModel(
             dewpoint = thresholds?.dewpoint ?: ""
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThresholdState())
+
 
     fun onThresholdsEvent(event: ThresholdsEvent) {
         when (event) {

@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.grib
 
-import android.util.Log
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
 import ucar.nc2.grib.grib2.Grib2Gds
 import ucar.nc2.grib.grib2.Grib2Record
@@ -207,7 +206,7 @@ fun getVerticalProfileMap(
     return verticalMap
 }
 
-fun normalizeLon(lon: Double): Double {
+fun formatLon(lon: Double): Double {
     if (lon > 180) {
         return lon - 360
     }
@@ -217,7 +216,7 @@ fun normalizeLon(lon: Double): Double {
     return lon
 }
 
-fun normalizeLat(lat: Double): Double {
+fun formatLat(lat: Double): Double {
     if (lat > 90) {
         return lat - 180
     }
@@ -239,8 +238,8 @@ fun getDataIndexFromLatLon(lat: Double, lon: Double, gds: Grib2Gds): Int {
         throw Exception("Scan-mode ${gridDef.scanMode} not supported")
     }
     val numGridPoints = gridDef.gdsNumberPoints  // amount of grid-cells (same as nx * ny)
-    val startX = normalizeLon(gridDef.startX)    // starting position of the grid-cell
-    val startY = normalizeLat(gridDef.startY)
+    val startX = formatLon(gridDef.startX)    // starting position of the grid-cell
+    val startY = formatLat(gridDef.startY)
     val dx = gridDef.dx // space between each cell (in lon/lat)
     val dy = gridDef.dy
     val nx = gridDef.nx // total amount of cells in the x-direction
