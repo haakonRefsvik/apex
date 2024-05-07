@@ -12,7 +12,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
 interface RocketSpecsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRocketSpecs(rocketSpecs: RocketSpecs)
-
     @Update
     suspend fun updateRocketSpecs(rocketSpecs: RocketSpecs)
 

@@ -17,5 +17,6 @@ enum class RocketSpecType(){
     BURN_TIME,
     DRY_WEIGHT,
     WET_WEIGHT,
-    DROP_TIME
+    /** Resolution of rocket trajectory */
+    RESOLUTION
 }

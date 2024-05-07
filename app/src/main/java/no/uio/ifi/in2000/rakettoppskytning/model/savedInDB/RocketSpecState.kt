@@ -9,5 +9,5 @@ data class RocketSpecState(
     val burntime: String = "",
     val dryWeight: String = "",
     val wetWeight: String = "",
-    val dropTime: String = "",
+    val resolution: String = "",
 )

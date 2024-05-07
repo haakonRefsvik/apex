@@ -22,7 +22,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.formatting.calculateHoursBetwee
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getHourFromDate
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
-import no.uio.ifi.in2000.rakettoppskytning.model.historicalData.SoilMoistureHourly
+import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos

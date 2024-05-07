@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonColors
@@ -76,8 +74,6 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
@@ -102,14 +98,12 @@ fun SettingsScreen(
     navController: NavHostController,
     settingsViewModel: SettingsViewModel,
     weatherRepository: WeatherRepository,
-    onThresholdEvent: (ThresholdsEvent) -> Unit,
-    onRocketSpecsEvent: (RocketSpecsEvent) -> Unit,
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val settings1check = settingsViewModel.settingscheck1
-    val settings2check = settingsViewModel.settingscheck2
+    val settings1check = settingsViewModel.weatherValueChosen
+    val settings2check = settingsViewModel.rocketProfileChosen
 
     val scope = rememberCoroutineScope()
 
@@ -502,7 +496,7 @@ fun SettingsScreen(
     DisposableEffect(Unit) {
         onDispose { // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
-                settingsViewModel.updateThresholdValues(onThresholdEvent)     // update values in thresholdRepo
+                settingsViewModel.updateThresholdValues()     // update values in thresholdRepo
                 settingsViewModel.updateRocketSpecValues()
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
                 if(mapViewModel.makeTrajectory.value){
@@ -515,7 +509,7 @@ fun SettingsScreen(
 
 @Composable
 fun SliderCard(settingsViewModel: SettingsViewModel){
-    val sliderPosition = settingsViewModel.sliderPosition
+    val sliderPosition = settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal]
 
     Row(
         modifier = Modifier
@@ -541,8 +535,8 @@ fun SliderCard(settingsViewModel: SettingsViewModel){
 
             Spacer(modifier = Modifier.height(7.dp))
             Text(
-                text = "Load every ${findPointSuffix(sliderPosition.floatValue.roundToInt())}point" +
-                        "\n${findPerformance(sliderPosition.floatValue.roundToInt())}",
+                text = "Load every ${findPointSuffix(sliderPosition.doubleValue.roundToInt())}point" +
+                        "\n${findPerformance(sliderPosition.doubleValue.roundToInt())}",
                 lineHeight = 16.sp,
                 fontSize = 13.sp,
                 color = settings50.copy(alpha = 0.7F)
@@ -553,8 +547,8 @@ fun SliderCard(settingsViewModel: SettingsViewModel){
         Spacer(modifier = Modifier.width(10.dp))
         Column(modifier = Modifier.width(150.dp)){
             Slider(
-                value = sliderPosition.floatValue,
-                onValueChange = { sliderPosition.floatValue = it },
+                value = sliderPosition.doubleValue.toFloat(),
+                onValueChange = { sliderPosition.doubleValue = it.toDouble() },
                 colors = SliderColors(
                     activeTickColor = filter0,
                     activeTrackColor = filter0,

@@ -39,6 +39,8 @@ import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
+import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecValues
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
@@ -218,7 +220,7 @@ fun Make3dtrajectory(
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
-                        } else if (index % settingsViewModel.sliderPosition.floatValue.roundToInt() == 0) {
+                        } else if ((index % settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal].doubleValue).toInt() == 0) {
                             val MODEL_ID_1 = "model-id${index}"
                             val SOURCE_ID = "source-id$${index}"
                             val MODEL1_COORDINATES = Point.fromLngLat(
