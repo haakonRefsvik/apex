@@ -10,7 +10,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Point(val x: Double, val y: Double, val z: Double, val timeS: Double) {
+class Point(val x: Double, val y: Double, val z: Double, val timeS: Double, val parachuted: Boolean = false) {
     override fun toString(): String {
         return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeS.toInt()})"
     }
@@ -140,6 +140,14 @@ fun simulateTrajectory(
     var vy = 0.0
     var vz = 0.0
 
+    var xNoPar = 0.0
+    var yNoPar = 0.0
+    var zNoPar: Double = 0.0
+
+    var vxNoPar = 0.0
+    var vyNoPar = 0.0
+    var vzNoPar = 0.0
+
     var secondsUsed = 0.0
     var parachuteDeployed = false
     var timeStep = dt
@@ -199,11 +207,8 @@ fun simulateTrajectory(
             }
         }
 
-        //println("rho: $rho, x: $xWind, y: $yWind")
-
-        val p = Point(x, y, z, secondsUsed)
+        val p = Point(x, y, z, secondsUsed, parachuteDeployed)
         list.add(p)
-        println("$p, wind: ${xWind.roundToInt()} m/s")
 
         if(burnTimeLeft >= 0 && z <= apogee){
             ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / currentMass
@@ -241,6 +246,23 @@ fun simulateTrajectory(
             vz = ( - vAfterParachute ) * timeStep
             vx = xWind
             vy = yWind
+
+            if(zNoPar > 0){
+                vxNoPar += (getNearestLevelData(allLevels, zNoPar)?.vComponentValue?: 0.0) * dt
+                vyNoPar += (getNearestLevelData(allLevels, zNoPar)?.uComponentValue?: 0.0) * dt
+                vzNoPar += az * timeStep
+
+                xNoPar += vxNoPar * timeStep
+                yNoPar += vyNoPar * timeStep
+                zNoPar += vzNoPar * timeStep
+
+                if(zNoPar < 0){
+                    zNoPar = 0.0
+                }
+
+                val p2 = Point(xNoPar, yNoPar, zNoPar, secondsUsed, false)
+                list.add(p2)
+            }
         }
 
         x += vx * timeStep
@@ -250,8 +272,10 @@ fun simulateTrajectory(
 
         if(vz < 0 && !parachuteDeployed){
             parachuteDeployed = true
-            println("TOP POINT")
             timeStep = 1.0  // only calculate each second after parachute is deployed
+            xNoPar = x
+            yNoPar = y
+            zNoPar = z
         }
     }
 

@@ -90,7 +90,6 @@ fun Navigation(
             FavoriteCardScreen(
                 navController,
                 favoriteCardViewModel,
-                detailsScreenViewModel,
                 homeScreenViewModel
             )
         }

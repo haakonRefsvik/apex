@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -22,10 +19,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.sharp.LocationOn
-import androidx.compose.material.icons.sharp.Settings
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -51,9 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.DefaultShadowColor
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -76,13 +68,12 @@ import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
+import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
@@ -104,6 +95,7 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.weatherValueChosen
     val settings2check = settingsViewModel.rocketProfileChosen
+    val color = lerp(main100, Black, 0.3F)
 
     val scope = rememberCoroutineScope()
 
@@ -139,60 +131,11 @@ fun SettingsScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = main50,
-                modifier = Modifier
-                    .shadow(
-                        10.dp,
-                        RectangleShape,
-                        false,
-                        DefaultShadowColor,
-                        DefaultShadowColor
-                    )
-                    .heightIn(max = 50.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = main50),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(modifier = Modifier.sizeIn(maxWidth = 38.dp), onClick = {
-                        navController.navigate(Routes.favCards)
-                    }) {
-                        Icon(
-                            Icons.Default.Favorite,
-                            modifier = Modifier.fillMaxSize(),
-                            contentDescription = "Favorite",
-                            tint = main0,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.widthIn(110.dp))
-                    IconButton(onClick = {
-                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
-                        navController.popBackStack("HomeScreen", false)
-                    }) {
-                        Icon(
-                            Icons.Sharp.LocationOn,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Location",
-                            tint = main0
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(110.dp))
-                    IconButton(onClick = { navController.navigate(Routes.settings) }) {
-                        Icon(
-                            Icons.Sharp.Settings,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Settings",
-                            tint = main100
-                        )
-                    }
-                }
-            }
+            BottomBar(
+                navController = navController,
+                homeScreenViewModel = homeScreenViewModel,
+                currentScreen = Routes.settings
+            )
         }
     ) { innerPadding ->
 
