@@ -117,6 +117,9 @@ fun HomeScreen(
                                 WeatherList(
                                     homeScreenViewModel = homeScreenViewModel,
                                     navController = navController,
+                                    state = state,
+                                    mapViewModel = mapViewModel,
+                                    onEvent = onEvent,
                                 )
 
                             }

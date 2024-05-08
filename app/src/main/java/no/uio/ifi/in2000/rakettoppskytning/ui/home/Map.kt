@@ -223,8 +223,8 @@ fun Make3dtrajectory(
     detailsScreenViewModel: DetailsScreenViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     settingsViewModel: SettingsViewModel,
-    homeScreenViewModel: HomeScreenViewModel
-) {
+
+    ) {
 
 
     val SOURCE_ID1 = "source1"

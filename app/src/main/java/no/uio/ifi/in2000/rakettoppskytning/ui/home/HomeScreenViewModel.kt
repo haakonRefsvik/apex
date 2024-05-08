@@ -60,6 +60,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     var endHour = mutableStateOf("")
     var startISOtime: String = ""
     var endISOtime: String = ""
+    val getWeatherHasBeenCalled = mutableStateOf(false)
 
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -152,19 +153,20 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon)
-            delay(100 )
+            delay(100)
             filterList()
             loading.value = false
+            getWeatherHasBeenCalled.value = true
         }
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
         foreCastRep.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = WeatherUiState()
-        )
+                viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = WeatherUiState()
+            )
 
     fun resetFilter() {
         checkedGreen.value = true
