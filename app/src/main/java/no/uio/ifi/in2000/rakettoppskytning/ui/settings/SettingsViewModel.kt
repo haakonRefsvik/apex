@@ -32,6 +32,7 @@ class SettingsViewModel(
 
     val weatherValueChosen = mutableStateOf(true)
     val rocketProfileChosen = mutableStateOf(false)
+    val ippcOnMap = mutableStateOf(false)
 
     val thresholdMutableStates = ThresholdType.entries.map {
         mutableDoubleStateOf(settingsRepo.getThresholdValue(it))
@@ -50,7 +51,7 @@ class SettingsViewModel(
                 thresholdMutableStates.forEachIndexed { index, mutableState ->
                     put(ThresholdType.entries[index].name, mutableState.doubleValue)
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 Log.d("settings", "Could not update thresholds\n ${e.stackTrace}")
             }
 

@@ -124,7 +124,8 @@ fun HomeScreen(
                 Map(
                     detailsScreenViewModel = detailsScreenViewModel,
                     mapViewModel,
-                    settingsViewModel
+                    settingsViewModel,
+                    homeScreenViewModel
                 )
                 if (mapViewModel.makeTrajectory.value) {
                     Column {
@@ -173,6 +174,34 @@ fun HomeScreen(
                                     Text(text = "3D")
                                 } else {
                                     Text("2D")
+                                }
+
+
+                            }
+
+
+                        }
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .padding(start = 5.dp, top = 5.dp)
+                                .heightIn(max = 35.dp),
+                            contentColor = filter0,
+                            containerColor = filter50,
+                            onClick = {
+                                mapViewModel.showTraDetails.value =
+                                    !mapViewModel.showTraDetails.value
+                            }) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(2.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (mapViewModel.showTraDetails.value) {
+
+                                    Text(text = "Hide details")
+                                } else {
+                                    Text("Show details")
                                 }
 
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -71,6 +72,7 @@ fun TimeDialog(
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val dtrpState = homeScreenViewModel.dtrpState.value
     val hourcheck = { x: Int -> if (x in 0..9) "0${x}" else x.toString() }
+
 
     DatePickerDialog(
         modifier = Modifier.fillMaxWidth(),
@@ -204,95 +206,96 @@ fun TimeDialog(
             )
         )
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            DateRangePicker(
-                state = dtrpState, modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 390.dp),
-                showModeToggle = false,
-                colors = DatePickerColors(
-                    time100,
-                    time0,
-                    time35,
-                    time0,
-                    time0,
-                    time0,
-                    time0,
-                    time100,
-                    time100,
-                    time100,
-                    time100,
-                    time100,
-                    time100,
-                    time0,
-                    time100,
-                    time100, // selectedDayContentColo
-                    time100,
-                    time35,
-                    time100,
-                    time35,
-                    time35,
-                    time65,
-                    time100,
-                    time0,
-                    TextFieldColors(
+        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, content = {
+            item {
+                DateRangePicker(
+                    state = dtrpState, modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 390.dp),
+                    showModeToggle = false,
+                    colors = DatePickerColors(
+                        time100,
+                        time0,
+                        time35,
+                        time0,
+                        time0,
+                        time0,
+                        time0,
                         time100,
                         time100,
                         time100,
                         time100,
                         time100,
                         time100,
+                        time0,
                         time100,
+                        time100, // selectedDayContentColo
                         time100,
+                        time35,
                         time100,
+                        time35,
+                        time35,
+                        time65,
                         time100,
-                        TextSelectionColors(time100, time100),
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
-                        time100,
+                        time0,
+                        TextFieldColors(
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            TextSelectionColors(time100, time100),
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                            time100,
+                        )
                     )
+
                 )
-
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Row {
-                InputFiled(homeScreenViewModel, "Start hour")
-                Spacer(modifier = Modifier.width(20.dp))
-                InputFiled(homeScreenViewModel, "End hour")
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            item {
+                Row {
+                    InputFiled(homeScreenViewModel, "Start hour")
+                    Spacer(modifier = Modifier.width(20.dp))
+                    InputFiled(homeScreenViewModel, "End hour")
+                }
+            }
 
-
-        }
+        })
 
 
     }

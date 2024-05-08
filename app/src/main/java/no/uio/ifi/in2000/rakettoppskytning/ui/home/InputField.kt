@@ -142,7 +142,7 @@ fun InputField(
                             lowestInput = -90.0,
                             oldValue = mapViewModel.lat.value.toString()
                         )
-                    }catch (e: Exception){
+                    } catch (e: Exception) {
                         Log.d("inputFormatter", "input was $input and caused exception ${e.cause}")
                     }
                 },
@@ -179,8 +179,11 @@ fun InputField(
                             lowestInput = -180.0,
                             oldValue = mapViewModel.lon.value.toString()
                         )
-                    }catch (e: Exception){
-                        Log.d("inputFormatter", "input was $input and caused exception ${e.message}")
+                    } catch (e: Exception) {
+                        Log.d(
+                            "inputFormatter",
+                            "input was $input and caused exception ${e.message}"
+                        )
                     }
 
                 },
@@ -248,7 +251,7 @@ fun InputField(
 
 
                     scope.launch {
-                        delay(1000)
+                        delay(200)
                         scaffoldState.bottomSheetState.expand()
                     }
                 }) {
@@ -299,7 +302,7 @@ fun InputField(
 
 
                             scope.launch {
-                                delay(1000)
+                                delay(200)
                                 scaffoldState.bottomSheetState.expand()
                             }
 
