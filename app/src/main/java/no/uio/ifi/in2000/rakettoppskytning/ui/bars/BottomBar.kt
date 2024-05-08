@@ -65,8 +65,10 @@ fun BottomBar(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(modifier = Modifier.sizeIn(maxWidth = 38.dp), onClick = {
-                navController.navigate(Routes.favCards)
+            IconButton(
+                modifier = Modifier
+                    .sizeIn(maxWidth = 38.dp),
+                onClick = { navController.navigate(Routes.favCards)
             }) {
                 Icon(
                     Icons.Default.Favorite,
@@ -79,6 +81,7 @@ fun BottomBar(
                         secondButton0
                     },
                 )
+
             }
 
             IconButton(onClick = {

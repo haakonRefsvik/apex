@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 
 class Point(val x: Double, val y: Double, val z: Double, val timeS: Double, val parachuted: Boolean = false) {
     override fun toString(): String {
-        return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeS.toInt()})"
+        return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeS.toInt()}, parachuted: $parachuted)"
     }
 }
 
@@ -280,4 +280,8 @@ fun simulateTrajectory(
     }
 
     return list
+}
+
+fun simulateFall(){
+
 }

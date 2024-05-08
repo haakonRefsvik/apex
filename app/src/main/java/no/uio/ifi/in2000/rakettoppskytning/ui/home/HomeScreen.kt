@@ -126,7 +126,8 @@ fun HomeScreen(
                 Map(
                     detailsScreenViewModel = detailsScreenViewModel,
                     mapViewModel,
-                    settingsViewModel
+                    settingsViewModel,
+                    homeScreenViewModel
                 )
                 if (mapViewModel.makeTrajectory.value) {
                     Column {

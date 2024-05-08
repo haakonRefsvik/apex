@@ -107,7 +107,8 @@ fun NewViewAnnotation(
 fun Map(
     detailsScreenViewModel: DetailsScreenViewModel,
     mapViewModel: MapViewModel,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
@@ -123,7 +124,7 @@ fun Map(
 
 
         if (mapViewModel.makeTrajectory.value) {
-            Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
+            Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel, homeScreenViewModel)
 
         } else {
             NewPointAnnotation(
@@ -164,6 +165,7 @@ fun Make3dtrajectory(
     mapViewModel: MapViewModel,
     detailsScreenViewModel: DetailsScreenViewModel,
     settingsViewModel: SettingsViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
@@ -171,7 +173,7 @@ fun Make3dtrajectory(
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
-    val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
+    val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
@@ -292,9 +294,6 @@ fun Make3dtrajectory(
                         )
                     }
 
-
-
-
                     +modelLayer(MODEL_ID_2, SOURCE_ID1) {
                         modelId(get(MODEL_ID_KEY))
                         modelType(ModelType.COMMON_3D)
@@ -302,8 +301,6 @@ fun Make3dtrajectory(
                         if (s != null) {
                             modelTranslation(listOf(s.x, s.y * -1, s.z))
                         }
-
-
 
                         modelRotation(
                             listOf(
