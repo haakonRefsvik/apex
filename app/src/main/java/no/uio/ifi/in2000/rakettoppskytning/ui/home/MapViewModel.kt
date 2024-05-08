@@ -27,6 +27,7 @@ class MapViewModel() : ViewModel() {
     val lon: MutableState<Double> = _lon
     val favorite = _favorite
     val makeTrajectory = mutableStateOf(false)
+    val showTraDetails = mutableStateOf(false)
     val trajectory =
         mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>())
     val threeD = mutableStateOf(true)
