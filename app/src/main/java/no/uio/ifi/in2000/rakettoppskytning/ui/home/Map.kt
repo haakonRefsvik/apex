@@ -151,7 +151,6 @@ fun Map(
                 homeScreenViewModel,
                 settingsViewModel
             )
-
         }
 //        else if (settingsViewModel.ippcOnMap.value) {
 //            val LAYER_ID = "layer-id"
@@ -224,6 +223,7 @@ fun Make3dtrajectory(
     detailsScreenViewModel: DetailsScreenViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     settingsViewModel: SettingsViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
 
 
@@ -233,7 +233,6 @@ fun Make3dtrajectory(
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
-
     val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
@@ -358,9 +357,6 @@ fun Make3dtrajectory(
                         )
                     }
 
-
-
-
                     +modelLayer(MODEL_ID_2, SOURCE_ID1) {
                         modelId(get(MODEL_ID_KEY))
                         modelType(ModelType.COMMON_3D)
@@ -368,8 +364,6 @@ fun Make3dtrajectory(
                         if (s != null) {
                             modelTranslation(listOf(s.x, s.y * -1, s.z))
                         }
-
-
 
                         modelRotation(
                             listOf(

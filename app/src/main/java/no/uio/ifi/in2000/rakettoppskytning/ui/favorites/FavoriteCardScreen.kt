@@ -50,6 +50,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +61,7 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatter
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
+import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
@@ -78,13 +80,10 @@ import java.time.ZonedDateTime
 fun FavoriteCardScreen(
     navController: NavHostController,
     favoriteCardViewModel: FavoriteCardViewModel,
-    detailsScreenViewModel: DetailsScreenViewModel,
     homeScreenViewModel: HomeScreenViewModel
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val favorites by favoriteCardViewModel.favoriteUiState.collectAsState()
-    val favoriteWeatherData by favoriteCardViewModel.weatherDataUiState.collectAsState()
-    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         favoriteCardViewModel.getFavoritesFromDatabase()
         favoriteCardViewModel.removeExpiredCards()
@@ -123,60 +122,11 @@ fun FavoriteCardScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = main50,
-                modifier = Modifier
-                    .shadow(
-                        10.dp,
-                        RectangleShape,
-                        false,
-                        DefaultShadowColor,
-                        DefaultShadowColor
-                    )
-                    .heightIn(max = 50.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = main50),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(modifier = Modifier.sizeIn(maxWidth = 38.dp), onClick = {
-                        navController.navigate(Routes.favCards)
-                    }) {
-                        Icon(
-                            Icons.Default.Favorite,
-                            modifier = Modifier.fillMaxSize(),
-                            contentDescription = "Favorite",
-                            tint = main100,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.widthIn(110.dp))
-                    IconButton(onClick = {
-                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
-                        navController.popBackStack("HomeScreen", false)
-                    }) {
-                        Icon(
-                            Icons.Sharp.LocationOn,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Location",
-                            tint = main0
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(110.dp))
-                    IconButton(onClick = { navController.navigate(Routes.settings) }) {
-                        Icon(
-                            Icons.Sharp.Settings,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Settings",
-                            tint = main0
-                        )
-                    }
-                }
-            }
+            BottomBar(
+                navController = navController,
+                homeScreenViewModel = homeScreenViewModel,
+                currentScreen = Routes.favCards
+            )
         }
     ) { innerPadding ->
         Column(

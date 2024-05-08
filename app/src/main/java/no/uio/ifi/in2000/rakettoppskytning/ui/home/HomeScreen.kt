@@ -32,11 +32,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
+import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
+import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopAppBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
@@ -70,7 +72,7 @@ fun HomeScreen(
             TopAppBar(navController)
         },
         bottomBar = {
-            BottomAppBar(navController, homeScreenViewModel)
+            BottomBar(navController, homeScreenViewModel, Routes.home)
         }
     ) { innerPadding ->
         Box(

@@ -82,11 +82,15 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontStyle
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
 
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -173,60 +177,11 @@ fun DetailsScreen(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = main50,
-                modifier = Modifier
-                    .shadow(
-                        10.dp,
-                        RectangleShape,
-                        false,
-                        DefaultShadowColor,
-                        DefaultShadowColor
-                    )
-                    .heightIn(max = 50.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = main50),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(modifier = Modifier.sizeIn(maxWidth = 38.dp), onClick = {
-                        navController.navigate(Routes.favCards)
-                    }) {
-                        Icon(
-                            Icons.Default.Favorite,
-                            modifier = Modifier.fillMaxSize(),
-                            contentDescription = "Favorite",
-                            tint = main0,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(110.dp))
-                    IconButton(onClick = {
-                        scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
-                        navController.popBackStack("HomeScreen", false)
-                    }) {
-                        Icon(
-                            Icons.Sharp.LocationOn,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Location",
-                            tint = main0
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(110.dp))
-                    IconButton(onClick = { navController.navigate(Routes.settings) }) {
-                        Icon(
-                            Icons.Sharp.Settings,
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "Settings",
-                            tint = main0
-                        )
-                    }
-                }
-            }
+            BottomBar(
+                navController = navController,
+                homeScreenViewModel = homeScreenViewModel,
+                currentScreen = ""
+            )
         }
     ) { innerPadding ->
         Column(
