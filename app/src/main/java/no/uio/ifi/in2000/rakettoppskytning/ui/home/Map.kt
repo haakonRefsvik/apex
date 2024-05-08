@@ -128,7 +128,8 @@ fun idToBitmap(id: Int): Bitmap {
 fun Map(
     detailsScreenViewModel: DetailsScreenViewModel,
     mapViewModel: MapViewModel,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    homeScreenViewModel: HomeScreenViewModel
 ) {
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
@@ -144,39 +145,46 @@ fun Map(
 
 
         if (mapViewModel.makeTrajectory.value) {
-            Make3dtrajectory(mapViewModel, detailsScreenViewModel, settingsViewModel)
+            Make3dtrajectory(
+                mapViewModel,
+                detailsScreenViewModel,
+                homeScreenViewModel,
+                settingsViewModel
+            )
 
-        } else if (settingsViewModel.ippcOnMap.value) {
-            val LAYER_ID = "layer-id"
-            val SOURCE_ID = "source-id"
-            val TOP_LAYER_ID = "line-layer"
-            val SETTLEMENT_LABEL = "settlement-major-label"
-            val SOURCE_URL =
-                "https://raw.githubusercontent.com/relet/pg-xc/master/geojson/luftrom.geojson"
-            MapEffect() { mapView ->
-                mapView.mapboxMap.apply {
-
-                    loadStyle(
-                        style(Style.OUTDOORS) {
-                            +geoJsonSource(SOURCE_ID) {
-                                data(SOURCE_URL)
-                            }
-                            +layerAtPosition(
-                                fillLayer(LAYER_ID, SOURCE_ID) {
-                                    fillColor(Color.parseColor("#0080ff")).fillOpacity(0.7)
-                                },
-                                below = SETTLEMENT_LABEL
-                            )
-                            +lineLayer(
-                                TOP_LAYER_ID, SOURCE_ID
-                            ) {
-
-                                lineWidth(.5)
-                            }
-                        })
-                }
-            }
-        } else {
+        }
+//        else if (settingsViewModel.ippcOnMap.value) {
+//            val LAYER_ID = "layer-id"
+//            val SOURCE_ID = "source-id"
+//            val TOP_LAYER_ID = "line-layer"
+//            val SETTLEMENT_LABEL = "settlement-major-label"
+//            val SOURCE_URL =
+//                "https://raw.githubusercontent.com/relet/pg-xc/master/geojson/luftrom.geojson"
+//            MapEffect() { mapView ->
+//                mapView.mapboxMap.apply {
+//
+//                    loadStyle(
+//                        style(Style.OUTDOORS) {
+//                            +geoJsonSource(SOURCE_ID) {
+//                                data(SOURCE_URL)
+//                            }
+//                            +layerAtPosition(
+//                                fillLayer(LAYER_ID, SOURCE_ID) {
+//                                    fillColor(Color.parseColor("#0080ff")).fillOpacity(0.7)
+//                                },
+//                                below = SETTLEMENT_LABEL
+//                            )
+//                            +lineLayer(
+//                                TOP_LAYER_ID, SOURCE_ID
+//                            ) {
+//
+//                                lineWidth(.5)
+//                            }
+//                        })
+//                }
+//            }
+//        }
+        else {
             NewPointAnnotation(
                 "",
                 lat = lat,
@@ -214,6 +222,7 @@ fun Map(
 fun Make3dtrajectory(
     mapViewModel: MapViewModel,
     detailsScreenViewModel: DetailsScreenViewModel,
+    homeScreenViewModel: HomeScreenViewModel,
     settingsViewModel: SettingsViewModel,
 ) {
 
@@ -225,7 +234,7 @@ fun Make3dtrajectory(
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
 
-    val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
+    val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val time = detailsScreenViewModel.time.value
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
@@ -265,11 +274,7 @@ fun Make3dtrajectory(
 
 
     MapEffect { mapView ->
-        mapView.mapboxMap.removeOnMapClickListener() {
-
-
-            false
-        }
+        mapView.mapboxMap.removeOnMapClickListener() { false }
 
         mapView.mapboxMap.apply {
 
@@ -437,90 +442,6 @@ fun Make3dtrajectory(
             }
 
         )
-        /**Dette må gjøre på en annet måte**/
-
-//        val yep = viewAnnotationOptions {
-//            annotationAnchor {
-//
-//                anchor(ViewAnnotationAnchor.TOP)
-//                offsetX(-5.0)
-//                offsetY(20.0)
-//            }
-//
-//
-//            geometry(Point.fromLngLat(cordEnd.latitude, cordEnd.longitude))
-//            allowOverlap(false)
-//                .build()
-//        }
-//
-//        ViewAnnotation(
-//            options = yep
-//
-//        ) {
-//            OutlinedCard(
-//                modifier = Modifier
-//                    .height(55.dp)
-//                    .width(200.dp),
-//                colors = CardColors(
-//                    containerColor = favoriteCard50,
-//                    contentColor = favoriteCard0,
-//                    disabledContentColor = favoriteCard50,
-//                    disabledContainerColor = favoriteCard0
-//                ),
-//                border = BorderStroke(1.dp, color = favoriteCard100),
-//                onClick = {
-//
-//                }
-//            ) {
-//                Row(
-//                    modifier = Modifier.fillMaxSize()
-//
-//
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxHeight()
-//                            .width(175.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//
-//                    ) {
-//                        Spacer(modifier = Modifier.width(10.dp))
-//                        Icon(
-//                            modifier = Modifier.size(25.dp),
-//                            imageVector = Icons.Default.Place,
-//                            contentDescription = "Location",
-//
-//                            )
-//                        Spacer(modifier = Modifier.width(10.dp))
-//                        Text("Hei", fontSize = 18.sp, color = favoriteCard100)
-//
-//                    }
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.End
-//                    )
-//
-//                    {
-//                        IconButton(modifier = Modifier
-//                            .size(30.dp)
-//                            .padding(end = 5.dp),
-//                            onClick = {
-//
-//                            }) {
-//                            Icon(
-//                                imageVector = Icons.Default.Close,
-//                                contentDescription = "Delete favorite",
-//                                tint = favoriteCard100
-//
-//                            )
-//
-//                        }
-//                    }
-//                }
-//            }
-//
-//        }
-
 
         PolylineAnnotation(points = linePoints, lineWidth = 2.0)
         PointAnnotation(
@@ -574,7 +495,7 @@ fun yay(number: Double): Double {
     }
 
 
-    return -0.0
+    return 0.0
 }
 
 fun offsetLatLon(
@@ -628,7 +549,7 @@ fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double
 
 fun generateCirclePoints(lat: Double, lon: Double, radius: Double, numPoints: Int): List<Point> {
     val circlePoints = mutableListOf<Point>()
-    for (i in 0 until numPoints) {
+    for (i in 0..numPoints) {
         val angle = Math.toRadians(i * (360.0 / numPoints))
         val dx = radius * cos(angle)
         val dy = radius * sin(angle)

@@ -58,7 +58,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.maps.MapboxExperimental
-import getRestrictedAirspace
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R

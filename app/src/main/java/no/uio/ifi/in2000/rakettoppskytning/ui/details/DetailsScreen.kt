@@ -104,7 +104,7 @@ fun DetailsScreen(
     state: FavoriteState,
     onEvent: (FavoriteEvent) -> Unit
 ) {
-    val weatherUiState by detailsScreenViewModel.weatherUiState.collectAsState()
+    val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
     val isAddingFavorite by remember(state.isAddingFavorite) { mutableStateOf(state.isAddingFavorite) }
 
@@ -113,7 +113,7 @@ fun DetailsScreen(
     var weatherAtPosHour: List<WeatherAtPosHour> = listOf()
     val duration = Toast.LENGTH_SHORT
     detailsScreenViewModel.time.value = time
-    if(time.last() == 'f'){
+    if (time.last() == 'f') {
         favoriteUiState.weatherAtPos.weatherList.forEach {
             if (it.date == time.dropLast(1)) {
                 weatherAtPosHour = listOf(it)
@@ -131,7 +131,7 @@ fun DetailsScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    if(isAddingFavorite){
+    if (isAddingFavorite) {
         AddFavoriteLocationDialog(
             state = state,
             onEvent = onEvent,
@@ -410,8 +410,9 @@ fun DetailsScreen(
                             item {
                                 weatherNow.verticalProfile?.let {
                                     WindCardAltitude(
-                                        it.getAllLevelDatas().sortedBy { levelData ->  levelData.getLevelHeightInMeters() }
-                                        )
+                                        it.getAllLevelDatas()
+                                            .sortedBy { levelData -> levelData.getLevelHeightInMeters() }
+                                    )
                                     Spacer(modifier = Modifier.height(30.dp))
                                 }
                             }

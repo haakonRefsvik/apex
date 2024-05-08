@@ -70,330 +70,329 @@ fun WeatherList(
     val openFilterDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
 
-        Spacer(modifier = Modifier.height(10.dp))
-        when {
+    Spacer(modifier = Modifier.height(10.dp))
+    when {
 
-            openFilterDialog.value -> {
-                FilterDialog(
-                    onDismissRequest = {
-                        openFilterDialog.value = false
+        openFilterDialog.value -> {
+            FilterDialog(
+                onDismissRequest = {
+                    openFilterDialog.value = false
 
-                    },
-                    onResetRequest = {
-                        homeScreenViewModel.resetFilter()
-                    },
-                    onConfirmation = {
-                        openFilterDialog.value = false
-                        homeScreenViewModel.filterList()
-                    },
-                    homeScreenViewModel = homeScreenViewModel
+                },
+                onResetRequest = {
+                    homeScreenViewModel.resetFilter()
+                },
+                onConfirmation = {
+                    openFilterDialog.value = false
+                    homeScreenViewModel.filterList()
+                },
+                homeScreenViewModel = homeScreenViewModel
 
-                )
-            }
+            )
         }
-        when {
-            openTimeDialog.value -> {
-                TimeDialog(
-                    onDismissRequest = { openTimeDialog.value = false },
-                    onConfirmation = { /*TODO*/ },
-                    homeScreenViewModel = homeScreenViewModel
-                )
-            }
+    }
+    when {
+        openTimeDialog.value -> {
+            TimeDialog(
+                onDismissRequest = { openTimeDialog.value = false },
+                onConfirmation = { /*TODO*/ },
+                homeScreenViewModel = homeScreenViewModel
+            )
         }
-        Spacer(modifier = Modifier.height(5.dp))
-        Row {
-
-            Button(modifier = Modifier.width(155.dp),
-                colors = ButtonColors(
-                    containerColor = secondButton0,
-                    contentColor = secondButton100,
-                    disabledContainerColor = secondButton0,
-                    disabledContentColor = secondButton100
-                ),
-                onClick = {
-                    openTimeDialog.value = true
-                }) {
-                Icon(
-                    modifier = Modifier.size(15.dp),
-                    painter = painterResource(R.drawable.outline_access_time_24),
-                    contentDescription = "Edit",
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-
-                Text("Change time")
-            }
-            Spacer(modifier = Modifier.width(25.dp))
-            Button(modifier = Modifier.width(155.dp),
-                colors = ButtonColors(
-                    containerColor = secondButton0,
-                    contentColor = secondButton100,
-                    disabledContainerColor = secondButton0,
-                    disabledContentColor = secondButton100
-                ),
-                onClick = {
-                    openFilterDialog.value = true
-
-                }) {
-                Icon(
-                    modifier = Modifier
-                        .size(20.dp),
-                    painter = painterResource(R.drawable.filter),
-                    contentDescription = "Filter"
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Text("Filter")
-            }
+    }
 
 
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+    val listState = rememberLazyListState()
 
+    LazyColumnScrollbar(
+        listState = listState,
+        modifier = Modifier,
+        rightSide = true,
+        alwaysShowScrollBar = false,
+        thickness = 5.dp,
+        padding = 10.dp,
+        thumbMinHeight = 0.1f,
+        thumbColor = Color.White.copy(alpha = 0.4F),
+        thumbSelectedColor = Color.White,
+        thumbShape = CircleShape,
+        selectionMode = ScrollbarSelectionMode.Thumb,
+        selectionActionable = ScrollbarSelectionActionable.Always,
+        hideDelay = 400.toDuration(DurationUnit.MILLISECONDS),
+        showItemIndicator = ListIndicatorSettings.EnabledMirrored(
+            100.dp,
+            Color.Gray
+        ),
+        enabled = true,
+    ) {
 
-        val listState = rememberLazyListState()
+        LazyColumn(state = listState, modifier = Modifier.background(main100),
+            content = {
+                if (forecast.weatherAtPos.weatherList.isEmpty() && homeScreenViewModel.hasBeenFiltered.value) {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                modifier = Modifier.fillMaxSize(0.5f),
 
-        LazyColumnScrollbar(
-            listState = listState,
-            modifier = Modifier,
-            rightSide = true,
-            alwaysShowScrollBar = false,
-            thickness = 5.dp,
-            padding = 10.dp,
-            thumbMinHeight = 0.1f,
-            thumbColor = Color.White.copy(alpha = 0.4F),
-            thumbSelectedColor = Color.White,
-            thumbShape = CircleShape,
-            selectionMode = ScrollbarSelectionMode.Thumb,
-            selectionActionable = ScrollbarSelectionActionable.Always,
-            hideDelay = 400.toDuration(DurationUnit.MILLISECONDS),
-            showItemIndicator = ListIndicatorSettings.EnabledMirrored(
-                100.dp,
-                Color.Gray
-            ),
-            enabled = true,
-            indicatorContent = { index, isThumbSelected ->
-                // Indicator content composable
-                // Replace with your own implementation
-            }
-        ) {
+                                painter = painterResource(R.drawable.data_not_found),
+                                contentDescription = "Filter"
+                            )
+                            Text(
+                                text = "We are not able to show the desired data ",
+                                fontSize = 18.sp, color = main50
+                            )
 
-            LazyColumn(state = listState, modifier = Modifier.background(main100),
-                content = {
-                    if (forecast.weatherAtPos.weatherList.isEmpty() && homeScreenViewModel.hasBeenFiltered.value) {
-                        item {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    modifier = Modifier.fillMaxSize(0.5f),
+                        }
+                    }
+                } else {
+                    item {
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
 
-                                    painter = painterResource(R.drawable.data_not_found),
+                            Button(modifier = Modifier.width(155.dp),
+                                colors = ButtonColors(
+                                    containerColor = secondButton0,
+                                    contentColor = secondButton100,
+                                    disabledContainerColor = secondButton0,
+                                    disabledContentColor = secondButton100
+                                ),
+                                onClick = {
+                                    openTimeDialog.value = true
+                                }) {
+                                Icon(
+                                    modifier = Modifier.size(15.dp),
+                                    painter = painterResource(R.drawable.outline_access_time_24),
+                                    contentDescription = "Edit",
+                                )
+                                Spacer(modifier = Modifier.width(5.dp))
+
+                                Text("Change time")
+                            }
+                            Spacer(modifier = Modifier.width(25.dp))
+                            Button(modifier = Modifier.width(155.dp),
+                                colors = ButtonColors(
+                                    containerColor = secondButton0,
+                                    contentColor = secondButton100,
+                                    disabledContainerColor = secondButton0,
+                                    disabledContentColor = secondButton100
+                                ),
+                                onClick = {
+                                    openFilterDialog.value = true
+
+                                }) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(20.dp),
+                                    painter = painterResource(R.drawable.filter),
                                     contentDescription = "Filter"
                                 )
-                                Text(
-                                    text = "We are not able to show the desired data ",
-                                    fontSize = 18.sp, color = main50
-                                )
-
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text("Filter")
                             }
+
+
                         }
-                    } else {
-                        item {
-                            forecast.weatherAtPos.weatherList.forEach { input ->
-                                var precipText =
-                                    "${input.series.data.next1Hours?.details?.precipitationAmount} mm"
-                                if (input.series.data.next1Hours == null) {
-                                    precipText =
-                                        "${input.series.data.next6Hours?.details?.precipitationAmount} mm"
-                                }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        forecast.weatherAtPos.weatherList.forEach { input ->
+                            var precipText =
+                                "${input.series.data.next1Hours?.details?.precipitationAmount} mm"
+                            if (input.series.data.next1Hours == null) {
+                                precipText =
+                                    "${input.series.data.next6Hours?.details?.precipitationAmount} mm"
+                            }
 
-                                Spacer(modifier = Modifier.height(7.5.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    ElevatedCard(
-                                        modifier = Modifier
-                                            .height(80.dp)
-                                            .width(340.dp),
-                                        colors = CardColors(
-                                            containerColor = weatherCard50,
-                                            contentColor = weatherCard0,
-                                            disabledContainerColor = weatherCard50,
-                                            disabledContentColor = weatherCard0
-                                        ),
-                                        onClick = {
-                                            navController.navigate("DetailsScreen/${input.date}")
-                                        }
-                                    )
-                                    {
-                                        Row {
-                                            Spacer(
-                                                modifier = Modifier
-                                                    .width(10.dp)
-                                                    .fillMaxHeight()
-                                                    .background(getColorFromStatusValue(input.closeToLimitScore))
-                                            )
-                                            Row(
-                                                modifier = Modifier.fillMaxSize(),
-                                                horizontalArrangement = Arrangement.Center,
-                                                verticalAlignment = Alignment.CenterVertically
+                            Spacer(modifier = Modifier.height(7.5.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                ElevatedCard(
+                                    modifier = Modifier
+                                        .height(80.dp)
+                                        .width(340.dp),
+                                    colors = CardColors(
+                                        containerColor = weatherCard50,
+                                        contentColor = weatherCard0,
+                                        disabledContainerColor = weatherCard50,
+                                        disabledContentColor = weatherCard0
+                                    ),
+                                    onClick = {
+                                        navController.navigate("DetailsScreen/${input.date}")
+                                    }
+                                )
+                                {
+                                    Row {
+                                        Spacer(
+                                            modifier = Modifier
+                                                .width(10.dp)
+                                                .fillMaxHeight()
+                                                .background(getColorFromStatusValue(input.closeToLimitScore))
+                                        )
+                                        Row(
+                                            modifier = Modifier.fillMaxSize(),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Column(
+                                                modifier = Modifier.width(75.dp),
+                                                horizontalAlignment = Alignment.Start,
                                             ) {
-                                                Column(
-                                                    modifier = Modifier.width(75.dp),
-                                                    horizontalAlignment = Alignment.Start,
-                                                ) {
-                                                    Text(
-                                                        input.series.time.substring(11, 16),
-                                                        fontSize = 20.sp,
-                                                        color = weatherCard0
-                                                    )
-                                                    Text(
-                                                        text = formatDate(input.series.time),
-                                                        fontSize = 13.sp,
-                                                        softWrap = true,
-                                                        maxLines = 1,
-                                                        color = weatherCard0.copy(alpha = 0.7F)
-                                                    )
-                                                }
-                                                Spacer(modifier = Modifier.width(40.dp))
-                                                Column {
-                                                    when (homeScreenViewModel.markedCardIndex.intValue) {
-                                                        0 -> {
-                                                            Text(
-                                                                "${input.series.data.instant.details.windSpeed} m/s",
-                                                                fontSize = 20.sp,
-                                                                fontWeight = FontWeight.Bold,
-                                                                modifier = Modifier.width(75.dp),
-                                                                color = weatherCard0,
+                                                Text(
+                                                    input.series.time.substring(11, 16),
+                                                    fontSize = 20.sp,
+                                                    color = weatherCard0
+                                                )
+                                                Text(
+                                                    text = formatDate(input.series.time),
+                                                    fontSize = 13.sp,
+                                                    softWrap = true,
+                                                    maxLines = 1,
+                                                    color = weatherCard0.copy(alpha = 0.7F)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(40.dp))
+                                            Column {
+                                                when (homeScreenViewModel.markedCardIndex.intValue) {
+                                                    0 -> {
+                                                        Text(
+                                                            "${input.series.data.instant.details.windSpeed} m/s",
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.width(75.dp),
+                                                            color = weatherCard0,
+                                                        )
+                                                    }
+
+                                                    1 -> {
+                                                        Box(
+                                                            modifier = Modifier.width(75.dp),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Icon(
+
+                                                                Icons.AutoMirrored.Filled.ArrowForward,
+                                                                modifier = Modifier
+                                                                    .size(30.dp)
+                                                                    .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
+                                                                tint = weatherCard0,
+                                                                contentDescription = "Location"
                                                             )
-                                                        }
 
-                                                        1 -> {
-                                                            Box(
-                                                                modifier = Modifier.width(75.dp),
-                                                                contentAlignment = Alignment.Center
-                                                            ) {
-                                                                Icon(
-
-                                                                    Icons.AutoMirrored.Filled.ArrowForward,
-                                                                    modifier = Modifier
-                                                                        .size(30.dp)
-                                                                        .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
-                                                                    tint = weatherCard0,
-                                                                    contentDescription = "Location"
-                                                                )
-
-
-                                                            }
 
                                                         }
 
-
-                                                        2 ->
-                                                            Text(
-                                                                precipText,
-                                                                fontSize = 20.sp,
-                                                                fontWeight = FontWeight.Bold,
-                                                                modifier = Modifier.width(75.dp),
-                                                                color = weatherCard0
-                                                            )
-
-                                                        3 -> {
-                                                            val d =
-                                                                input.series.data.instant.details
-                                                            val fog: Double =
-                                                                d.fogAreaFraction ?: 0.0
-                                                            val visibility = getVerticalSightKm(
-                                                                fog,
-                                                                d.cloudAreaFractionLow,
-                                                                d.cloudAreaFractionMedium,
-                                                                d.cloudAreaFractionHigh,
-                                                            )
-
-                                                            Text(
-                                                                visibility,
-                                                                fontSize = 20.sp,
-                                                                fontWeight = FontWeight.Bold,
-                                                                modifier = Modifier.width(75.dp),
-                                                                color = weatherCard0
-                                                            )
-                                                        }
-
-
-                                                        4 ->
-                                                            Text(
-                                                                "${input.series.data.instant.details.relativeHumidity} %",
-                                                                fontSize = 20.sp,
-                                                                fontWeight = FontWeight.Bold,
-                                                                modifier = Modifier.width(75.dp),
-                                                                color = weatherCard0
-                                                            )
-
-                                                        5 ->
-                                                            Text(
-                                                                "${input.series.data.instant.details.dewPointTemperature} °c",
-                                                                fontSize = 20.sp,
-                                                                fontWeight = FontWeight.Bold,
-                                                                modifier = Modifier.width(75.dp),
-                                                                color = weatherCard0
-                                                            )
-
-                                                        else ->
-                                                            Text(
-                                                                precipText,
-                                                                fontSize = 20.sp,
-                                                                fontWeight = FontWeight.Bold,
-                                                                modifier = Modifier.width(75.dp),
-                                                                color = weatherCard0
-                                                            )
                                                     }
 
 
+                                                    2 ->
+                                                        Text(
+                                                            precipText,
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.width(75.dp),
+                                                            color = weatherCard0
+                                                        )
+
+                                                    3 -> {
+                                                        val d =
+                                                            input.series.data.instant.details
+                                                        val fog: Double =
+                                                            d.fogAreaFraction ?: 0.0
+                                                        val visibility = getVerticalSightKm(
+                                                            fog,
+                                                            d.cloudAreaFractionLow,
+                                                            d.cloudAreaFractionMedium,
+                                                            d.cloudAreaFractionHigh,
+                                                        )
+
+                                                        Text(
+                                                            visibility,
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.width(75.dp),
+                                                            color = weatherCard0
+                                                        )
+                                                    }
+
+
+                                                    4 ->
+                                                        Text(
+                                                            "${input.series.data.instant.details.relativeHumidity} %",
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.width(75.dp),
+                                                            color = weatherCard0
+                                                        )
+
+                                                    5 ->
+                                                        Text(
+                                                            "${input.series.data.instant.details.dewPointTemperature} °c",
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.width(75.dp),
+                                                            color = weatherCard0
+                                                        )
+
+                                                    else ->
+                                                        Text(
+                                                            precipText,
+                                                            fontSize = 20.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            modifier = Modifier.width(75.dp),
+                                                            color = weatherCard0
+                                                        )
                                                 }
 
-                                                Spacer(modifier = Modifier.width(42.dp))
 
-                                                var symbolId =
-                                                    input.series.data.next1Hours?.summary?.symbolCode?.uppercase()
-                                                        ?: "FAIR_DAY"
-
-                                                if (input.series.data.next1Hours == null) {
-                                                    symbolId =
-                                                        input.series.data.next12Hours?.summary?.symbolCode?.uppercase()
-                                                            ?: "FAIR_DAY"
-                                                }
-
-                                                Image(
-                                                    modifier = Modifier.size(55.dp),
-
-                                                    painter = painterResource(
-                                                        id = ForeCastSymbols.valueOf(
-                                                            symbolId
-                                                        ).id
-                                                    ),
-                                                    contentDescription = symbolId
-                                                )
-
-
-                                                Icon(
-                                                    modifier = Modifier.size(20.dp),
-                                                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                                    contentDescription = "Arrow",
-                                                    tint = weatherCard0
-                                                )
                                             }
-                                        }
 
+                                            Spacer(modifier = Modifier.width(42.dp))
+
+                                            var symbolId =
+                                                input.series.data.next1Hours?.summary?.symbolCode?.uppercase()
+                                                    ?: "FAIR_DAY"
+
+                                            if (input.series.data.next1Hours == null) {
+                                                symbolId =
+                                                    input.series.data.next12Hours?.summary?.symbolCode?.uppercase()
+                                                        ?: "FAIR_DAY"
+                                            }
+
+                                            Image(
+                                                modifier = Modifier.size(55.dp),
+
+                                                painter = painterResource(
+                                                    id = ForeCastSymbols.valueOf(
+                                                        symbolId
+                                                    ).id
+                                                ),
+                                                contentDescription = symbolId
+                                            )
+
+
+                                            Icon(
+                                                modifier = Modifier.size(20.dp),
+                                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                                                contentDescription = "Arrow",
+                                                tint = weatherCard0
+                                            )
+                                        }
                                     }
 
                                 }
-                                Spacer(modifier = Modifier.height(7.5.dp))
+
                             }
+                            Spacer(modifier = Modifier.height(7.5.dp))
                         }
                     }
-                })
-        }
+                }
+            })
+    }
 
 }
