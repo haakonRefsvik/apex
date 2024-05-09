@@ -101,6 +101,16 @@ fun AddFavoriteDialogCorrect(
                         onDone = {
                             controller?.hide()
                             focusManager.clearFocus()
+                            if (!isNameAlreadyUsed && inputName != "") {
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    onEvent(FavoriteEvent.SetName(inputName))
+                                    onEvent(FavoriteEvent.SetLat(lat.toString()))
+                                    onEvent(FavoriteEvent.SetLon(lon.toString()))
+                                    delay(500L)
+                                    onEvent(FavoriteEvent.SaveFavorite)
+                                    toast.show()
+                                }
+                            }
                         }
                     ),
                     label = { Text("Name") },

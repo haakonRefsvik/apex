@@ -10,7 +10,13 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Point(val x: Double, val y: Double, val z: Double, val timeS: Double, val parachuted: Boolean = false) {
+class Point(
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    val timeS: Double,
+    val parachuted: Boolean = false
+) {
     override fun toString(): String {
         return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeS.toInt()}, parachuted: $parachuted)"
     }
@@ -18,10 +24,10 @@ class Point(val x: Double, val y: Double, val z: Double, val timeS: Double, val 
 
 /**Considered alt(itude) is between lower and upperlayer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
-fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>?{
+fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>? {
     val altBetweenLayers = upperAlt - lowerAlt
 
-    if(alt > upperAlt || alt < lowerAlt){
+    if (alt > upperAlt || alt < lowerAlt) {
         return null
     }
 
@@ -31,7 +37,12 @@ fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Doubl
     return Pair(1 - p1, p1)
 }
 
-fun getSigmoidRatios(lowerAlt: Double, upperAlt: Double, alt: Double, steepness: Double = 0.01): Pair<Double, Double>? {
+fun getSigmoidRatios(
+    lowerAlt: Double,
+    upperAlt: Double,
+    alt: Double,
+    steepness: Double = 0.01
+): Pair<Double, Double>? {
     val altBetweenLayers = upperAlt - lowerAlt
 
     if (alt > upperAlt || alt < lowerAlt) {
@@ -63,21 +74,21 @@ fun getSigmoidRatios(lowerAlt: Double, upperAlt: Double, alt: Double, steepness:
     return Pair(lowerRatio, upperRatio)
 }
 
-fun mergeLevelData(ratios: Pair<Double, Double>, lowerData: Double, upperData: Double): Double{
+fun mergeLevelData(ratios: Pair<Double, Double>, lowerData: Double, upperData: Double): Double {
     return (ratios.first * lowerData) + (ratios.second * upperData)
 }
 
-fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<LevelData, LevelData>?{
+fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<LevelData, LevelData>? {
     val sortedLevels = allLevels.sortedByDescending { it.pressurePascal }
 
     sortedLevels.forEachIndexed { index, _ ->
         val l = sortedLevels[index]
-        if(index == sortedLevels.lastIndex){
+        if (index == sortedLevels.lastIndex) {
             return Pair(l, l)
         }
         val u = sortedLevels[index + 1]
 
-        if (l.getLevelHeightInMeters() <= altitude && altitude <= u.getLevelHeightInMeters() ) {
+        if (l.getLevelHeightInMeters() <= altitude && altitude <= u.getLevelHeightInMeters()) {
             return Pair(l, u)
         }
     }
@@ -85,15 +96,16 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
     return null
 }
 
-fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData?{
-    var nearest: LevelData = allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
+fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData {
+    var nearest: LevelData =
+        allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
     var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
 
     allLevels.forEach {
         val levelAlt = it.getLevelHeightInMeters()
         val d = abs(levelAlt - altitudeMeters)
 
-        if(d < nearestAlt){
+        if (d < nearestAlt) {
             nearest = it
             nearestAlt = d
         }
@@ -124,7 +136,7 @@ fun simulateTrajectory(
     dt: Double,
     allLevels: List<LevelData>,
     vAfterParachute: Double = 8.6
-): List<Point>{
+): List<Point> {
     Log.d("Ballistic", "Making new trajectory")
     val g = 9.81
     var rho = 1.225
@@ -161,7 +173,7 @@ fun simulateTrajectory(
     var ay: Double
     var az: Double
 
-    val list= mutableListOf<Point>()
+    val list = mutableListOf<Point>()
 
     var ratios: Pair<Double, Double>? = Pair(1.0, 0.0)
     var xWind = 0.0
@@ -169,9 +181,9 @@ fun simulateTrajectory(
     var currLowerUpper: Pair<LevelData, LevelData>?
     var lastZ = -100.0
 
-    while (z >= altitude){
+    while (z >= altitude) {
 
-        if(abs(lastZ - z) > 100){
+        if (abs(lastZ - z) > 100) {
             // Update ratios each 100 meters altitude
             currLowerUpper = findLowerUpperLevel(allLevels, z)
             lastZ = z
@@ -181,16 +193,18 @@ fun simulateTrajectory(
                 val altU = currLowerUpper.second.getLevelHeightInMeters()
                 ratios = getSigmoidRatios(altL, altU, z)
 
-                if(ratios != null) {
+                if (ratios != null) {
                     rho = calculateAirDensity(
                         pressure = mergeLevelData(
                             getLinearRatios(altL, altU, z)!!,
                             currLowerUpper.first.pressurePascal,
-                            currLowerUpper.second.pressurePascal),
+                            currLowerUpper.second.pressurePascal
+                        ),
                         temperature = mergeLevelData(
                             getLinearRatios(altL, altU, z)!!,
                             currLowerUpper.first.getTemperatureCelsius(),
-                            currLowerUpper.second.getTemperatureCelsius()),
+                            currLowerUpper.second.getTemperatureCelsius()
+                        ),
                     )
 
                     xWind = mergeLevelData(
@@ -210,20 +224,23 @@ fun simulateTrajectory(
         val p = Point(x, y, z, secondsUsed, parachuteDeployed)
         list.add(p)
 
-        if(burnTimeLeft >= 0 && z <= apogee){
+        if (burnTimeLeft >= 0 && z <= apogee) {
             ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / currentMass
-            if(isCloseToZero(ax)){ax = 0.0}
+            if (isCloseToZero(ax)) {
+                ax = 0.0
+            }
             ay = thrust * cos(launchAngleRad) * cos(launchDirRad) / currentMass
-            if(isCloseToZero(ay)){ay = 0.0}
+            if (isCloseToZero(ay)) {
+                ay = 0.0
+            }
             az = thrust * sin(launchAngleRad) / currentMass - g
             burnTimeLeft -= timeStep
 
-            if(burnTime > 0){
+            if (burnTime > 0) {
                 currentMass -= (massLossPerSecond * dt) // decrease mass
             }
 
-        }
-        else{
+        } else {
             ax = xWind
             ay = yWind
             az = -g
@@ -242,21 +259,21 @@ fun simulateTrajectory(
         vy += ay * timeStep
         vz += az * timeStep
 
-        if(parachuteDeployed){
-            vz = ( - vAfterParachute ) * timeStep
+        if (parachuteDeployed) {
+            vz = (-vAfterParachute) * timeStep
             vx = xWind
             vy = yWind
 
-            if(zNoPar > 0){
-                vxNoPar += (getNearestLevelData(allLevels, zNoPar)?.vComponentValue?: 0.0) * dt
-                vyNoPar += (getNearestLevelData(allLevels, zNoPar)?.uComponentValue?: 0.0) * dt
+            if (zNoPar > 0) {
+                vxNoPar += (getNearestLevelData(allLevels, zNoPar)?.vComponentValue ?: 0.0) * dt
+                vyNoPar += (getNearestLevelData(allLevels, zNoPar)?.uComponentValue ?: 0.0) * dt
                 vzNoPar += az * timeStep
 
                 xNoPar += vxNoPar * timeStep
                 yNoPar += vyNoPar * timeStep
                 zNoPar += vzNoPar * timeStep
 
-                if(zNoPar < 0){
+                if (zNoPar < 0) {
                     zNoPar = 0.0
                 }
 
@@ -270,7 +287,7 @@ fun simulateTrajectory(
         z += vz * timeStep
         secondsUsed += timeStep
 
-        if(vz < 0 && !parachuteDeployed){
+        if (vz < 0 && !parachuteDeployed) {
             parachuteDeployed = true
             timeStep = 1.0  // only calculate each second after parachute is deployed
             xNoPar = x
@@ -282,6 +299,6 @@ fun simulateTrajectory(
     return list
 }
 
-fun simulateFall(){
+fun simulateFall() {
 
 }

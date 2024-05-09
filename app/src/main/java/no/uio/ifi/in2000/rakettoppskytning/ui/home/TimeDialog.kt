@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerColors
 import androidx.compose.material3.rememberDateRangePickerState
@@ -101,14 +102,17 @@ fun TimeDialog(
                     if (homeScreenViewModel.endHour.value == "") {
                         homeScreenViewModel.endHour.value = "0"
                     }
-                    homeScreenViewModel.startISOtime =
-                        sdf.format(dtrpState.selectedStartDateMillis)
-                            .replaceRange(
-                                11,
-                                16,
-                                "${hourcheck(homeScreenViewModel.startHour.value.toInt())}:00"
-                            )
-                    if (dtrpState.selectedEndDateMillis == null) {
+                    if (dtrpState.selectedStartDateMillis != null) {
+                        homeScreenViewModel.startISOtime =
+                            sdf.format(dtrpState.selectedStartDateMillis)
+                                .replaceRange(
+                                    11,
+                                    16,
+                                    "${hourcheck(homeScreenViewModel.startHour.value.toInt())}:00"
+                                )
+                    }
+
+                    if (dtrpState.selectedEndDateMillis == null && dtrpState.selectedStartDateMillis != null) {
                         homeScreenViewModel.endISOtime =
                             sdf.format(dtrpState.selectedStartDateMillis)
                                 .replaceRange(
@@ -116,6 +120,10 @@ fun TimeDialog(
                                     16,
                                     "${hourcheck(homeScreenViewModel.endHour.value.toInt())}:00"
                                 )
+                    } else if (dtrpState.selectedEndDateMillis == null && dtrpState.selectedStartDateMillis == null) {
+                        homeScreenViewModel.endHour = homeScreenViewModel.endHour
+                        homeScreenViewModel.startHour = homeScreenViewModel.startHour
+
                     } else {
                         homeScreenViewModel.endISOtime = sdf.format(dtrpState.selectedEndDateMillis)
                             .replaceRange(
@@ -211,7 +219,7 @@ fun TimeDialog(
                 DateRangePicker(
                     state = dtrpState, modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 390.dp),
+                        .heightIn(max = 400.dp),
                     showModeToggle = false,
                     colors = DatePickerColors(
                         time100,
@@ -238,50 +246,24 @@ fun TimeDialog(
                         time65,
                         time100,
                         time0,
-                        TextFieldColors(
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            TextSelectionColors(time100, time100),
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
-                            time100,
+                        TextFieldDefaults.colors(
+                            unfocusedTextColor = time0,
+                            unfocusedContainerColor = time100,
+                            focusedContainerColor = time100,
+                            focusedIndicatorColor = time35,
+                            unfocusedLabelColor = time0,
+                            unfocusedIndicatorColor = time0,
+                            unfocusedPlaceholderColor = time0,
+                            focusedTextColor = time0,
+                            focusedTrailingIconColor = time0,
+                            focusedLeadingIconColor = time0,
+                            focusedLabelColor = time35,
+                            cursorColor = time0,
+                            selectionColors = TextSelectionColors(time0, time0),
+                            errorContainerColor = time100,
+                            errorTextColor = time0
+
+
                         )
                     )
 
@@ -293,6 +275,7 @@ fun TimeDialog(
                     Spacer(modifier = Modifier.width(20.dp))
                     InputFiled(homeScreenViewModel, "End hour")
                 }
+                Spacer(modifier = Modifier.height(10.dp))
             }
 
         })
@@ -319,12 +302,14 @@ fun InputFiled(
     OutlinedTextField(
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = time0,
-            focusedBorderColor = time65,
+            focusedBorderColor = time35,
             cursorColor = time0,
-            focusedTrailingIconColor = time65,
+            focusedTrailingIconColor = time35,
             unfocusedLabelColor = time0,
-            focusedLabelColor = time65,
-        ),
+            focusedLabelColor = time35,
+            selectionColors = TextSelectionColors(time0, time0),
+
+            ),
         modifier = Modifier
             .width(90.dp)
             .height(90.dp),

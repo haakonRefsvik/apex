@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -60,6 +61,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     var endHour = mutableStateOf("")
     var startISOtime: String = ""
     var endISOtime: String = ""
+    val getWeatherHasBeenCalled = mutableStateOf(false)
 
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -152,19 +154,20 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             foreCastRep.loadWeather(lat, lon)
-            delay(100 )
+            delay(100)
             filterList()
             loading.value = false
+            getWeatherHasBeenCalled.value = true
         }
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
         foreCastRep.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = WeatherUiState()
-        )
+                viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = WeatherUiState()
+            )
 
     fun resetFilter() {
         checkedGreen.value = true
@@ -204,6 +207,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             yearRange = 2024..2024,
             initialSelectedStartDateMillis = initialSelectedStartDateMillis.value.timeInMillis,
             initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis,
+            initialDisplayMode = DisplayMode.Picker
+
         )
     )
 
