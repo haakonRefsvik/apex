@@ -223,7 +223,6 @@ fun Make3dtrajectory(
     detailsScreenViewModel: DetailsScreenViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     settingsViewModel: SettingsViewModel,
-    homeScreenViewModel: HomeScreenViewModel
 ) {
 
 
