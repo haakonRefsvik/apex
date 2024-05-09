@@ -14,6 +14,7 @@ import java.io.File
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.*
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.makeVerticalProfilesFromGrib
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.errorCheckSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getFirstSoilIndex
@@ -95,10 +96,11 @@ class WeatherRepository(
     /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     suspend fun loadWeather(lat: Double, lon: Double) {
         try {
+            val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
             val list = mutableListOf<WeatherAtPosHour>()
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
             val gribFiles: List<File> = loadGribFromDataSource()
-            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon)
+            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon, heightLimit)
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
             val soilIndex =
                 getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
@@ -159,13 +161,12 @@ class WeatherRepository(
 
     suspend fun loadFavoriteCard(lat: Double, lon: Double, desiredDate: String): WeatherAtPos {
         try {
+            val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
             val list = mutableListOf<WeatherAtPosHour>()
             val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
             val gribFiles: List<File> = loadGribFromDataSource()
             val allVerticalProfiles: List<VerticalProfile> =
-                makeVerticalProfilesFromGrib(gribFiles, lat, lon)
-            makeVerticalProfilesFromGrib(gribFiles, lat, lon)
-
+                makeVerticalProfilesFromGrib(gribFiles, lat, lon, heightLimit)
 
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
             val soilIndex =
@@ -222,48 +223,6 @@ class WeatherRepository(
 
         }
         return null
-    }
-
-    private suspend fun makeVerticalProfilesFromGrib(
-        gribFiles: List<File>,
-        lat: Double,
-        lon: Double
-    ): List<VerticalProfile> = coroutineScope {
-        val deferredList = mutableListOf<Deferred<VerticalProfile>>()
-        val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
-        try {
-            for (file in gribFiles) {
-                Log.d("gribThread", "Making verticalProfile on new thread up to ${settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE)} m")
-                val deferred = async(Dispatchers.IO) {
-                    VerticalProfile(
-                        heightLimitMeters = heightLimit,
-                        lat = lat, lon = lon,
-                        verticalProfileMap = getVerticalProfileMap(lat, lon, file, heightLimit),
-                        time = getTime(file)
-                    )
-                }
-                deferredList.add(deferred)
-                Log.d("gribThread", "Thread done")
-
-            }
-
-            deferredList.awaitAll()
-            Log.d("gribThread", "All threads done!")
-
-        } catch (e: Exception) {
-            Log.e(
-                "GribToVerticalProfile",
-                "Error occurred while processing vertical profiles, restarting...",
-                e
-            )
-        } finally {
-            for (deferred in deferredList) {
-                if (!deferred.isCompleted) {
-                    deferred.cancel()
-                }
-            }
-        }
-        return@coroutineScope deferredList.awaitAll<VerticalProfile>()
     }
 
     private suspend fun loadGribFromDataSource(): List<File> {

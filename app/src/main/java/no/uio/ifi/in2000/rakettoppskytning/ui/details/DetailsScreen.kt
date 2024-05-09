@@ -465,16 +465,17 @@ fun DetailsScreen(
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 
-                                    var info = "Moisture in the ground"
-
+                                    var info = "Could not get ground-moisture"
+                                    var value = "N/A"
                                     if (weatherNow.soilMoisture != null) {
                                         info = getSoilDescription(weatherNow.soilMoisture)
+                                        value = weatherNow.soilMoisture.toString()
                                     }
 
                                     WeatherCard(
                                         iconId = R.drawable.vann,
                                         desc = "Soil moisture",
-                                        value = "${weatherNow.soilMoisture} %",
+                                        value = "$value %",
                                         info = info,
                                         statusCode = getSoilScore(weatherNow.soilMoisture)
                                     )
@@ -488,7 +489,7 @@ fun DetailsScreen(
                                         iconId = R.drawable.cloudy,
                                         desc = "Cloud cover",
                                         value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
-                                        info = "Total cloud cover for all heights in"
+                                        info = "Total cloud cover for all heights in %"
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 

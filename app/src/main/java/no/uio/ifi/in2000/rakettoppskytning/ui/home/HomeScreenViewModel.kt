@@ -42,8 +42,8 @@ data class WeatherUiState(
 
 
 class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
-    private val foreCastRep = repo
-    private val gribRepo = foreCastRep.gribRepository
+    private val weatherRepo = repo
+    private val gribRepo = weatherRepo.gribRepository
     val loading = mutableStateOf(false)
     val checkedGreen = mutableStateOf(true)
     val checkedRed = mutableStateOf(true)
@@ -83,7 +83,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
     fun filterList() {
         hasBeenFiltered.value = true
-        foreCastRep.resetFilter()
+        weatherRepo.resetFilter()
 
         var weatherAtPos: List<WeatherAtPosHour> = if (checkedGreen.value && !checkedRed.value) {
             weatherUiState.value.weatherAtPos.weatherList.filter { it.closeToLimitScore < 1 }
@@ -143,7 +143,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
 
 
 
-        foreCastRep.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
+        weatherRepo.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
 
     }
 
@@ -151,7 +151,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         Log.d("getWeather", "apicall")
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            foreCastRep.loadWeather(lat, lon)
+            weatherRepo.loadWeather(lat, lon)
             delay(100 )
             filterList()
             loading.value = false
@@ -159,7 +159,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
-        foreCastRep.observeWeather()
+        weatherRepo.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
             started = SharingStarted.Eagerly,
@@ -176,7 +176,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     }
 
     fun resetList() {
-        foreCastRep.resetFilter()
+        weatherRepo.resetFilter()
     }
 
 
