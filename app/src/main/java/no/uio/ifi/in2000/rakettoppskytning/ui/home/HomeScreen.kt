@@ -29,11 +29,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
@@ -133,6 +135,8 @@ fun HomeScreen(
                     homeScreenViewModel
                 )
                 if (mapViewModel.makeTrajectory.value) {
+
+
                     Column {
                         FloatingActionButton(
                             modifier = Modifier

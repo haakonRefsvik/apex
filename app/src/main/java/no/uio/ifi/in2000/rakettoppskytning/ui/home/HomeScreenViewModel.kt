@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -206,6 +207,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             yearRange = 2024..2024,
             initialSelectedStartDateMillis = initialSelectedStartDateMillis.value.timeInMillis,
             initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis,
+            initialDisplayMode = DisplayMode.Picker
+
         )
     )
 

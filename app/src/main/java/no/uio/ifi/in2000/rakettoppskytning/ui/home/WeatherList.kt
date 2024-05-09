@@ -128,7 +128,7 @@ fun WeatherList(
         openTimeDialog.value -> {
             TimeDialog(
                 onDismissRequest = { openTimeDialog.value = false },
-                onConfirmation = { /*TODO*/ },
+                onConfirmation = { },
                 homeScreenViewModel = homeScreenViewModel
             )
         }
@@ -165,7 +165,7 @@ fun WeatherList(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                       
+
                         if (state.favorites.isNotEmpty()) {
                             Row(modifier = Modifier.width(340.dp)) {
                                 if (state.favorites.size == 1) {
