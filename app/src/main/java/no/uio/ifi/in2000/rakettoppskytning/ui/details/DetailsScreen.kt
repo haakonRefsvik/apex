@@ -82,12 +82,11 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontStyle
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
@@ -105,12 +104,10 @@ fun DetailsScreen(
     context: Context,
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit
 ) {
     val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
-    val isAddingFavorite by remember(state.isAddingFavorite) { mutableStateOf(state.isAddingFavorite) }
+    var isAddingFavorite by remember{ mutableStateOf(false) }
 
     val time: String = backStackEntry ?: ""
     detailsScreenViewModel.time.value = backStackEntry ?: ""
@@ -137,11 +134,13 @@ fun DetailsScreen(
 
     if (isAddingFavorite) {
         AddFavoriteLocationDialog(
-            state = state,
-            onEvent = onEvent,
+            homeScreenViewModel = homeScreenViewModel,
             lat = weatherAtPosHour.firstOrNull()!!.lat,
             lon = weatherAtPosHour.firstOrNull()!!.lon,
-            context,
+            context = context,
+            isAddingFavorite = isAddingFavorite,
+            onDismiss = { isAddingFavorite = false },
+
         )
     }
 
@@ -234,7 +233,7 @@ fun DetailsScreen(
                                     Toast.makeText(context, "Added card to favorites", duration)
                                 toast.show()
                                 scope.launch {
-                                    onEvent(FavoriteEvent.ShowDialog)
+                                    isAddingFavorite = true
                                 }
                             } else {
                                 favoriteCardViewModel.deleteFavoriteCard(

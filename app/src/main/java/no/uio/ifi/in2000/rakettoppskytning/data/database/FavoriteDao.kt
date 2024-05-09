@@ -12,10 +12,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 interface FavoriteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertFavorite(favorite: Favorite)
+    suspend fun insertFavorite(favorite: Favorite)
 
-    @Delete
-    suspend fun deleteFavorite(favorite: Favorite)
+    @Query("DELETE FROM favorite WHERE name = :name AND lat = :lat AND lon = :lon")
+    suspend fun deleteFavorite(name: String, lat: String, lon: String)
 
     @Query("SELECT * FROM favorite")
     fun getFavorites(): Flow<List<Favorite>>

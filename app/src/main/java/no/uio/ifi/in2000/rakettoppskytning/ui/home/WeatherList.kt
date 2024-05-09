@@ -59,8 +59,6 @@ import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
@@ -85,11 +83,10 @@ import kotlin.time.toDuration
 fun WeatherList(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
 ) {
     val forecast by homeScreenViewModel.weatherUiState.collectAsState()
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
     val openFilterDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
 
@@ -166,9 +163,9 @@ fun WeatherList(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        if (state.favorites.isNotEmpty()) {
+                        if (favoriteLocations.favorites.isNotEmpty()) {
                             Row(modifier = Modifier.width(340.dp)) {
-                                if (state.favorites.size == 1) {
+                                if (favoriteLocations.favorites.size == 1) {
                                     Text("Favorite location:", fontSize = 14.sp, color = main50)
 
                                 } else {
@@ -185,7 +182,7 @@ fun WeatherList(
                         )
                         {
 
-                            state.favorites.reversed().forEach { favorite ->
+                            favoriteLocations.favorites.reversed().forEach { favorite ->
                                 item {
                                     OutlinedCard(
                                         modifier = Modifier
@@ -250,12 +247,7 @@ fun WeatherList(
                                                     .size(30.dp)
                                                     .padding(end = 5.dp),
                                                     onClick = {
-                                                        onEvent(
-                                                            FavoriteEvent.DeleteFavorite(
-                                                                favorite
-                                                            )
-                                                        )
-
+                                                        homeScreenViewModel.deleteFavoriteLocation(favorite.name, favorite.lat, favorite.lon)
                                                     }) {
                                                     Icon(
                                                         imageVector = Icons.Default.Close,

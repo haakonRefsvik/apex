@@ -11,7 +11,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 
 @Database(
     entities = [Favorite::class, Thresholds::class, FavoriteCard::class, RocketSpecs::class],
-    version = 6
+    version = 7
 )
 abstract class AppDatabase: RoomDatabase() {
 

@@ -39,6 +39,8 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -62,8 +64,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
@@ -85,8 +85,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 fun InputField(
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     context: Context
 ) {
 
@@ -95,20 +93,28 @@ fun InputField(
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
 
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        homeScreenViewModel.getFavoriteLocations()
+    }
+
     val controller = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
-    val isAddingFavorite by remember(state.isAddingFavorite) { mutableStateOf(state.isAddingFavorite) }
 
+    var isAddingFavorite by remember{ mutableStateOf(false) }
 
     if (isAddingFavorite) {
+        Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
         AddFavoriteDialog(
-            state = state,
-            onEvent = onEvent,
+            homeScreenViewModel = homeScreenViewModel,
             lat = lat,
             lon = lon,
-            context
+            context = context,
+            isAddingFavorite = isAddingFavorite,
+            onDismiss = { isAddingFavorite = false }
         )
     }
 
@@ -213,7 +219,7 @@ fun InputField(
                     mapViewModel.lon.value = lon
                     mapViewModel.updateCamera(lat, lon)
                     scope.launch {
-                        onEvent(FavoriteEvent.ShowDialog)
+                        isAddingFavorite = true
                     }
 
                 }) {
