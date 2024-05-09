@@ -9,7 +9,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardScreen
@@ -24,14 +31,23 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(
-    homeScreenViewModel: HomeScreenViewModel,
-    mapViewModel: MapViewModel,
-    settingsViewModel: SettingsViewModel,
-    weatherRepo: WeatherRepository,
-    detailsScreenViewModel: DetailsScreenViewModel,
-    context: Context,
-    favoriteCardViewModel: FavoriteCardViewModel,
+    thresholdsDao: ThresholdsDao,
+    rocketSpecsDao: RocketSpecsDao,
+    favoriteCardDao: FavoriteCardDao,
+    favoriteDao: FavoriteDao,
+    context: Context
 ) {
+
+    val gribRepository = GribRepository()
+    val settingsRepository = SettingsRepository(thresholdsDao, rocketSpecsDao)
+    val weatherRepo = WeatherRepository(settingsRepository, gribRepository)
+    val favoriteCardRepository = FavoriteCardRepository(favoriteCardDao, favoriteDao)
+
+    val homeScreenViewModel = HomeScreenViewModel(weatherRepo, favoriteCardRepository)
+    val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
+    val settingsViewModel = SettingsViewModel(settingsRepository)
+    val favoriteCardViewModel = FavoriteCardViewModel(weatherRepo, favoriteCardRepository)
+    val mapViewModel = MapViewModel()
 
     val navController = rememberNavController()
 

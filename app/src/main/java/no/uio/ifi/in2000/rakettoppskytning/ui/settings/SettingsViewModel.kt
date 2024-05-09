@@ -101,7 +101,16 @@ class SettingsViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RocketSpecState())
 
     fun getRocketSpec(): RocketSpecState {
-        return rocketspecsState.value
+        return RocketSpecState(
+            apogee = rocketSpecMutableStates[RocketSpecType.APOGEE.ordinal].doubleValue.toString(),
+            launchAngle = rocketSpecMutableStates[RocketSpecType.LAUNCH_ANGLE.ordinal].doubleValue.toString(),
+            launchDirection = rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue.toString(),
+            thrust = rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal].doubleValue.toString(),
+            burntime = rocketSpecMutableStates[RocketSpecType.BURN_TIME.ordinal].doubleValue.toString(),
+            dryWeight = rocketSpecMutableStates[RocketSpecType.DRY_WEIGHT.ordinal].doubleValue.toString(),
+            wetWeight = rocketSpecMutableStates[RocketSpecType.WET_WEIGHT.ordinal].doubleValue.toString(),
+            resolution = rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal].doubleValue.toString(),
+        )
     }
 
 }
