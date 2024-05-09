@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
         object : ViewModelProvider.Factory {
 
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SettingsViewModel(settingsRepository, db.thresholdsDao, db.rocketSpecsDao) as T
+                return SettingsViewModel(settingsRepository) as T
             }
         }
     }

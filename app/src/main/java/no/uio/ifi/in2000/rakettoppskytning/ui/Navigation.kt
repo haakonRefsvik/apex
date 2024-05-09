@@ -10,11 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardScreen
