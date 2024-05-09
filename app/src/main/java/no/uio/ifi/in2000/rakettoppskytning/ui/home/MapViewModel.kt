@@ -46,7 +46,7 @@ class MapViewModel() : ViewModel() {
     val airSpaceUiState: StateFlow<AirSpaceList> =
         _airSpaceRepo.observeAirSpace().map { it }.stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = AirSpaceList(listOf())
         )
 

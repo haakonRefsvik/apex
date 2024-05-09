@@ -33,6 +33,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -299,6 +300,16 @@ fun SettingsScreen(
                             suffix = "%",
                         )
 
+                    }
+                    item {
+                        Switch(
+                            checked = settingsViewModel.ippcOnMap.value,
+                            onCheckedChange = {
+                                mapViewModel.getAirspace()
+                                settingsViewModel.ippcOnMap.value =
+                                    !settingsViewModel.ippcOnMap.value
+                            }
+                        )
                     }
 
                 } else {

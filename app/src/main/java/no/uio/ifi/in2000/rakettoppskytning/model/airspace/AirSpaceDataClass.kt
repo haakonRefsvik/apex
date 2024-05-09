@@ -1,6 +1,7 @@
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+data class AirSpaceList(val list: List<AirSpace>)
 
 @Serializable
 data class Geometry(
@@ -19,27 +20,26 @@ data class Properties(
     @SerialName("from (fl)")
     val fromFl: String? = null,
     @SerialName("from (ft amsl)")
-    val fromFtAmsl: String? = null,
+    val fromFtAmsl: Double? = null, //Any
     @SerialName("from (m amsl)")
-    val fromMAmsl: Int? = null,
+    val fromMAmsl: Double? = null, //Any
     val name: String,
     @SerialName("source_href")
     val sourceHref: String,
     @SerialName("to (fl)")
     val toFl: String? = null,
     @SerialName("to (ft amsl)")
-    val toFtAmsl: Int? = null,
+    val toFtAmsl: Double? = null, //Any
     @SerialName("to (m amsl)")
-    val mAmsl: Int? = null,
+    val toMAmsl: Double? = null, //Any
     val opacity: Double? = null,
     val frequency: String? = null,
     @SerialName("notam_only")
     val notamOnly: String? = null,
-
-    )
+)
 
 @Serializable
-data class Feature(
+data class feature(
     val type: String,
     val properties: Properties,
     val geometry: Geometry
@@ -48,9 +48,5 @@ data class Feature(
 @Serializable
 data class AirSpace(
     val type: String,
-    val features: List<Feature>
-)
-
-data class AirSpaceList(
-    val list: List<AirSpace>
+    val features: List<feature>
 )

@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -35,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEachReversed
 import androidx.lifecycle.viewModelScope
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -68,6 +70,7 @@ import com.mapbox.maps.viewannotation.geometry
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
@@ -132,6 +135,7 @@ fun Map(
     settingsViewModel: SettingsViewModel,
     homeScreenViewModel: HomeScreenViewModel
 ) {
+    val airSpace by mapViewModel.airSpaceUiState.collectAsState()
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
     val cameraOptions by mapViewModel.cameraOptions
@@ -153,40 +157,55 @@ fun Map(
                 settingsViewModel
             )
         } else if (settingsViewModel.ippcOnMap.value) {
+            MapEffect() { mapView ->
+                mapView.mapboxMap.apply {
 
-//            val LAYER_ID = "layer-id"
-//            val SOURCE_ID = "source-id"
-//            val TOP_LAYER_ID = "line-layer"
-//            val SETTLEMENT_LABEL = "settlement-major-label"
-//            val SOURCE_URL =
-//                "https://raw.githubusercontent.com/relet/pg-xc/master/geojson/luftrom.geojson"
-//            MapEffect() { mapView ->
-//                mapView.mapboxMap.apply {
-//
-//                    loadStyle(
-//                        style(Style.OUTDOORS) {
-//                            +geoJsonSource(SOURCE_ID) {
-//                                data(SOURCE_URL)
-//                            }
-//                            +layerAtPosition(
-//                                fillLayer(LAYER_ID, SOURCE_ID) {
-//                                    fillColor(Color.parseColor("#0080ff")).fillOpacity(0.7)
-//                                },
-//                                below = SETTLEMENT_LABEL
-//                            )
-//                            +lineLayer(
-//                                TOP_LAYER_ID, SOURCE_ID
-//                            ) {
-//
-//                                lineWidth(.5)
-//                            }
-//                        })
-//                }
-//            }
-            val airSpace by mapViewModel.airSpaceUiState.collectAsState()
-            mapViewModel.getAirspace()
+                    loadStyle(
+                        style(Style.OUTDOORS) {
+                        })
+                }
+            }
+            airSpace.list.forEach {
+                Log.d("whats2", it.features.size.toString())
 
-            Log.d("Heisann", airSpace.list.first().toString())
+                it.features.forEach Break@{ what ->
+                    val points = mutableListOf<Point>()
+
+                    what.geometry.coordinates.forEach { coordinates ->
+
+
+                        coordinates.forEach { asd ->
+                            if (asd.last() >= 64.0) {
+                                return@Break
+                            }
+
+                            points.add(
+                                Point.fromLngLat(asd.first(), asd.last())
+                            )
+                            Log.d("Ehhhm", coordinates.toString())
+
+
+                        }
+
+
+                    }
+                    PolygonAnnotation(
+                        points = listOf(points),
+                        fillColorInt = Color.parseColor(what.properties.color),
+                        fillOpacity = what.properties.fillOpacity * 2.5,
+                        onClick = {
+                            Log.d("Clicked on", what.properties.name)
+                            true
+                        }
+                    )
+
+
+                }
+
+
+            }
+
+
         } else {
             NewPointAnnotation(
                 "",

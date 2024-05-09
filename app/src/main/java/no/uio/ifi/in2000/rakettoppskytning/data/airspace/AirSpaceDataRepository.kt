@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.data.airspace
 
 import AirSpace
 import AirSpaceList
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +15,8 @@ class AirSpaceDataRepository {
 
     suspend fun loadAirSpace() {
         val space = getAirspace()
+
         _airSpaceRe.update { space }
+
     }
 }
