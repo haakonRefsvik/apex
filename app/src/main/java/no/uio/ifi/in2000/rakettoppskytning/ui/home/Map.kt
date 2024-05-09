@@ -35,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -151,8 +152,8 @@ fun Map(
                 homeScreenViewModel,
                 settingsViewModel
             )
-        }
-//        else if (settingsViewModel.ippcOnMap.value) {
+        } else if (settingsViewModel.ippcOnMap.value) {
+
 //            val LAYER_ID = "layer-id"
 //            val SOURCE_ID = "source-id"
 //            val TOP_LAYER_ID = "line-layer"
@@ -182,8 +183,11 @@ fun Map(
 //                        })
 //                }
 //            }
-//        }
-        else {
+            val airSpace by mapViewModel.airSpaceUiState.collectAsState()
+            mapViewModel.getAirspace()
+
+            Log.d("Heisann", airSpace.list.first().toString())
+        } else {
             NewPointAnnotation(
                 "",
                 lat = lat,
