@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
@@ -28,15 +30,16 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
-fun Navigation(
-    thresholdsDao: ThresholdsDao,
-    rocketSpecsDao: RocketSpecsDao,
-    favoriteCardDao: FavoriteCardDao,
-    favoriteDao: FavoriteDao,
-    context: Context
-) {
+fun Navigation( context: MainActivity) {
+
+    val db = AppDatabase.getInstance(context)
+
+    val thresholdsDao = db.thresholdsDao
+    val rocketSpecsDao = db.rocketSpecsDao
+    val favoriteCardDao = db.favoriteCardDao
+    val favoriteDao = db.favoriteDao
 
     val gribRepository = GribRepository()
     val settingsRepository = SettingsRepository(thresholdsDao, rocketSpecsDao)

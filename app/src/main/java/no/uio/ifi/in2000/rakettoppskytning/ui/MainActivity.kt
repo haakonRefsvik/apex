@@ -44,61 +44,8 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     val context = this;
 
-    /*
-    private lateinit var db: AppDatabase // Change to lateinit var
-
-    private lateinit var settingsRepository: SettingsRepository // Change to lateinit var
-    private val gribRepository = GribRepository()
-    private lateinit var favoriteCardRepository: FavoriteCardRepository
-
-    private val weatherRepo: WeatherRepository by lazy {
-        WeatherRepository(settingsRepository, gribRepository)
-    }
-
-    private val detailsScreenViewModel by lazy {
-        DetailsScreenViewModel(weatherRepo)
-    }
-
-    //val homeScreenViewModel = HomeScreenViewModel(weatherRepo)
-    private val mapViewModel by lazy {
-        MapViewModel()
-    }
-
-    private val settingsViewModel by viewModels<SettingsViewModel> {
-        object : ViewModelProvider.Factory {
-
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SettingsViewModel(settingsRepository) as T
-            }
-        }
-    }
-
-    private val viewModel by viewModels<HomeScreenViewModel> {
-        object : ViewModelProvider.Factory {
-
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeScreenViewModel(weatherRepo, favoriteCardRepository) as T
-            }
-        }
-    }
-
-    private val favoriteCardViewModel by viewModels<FavoriteCardViewModel> {
-        object : ViewModelProvider.Factory {
-
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return FavoriteCardViewModel(weatherRepo, favoriteCardRepository) as T
-            }
-        }
-    }
-
-     */
-
-    private lateinit var db: AppDatabase
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
-
-
 
     override fun onStart() {
         super.onStart()
@@ -110,14 +57,8 @@ class MainActivity : ComponentActivity() {
         connectivityManager.unregisterConnectionObserver(this)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Initialize db and thresholdRepository after context is available
-        db = AppDatabase.getInstance(this)
-        //settingsRepository = SettingsRepository(db.thresholdsDao, db.rocketSpecsDao)
-        //favoriteCardRepository = FavoriteCardRepository(db.favoriteCardDao, db.favoriteDao)
 
         ApiKeyHolder.in2000ProxyKey = resources.getString(R.string.in2000ProxyKey)
 
@@ -127,21 +68,14 @@ class MainActivity : ComponentActivity() {
             RakettoppskytningTheme {
                 // A surface container using the 'background' color from the theme
 
-
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    Navigation(
-                        thresholdsDao = db.thresholdsDao,
-                        rocketSpecsDao = db.rocketSpecsDao,
-                        favoriteCardDao = db.favoriteCardDao,
-                        favoriteDao = db.favoriteDao,
-                        context = context
-                    )
-                    val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
+                    Navigation(context = context)
 
+                    val isNetworkAvailable = connectivityManager.isNetworkAvailable.value
 
                     // Conditional display of NetworkSnackbar only when the network is unavailable
                     if (!isNetworkAvailable) {
