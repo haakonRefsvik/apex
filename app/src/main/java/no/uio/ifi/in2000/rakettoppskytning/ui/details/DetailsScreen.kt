@@ -81,6 +81,7 @@ import kotlin.time.toDuration
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.font.FontStyle
@@ -301,8 +302,16 @@ fun DetailsScreen(
                                 scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                                 navController.popBackStack("HomeScreen", false)
                             }
-                        ) {
+                        ){
+                            if(mapViewModel.makeTrajectory.value && mapViewModel.trajectory.value.isEmpty()){
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(15.dp),
+                                    strokeWidth = 3.dp,
+                                    color = main100
+                                )
+                            }
 
+                            Spacer(modifier = Modifier.width(15.dp))
                             Text("Calculate ballistic trajectory")
                         }
                         if (weatherNow.verticalProfile == null) {
