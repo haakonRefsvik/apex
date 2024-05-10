@@ -4,6 +4,13 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,13 +54,13 @@ fun Navigation( context: MainActivity) {
     val favoriteCardRepository = FavoriteCardRepository(favoriteCardDao, favoriteDao)
 
     val homeScreenViewModel = HomeScreenViewModel(weatherRepo, favoriteCardRepository)
+    homeScreenViewModel.initialize()
     val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
     val settingsViewModel = SettingsViewModel(settingsRepository)
     val favoriteCardViewModel = FavoriteCardViewModel(weatherRepo, favoriteCardRepository)
     val mapViewModel = MapViewModel()
 
     val navController = rememberNavController()
-
 
     NavHost(navController = navController, startDestination = "HomeScreen") {
         composable("HomeScreen") {

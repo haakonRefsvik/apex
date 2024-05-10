@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.util.Log
+import androidx.annotation.MainThread
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
@@ -10,8 +11,11 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +47,8 @@ data class FavoriteLocationUiState(
     val favorites: List<Favorite> = emptyList()
 )
 
+var isInitialized = mutableStateOf(false)
+
 class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     private val weatherRepo = repo
     private val gribRepo = weatherRepo.gribRepository
@@ -63,7 +69,6 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     var startISOtime: String = ""
     var endISOtime: String = ""
     val getWeatherHasBeenCalled = mutableStateOf(false)
-
 
     @OptIn(ExperimentalMaterial3Api::class)
     val scaffold = BottomSheetScaffoldState(
@@ -183,8 +188,9 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         weatherRepo.resetFilter()
     }
 
-
-    init {
+    fun initialize() {
+        if(isInitialized.value) return
+        isInitialized.value = true
         initialSelectedStartDateMillis.value.time = Date()
         initialSelectedEndDateMillis.value.time = Date()
         initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
@@ -196,6 +202,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         startHour.value = startISOtime.substring(11, 13)
         endHour.value = startISOtime.substring(11, 13)
         Log.d("starthour", "${startHour.value} ${endHour.value}")
+
         viewModelScope.launch {
             gribRepo.loadGribFiles()
         }

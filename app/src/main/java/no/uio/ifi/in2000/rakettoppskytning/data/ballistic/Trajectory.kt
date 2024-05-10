@@ -146,7 +146,7 @@ fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double, rho: Double
                 low.getTemperatureCelsius(),
                 upp.getTemperatureCelsius()))
     }catch (e: Exception){
-        rho
+        rho     // return just the standard air-density if anything fails
     }
 
 }
