@@ -1,6 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.settings
 
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
 import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
@@ -13,20 +13,19 @@ import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecValues
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdValues
 
-class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDao: RocketSpecsDao) {
+class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val rocketSpecsDao: RocketSpecsDao) {
     private val thresholds: ThresholdValues = runBlocking { getThresholdValues(thresholdsDao) }
     private val rocketSpecs: RocketSpecValues = runBlocking { getRocketSpecValues(rocketSpecsDao) }
 
-    suspend fun updateThresholdValues(map: HashMap<String, Double>, thresholdsDao: ThresholdsDao){
+    suspend fun updateThresholdValues(map: HashMap<String, Double>){
         thresholds.valueMap = map
         thresholdsDao.updateThreshold(
             mapToDatabaseObject(thresholds)
         )
     }
 
-    suspend fun updateRocketSpecValues(map: HashMap<String, Double>, rocketSpecsDao: RocketSpecsDao){
+    suspend fun updateRocketSpecValues(map: HashMap<String, Double>){
         rocketSpecs.valueMap = map
-
         rocketSpecsDao.updateRocketSpecs(
             mapToDatabaseObject(rocketSpecs)
         )
@@ -109,6 +108,13 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, rocketSpecsDa
         }
 
         return sum/map.size
+    }
+
+    fun getRocketSpecValuesFromRepo(): Flow<RocketSpecs?> {
+        return rocketSpecsDao.getRocketSpecsById(1)
+    }
+    fun getThresholdValuesFromRepo(): Flow<Thresholds?> {
+        return thresholdsDao.getThresholdById(1)
     }
 }
 /**

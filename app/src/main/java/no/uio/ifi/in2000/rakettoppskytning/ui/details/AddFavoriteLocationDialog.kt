@@ -2,34 +2,41 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogCorrect
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogError
 
 @Composable
 fun AddFavoriteLocationDialog(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
+    homeScreenViewModel: HomeScreenViewModel,
     lat: Double,
     lon: Double,
-    context: Context
+    context: Context,
+    isAddingFavorite: Boolean,
+    onDismiss: () -> Unit,
 ) {
 
+    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
+
     val isLocationFavorited =
-        state.favorites.any { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
+        favoriteLocations.favorites.any { it.lat.toDouble() == lat && it.lon.toDouble() == lon }
 
     if (!isLocationFavorited) {
         AddFavoriteDialogCorrect(
-            state = state,
-            onEvent = onEvent,
+            homeScreenViewModel = homeScreenViewModel,
             lat = lat,
             lon = lon,
             context = context,
+            isAddingFavorite = isAddingFavorite,
+            onDismiss = onDismiss,
             displayText = "This location does not have a name. Do you want to give it a name?",
             dismissText = "No"
         )
     }
     else{
-        onEvent(FavoriteEvent.HideDialog)
+        onDismiss()
     }
 }
+

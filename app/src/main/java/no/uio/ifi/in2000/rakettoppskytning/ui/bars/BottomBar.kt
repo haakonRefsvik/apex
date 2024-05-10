@@ -68,16 +68,19 @@ fun BottomBar(
             IconButton(
                 modifier = Modifier
                     .sizeIn(maxWidth = 38.dp),
-                onClick = { navController.navigate(Routes.favCards)
-            }) {
+                onClick = {
+                    if (currentScreen != Routes.favCards) {
+                        navController.navigate(Routes.favCards)
+                    }
+                }) {
                 Icon(
                     Icons.Default.Favorite,
                     modifier = Modifier.fillMaxSize(),
                     contentDescription = "Favorite",
                     tint =
-                    if(currentScreen == Routes.favCards){
-                        main0}
-                    else {
+                    if (currentScreen == Routes.favCards) {
+                        main0
+                    } else {
                         secondButton0
                     },
                 )
@@ -85,34 +88,43 @@ fun BottomBar(
             }
 
             IconButton(onClick = {
-                navController.navigate(Routes.home)
-                scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                if (currentScreen != Routes.home) {
+                    navController.popBackStack(Routes.home, false)
+                    scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                } else {
+                    scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                }
+
             }) {
                 Icon(
                     Icons.Sharp.LocationOn,
                     modifier = Modifier.size(40.dp),
                     contentDescription = "Location",
                     tint =
-                    if(currentScreen == Routes.home){
-                        main0}
-                    else {
+                    if (currentScreen == Routes.home) {
+                        main0
+                    } else {
                         secondButton0
                     }
                 )
             }
 
-            IconButton(onClick = { navController.navigate(Routes.settings) }) {
+            IconButton(onClick = {
+                if (currentScreen != Routes.settings) {
+                    navController.navigate(Routes.settings)
+                }
+            }) {
                 Icon(
                     Icons.Sharp.Settings,
                     modifier = Modifier
                         .size(40.dp),
                     contentDescription = "Settings",
                     tint =
-                        if(currentScreen == Routes.settings){
-                            main0}
-                        else {
-                            secondButton0
-                        }
+                    if (currentScreen == Routes.settings) {
+                        main0
+                    } else {
+                        secondButton0
+                    }
                 )
             }
         }

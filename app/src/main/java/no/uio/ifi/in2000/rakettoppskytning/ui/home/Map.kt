@@ -69,7 +69,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
@@ -223,9 +222,8 @@ fun Make3dtrajectory(
     detailsScreenViewModel: DetailsScreenViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     settingsViewModel: SettingsViewModel,
-) {
 
-
+    ) {
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
     val MODEL_ID_KEY = "model-id-key"

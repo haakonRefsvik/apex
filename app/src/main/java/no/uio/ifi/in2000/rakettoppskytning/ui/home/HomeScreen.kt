@@ -29,14 +29,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopAppBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
@@ -52,8 +52,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 fun HomeScreen(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel,
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel,
     detailsScreenViewModel: DetailsScreenViewModel,
@@ -101,8 +99,6 @@ fun HomeScreen(
                             InputField(
                                 homeScreenViewModel = homeScreenViewModel,
                                 mapViewModel,
-                                state,
-                                onEvent,
                                 context = context
                             )
 
@@ -117,6 +113,7 @@ fun HomeScreen(
                                 WeatherList(
                                     homeScreenViewModel = homeScreenViewModel,
                                     navController = navController,
+                                    mapViewModel = mapViewModel,
                                 )
 
                             }
@@ -130,6 +127,8 @@ fun HomeScreen(
                     homeScreenViewModel
                 )
                 if (mapViewModel.makeTrajectory.value) {
+
+
                     Column {
                         FloatingActionButton(
                             modifier = Modifier

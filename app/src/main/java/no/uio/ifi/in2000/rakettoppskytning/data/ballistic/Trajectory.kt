@@ -10,7 +10,13 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Point(val x: Double, val y: Double, val z: Double, private val timeS: Double, val parachuted: Boolean = false) {
+class Point(
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    val timeS: Double,
+    val parachuted: Boolean = false
+) {
     override fun toString(): String {
         return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeS.toInt()}, parachuted: $parachuted)"
     }
@@ -18,10 +24,10 @@ class Point(val x: Double, val y: Double, val z: Double, private val timeS: Doub
 
 /**Considered alt(itude) is between lower and upperlayer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
-fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>?{
+fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>? {
     val altBetweenLayers = upperAlt - lowerAlt
 
-    if(alt > upperAlt || alt < lowerAlt){
+    if (alt > upperAlt || alt < lowerAlt) {
         return null
     }
 
@@ -31,7 +37,14 @@ fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Doubl
     return Pair(1 - p1, p1)
 }
 
-fun getSigmoidRatios(lowerAlt: Double, upperAlt: Double, alt: Double, steepness: Double = 0.01): Pair<Double, Double>? {
+
+fun getSigmoidRatios(
+    lowerAlt: Double,
+    upperAlt: Double,
+    alt: Double,
+    steepness: Double = 0.01
+): Pair<Double, Double>? {
+    val altBetweenLayers = upperAlt - lowerAlt
 
     if (alt > upperAlt || alt < lowerAlt) {
         return null
@@ -62,21 +75,21 @@ fun getSigmoidRatios(lowerAlt: Double, upperAlt: Double, alt: Double, steepness:
     return Pair(lowerRatio, upperRatio)
 }
 
-fun mergeLevelData(ratios: Pair<Double, Double>, lowerData: Double, upperData: Double): Double{
+fun mergeLevelData(ratios: Pair<Double, Double>, lowerData: Double, upperData: Double): Double {
     return (ratios.first * lowerData) + (ratios.second * upperData)
 }
 
-fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<LevelData, LevelData>?{
+fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<LevelData, LevelData>? {
     val sortedLevels = allLevels.sortedByDescending { it.pressurePascal }
 
     sortedLevels.forEachIndexed { index, _ ->
         val l = sortedLevels[index]
-        if(index == sortedLevels.lastIndex){
+        if (index == sortedLevels.lastIndex) {
             return Pair(l, l)
         }
         val u = sortedLevels[index + 1]
 
-        if (l.getLevelHeightInMeters() <= altitude && altitude <= u.getLevelHeightInMeters() ) {
+        if (l.getLevelHeightInMeters() <= altitude && altitude <= u.getLevelHeightInMeters()) {
             return Pair(l, u)
         }
     }
@@ -86,13 +99,14 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
 
 fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData{
     var nearest: LevelData = allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
+
     var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
 
     allLevels.forEach {
         val levelAlt = it.getLevelHeightInMeters()
         val d = abs(levelAlt - altitudeMeters)
 
-        if(d < nearestAlt){
+        if (d < nearestAlt) {
             nearest = it
             nearestAlt = d
         }
@@ -164,6 +178,7 @@ fun simulateTrajectory(
     allLevels: List<LevelData>,
     vAfterParachute: Double = 8.6
 ): List<Point>{
+
     val g = 9.81
     var rho = 1.225
     val cd = 0.5
@@ -190,7 +205,7 @@ fun simulateTrajectory(
     var ay: Double
     var az: Double
 
-    val list= mutableListOf<Point>()
+    val list = mutableListOf<Point>()
 
     var xWind = 0.0
     var yWind = 0.0

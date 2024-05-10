@@ -9,14 +9,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
+import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecsEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdsEvent
+import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardScreen
@@ -28,19 +30,27 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
-fun Navigation(
-    state: FavoriteState,
-    onEvent: (FavoriteEvent) -> Unit,
-    homeScreenViewModel: HomeScreenViewModel,
-    mapViewModel: MapViewModel,
-    settingsViewModel: SettingsViewModel,
-    weatherRepo: WeatherRepository,
-    detailsScreenViewModel: DetailsScreenViewModel,
-    context: Context,
-    favoriteCardViewModel: FavoriteCardViewModel,
-) {
+fun Navigation( context: MainActivity) {
+
+    val db = AppDatabase.getInstance(context)
+
+    val thresholdsDao = db.thresholdsDao
+    val rocketSpecsDao = db.rocketSpecsDao
+    val favoriteCardDao = db.favoriteCardDao
+    val favoriteDao = db.favoriteDao
+
+    val gribRepository = GribRepository()
+    val settingsRepository = SettingsRepository(thresholdsDao, rocketSpecsDao)
+    val weatherRepo = WeatherRepository(settingsRepository, gribRepository)
+    val favoriteCardRepository = FavoriteCardRepository(favoriteCardDao, favoriteDao)
+
+    val homeScreenViewModel = HomeScreenViewModel(weatherRepo, favoriteCardRepository)
+    val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
+    val settingsViewModel = SettingsViewModel(settingsRepository)
+    val favoriteCardViewModel = FavoriteCardViewModel(weatherRepo, favoriteCardRepository)
+    val mapViewModel = MapViewModel()
 
     val navController = rememberNavController()
 
@@ -50,8 +60,6 @@ fun Navigation(
             HomeScreen(
                 navController,
                 homeScreenViewModel = homeScreenViewModel,
-                state,
-                onEvent,
                 mapViewModel,
                 settingsViewModel,
                 detailsScreenViewModel,
@@ -72,8 +80,6 @@ fun Navigation(
                     context = context,
                     homeScreenViewModel = homeScreenViewModel,
                     mapViewModel = mapViewModel,
-                    onEvent = onEvent,
-                    state = state
                 )
             }
         }

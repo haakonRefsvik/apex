@@ -39,7 +39,6 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
-
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -363,7 +362,8 @@ fun SettingsScreen(
                         )
                     }
                     item {
-                        val deg = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue
+                        val deg =
+                            settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue
                         val string = findClosestDegree(deg)
 
 
@@ -428,7 +428,7 @@ fun SettingsScreen(
                             lowestInput = 0.0
                         )
                     }
-                    item{
+                    item {
                         SliderCard(settingsViewModel)
                     }
                 }
@@ -442,7 +442,7 @@ fun SettingsScreen(
                 settingsViewModel.updateThresholdValues()     // update values in thresholdRepo
                 settingsViewModel.updateRocketSpecValues()
                 weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
-                if(mapViewModel.makeTrajectory.value){
+                if (mapViewModel.makeTrajectory.value) {
                     mapViewModel.deleteTrajectory()
                 }
             }
@@ -451,8 +451,9 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SliderCard(settingsViewModel: SettingsViewModel){
-    val sliderPosition = settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal]
+fun SliderCard(settingsViewModel: SettingsViewModel) {
+    val sliderPosition =
+        settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal]
 
     Row(
         modifier = Modifier
@@ -488,7 +489,7 @@ fun SliderCard(settingsViewModel: SettingsViewModel){
 
         }
         Spacer(modifier = Modifier.width(10.dp))
-        Column(modifier = Modifier.width(150.dp)){
+        Column(modifier = Modifier.width(150.dp)) {
             Slider(
                 value = sliderPosition.doubleValue.toFloat(),
                 onValueChange = { sliderPosition.doubleValue = it.toDouble() },
@@ -611,7 +612,7 @@ fun SettingsCard(
 
 }
 
-fun findPointSuffix(res: Int): String{
+fun findPointSuffix(res: Int): String {
     val result = when {
         res == 1 -> ""
         res == 2 -> "2nd "
@@ -621,7 +622,7 @@ fun findPointSuffix(res: Int): String{
     return result
 }
 
-fun findPerformance(res: Int): String{
+fun findPerformance(res: Int): String {
     val result = when {
         res <= 2 -> "Low performance"
         res in 3..6 -> "Medium performace"
@@ -644,7 +645,7 @@ fun findClosestDegree(degree: Double): String {
             Pair(270.0, "West"),
             Pair(315.0, "North-West"),
             Pair(360.0, "North"),
-            )
+        )
 
     var closestString = ""
     var shortestDistance = Double.MAX_VALUE
@@ -657,7 +658,7 @@ fun findClosestDegree(degree: Double): String {
         }
     }
 
-    if(shortestDistance != 0.0){
+    if (shortestDistance != 0.0) {
         return "$closestString (ish)"
     }
 

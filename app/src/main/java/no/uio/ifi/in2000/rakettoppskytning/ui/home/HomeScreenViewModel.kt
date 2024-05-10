@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -24,10 +25,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteEvent
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteState
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
@@ -39,11 +39,13 @@ import java.util.Date
 data class WeatherUiState(
     val weatherAtPos: WeatherData = WeatherAtPos()
 )
+data class FavoriteLocationUiState(
+    val favorites: List<Favorite> = emptyList()
+)
 
-
-class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao) : ViewModel() {
-    private val weatherRepo = repo
-    private val gribRepo = weatherRepo.gribRepository
+class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
+    private val foreCastRep = repo
+    private val gribRepo = foreCastRep.gribRepository
     val loading = mutableStateOf(false)
     val checkedGreen = mutableStateOf(true)
     val checkedRed = mutableStateOf(true)
@@ -60,6 +62,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
     var endHour = mutableStateOf("")
     var startISOtime: String = ""
     var endISOtime: String = ""
+    val getWeatherHasBeenCalled = mutableStateOf(false)
 
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -151,20 +154,21 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
         Log.d("getWeather", "apicall")
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            weatherRepo.loadWeather(lat, lon)
-            delay(100 )
+            foreCastRep.loadWeather(lat, lon)
+            delay(100)
             filterList()
             loading.value = false
+            getWeatherHasBeenCalled.value = true
         }
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
         weatherRepo.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = WeatherUiState()
-        )
+                viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = WeatherUiState()
+            )
 
     fun resetFilter() {
         checkedGreen.value = true
@@ -204,98 +208,40 @@ class HomeScreenViewModel(repo: WeatherRepository, private val dao: FavoriteDao)
             yearRange = 2024..2024,
             initialSelectedStartDateMillis = initialSelectedStartDateMillis.value.timeInMillis,
             initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis,
+            initialDisplayMode = DisplayMode.Picker
+
         )
     )
-
-    private val _favorites =
-        dao.getFavorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
-
-    private val _state = MutableStateFlow(FavoriteState())
-    val state = combine(_state, _favorites) { state, favorites ->
-        state.copy(
-            favorites = favorites
+    val favoriteUiState: StateFlow<FavoriteLocationUiState> =
+        favoriteRepo.observeFavoriteLocations().map {
+            FavoriteLocationUiState(
+                favorites = it
+            )
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = FavoriteLocationUiState()
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FavoriteState())
-
-    fun onEvent(event: FavoriteEvent) {
-        when (event) {
-            is FavoriteEvent.DeleteFavorite -> {
-                viewModelScope.launch {
-                    dao.deleteFavorite(event.favorite)
-                }
-            }
-
-            FavoriteEvent.HideDialog -> {
-                _state.update {
-                    it.copy(
-                        isAddingFavorite = false,
-                        name = "",
-                        lat = "",
-                        lon = ""
-                    )
-                }
-            }
-
-            FavoriteEvent.SaveFavorite -> {
-                val name = state.value.name
-                val lat = state.value.lat
-                val lon = state.value.lon
-
-                if (name.isBlank() || lat.isBlank() || lon.isBlank()) {
-                    return
-                }
-
-                val favorite = Favorite(
-                    name = name,
-                    lat = lat,
-                    lon = lon
-                )
-                viewModelScope.launch {
-                    dao.upsertFavorite(favorite)
-                }
-                _state.update {
-                    it.copy(
-                        isAddingFavorite = false,
-                        name = "",
-                        lat = "",
-                        lon = ""
-                    )
-                }
-            }
-
-            is FavoriteEvent.SetName -> {
-                _state.update {
-                    it.copy(
-                        name = event.name
-                    )
-                }
-            }
-
-            is FavoriteEvent.SetLat -> {
-                _state.update {
-                    it.copy(
-                        lat = event.lat
-                    )
-                }
-            }
-
-            is FavoriteEvent.SetLon -> {
-                _state.update {
-                    it.copy(
-                        lon = event.lon
-                    )
-                }
-            }
-
-            is FavoriteEvent.ShowDialog -> {
-                _state.update {
-                    it.copy(
-                        isAddingFavorite = true
-                    )
-                }
-            }
+    fun addFavorite(name: String, lat: String, lon: String) {
+        viewModelScope.launch {
+            favoriteRepo.insertFavoriteLocation(name, lat, lon)
         }
     }
 
+    fun getFavoriteLocations() {
+        try {
+            viewModelScope.launch {
+                favoriteRepo.getFavoriteLocation()
+            }
+        } catch (e: Exception) {
+            Log.d("FavoriteLocation", e.stackTraceToString())
+        }
+    }
+
+    fun deleteFavoriteLocation(name: String, lat: String, lon: String) {
+        viewModelScope.launch {
+            favoriteRepo.deleteFavoriteLocation(name, lat, lon)
+        }
+    }
 
 }
