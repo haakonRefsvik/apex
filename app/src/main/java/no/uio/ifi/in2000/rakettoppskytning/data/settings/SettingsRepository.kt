@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.settings
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
@@ -47,7 +48,6 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val r
         val fc = series.data.instant.details
         val fc1 = series.data.next1Hours?.details
         val closenessMap = HashMap<String, Double>()
-
 
         val c1 = try {
             getCloseness(

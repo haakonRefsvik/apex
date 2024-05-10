@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.forecast
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,8 +61,10 @@ class WeatherRepository(
 
     }
 
-    fun thresholdValuesUpdated() {
+    //TODO: THIS FUNCTION NEVER UPDATES CARD-COLORS BECAUSE weatherAtPos.value IS AN EMPTY LIST
+    suspend fun thresholdValuesUpdated() {
         val weatherAtPos = _weatherAtPos.value
+
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
             val closenessMap =
                 settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile, weather.soilMoisture)
@@ -104,8 +107,6 @@ class WeatherRepository(
             val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
             val soilIndex =
                 getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
-
-            Log.d("mais", "${allVerticalProfiles.size}")
 
             allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
 

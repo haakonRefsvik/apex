@@ -39,7 +39,6 @@ class SettingsViewModel(
 
     val weatherValueChosen = mutableStateOf(true)
     val rocketProfileChosen = mutableStateOf(false)
-    val ippcOnMap = mutableStateOf(false)
 
     val thresholdMutableStates = ThresholdType.entries.map {
         mutableDoubleStateOf(settingsRepo.getThresholdValue(it))

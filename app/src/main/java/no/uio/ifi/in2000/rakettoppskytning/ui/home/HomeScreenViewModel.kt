@@ -208,7 +208,6 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         viewModelScope.launch {
             gribRepo.loadGribFiles()
         }
-        Log.d("starthour", "bblafdsv")
     }
 
 
