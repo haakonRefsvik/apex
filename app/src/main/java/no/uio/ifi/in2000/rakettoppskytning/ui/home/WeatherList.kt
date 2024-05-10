@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -47,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,6 +62,8 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
@@ -171,8 +171,6 @@ fun WeatherList(
                                 } else {
                                     Text("Favorite locations:", fontSize = 14.sp, color = main50)
                                 }
-
-
                             }
 
                         }
@@ -301,6 +299,7 @@ fun WeatherList(
 
                                     Text("Change time")
                                 }
+
                                 Spacer(modifier = Modifier.width(25.dp))
                                 Button(modifier = Modifier.width(155.dp),
                                     colors = ButtonColors(
@@ -322,9 +321,8 @@ fun WeatherList(
                                     Spacer(modifier = Modifier.width(5.dp))
                                     Text("Filter")
                                 }
-
-
                             }
+
                             Image(
                                 modifier = Modifier.fillMaxSize(0.5f),
 
@@ -338,6 +336,7 @@ fun WeatherList(
 
                         }
                     }
+
                 } else if (!homeScreenViewModel.getWeatherHasBeenCalled.value) {
                     item {
                         Column(
@@ -400,201 +399,54 @@ fun WeatherList(
                                 Text("Filter")
                             }
 
-
                         }
                         Spacer(modifier = Modifier.height(10.dp))
-                        forecast.weatherAtPos.weatherList.forEach { input ->
-                            var precipText =
-                                "${input.series.data.next1Hours?.details?.precipitationAmount} mm"
-                            if (input.series.data.next1Hours == null) {
-                                precipText =
-                                    "${input.series.data.next6Hours?.details?.precipitationAmount} mm"
-                            }
-                            if(input.series.data.next6Hours == null){
-                                precipText = "N/A"
-                            }
+                    }
 
-                            Spacer(modifier = Modifier.height(7.5.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                ElevatedCard(
-                                    modifier = Modifier
-                                        .height(80.dp)
-                                        .width(340.dp),
-                                    colors = CardColors(
-                                        containerColor = weatherCard50,
-                                        contentColor = weatherCard0,
-                                        disabledContainerColor = weatherCard50,
-                                        disabledContentColor = weatherCard0
-                                    ),
-                                    onClick = {
-                                        navController.navigate("DetailsScreen/${input.date}")
-                                    }
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .height(40.dp)
+                                    .width(340.dp),
+                                colors = CardColors(
+                                    containerColor = main100,
+                                    contentColor = main100,
+                                    disabledContainerColor = main100,
+                                    disabledContentColor = main100
                                 )
-                                {
-                                    Row {
-                                        Spacer(
-                                            modifier = Modifier
-                                                .width(10.dp)
-                                                .fillMaxHeight()
-                                                .background(getColorFromStatusValue(input.closeToLimitScore))
+                            )
+                            {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Row {
+
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.Start,
+                                    ) {
+                                        if(homeScreenViewModel.markedCardIndex.value != FilterCategory.UNFILTERED)
+                                        Text(
+                                            "Sorted by ${homeScreenViewModel.markedCardIndex.value.string}",
+                                            fontSize = 16.sp,
+                                            color = weatherCard0.copy(0.7F)
                                         )
-                                        Row(
-                                            modifier = Modifier.fillMaxSize(),
-                                            horizontalArrangement = Arrangement.Center,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Column(
-                                                modifier = Modifier.width(75.dp),
-                                                horizontalAlignment = Alignment.Start,
-                                            ) {
-                                                Text(
-                                                    input.series.time.substring(11, 16),
-                                                    fontSize = 20.sp,
-                                                    color = weatherCard0
-                                                )
-                                                Text(
-                                                    text = formatDate(input.series.time),
-                                                    fontSize = 13.sp,
-                                                    softWrap = true,
-                                                    maxLines = 1,
-                                                    color = weatherCard0.copy(alpha = 0.7F)
-                                                )
-                                            }
-                                            Spacer(modifier = Modifier.width(40.dp))
-                                            Column {
-                                                when (homeScreenViewModel.markedCardIndex.intValue) {
-                                                    0 -> {
-                                                        Text(
-                                                            "${input.series.data.instant.details.windSpeed} m/s",
-                                                            fontSize = 20.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            modifier = Modifier.width(75.dp),
-                                                            color = weatherCard0,
-                                                        )
-                                                    }
-
-                                                    1 -> {
-                                                        Box(
-                                                            modifier = Modifier.width(75.dp),
-                                                            contentAlignment = Alignment.Center
-                                                        ) {
-                                                            Icon(
-
-                                                                Icons.AutoMirrored.Filled.ArrowForward,
-                                                                modifier = Modifier
-                                                                    .size(30.dp)
-                                                                    .rotate(90f + input.series.data.instant.details.windFromDirection.toFloat()),
-                                                                tint = weatherCard0,
-                                                                contentDescription = "Location"
-                                                            )
-                                                        }
-
-                                                    }
-
-
-                                                    2 ->
-                                                        Text(
-                                                            precipText,
-                                                            fontSize = 20.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            modifier = Modifier.width(75.dp),
-                                                            color = weatherCard0
-                                                        )
-
-                                                    3 -> {
-                                                        val d =
-                                                            input.series.data.instant.details
-                                                        val fog: Double =
-                                                            d.fogAreaFraction ?: 0.0
-                                                        val visibility = getVerticalSightKm(
-                                                            fog,
-                                                            d.cloudAreaFractionLow,
-                                                            d.cloudAreaFractionMedium,
-                                                            d.cloudAreaFractionHigh,
-                                                        )
-
-                                                        Text(
-                                                            visibility,
-                                                            fontSize = 20.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            modifier = Modifier.width(75.dp),
-                                                            color = weatherCard0
-                                                        )
-                                                    }
-
-
-                                                    4 ->
-                                                        Text(
-                                                            "${input.series.data.instant.details.relativeHumidity} %",
-                                                            fontSize = 20.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            modifier = Modifier.width(75.dp),
-                                                            color = weatherCard0
-                                                        )
-
-                                                    5 ->
-                                                        Text(
-                                                            "${input.series.data.instant.details.dewPointTemperature} °c",
-                                                            fontSize = 20.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            modifier = Modifier.width(75.dp),
-                                                            color = weatherCard0
-                                                        )
-
-                                                    else ->
-                                                        Text(
-                                                            precipText,
-                                                            fontSize = 20.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            modifier = Modifier.width(75.dp),
-                                                            color = weatherCard0
-                                                        )
-                                                }
-
-
-                                            }
-
-                                            Spacer(modifier = Modifier.width(42.dp))
-
-                                            var symbolId =
-                                                input.series.data.next1Hours?.summary?.symbolCode?.uppercase()
-                                                    ?: "FAIR_DAY"
-
-                                            if (input.series.data.next1Hours == null) {
-                                                symbolId =
-                                                    input.series.data.next12Hours?.summary?.symbolCode?.uppercase()
-                                                        ?: "FAIR_DAY"
-                                            }
-
-                                            Image(
-                                                modifier = Modifier.size(55.dp),
-
-                                                painter = painterResource(
-                                                    id = ForeCastSymbols.valueOf(
-                                                        symbolId
-                                                    ).id
-                                                ),
-                                                contentDescription = symbolId
-                                            )
-
-
-                                            Icon(
-                                                modifier = Modifier.size(20.dp),
-                                                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                                                contentDescription = "Arrow",
-                                                tint = weatherCard0
-                                            )
-                                        }
                                     }
-
                                 }
-
                             }
-                            Spacer(modifier = Modifier.height(7.5.dp))
+                        }
+                    }
+
+                    forecast.weatherAtPos.weatherList.forEach { input ->
+                        item {
+                            WeatherCard(
+                                weatherAtPosHour = input,
+                                navController = navController,
+                                homeScreenViewModel = homeScreenViewModel
+                            )
                         }
                     }
                 }

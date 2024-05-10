@@ -35,7 +35,7 @@ suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
 
 
     val url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
-    Log.d("APICALL", "url: $url")
+    Log.d("APICALL", "Forecast blir kalt på")
 
     return try {
         listOf(client.get(url).body<LocationForecast>())

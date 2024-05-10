@@ -1,7 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.annotation.SuppressLint
 import android.util.Log
-import androidx.annotation.MainThread
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DateRangePickerState
@@ -11,24 +11,17 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
@@ -36,6 +29,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPos
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -49,6 +43,16 @@ data class FavoriteLocationUiState(
 
 var isInitialized = mutableStateOf(false)
 
+class HomeViewModelFactory(
+    private val repo: WeatherRepository,
+    private val favoriteRepo: FavoriteCardRepository
+): ViewModelProvider.Factory{
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return HomeScreenViewModel(repo, favoriteRepo) as T
+    }
+}
+
 class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     private val weatherRepo = repo
     private val gribRepo = weatherRepo.gribRepository
@@ -59,11 +63,12 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     val options = (listOf("Lowest to highest", "Highest to lowest"))
     val isReversed = mutableStateOf(false)
     val text = mutableStateOf(options[0])
-    val markedCardIndex = mutableIntStateOf(-1)
+    val markedCardIndex = mutableStateOf(FilterCategory.UNFILTERED)
     val hasBeenFiltered = mutableStateOf(false)
     private val initialSelectedStartDateMillis = mutableStateOf(Calendar.getInstance())
     private val initialSelectedEndDateMillis = mutableStateOf(Calendar.getInstance())
-    private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    @SuppressLint("SimpleDateFormat")
+    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     var startHour = mutableStateOf("")
     var endHour = mutableStateOf("")
     var startISOtime: String = ""
@@ -103,20 +108,20 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
             weatherUiState.value.weatherAtPos.weatherList
         }
 
-        when (markedCardIndex.intValue) {
-            0 -> {
+        when (markedCardIndex.value) {
+            FilterCategory.WIND_STRENGTH -> {
                 weatherAtPos = weatherAtPos.sortedBy { it.series.data.instant.details.windSpeed }
             }
 
-            1 -> {
+            FilterCategory.WIND_DIR -> {
                 weatherAtPos =
                     weatherAtPos.filter { it.series.data.instant.details.windFromDirection in sliderPosition.value.start..sliderPosition.value.endInclusive }
             }
 
-            2 -> weatherAtPos =
+            FilterCategory.RAIN -> weatherAtPos =
                 weatherAtPos.sortedBy { it.series.data.next1Hours?.details?.precipitationAmount }
 
-            3 -> {
+            FilterCategory.VIEW_DIST -> {
                 weatherAtPos =
                     weatherAtPos.sortedBy {
                         it.series.data.instant.details.fogAreaFraction?.let { it1 ->
@@ -128,15 +133,14 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
                             )
                         }
                     }
-
             }
 
-            4 -> {
+            FilterCategory.AIR_HUMID -> {
                 weatherAtPos =
                     weatherAtPos.sortedBy { it.series.data.instant.details.relativeHumidity }
             }
 
-            5 -> {
+            FilterCategory.DEW_POINT -> {
                 weatherAtPos =
                     weatherAtPos.sortedBy { it.series.data.instant.details.dewPointTemperature }
             }
@@ -148,9 +152,6 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
 
         }
         weatherAtPos = weatherAtPos.filter { it.series.time in startISOtime..endISOtime }
-
-
-
         weatherRepo.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
 
     }
@@ -181,31 +182,41 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         sliderPosition.value = 0f..360f
         isReversed.value = false
         text.value = options[0]
-        markedCardIndex.intValue = -1
+        markedCardIndex.value = FilterCategory.UNFILTERED
     }
 
     fun resetList() {
         weatherRepo.resetFilter()
     }
 
-    fun initialize() {
-        if(isInitialized.value) return
-        isInitialized.value = true
+    init{
         initialSelectedStartDateMillis.value.time = Date()
         initialSelectedEndDateMillis.value.time = Date()
         initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
         startISOtime =
-            sdf.format(initialSelectedStartDateMillis.value.timeInMillis)
+            simpleDateFormat.format(initialSelectedStartDateMillis.value.timeInMillis)
                 .replaceRange(14, 19, "00:00")
 
-        endISOtime = sdf.format(initialSelectedEndDateMillis.value.timeInMillis)
+        endISOtime = simpleDateFormat.format(initialSelectedEndDateMillis.value.timeInMillis)
         startHour.value = startISOtime.substring(11, 13)
         endHour.value = startISOtime.substring(11, 13)
-        Log.d("starthour", "${startHour.value} ${endHour.value}")
+
+        /**
+         * Getting GRIB-data as soon as possible to save time
+         * */
 
         viewModelScope.launch {
             gribRepo.loadGribFiles()
         }
+        Log.d("starthour", "bblafdsv")
+    }
+
+
+    fun initialize() {
+        if(isInitialized.value) return
+
+        isInitialized.value = true
+
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

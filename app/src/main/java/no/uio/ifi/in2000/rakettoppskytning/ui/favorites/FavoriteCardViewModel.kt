@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,14 +16,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getCurrentDate
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 data class FavoriteUiState(
     val favorites: List<FavoriteCard> = listOf()
 )
+
+class FavoriteFactory(
+    private val repo: WeatherRepository,
+    private val favoriteRepo: FavoriteCardRepository,
+): ViewModelProvider.Factory{
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return FavoriteCardViewModel(repo, favoriteRepo) as T
+    }
+}
+
+
 
 class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     val lastUpdated = mutableStateOf("")

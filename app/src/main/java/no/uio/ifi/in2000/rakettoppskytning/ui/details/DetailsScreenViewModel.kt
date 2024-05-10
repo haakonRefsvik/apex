@@ -2,13 +2,25 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
+import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
+
+class DetailsFactory(
+    private val repo: WeatherRepository,
+): ViewModelProvider.Factory{
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return DetailsScreenViewModel(repo) as T
+    }
+}
 
 class DetailsScreenViewModel(val repo: WeatherRepository) : ViewModel() {
     val time = mutableStateOf("")
