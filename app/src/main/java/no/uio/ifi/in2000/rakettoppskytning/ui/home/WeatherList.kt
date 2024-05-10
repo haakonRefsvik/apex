@@ -7,7 +7,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,8 +22,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
@@ -44,20 +41,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
@@ -67,13 +59,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
