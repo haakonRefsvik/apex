@@ -288,9 +288,12 @@ fun simulateTrajectory(
 
         if (vz < 0 && !parachuteDeployed) {
             parachuteDeployed = true
-            val parachuteTrajectory =
-                simulateParachute(x, y, z, 1.0, secondsUsed, allLevels, vAfterParachute)
-            list.addAll(parachuteTrajectory)
+            if(allLevels.isNotEmpty()){
+                val parachuteTrajectory =
+                    simulateParachute(x, y, z, 1.0, secondsUsed, allLevels, vAfterParachute)
+                list.addAll(parachuteTrajectory)
+            }
+
         }
     }
 
