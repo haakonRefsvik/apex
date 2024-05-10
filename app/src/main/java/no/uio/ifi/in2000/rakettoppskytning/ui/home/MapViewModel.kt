@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -48,6 +49,7 @@ class MapViewModel() : ViewModel() {
                     massDry = rocketSpecs.wetWeight.toDouble()
                 )
         }
+        Log.d("tra", "loading trajectory of ${trajectory.value.size} points")
     }
 
     fun deleteTrajectory() {

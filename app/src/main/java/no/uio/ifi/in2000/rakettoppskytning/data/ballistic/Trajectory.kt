@@ -131,20 +131,24 @@ fun calculateAirDensity(pressure: Double, temperature: Double): Double {
  * gives you an estimated air-density based on the air density of those two layers -
  * based on how far you are from one layer to the next
  * */
-fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double): Double {
+fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double, rho: Double): Double {
     val altL = low.getLevelHeightInMeters()
     val altU = upp.getLevelHeightInMeters()
+    
+    return try {
+        calculateAirDensity(
+            pressure = mergeLevelData(
+                getLinearRatios(altL, altU, alt)!!,
+                low.pressurePascal,
+                upp.pressurePascal),
+            temperature = mergeLevelData(
+                getLinearRatios(altL, altU, alt)!!,
+                low.getTemperatureCelsius(),
+                upp.getTemperatureCelsius()))
+    }catch (e: Exception){
+        rho
+    }
 
-    return calculateAirDensity(
-        pressure = mergeLevelData(
-            getLinearRatios(altL, altU, alt)!!,
-            low.pressurePascal,
-            upp.pressurePascal),
-        temperature = mergeLevelData(
-            getLinearRatios(altL, altU, alt)!!,
-            low.getTemperatureCelsius(),
-            upp.getTemperatureCelsius()),
-    )
 }
 /**
  * This function takes in the two isobaric layers you are between (in altitude) and
@@ -211,7 +215,6 @@ fun simulateTrajectory(
     var lastZ = -100.0
 
     while (z >= altitude) {
-
         val p = Point(x, y, z, secondsUsed, parachuteDeployed)
         list.add(p)
 
@@ -223,7 +226,7 @@ fun simulateTrajectory(
             if (currLowerUpper != null) {
                 val lowLevel = currLowerUpper.first
                 val uppLevel = currLowerUpper.second
-                rho = getAirDensityLinear(lowLevel, uppLevel, z)
+                rho = getAirDensityLinear(lowLevel, uppLevel, z, rho)
                 xWind = getWindSigmoid(
                     lowLevel,
                     uppLevel,

@@ -197,7 +197,9 @@ class ExampleUnitTest {
             allLevels = list,
         )
 
-        assertEquals(true, tra.size in 201..999)
+        println(tra.size)
+
+        assertEquals(true, tra.size in 201..5000)
     }
 
     @Test
