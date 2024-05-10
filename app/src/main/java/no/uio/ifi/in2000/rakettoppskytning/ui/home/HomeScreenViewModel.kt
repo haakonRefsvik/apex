@@ -44,8 +44,8 @@ data class FavoriteLocationUiState(
 )
 
 class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
-    private val foreCastRep = repo
-    private val gribRepo = foreCastRep.gribRepository
+    private val weatherRepo = repo
+    private val gribRepo = weatherRepo.gribRepository
     val loading = mutableStateOf(false)
     val checkedGreen = mutableStateOf(true)
     val checkedRed = mutableStateOf(true)
@@ -154,7 +154,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         Log.d("getWeather", "apicall")
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            foreCastRep.loadWeather(lat, lon)
+            weatherRepo.loadWeather(lat, lon)
             delay(100)
             filterList()
             loading.value = false

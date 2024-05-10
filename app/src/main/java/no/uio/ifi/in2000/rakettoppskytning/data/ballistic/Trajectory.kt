@@ -44,8 +44,6 @@ fun getSigmoidRatios(
     alt: Double,
     steepness: Double = 0.01
 ): Pair<Double, Double>? {
-    val altBetweenLayers = upperAlt - lowerAlt
-
     if (alt > upperAlt || alt < lowerAlt) {
         return null
     }
