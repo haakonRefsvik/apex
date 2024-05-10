@@ -246,7 +246,6 @@ fun InputField(
                     controller?.hide()
                     homeScreenViewModel.getWeatherByCord(lat, lon)
 
-
                     scope.launch {
                         delay(200)
                         scaffoldState.bottomSheetState.expand()

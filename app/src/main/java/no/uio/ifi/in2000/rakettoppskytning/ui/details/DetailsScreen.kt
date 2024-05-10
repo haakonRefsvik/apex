@@ -81,6 +81,7 @@ import kotlin.time.toDuration
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.lerp
@@ -300,8 +301,16 @@ fun DetailsScreen(
                                 scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
                                 navController.popBackStack("HomeScreen", false)
                             }
-                        ) {
+                        ){
+                            if(mapViewModel.makeTrajectory.value && mapViewModel.trajectory.value.isEmpty()){
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(15.dp),
+                                    strokeWidth = 3.dp,
+                                    color = main100
+                                )
+                            }
 
+                            Spacer(modifier = Modifier.width(15.dp))
                             Text("Calculate ballistic trajectory")
                         }
                         if (weatherNow.verticalProfile == null) {
@@ -455,16 +464,17 @@ fun DetailsScreen(
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 
-                                    var info = "Moisture in the ground"
-
+                                    var info = "Could not get ground-moisture"
+                                    var value = "N/A"
                                     if (weatherNow.soilMoisture != null) {
                                         info = getSoilDescription(weatherNow.soilMoisture)
+                                        value = weatherNow.soilMoisture.toString()
                                     }
 
                                     WeatherCard(
                                         iconId = R.drawable.vann,
                                         desc = "Soil moisture",
-                                        value = "${weatherNow.soilMoisture} %",
+                                        value = "$value %",
                                         info = info,
                                         statusCode = getSoilScore(weatherNow.soilMoisture)
                                     )
@@ -478,7 +488,7 @@ fun DetailsScreen(
                                         iconId = R.drawable.cloudy,
                                         desc = "Cloud cover",
                                         value = "${fcData.instant.details.cloudAreaFraction.roundToInt()} %",
-                                        info = "Total cloud cover for all heights in"
+                                        info = "Total cloud cover for all heights in %"
                                     )
                                     Spacer(modifier = Modifier.width(20.dp))
 

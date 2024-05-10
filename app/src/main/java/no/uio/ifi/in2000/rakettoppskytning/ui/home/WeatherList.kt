@@ -410,6 +410,9 @@ fun WeatherList(
                                 precipText =
                                     "${input.series.data.next6Hours?.details?.precipitationAmount} mm"
                             }
+                            if(input.series.data.next6Hours == null){
+                                precipText = "N/A"
+                            }
 
                             Spacer(modifier = Modifier.height(7.5.dp))
                             Row(
@@ -488,8 +491,6 @@ fun WeatherList(
                                                                 tint = weatherCard0,
                                                                 contentDescription = "Location"
                                                             )
-
-
                                                         }
 
                                                     }

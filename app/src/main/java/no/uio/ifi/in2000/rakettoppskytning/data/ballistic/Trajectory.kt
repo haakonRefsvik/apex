@@ -37,6 +37,7 @@ fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Doubl
     return Pair(1 - p1, p1)
 }
 
+
 fun getSigmoidRatios(
     lowerAlt: Double,
     upperAlt: Double,
@@ -96,9 +97,9 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
     return null
 }
 
-fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData {
-    var nearest: LevelData =
-        allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
+fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData{
+    var nearest: LevelData = allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
+
     var nearestAlt = abs(nearest.getLevelHeightInMeters() - altitudeMeters)
 
     allLevels.forEach {
@@ -114,6 +115,9 @@ fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): Lev
     return nearest
 }
 
+/**
+ * Function to deal with numbers really close to zero
+ * */
 fun isCloseToZero(number: Double, threshold: Double = 1e-10): Boolean {
     return abs(number) < threshold
 }
@@ -122,6 +126,43 @@ fun calculateAirDensity(pressure: Double, temperature: Double): Double {
     val gasConstant = 287.058 // Specific gas constant for dry air in J/kg·K
     val kelvinTemperature = temperature + 273.15 // Convert temperature from Celsius to Kelvin
     return (pressure) / (gasConstant * kelvinTemperature)
+}
+
+/**
+ * This function takes in the two isobaric layers you are between (in altitude) and
+ * gives you an estimated air-density based on the air density of those two layers -
+ * based on how far you are from one layer to the next
+ * */
+fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double): Double {
+    val altL = low.getLevelHeightInMeters()
+    val altU = upp.getLevelHeightInMeters()
+
+    return calculateAirDensity(
+        pressure = mergeLevelData(
+            getLinearRatios(altL, altU, alt)!!,
+            low.pressurePascal,
+            upp.pressurePascal),
+        temperature = mergeLevelData(
+            getLinearRatios(altL, altU, alt)!!,
+            low.getTemperatureCelsius(),
+            upp.getTemperatureCelsius()),
+    )
+}
+/**
+ * This function takes in the two isobaric layers you are between (in altitude) and
+ * gives you the estimated wind (u or v-component) of those two layers -
+ * based on how far you are from one layer to the next non-linear
+ * */
+fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double, windHigh: Double): Double {
+    val altL = low.getLevelHeightInMeters()
+    val altU = upp.getLevelHeightInMeters()
+    val ratios = getSigmoidRatios(altL, altU, alt) ?: return 0.0
+
+    return mergeLevelData(
+        ratios,
+        windLow,
+        windHigh
+    )
 }
 
 fun simulateTrajectory(
@@ -136,8 +177,8 @@ fun simulateTrajectory(
     dt: Double,
     allLevels: List<LevelData>,
     vAfterParachute: Double = 8.6
-): List<Point> {
-    Log.d("Ballistic", "Making new trajectory")
+): List<Point>{
+
     val g = 9.81
     var rho = 1.225
     val cd = 0.5
@@ -152,17 +193,8 @@ fun simulateTrajectory(
     var vy = 0.0
     var vz = 0.0
 
-    var xNoPar = 0.0
-    var yNoPar = 0.0
-    var zNoPar: Double = 0.0
-
-    var vxNoPar = 0.0
-    var vyNoPar = 0.0
-    var vzNoPar = 0.0
-
     var secondsUsed = 0.0
     var parachuteDeployed = false
-    var timeStep = dt
 
     val massDifference = mass - massDry
     val massLossPerSecond = (massDifference / burnTime)
@@ -175,7 +207,6 @@ fun simulateTrajectory(
 
     val list = mutableListOf<Point>()
 
-    var ratios: Pair<Double, Double>? = Pair(1.0, 0.0)
     var xWind = 0.0
     var yWind = 0.0
     var currLowerUpper: Pair<LevelData, LevelData>?
@@ -183,46 +214,34 @@ fun simulateTrajectory(
 
     while (z >= altitude) {
 
+        val p = Point(x, y, z, secondsUsed, parachuteDeployed)
+        list.add(p)
+
         if (abs(lastZ - z) > 100) {
             // Update ratios each 100 meters altitude
             currLowerUpper = findLowerUpperLevel(allLevels, z)
             lastZ = z
 
             if (currLowerUpper != null) {
-                val altL = currLowerUpper.first.getLevelHeightInMeters()
-                val altU = currLowerUpper.second.getLevelHeightInMeters()
-                ratios = getSigmoidRatios(altL, altU, z)
-
-                if (ratios != null) {
-                    rho = calculateAirDensity(
-                        pressure = mergeLevelData(
-                            getLinearRatios(altL, altU, z)!!,
-                            currLowerUpper.first.pressurePascal,
-                            currLowerUpper.second.pressurePascal
-                        ),
-                        temperature = mergeLevelData(
-                            getLinearRatios(altL, altU, z)!!,
-                            currLowerUpper.first.getTemperatureCelsius(),
-                            currLowerUpper.second.getTemperatureCelsius()
-                        ),
-                    )
-
-                    xWind = mergeLevelData(
-                        ratios,
-                        currLowerUpper.first.vComponentValue,
-                        currLowerUpper.second.vComponentValue
-                    )
-                    yWind = mergeLevelData(
-                        ratios,
-                        currLowerUpper.first.uComponentValue,
-                        currLowerUpper.second.uComponentValue
-                    )
-                }
+                val lowLevel = currLowerUpper.first
+                val uppLevel = currLowerUpper.second
+                rho = getAirDensityLinear(lowLevel, uppLevel, z)
+                xWind = getWindSigmoid(
+                    lowLevel,
+                    uppLevel,
+                    z,
+                    lowLevel.vComponentValue,
+                    uppLevel.vComponentValue
+                )
+                yWind = getWindSigmoid(
+                    lowLevel,
+                    uppLevel,
+                    z,
+                    lowLevel.uComponentValue,
+                    uppLevel.uComponentValue
+                )
             }
         }
-
-        val p = Point(x, y, z, secondsUsed, parachuteDeployed)
-        list.add(p)
 
         if (burnTimeLeft >= 0 && z <= apogee) {
             ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / currentMass
@@ -234,15 +253,15 @@ fun simulateTrajectory(
                 ay = 0.0
             }
             az = thrust * sin(launchAngleRad) / currentMass - g
-            burnTimeLeft -= timeStep
+            burnTimeLeft -= dt
 
             if (burnTime > 0) {
                 currentMass -= (massLossPerSecond * dt) // decrease mass
             }
 
         } else {
-            ax = xWind
-            ay = yWind
+            ax = (xWind / currentMass)
+            ay = (yWind / currentMass)
             az = -g
 
             val v = sqrt(vx.pow(2.0) + vy.pow(2.0) + vz.pow(2.0))
@@ -253,52 +272,93 @@ fun simulateTrajectory(
             ax += fDragX / currentMass
             ay += fDragY / currentMass
             az += fDragZ / currentMass
+
         }
 
-        vx += ax * timeStep
-        vy += ay * timeStep
-        vz += az * timeStep
+        vx += (ax * dt)
+        vy += ay * dt
+        vz += az * dt
 
-        if (parachuteDeployed) {
-            vz = (-vAfterParachute) * timeStep
-            vx = xWind
-            vy = yWind
+        x += vx * dt
+        y += vy * dt
+        z += vz * dt
 
-            if (zNoPar > 0) {
-                vxNoPar += (getNearestLevelData(allLevels, zNoPar)?.vComponentValue ?: 0.0) * dt
-                vyNoPar += (getNearestLevelData(allLevels, zNoPar)?.uComponentValue ?: 0.0) * dt
-                vzNoPar += az * timeStep
-
-                xNoPar += vxNoPar * timeStep
-                yNoPar += vyNoPar * timeStep
-                zNoPar += vzNoPar * timeStep
-
-                if (zNoPar < 0) {
-                    zNoPar = 0.0
-                }
-
-                val p2 = Point(xNoPar, yNoPar, zNoPar, secondsUsed, false)
-                list.add(p2)
-            }
-        }
-
-        x += vx * timeStep
-        y += vy * timeStep
-        z += vz * timeStep
-        secondsUsed += timeStep
+        secondsUsed += dt
 
         if (vz < 0 && !parachuteDeployed) {
             parachuteDeployed = true
-            timeStep = 1.0  // only calculate each second after parachute is deployed
-            xNoPar = x
-            yNoPar = y
-            zNoPar = z
+            val parachuteTrajectory =
+                simulateParachute(x, y, z, 1.0, secondsUsed, allLevels, vAfterParachute)
+            list.addAll(parachuteTrajectory)
         }
     }
 
     return list
 }
 
-fun simulateFall() {
 
+fun simulateParachute(
+    xInit: Double,
+    yInit: Double,
+    zInit: Double,
+    timeStep: Double,
+    s: Double,
+    allLevels: List<LevelData>,
+    parachuteVelocityDown: Double
+): List<Point> {
+    var x = xInit
+    var y = yInit
+    var z = zInit
+
+    var vx: Double
+    var vy: Double
+    var vz: Double
+
+    var xWind = 0.0
+    var yWind = 0.0
+    var currLowerUpper: Pair<LevelData, LevelData>?
+    var lastZ = -100.0
+    var secondsUsed = s
+
+    val list= mutableListOf<Point>()
+
+    while (z >= 0) {
+        val p = Point(x, y, z, secondsUsed, true)
+        list.add(p)
+        // Update ratios each 100 meters altitude
+        if (abs(lastZ - z) > 100) {
+            currLowerUpper = findLowerUpperLevel(allLevels, z)
+            lastZ = z
+
+            if (currLowerUpper != null) {
+                val lowLevel = currLowerUpper.first
+                val uppLevel = currLowerUpper.second
+                xWind = getWindSigmoid(
+                    lowLevel,
+                    uppLevel,
+                    z,
+                    lowLevel.vComponentValue,
+                    uppLevel.vComponentValue
+                )
+                yWind = getWindSigmoid(
+                    lowLevel,
+                    uppLevel,
+                    z,
+                    lowLevel.uComponentValue,
+                    uppLevel.uComponentValue
+                )
+            }
+        }
+
+        vz = (-parachuteVelocityDown) * timeStep
+        vx = xWind
+        vy = yWind
+
+        x += vx * timeStep
+        y += vy * timeStep
+        z += vz * timeStep
+        secondsUsed += timeStep
+    }
+
+    return list
 }

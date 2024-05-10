@@ -224,8 +224,6 @@ fun Make3dtrajectory(
     settingsViewModel: SettingsViewModel,
 
     ) {
-
-
     val SOURCE_ID1 = "source1"
     val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
     val MODEL_ID_KEY = "model-id-key"

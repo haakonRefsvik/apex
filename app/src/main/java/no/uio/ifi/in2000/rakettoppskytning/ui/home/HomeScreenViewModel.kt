@@ -86,7 +86,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     val bottomSheetScaffoldState: MutableState<BottomSheetScaffoldState> = _bottomSheetScaffoldState
     fun filterList() {
         hasBeenFiltered.value = true
-        foreCastRep.resetFilter()
+        weatherRepo.resetFilter()
 
         var weatherAtPos: List<WeatherAtPosHour> = if (checkedGreen.value && !checkedRed.value) {
             weatherUiState.value.weatherAtPos.weatherList.filter { it.closeToLimitScore < 1 }
@@ -146,7 +146,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
 
 
 
-        foreCastRep.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
+        weatherRepo.updateWeatherAtPos(WeatherAtPos(weatherAtPos))
 
     }
 
@@ -163,7 +163,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     }
 
     val weatherUiState: StateFlow<WeatherUiState> =
-        foreCastRep.observeWeather()
+        weatherRepo.observeWeather()
             .map { WeatherUiState(weatherAtPos = it) }.stateIn(
                 viewModelScope,
                 started = SharingStarted.Eagerly,
@@ -180,7 +180,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     }
 
     fun resetList() {
-        foreCastRep.resetFilter()
+        weatherRepo.resetFilter()
     }
 
 

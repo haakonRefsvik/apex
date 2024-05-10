@@ -33,23 +33,16 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
     val weatherDataUiState: StateFlow<WeatherUiState> =
         repo.observeFavorites().map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = WeatherUiState()
         )
 
     val favoriteUiState: StateFlow<FavoriteUiState> =
         favoriteRepo.observeFavorites().map { FavoriteUiState(favorites = it) }.stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.Eagerly,
             initialValue = FavoriteUiState()
         )
-
-    fun getWeatherByFavorite(lat: Double, lon: Double, date: String) {
-        Log.d("getWeather", "apicall")
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.loadFavoriteCard(lat, lon, date)
-        }
-    }
 
     suspend fun findNameByLatLon(lat: Double, lon: Double): String? {
         return withContext(Dispatchers.IO) {
@@ -83,6 +76,7 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
 
 
         if (isUpdatingWeatherData.value){
+            Log.d("favoriteCards", "wont reload, is already loading")
             viewModelScope.launch {
                 isUpdatingWeatherData.value = true
                 delay(dummyLoadDuration)
@@ -93,6 +87,7 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
         }
 
         if(!expiredData && noNewCards){
+            Log.d("favoriteCards", "wont reload, data is new")
             viewModelScope.launch {
                 isUpdatingWeatherData.value = true
                 delay(dummyLoadDuration)
