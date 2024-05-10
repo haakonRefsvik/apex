@@ -4,69 +4,35 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.CardColors
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.allViews
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.sp
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
-import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
 import com.mapbox.maps.extension.compose.MapEffect
 import com.mapbox.maps.extension.compose.MapboxMap
-import com.mapbox.maps.extension.compose.annotation.ViewAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PolygonAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PolylineAnnotation
 import com.mapbox.maps.extension.style.expressions.dsl.generated.get
-import com.mapbox.maps.extension.style.layers.generated.fillLayer
-import com.mapbox.maps.extension.style.layers.generated.lineLayer
 import com.mapbox.maps.extension.style.layers.generated.modelLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.ModelType
 import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
 import com.mapbox.maps.extension.style.model.model
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
-import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
-import com.mapbox.maps.viewannotation.OnViewAnnotationUpdatedListener
-import com.mapbox.maps.viewannotation.annotationAnchor
-import com.mapbox.maps.viewannotation.geometry
-import com.mapbox.maps.viewannotation.viewAnnotationOptions
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
@@ -74,11 +40,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -225,7 +186,8 @@ fun Make3dtrajectory(
 
     ) {
     val SOURCE_ID1 = "source1"
-    val SAMPLE_MODEL_URI_1 = "asset://bigball.glb"
+    val redball = "asset://bigball.glb"
+    val blueball = "asset://blueball.glb"
     val MODEL_ID_KEY = "model-id-key"
     val MODEL_ID_2 = "model-id-2"
     val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
@@ -286,9 +248,16 @@ fun Make3dtrajectory(
                             val MODEL1_COORDINATES = Point.fromLngLat(
                                 mapViewModel.lon.value, mapViewModel.lat.value
                             )
-                            +model(MODEL_ID_1) {
-                                uri(SAMPLE_MODEL_URI_1)
+                            if (point.parachuted) {
+                                +model(MODEL_ID_1) {
+                                    uri(blueball)
+                                }
+                            } else {
+                                +model(MODEL_ID_1) {
+                                    uri(redball)
+                                }
                             }
+
                             +geoJsonSource(SOURCE_ID) {
                                 featureCollection(
                                     FeatureCollection.fromFeatures(
