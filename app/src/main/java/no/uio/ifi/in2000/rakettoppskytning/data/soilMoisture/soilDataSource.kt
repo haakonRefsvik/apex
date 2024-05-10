@@ -26,6 +26,8 @@ suspend fun getSoilForecast(lat: Double, lon: Double): List<SoilMoistureHourly> 
     val urlPrefix = "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}"
     val soilUrl = "$urlPrefix&hourly=soil_moisture_0_to_1cm"
 
+    Log.d("APICALL", "SoilForecast blir kallt på")
+
     return try {
         listOf(client.get(soilUrl).body<SoilMoistureHourly>())
     }catch (e: Exception){

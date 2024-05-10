@@ -17,23 +17,12 @@ import androidx.lifecycle.ViewModelProvider
 import no.uio.ifi.in2000.rakettoppskytning.R
 
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
-
-import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.RakettoppskytningTheme
 
 import no.uio.ifi.in2000.rakettoppskytning.network.ConnectivityManager
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
-import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import no.uio.ifi.in2000.rakettoppskytning.network.NetworkSnackbar
 import javax.inject.Inject
 

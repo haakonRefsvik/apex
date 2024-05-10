@@ -1,16 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui
 
-import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,21 +9,22 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import no.uio.ifi.in2000.rakettoppskytning.data.database.AppDatabase
-import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
-import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
-import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
-import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
+import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeViewModelFactory
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
@@ -48,17 +40,16 @@ fun Navigation( context: MainActivity) {
     val favoriteCardDao = db.favoriteCardDao
     val favoriteDao = db.favoriteDao
 
-    val gribRepository = GribRepository()
-    val settingsRepository = SettingsRepository(thresholdsDao, rocketSpecsDao)
-    val weatherRepo = WeatherRepository(settingsRepository, gribRepository)
-    val favoriteCardRepository = FavoriteCardRepository(favoriteCardDao, favoriteDao)
+    val grbRepo = GribRepository()
+    val setRepo = SettingsRepository(thresholdsDao, rocketSpecsDao)
+    val weaRepo = WeatherRepository(setRepo, grbRepo)
+    val favRepo = FavoriteCardRepository(favoriteCardDao, favoriteDao)
 
-    val homeScreenViewModel = HomeScreenViewModel(weatherRepo, favoriteCardRepository)
-    homeScreenViewModel.initialize()
-    val detailsScreenViewModel = DetailsScreenViewModel(weatherRepo)
-    val settingsViewModel = SettingsViewModel(settingsRepository)
-    val favoriteCardViewModel = FavoriteCardViewModel(weatherRepo, favoriteCardRepository)
-    val mapViewModel = MapViewModel()
+    val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = HomeViewModelFactory(weaRepo, favRepo))
+    val detailsScreenViewModel: DetailsScreenViewModel = viewModel(factory = DetailsFactory(weaRepo))
+    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsFactory(setRepo))
+    val favoriteCardViewModel: FavoriteCardViewModel = viewModel(factory = FavoriteFactory(weaRepo, favRepo))
+    val mapViewModel: MapViewModel = viewModel(factory = MapFactory())
 
     val navController = rememberNavController()
 
@@ -94,7 +85,7 @@ fun Navigation( context: MainActivity) {
             SettingsScreen(
                 navController,
                 settingsViewModel,
-                weatherRepo,
+                weaRepo,
                 homeScreenViewModel,
                 mapViewModel,
             )
