@@ -215,7 +215,7 @@ fun simulateTrajectory(
     var lastZ = -100.0
 
     while (z >= altitude) {
-        val p = Point(x, y, z, secondsUsed, parachuteDeployed)
+        val p = Point(x, y, z, secondsUsed, false)
         list.add(p)
 
         if (abs(lastZ - z) > 100) {
