@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.mapbox.maps.plugin.logo.generated.LogoSettings
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
@@ -44,15 +46,19 @@ fun WeatherCard(
     navController: NavHostController,
     homeScreenViewModel: HomeScreenViewModel
 ){
-    var precipText =
-        "${weatherAtPosHour.series.data.next1Hours?.details?.precipitationAmount} mm"
-    if (weatherAtPosHour.series.data.next1Hours == null) {
-        precipText =
-            "${weatherAtPosHour.series.data.next6Hours?.details?.precipitationAmount} mm"
+    val data = weatherAtPosHour.series.data
+    var precipText = "${data.next1Hours?.details?.precipitationAmount} mm"
+
+    if (data.next1Hours == null) {
+        precipText = "${data.next6Hours?.details?.precipitationAmount} mm"
+
+        if(data.next6Hours?.details?.precipitationAmount == null){
+            precipText = "N/A"
+            Log.d("mais", "${weatherAtPosHour.date} has no precip")
+        }
+
     }
-    if(weatherAtPosHour.series.data.next6Hours == null){
-        precipText = "N/A"
-    }
+
 
     Spacer(modifier = Modifier.height(7.5.dp))
     Row(

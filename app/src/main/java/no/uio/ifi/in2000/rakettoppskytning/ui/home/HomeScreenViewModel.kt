@@ -115,7 +115,9 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
 
             FilterCategory.WIND_DIR -> {
                 weatherAtPos =
-                    weatherAtPos.filter { it.series.data.instant.details.windFromDirection in sliderPosition.value.start..sliderPosition.value.endInclusive }
+                    weatherAtPos.filter {
+                        it.series.data.instant.details.windFromDirection in
+                        sliderPosition.value.start..sliderPosition.value.endInclusive }
             }
 
             FilterCategory.RAIN -> weatherAtPos =
@@ -124,9 +126,9 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
             FilterCategory.VIEW_DIST -> {
                 weatherAtPos =
                     weatherAtPos.sortedBy {
-                        it.series.data.instant.details.fogAreaFraction?.let { it1 ->
+                        it.series.data.instant.details.fogAreaFraction?.let { fog ->
                             getVerticalSightKmNumber(
-                                it1,
+                                fog,
                                 it.series.data.instant.details.cloudAreaFractionLow,
                                 it.series.data.instant.details.cloudAreaFractionMedium,
                                 it.series.data.instant.details.cloudAreaFractionHigh
@@ -156,7 +158,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
 
     }
 
-    fun getWeatherByCord(lat: Double, lon: Double) {
+    fun getWeatherByPos(lat: Double, lon: Double) {
         Log.d("getWeather", "apicall")
         loading.value = true
         viewModelScope.launch(Dispatchers.IO) {
@@ -176,6 +178,12 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
                 initialValue = WeatherUiState()
             )
 
+    /** Updates the color of the weather-cards (if there are any) based on the new settings*/
+    fun updateCardColors(){
+        weatherRepo.updateCardColors()
+    }
+
+    /** Resets the filter itself */
     fun resetFilter() {
         checkedGreen.value = true
         checkedRed.value = true
@@ -185,6 +193,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         markedCardIndex.value = FilterCategory.UNFILTERED
     }
 
+    /** Makes the weather list go back to its original state */
     fun resetList() {
         weatherRepo.resetFilter()
     }
@@ -201,9 +210,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
         startHour.value = startISOtime.substring(11, 13)
         endHour.value = startISOtime.substring(11, 13)
 
-        /**
-         * Getting GRIB-data as soon as possible to save time
-         * */
+        /**Getting GRIB-data as soon as possible to save time*/
 
         viewModelScope.launch {
             gribRepo.loadGribFiles()
@@ -219,7 +226,7 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    val dtrpState = mutableStateOf(
+    val datePickerState = mutableStateOf(
         DateRangePickerState(
             CalendarLocale("NO"),
             yearRange = 2024..2024,
