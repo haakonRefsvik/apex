@@ -69,12 +69,12 @@ fun InputField(
     val placeholderLat = remember { mutableDoubleStateOf(lat) }
     val placeholderLon = remember { mutableDoubleStateOf(lon) }
 
-    Log.d("inputfield", "lat: $lat, lon $lon")
-
+    // Gets the favorite location from the database
     LaunchedEffect(Unit) {
         homeScreenViewModel.getFavoriteLocations()
     }
 
+    // Updates the values in the inputFields when clicking the map
     LaunchedEffect(key1 = lat, key2 = lon) {
         placeholderLat.doubleValue = lat
         placeholderLon.doubleValue = lon
