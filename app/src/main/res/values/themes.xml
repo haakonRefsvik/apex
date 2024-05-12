@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Rakettoppskytning" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.RakettoppskytningStyle2" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Rakettoppskytning" parent="android:Theme.Material.Light.NoActionBar">
+    </style>
+
+
+    <style name="Theme.RakettoppskytningStyle2" parent="android:Theme.Material.Light.NoActionBar">
+    </style>
+
+    <style name="Theme.Rakettoppskytning.Splash" parent="Theme.SplashScreen">
+        <!-- Reference to the theme that should be applied after the splash screen. -->
+        <item name="postSplashScreenTheme">@style/Theme.Rakettoppskytning</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+    </style>
 
     <color name="colorPrimary">#0E131F</color>
-
 
 </resources>
