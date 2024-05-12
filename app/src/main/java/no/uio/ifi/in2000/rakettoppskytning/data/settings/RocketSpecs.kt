@@ -6,6 +6,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecValues
 
+/**
+ *
+ * This function generates and returns default rocket specifications using a predefined set of values.
+ * */
 fun getDefaultRocketSpecs(): RocketSpecValues {
     val map = hashMapOf(
         RocketSpecType.APOGEE.name to 3500.0,
@@ -21,6 +25,9 @@ fun getDefaultRocketSpecs(): RocketSpecValues {
     return RocketSpecValues(map)
 }
 
+/**
+ *
+ * This function converts a RocketSpecValues object to a RocketSpecs database object using a map of values.*/
 fun mapToDatabaseObject(values: RocketSpecValues): RocketSpecs {
     val map = values.valueMap
 
@@ -38,6 +45,11 @@ fun mapToDatabaseObject(values: RocketSpecValues): RocketSpecs {
 }
 
 
+/**
+ *
+ * This function fetches rocket specifications from the provided RocketSpecsDao,
+ * converting them to a RocketSpecValues object.
+ * If they don't exist, it inserts default values into the database and returns them.*/
 suspend fun getRocketSpecValues(rocketSpecsDao: RocketSpecsDao): RocketSpecValues {
     val rocketSpecs = rocketSpecsDao.getRocketSpecsById(1).firstOrNull() // Retrieve the threshold with ID 1
 

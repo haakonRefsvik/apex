@@ -9,10 +9,8 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -23,7 +21,6 @@ import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 
 
 @Serializable

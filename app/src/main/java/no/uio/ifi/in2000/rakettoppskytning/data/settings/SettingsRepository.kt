@@ -1,23 +1,22 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.settings
 
-import android.util.Log
-import kotlinx.coroutines.flow.Flow
+
 import kotlinx.coroutines.runBlocking
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
 import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Series
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecValues
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdValues
 
+
 class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val rocketSpecsDao: RocketSpecsDao) {
     private val thresholds: ThresholdValues = runBlocking { getThresholdValues(thresholdsDao) }
     private val rocketSpecs: RocketSpecValues = runBlocking { getRocketSpecValues(rocketSpecsDao) }
 
+    /** This function updates threshold values in the database after modifying the threshold map.*/
     suspend fun updateThresholdValues(map: HashMap<String, Double>){
         thresholds.valueMap = map
         thresholdsDao.updateThreshold(
@@ -25,6 +24,7 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val r
         )
     }
 
+    /** This function updates rocket values in the database after modifying the rocket map.*/
     suspend fun updateRocketSpecValues(map: HashMap<String, Double>){
         rocketSpecs.valueMap = map
         rocketSpecsDao.updateRocketSpecs(
@@ -32,10 +32,11 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val r
         )
     }
 
+    /**This function retrieves a threshold value by its type from the stored map, returning 0.0 if the value is not found.*/
     fun getThresholdValue(parameter: ThresholdType): Double{
         return thresholds.valueMap[parameter.name]?: 0.0
     }
-
+    /**This function retrieves a rocket value by its type from the stored map, returning 0.0 if the value is not found.*/
     fun getRocketSpecValue(parameter: RocketSpecType): Double{
         return rocketSpecs.valueMap[parameter.name]?: 0.0
     }
@@ -97,6 +98,8 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val r
         return closenessMap
     }
 
+    /** This function calculates a readiness score based on a given map of values,
+     * returning 1.0 if any value is 1.0, or the average of all values otherwise.*/
     fun getReadinessScore(map: HashMap<String, Double>): Double {
         var sum = 0.0
 
@@ -110,12 +113,6 @@ class SettingsRepository(private val thresholdsDao: ThresholdsDao, private val r
         return sum/map.size
     }
 
-    fun getRocketSpecValuesFromRepo(): Flow<RocketSpecs?> {
-        return rocketSpecsDao.getRocketSpecsById(1)
-    }
-    fun getThresholdValuesFromRepo(): Flow<Thresholds?> {
-        return thresholdsDao.getThresholdById(1)
-    }
 }
 /**
  * This function returns how close a value is to a limit (from 0.0 to 1.0)
