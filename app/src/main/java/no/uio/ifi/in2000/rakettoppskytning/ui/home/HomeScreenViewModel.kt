@@ -199,30 +199,27 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
     }
 
     init{
-        initialSelectedStartDateMillis.value.time = Date()
-        initialSelectedEndDateMillis.value.time = Date()
-        initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
-        startISOtime =
-            simpleDateFormat.format(initialSelectedStartDateMillis.value.timeInMillis)
-                .replaceRange(14, 19, "00:00")
+        if(!isInitialized.value) {
 
-        endISOtime = simpleDateFormat.format(initialSelectedEndDateMillis.value.timeInMillis)
-        startHour.value = startISOtime.substring(11, 13)
-        endHour.value = startISOtime.substring(11, 13)
+            initialSelectedStartDateMillis.value.time = Date()
+            initialSelectedEndDateMillis.value.time = Date()
+            initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
+            startISOtime =
+                simpleDateFormat.format(initialSelectedStartDateMillis.value.timeInMillis)
+                    .replaceRange(14, 19, "00:00")
 
-        /**Getting GRIB-data as soon as possible to save time*/
+            endISOtime = simpleDateFormat.format(initialSelectedEndDateMillis.value.timeInMillis)
+            startHour.value = startISOtime.substring(11, 13)
+            endHour.value = startISOtime.substring(11, 13)
 
-        viewModelScope.launch {
-            gribRepo.loadGribFiles()
+            /**Getting GRIB-data as soon as possible to save time*/
+
+            viewModelScope.launch {
+                gribRepo.loadGribFiles()
+            }
+
+            isInitialized.value = true
         }
-    }
-
-
-    fun initialize() {
-        if(isInitialized.value) return
-
-        isInitialized.value = true
-
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

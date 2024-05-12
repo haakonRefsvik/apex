@@ -42,8 +42,8 @@ fun Navigation( context: MainActivity) {
 
     val grbRepo = GribRepository()
     val setRepo = SettingsRepository(thresholdsDao, rocketSpecsDao)
-    val weaRepo = WeatherRepository(setRepo, grbRepo)
     val favRepo = FavoriteCardRepository(favoriteCardDao, favoriteDao)
+    val weaRepo = WeatherRepository(setRepo, grbRepo, favRepo)
 
     val homeScreenViewModel: HomeScreenViewModel = viewModel(factory = HomeViewModelFactory(weaRepo, favRepo))
     val detailsScreenViewModel: DetailsScreenViewModel = viewModel(factory = DetailsFactory(weaRepo))
@@ -85,7 +85,6 @@ fun Navigation( context: MainActivity) {
             SettingsScreen(
                 navController,
                 settingsViewModel,
-                weaRepo,
                 homeScreenViewModel,
                 mapViewModel,
             )

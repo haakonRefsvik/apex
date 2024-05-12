@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
@@ -28,7 +29,8 @@ import kotlin.math.roundToInt
 
 class WeatherRepository(
     private val settingsRepository: SettingsRepository,
-    val gribRepository: GribRepository
+    val gribRepository: GribRepository,
+    private val favoriteCardRepository: FavoriteCardRepository
 ) {
     private val _weatherAtPos = MutableStateFlow(WeatherAtPos())
     private val _weatherAtPosFavorite = MutableStateFlow(WeatherFavorites())
@@ -76,42 +78,10 @@ class WeatherRepository(
         _weatherAtPos.update { weatherAtPos }
     }
 
-    /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
     suspend fun loadWeather(lat: Double, lon: Double) {
         try {
-            val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
-            val list = mutableListOf<WeatherAtPosHour>()
-            val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
             val gribFiles: List<File> = loadGribFromDataSource()
-            val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon, heightLimit)
-            val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
-            val soilIndex =
-                getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
-
-            allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
-
-                val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
-                val date = series.time
-                val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
-                val closenessMap = settingsRepository.getValueClosenessMap(series, vp, soilMoisture)
-                val score = settingsRepository.getReadinessScore(closenessMap)
-                vp?.addGroundInfo(series)
-                val weatherAtPosHour = WeatherAtPosHour(
-                    date,
-                    getHourFromDate(date),
-                    lat,
-                    lon,
-                    series,
-                    vp,
-                    soilMoisture,
-                    closenessMap,
-                    score
-                )
-
-                list.add(weatherAtPosHour)
-            }
-
-            val updatedWeatherAtPos = WeatherAtPos(list)
+            val updatedWeatherAtPos = makeWeatherAtPos(lat, lon, gribFiles)
             _weatherAtPosOriginal = updatedWeatherAtPos
             _weatherAtPos.update { updatedWeatherAtPos }
 
@@ -122,67 +92,95 @@ class WeatherRepository(
         }
     }
 
-    suspend fun loadAllFavoriteCards(favorites: List<FavoriteCard>, expiredData: Boolean){
+    /** Combines data from grib and forecast and makes weatherAtPos-objects from it */
+    private suspend fun makeWeatherAtPos(
+        lat: Double, lon: Double,
+        gribFiles: List<File>,
+        desiredDates: List<String> = listOf(),
+        favorite: Boolean = false
+    ): WeatherAtPos
+    {
+        val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
         val list = mutableListOf<WeatherAtPosHour>()
-        favorites.forEach {favCard ->
-            val match = _weatherAtPosFavorite.value.weatherList.find{it.date == favCard.date && it.lon == favCard.lon.toDouble() && it.lat == favCard.lat.toDouble()}
-            if(match != null && !expiredData){
-                Log.d("loadFavorites", "found existing card, skipping...")
-                list.add(match)
+        val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
+        val allVerticalProfiles: List<VerticalProfile> = makeVerticalProfilesFromGrib(gribFiles, lat, lon, heightLimit)
+        val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
+        val soilIndex =
+            getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
+
+        allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
+            if (desiredDates.isNotEmpty() && !desiredDates.contains(series.time)){
+                return@forEachIndexed
+            }
+            val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
+            val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, series.time)
+            val closenessMap = settingsRepository.getValueClosenessMap(series, vp, soilMoisture)
+            val score = settingsRepository.getReadinessScore(closenessMap)
+            vp?.addGroundInfo(series)
+            val weatherAtPosHour = WeatherAtPosHour(
+                date = series.time,
+                hour = getHourFromDate(series.time),
+                lat,
+                lon,
+                series,
+                verticalProfile = vp,
+                soilMoisture = errorCheckSoilForecast(soilForecast, soilIndex, hour),
+                closenessMap,
+                score,
+                favorite = mutableStateOf(favorite)
+            )
+
+            list.add(weatherAtPosHour)
+        }
+
+        return WeatherAtPos(list)
+    }
+
+    /** Takes in a list of favorite-cards, and gives them updated weather-data*/
+    suspend fun loadAllFavoriteCards(expiredData: Boolean){
+        val favorites = favoriteCardRepository.getAllCards()
+        val gribFiles: List<File> = loadGribFromDataSource()
+        val list = mutableListOf<WeatherAtPosHour>()
+        // We can reduce API calls if we have cards that have the same position
+        val samePositionMap = hashMapOf<Pair<Double, Double>, MutableList<String>>() // (lat, lon): Date
+
+        favorites.forEach {
+            val pos = Pair(it.lat.toDouble(), it.lon.toDouble())
+            if (samePositionMap.containsKey(pos)){
+                samePositionMap[pos]!!.add(it.date)
+            }
+            else{
+                samePositionMap[pos] = mutableListOf(it.date)
+            }
+        }
+
+        Log.d("loadFavorites", "made map: $samePositionMap")
+        // first, make sure we don't do API-calls on cards we already have updated data on
+        samePositionMap.forEach {(pos, dates) ->
+            val allFavAtPos = _weatherAtPosFavorite.value.weatherList.filter { it.lat == pos.first && it.lon == pos.second }
+            val posUpToDate: Boolean = allFavAtPos.map { it.date }.containsAll(dates)
+
+            // if the position has the data for all the dates, its considered updated and can skip to the next position
+            if(posUpToDate && !expiredData){
+                Log.d("loadFavorites", "pos $pos is up to date, skipping...")
+                list.addAll(allFavAtPos)
                 return@forEach
             }
-            val weatherAtPos = loadFavoriteCard(favCard.lat.toDouble(), favCard.lon.toDouble(), favCard.date)
-            weatherAtPos.weatherList.firstOrNull()?.let { weatherHour -> list.add(weatherHour) }
+
+            // here we can make the API-call for each position, and not for each card
+            val weatherAtPos = makeWeatherAtPos(
+                pos.first, pos.second,
+                gribFiles = gribFiles,
+                favorite = true,
+                desiredDates = dates
+            )
+
+            list.addAll(weatherAtPos.weatherList)
         }
 
         val weatherData = WeatherFavorites(list)
 
         _weatherAtPosFavorite.update { weatherData }
-    }
-
-    suspend fun loadFavoriteCard(lat: Double, lon: Double, desiredDate: String): WeatherAtPos {
-        try {
-            val heightLimit = settingsRepository.getRocketSpecValue(RocketSpecType.APOGEE).roundToInt()
-            val list = mutableListOf<WeatherAtPosHour>()
-            val allForecasts: LocationForecast? = loadForecastFromDataSource(lat, lon).firstOrNull()
-            val gribFiles: List<File> = loadGribFromDataSource()
-            val allVerticalProfiles: List<VerticalProfile> =
-                makeVerticalProfilesFromGrib(gribFiles, lat, lon, heightLimit)
-
-            val soilForecast: SoilMoistureHourly? = loadSoilForecast(lat, lon).firstOrNull()
-            val soilIndex =
-                getFirstSoilIndex(allForecasts?.properties?.timeseries?.first()?.time, soilForecast)
-
-            allForecasts?.properties?.timeseries?.forEachIndexed { hour, series ->
-                if (series.time != desiredDate){
-                    return@forEachIndexed
-                }
-                val soilMoisture: Int? = errorCheckSoilForecast(soilForecast, soilIndex, hour)
-                val date = series.time
-                val vp: VerticalProfile? = getVerticalProfileNearestHour(allVerticalProfiles, date)
-                val closenessMap = settingsRepository.getValueClosenessMap(series, vp, soilMoisture)
-                val score = settingsRepository.getReadinessScore(closenessMap)
-                vp?.addGroundInfo(series)
-                val weatherAtPosHour = WeatherAtPosHour(
-                    date,
-                    getHourFromDate(date),
-                    lat,
-                    lon,
-                    series,
-                    vp,
-                    soilMoisture,
-                    closenessMap,
-                    score,
-                    favorite = mutableStateOf(true)
-                )
-                list.add(weatherAtPosHour)
-            }
-
-            return WeatherAtPos(list)
-
-        }catch (e: Exception) {
-            return WeatherAtPos()
-        }
     }
 
     private fun getVerticalProfileNearestHour(

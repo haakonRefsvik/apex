@@ -88,7 +88,8 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
         val dummyLoadDuration = (600).toLong()
         val expiredData = (lastUpdated.value != getCurrentDate() && lastUpdated.value != "")
         val noNewCards = (lastFavoritesUpdates.value.isNotEmpty() && lastFavoritesUpdates.value.containsAll(favoriteUiState.value.favorites))
-
+        val hasData = (weatherDataUiState.value.weatherAtPos.weatherList.map { it.date })
+            .containsAll(favoriteUiState.value.favorites.map { it.date })
 
         if (isUpdatingWeatherData.value){
             Log.d("favoriteCards", "wont reload, is already loading")
@@ -101,7 +102,7 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
             return
         }
 
-        if(!expiredData && noNewCards){
+        if(!expiredData && noNewCards && hasData){
             Log.d("favoriteCards", "wont reload, data is new")
             viewModelScope.launch {
                 isUpdatingWeatherData.value = true
@@ -114,9 +115,11 @@ class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: Favor
         lastFavoritesUpdates.value = favoriteUiState.value.favorites
         lastUpdated.value = getCurrentDate()
 
+        Log.d("favoriteCards", "updating favcard-data")
+
         viewModelScope.launch {
             isUpdatingWeatherData.value = true
-            repo.loadAllFavoriteCards(favoriteUiState.value.favorites, expiredData)
+            repo.loadAllFavoriteCards(expiredData)
             isUpdatingWeatherData.value = false
             refreshKey.intValue++
         }
