@@ -8,6 +8,11 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
 
+/**
+ * This DAO interface declares functions for inserting
+ * and updating rocket specifications in the database,
+ * as well as retrieving rocket specifications by their ID as a Flow.
+ * */
 @Dao
 interface RocketSpecsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)

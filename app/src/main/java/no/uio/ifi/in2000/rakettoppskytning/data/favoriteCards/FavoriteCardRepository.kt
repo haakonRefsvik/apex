@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards
 
 import android.util.Log
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,7 +9,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteCardDao
 import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
-import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherFavorites
 
 class FavoriteCardRepository(
     private val favoriteCardDao: FavoriteCardDao,

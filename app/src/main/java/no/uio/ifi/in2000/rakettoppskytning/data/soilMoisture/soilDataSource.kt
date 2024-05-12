@@ -12,7 +12,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
 import kotlin.math.roundToInt
 
 
-/** Henter data fra en open-source api med kun percipation_sum som parameter (nedbør i sum per dag)*/
+/** Retrieves data from an open-source API with only percipation_sum as a parameter (total precipitation per day).*/
 suspend fun getSoilForecast(lat: Double, lon: Double): List<SoilMoistureHourly> {
     val client = HttpClient(CIO) {
 

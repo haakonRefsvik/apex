@@ -81,7 +81,6 @@ classDiagram
 \
 \
 Sekvensdiagram for at bruker trykker "Get Weatherdata"
-
 ```mermaid
 sequenceDiagram
     actor User
@@ -105,7 +104,6 @@ sequenceDiagram
 \
 \
 Sekvensdiagram for at bruker velger et værkort
-
 ```mermaid
 
 sequenceDiagram

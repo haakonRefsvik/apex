@@ -83,37 +83,6 @@ class SettingsViewModel(
         )
     }
 
-    private val _thresholds: Flow<Thresholds?> = settingsRepo.getThresholdValuesFromRepo()
-
-    private val _thresholdstate = MutableStateFlow(ThresholdState())
-
-    val thresholdState = combine(_thresholdstate, _thresholds) { state, thresholds ->
-        state.copy(
-            percipitation = thresholds?.percipitation ?: "",
-            humidity = thresholds?.humidity ?: "",
-            wind = thresholds?.wind ?: "",
-            shearWind = thresholds?.shearWind ?: "",
-            dewpoint = thresholds?.dewpoint ?: ""
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThresholdState())
-
-    private val _rocketspecs: Flow<RocketSpecs?> = settingsRepo.getRocketSpecValuesFromRepo()
-
-    private val _rocketspecsState = MutableStateFlow(RocketSpecState())
-
-    val rocketspecsState = combine(_rocketspecsState, _rocketspecs) { state, rocketspecs ->
-        state.copy(
-            apogee = rocketspecs?.apogee ?: "",
-            launchAngle = rocketspecs?.launchAngle ?: "",
-            launchDirection = rocketspecs?.launchDirection ?: "",
-            thrust = rocketspecs?.thrust ?: "",
-            burntime = rocketspecs?.burntime ?: "",
-            dryWeight = rocketspecs?.dryWeight ?: "",
-            wetWeight = rocketspecs?.wetWeight ?: "",
-            resolution = rocketspecs?.resolution ?: ""
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), RocketSpecState())
-
     fun getRocketSpec(): RocketSpecState {
         return RocketSpecState(
             apogee = rocketSpecMutableStates[RocketSpecType.APOGEE.ordinal].doubleValue.toString(),
