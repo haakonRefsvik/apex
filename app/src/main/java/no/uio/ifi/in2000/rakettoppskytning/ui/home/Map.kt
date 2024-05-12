@@ -383,8 +383,8 @@ fun Make3dtrajectory(
             Point.fromLngLat(lastCord.second, lastCord.first),
 
             )
-        val cordStart = Coordinates(mapViewModel.lon.value, mapViewModel.lat.value)
-        val cordEnd = Coordinates(lastCord.second, lastCord.first)
+        val cordStart = Coordinates(mapViewModel.lat.value, mapViewModel.lon.value)
+        val cordEnd = Coordinates(lastCord.first, lastCord.second)
         val middleCord = calculateMidpoint(cordStart, cordEnd)
         val distance =
             calcDistance(
@@ -393,9 +393,7 @@ fun Make3dtrajectory(
                 cordEnd.latitude,
                 cordEnd.longitude
             )
-        Log.d("WTF", lastParaPoint.toString())
         if (lastParaPoint != null) {
-            Log.d("WTF", "I AM NOT NULL")
 
             val lastParaCord = offsetLatLon(
                 mapViewModel.lat.value,
@@ -404,12 +402,11 @@ fun Make3dtrajectory(
                 lastParaPoint.y
             )
             val middleCordPara =
-                calculateMidpoint(cordStart, Coordinates(lastParaCord.second, lastParaCord.first))
+                calculateMidpoint(cordStart, Coordinates(lastParaCord.first, lastParaCord.second))
             val lastParaPoints = listOf(
                 Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
                 Point.fromLngLat(lastParaCord.second, lastParaCord.first),
             )
-            Log.d("WTFS", lastParaPoints.toString())
             PolylineAnnotation(points = lastParaPoints, lineWidth = 2.0, lineColorInt = Color.BLUE)
             PolygonAnnotation(
                 points = listOf(
@@ -428,7 +425,7 @@ fun Make3dtrajectory(
                 lastParaCord.second
             )
             PointAnnotation(
-                point = Point.fromLngLat(middleCordPara.latitude, middleCordPara.longitude),
+                point = Point.fromLngLat(middleCordPara.longitude, middleCordPara.latitude),
                 textField = "${String.format("%.2f", paraDistance)} km",
                 textAnchor = TextAnchor.TOP_RIGHT,
                 textColorInt = Color.BLUE
@@ -441,7 +438,7 @@ fun Make3dtrajectory(
 
         PolygonAnnotation(
             points = listOf(
-                generateCirclePoints(cordEnd.longitude, cordEnd.latitude, 150.0, 250)
+                generateCirclePoints(cordEnd.latitude, cordEnd.longitude, 150.0, 250)
             ), fillColorInt = Color.RED, fillOpacity = 0.5,
             onClick = {
                 Log.d("Clicked on", "Red")
@@ -452,7 +449,7 @@ fun Make3dtrajectory(
 
         PolylineAnnotation(points = linePoints, lineWidth = 2.0, lineColorInt = Color.RED)
         PointAnnotation(
-            point = Point.fromLngLat(middleCord.latitude, middleCord.longitude),
+            point = Point.fromLngLat(middleCord.longitude, middleCord.latitude),
             textField = "${String.format("%.2f", distance)} km",
             textAnchor = TextAnchor.TOP_RIGHT,
             textColorInt = Color.RED
@@ -552,6 +549,10 @@ fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double
             cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
             sin(dLon / 2) * sin(dLon / 2)
     val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    Log.d(
+        "Distance",
+        "Firstlat: $lat1, Firstlon: $lon1. SecondLat: $lat2, secondlon: $lon2. Distance: ${R * c}"
+    )
     return R * c
 }
 
