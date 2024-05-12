@@ -48,11 +48,16 @@ fun formatNewValue(
         ""
     }
 
-    Log.d("inputFormatter", "old: ${oldValueIntegers}, num-ints: $numberOfIntegers")
-    if(oldValueIntegers < numberOfIntegers && (input.toDouble() > highestInput || input.toDouble() < lowestInput)){
-        Log.d("inputFormatter", "Not changing the last integer, dropping the last because total is over the limit")
-        formattedIntegerValue = formattedIntegerValue.dropLast(1)
+    try {
+        Log.d("inputFormatter", "old: ${oldValueIntegers}, num-ints: $numberOfIntegers")
+        if(oldValueIntegers < numberOfIntegers && (input.toDouble() > highestInput || input.toDouble() < lowestInput)){
+            Log.d("inputFormatter", "Not changing the last integer, dropping the last because total is over the limit")
+            formattedIntegerValue = formattedIntegerValue.dropLast(1)
+        }
+    }catch (e: Exception){
+        Log.d("inputFormatter", "numberFormatException")
     }
+
 
     while (decimalPart.length > numberOfDecimals + 1) {
         Log.d("inputFormatter", "Dropping the last number in the decimal-part")

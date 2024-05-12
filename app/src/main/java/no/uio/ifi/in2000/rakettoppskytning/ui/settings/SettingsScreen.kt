@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -94,7 +95,6 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.weatherValueChosen
     val settings2check = settingsViewModel.rocketProfileChosen
-    val color = lerp(main100, Black, 0.3F)
 
     val scope = rememberCoroutineScope()
 
@@ -437,179 +437,17 @@ fun SettingsScreen(
     }
 
     DisposableEffect(Unit) {
-        onDispose { // Things to do after closing screen:
+        onDispose {                                         // Things to do after closing screen:
             CoroutineScope(Dispatchers.IO).launch {
-                settingsViewModel.updateThresholdValues()     // update values in thresholdRepo
+                settingsViewModel.updateThresholdValues()   // update values in thresholdRepo
                 settingsViewModel.updateRocketSpecValues()
-                weatherRepository.thresholdValuesUpdated() // update status-colors in the weatherCards
+                weatherRepository.thresholdValuesUpdated()  // update status-colors in the weatherCards
                 if (mapViewModel.makeTrajectory.value) {
-                    mapViewModel.deleteTrajectory()
+                    mapViewModel.deleteTrajectory()         // delete eventual trajectory
                 }
             }
         }
     }
-}
-
-@Composable
-fun SliderCard(settingsViewModel: SettingsViewModel) {
-    val sliderPosition =
-        settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal]
-
-    Row(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-
-    ) {
-        Column(
-            modifier = Modifier.width(170.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row {
-                Text(
-                    text = "Trajectory resolution",
-                    fontSize = 16.sp,
-                    color = settings50
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-
-            }
-
-
-            Spacer(modifier = Modifier.height(7.dp))
-            Text(
-                text = "Load every ${findPointSuffix(sliderPosition.doubleValue.roundToInt())}point" +
-                        "\n${findPerformance(sliderPosition.doubleValue.roundToInt())}",
-                lineHeight = 16.sp,
-                fontSize = 13.sp,
-                color = settings50.copy(alpha = 0.7F)
-            )
-
-
-        }
-        Spacer(modifier = Modifier.width(10.dp))
-        Column(modifier = Modifier.width(150.dp)) {
-            Slider(
-                value = sliderPosition.doubleValue.toFloat(),
-                onValueChange = { sliderPosition.doubleValue = it.toDouble() },
-                colors = SliderColors(
-                    activeTickColor = filter0,
-                    activeTrackColor = filter0,
-                    inactiveTickColor = filter50,
-                    inactiveTrackColor = filter50,
-                    disabledInactiveTickColor = filter50,
-                    disabledActiveTickColor = filter50,
-                    disabledActiveTrackColor = filter50,
-                    disabledInactiveTrackColor = filter50,
-                    thumbColor = filter0,
-                    disabledThumbColor = filter50
-                ),
-                steps = 8,
-                valueRange = 1f..10f
-            )
-        }
-    }
-
-    Spacer(modifier = Modifier.height(27.dp))
-}
-
-@SuppressLint("SuspiciousIndentation")
-@Composable
-fun SettingsCard(
-    mutableValue: MutableState<Double>,
-    title: String,
-    desc: String = "",
-    suffix: String,
-    drawableId: Int,
-    numberOfDecimals: Int = 1,
-    numberOfIntegers: Int = 2,
-    highestInput: Double = Double.POSITIVE_INFINITY,
-    lowestInput: Double = Double.NEGATIVE_INFINITY,
-) {
-    val controller = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
-    Row(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-
-    ) {
-        Column(
-            modifier = Modifier.width(210.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row {
-                Text(
-                    text = title,
-                    fontSize = 16.sp,
-                    color = settings50
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    fontSize = 13.sp,
-                    text = "($suffix)",
-                    color = settings50.copy(alpha = 0.7F)
-                )
-            }
-
-
-            if (desc != "") {
-                Spacer(modifier = Modifier.height(7.dp))
-                Text(
-                    text = desc,
-                    lineHeight = 16.sp,
-                    fontSize = 13.sp,
-                    color = settings50.copy(alpha = 0.7F)
-                )
-
-            }
-        }
-        Spacer(modifier = Modifier.width(40.dp))
-        OutlinedTextField(
-            modifier = Modifier
-                .width(80.dp)
-                .height(45.dp),
-            textStyle = TextStyle(textAlign = TextAlign.Center, color = settings50),
-            value = String.format("%.${numberOfDecimals}f", mutableValue.value),
-            onValueChange = { input ->
-                val newValue = try {
-                    val formatNewValue = formatNewValue(
-                        input,
-                        numberOfIntegers,
-                        numberOfDecimals,
-                        highestInput = highestInput,
-                        lowestInput = lowestInput,
-                        oldValue = mutableValue.value.toString()
-                    )
-                    formatNewValue
-
-                } catch (e: Exception) {
-                    mutableValue.value
-                }
-
-                mutableValue.value = newValue
-
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Number
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    controller?.hide()
-                    focusManager.clearFocus()
-                }
-            ),
-            singleLine = true,
-        )
-
-    }
-
-    Spacer(modifier = Modifier.height(27.dp))
-
 }
 
 fun findPointSuffix(res: Int): String {
@@ -624,6 +462,7 @@ fun findPointSuffix(res: Int): String {
 
 fun findPerformance(res: Int): String {
     val result = when {
+        res == 10 -> "Peak performance"
         res <= 2 -> "Low performance"
         res in 3..6 -> "Medium performace"
         res > 6 -> "High performance"

@@ -79,8 +79,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 
 /** The inputfield where you can search for the weather at a spesific lat/lon */
 
-@OptIn(MapboxExperimental::class, ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputField(
     homeScreenViewModel: HomeScreenViewModel,
@@ -93,7 +92,10 @@ fun InputField(
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
 
-    val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
+    val placeholderLat = remember { mutableDoubleStateOf(lat) }
+    val placeholderLon = remember { mutableDoubleStateOf(lon) }
+
+    Log.d("inputfield", "lat: $lat, lon $lon")
 
     LaunchedEffect(Unit) {
         homeScreenViewModel.getFavoriteLocations()
@@ -107,7 +109,7 @@ fun InputField(
     var isAddingFavorite by remember{ mutableStateOf(false) }
 
     if (isAddingFavorite) {
-        Log.d("addingFav: ", "lat: ${lat} og lon: ${lon}")
+        Log.d("addingFav: ", "lat: $lat og lon: $lon")
         AddFavoriteDialog(
             homeScreenViewModel = homeScreenViewModel,
             lat = lat,
@@ -130,20 +132,20 @@ fun InputField(
             OutlinedTextField(
                 value = String.format(
                     "%.${showDecimals}f",
-                    lat
+                    placeholderLat.doubleValue
                 ), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
                     try {
-                        mapViewModel.lat.value = formatNewValue(
+                        placeholderLat.doubleValue = formatNewValue(
                             input,
                             2,
                             5,
                             highestInput = 90.0,
                             lowestInput = -90.0,
-                            oldValue = mapViewModel.lat.value.toString()
+                            oldValue = placeholderLat.doubleValue.toString()
                         )
                     } catch (e: Exception) {
-                        Log.d("inputFormatter", "input was $input and caused exception ${e.cause}")
+                        Log.d("inputFormatter", "input was $input and caused exception")
                     }
                 },
                 Modifier
@@ -158,6 +160,8 @@ fun InputField(
                     onDone = {
                         controller?.hide()
                         focusManager.clearFocus()
+                        mapViewModel.lat.value = placeholderLat.doubleValue
+                        mapViewModel.lon.value = placeholderLon.doubleValue
                     }
                 ),
                 label = { Text("Latitude", color = firstButton50) },
@@ -167,17 +171,17 @@ fun InputField(
             OutlinedTextField(
                 value = String.format(
                     "%.${showDecimals}f",
-                    lon
+                    placeholderLon.doubleValue
                 ), // viser lat, verdien som maks 5 desimaler
                 onValueChange = { input ->
                     try {
-                        mapViewModel.lon.value = formatNewValue(
+                        placeholderLon.doubleValue = formatNewValue(
                             input,
                             4,
                             5,
                             highestInput = 180.0,
                             lowestInput = -180.0,
-                            oldValue = mapViewModel.lon.value.toString()
+                            oldValue = placeholderLon.doubleValue.toString()
                         )
                     } catch (e: Exception) {
                         Log.d(
@@ -200,6 +204,8 @@ fun InputField(
                     onDone = {
                         controller?.hide()
                         focusManager.clearFocus()
+                        mapViewModel.lat.value = placeholderLat.doubleValue
+                        mapViewModel.lon.value = placeholderLon.doubleValue
                     }
                 ),
                 label = { Text("Longitude", color = firstButton50) },
