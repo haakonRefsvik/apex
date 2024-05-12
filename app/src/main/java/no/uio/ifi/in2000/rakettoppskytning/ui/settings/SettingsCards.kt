@@ -76,7 +76,9 @@ fun SliderCard(settingsViewModel: SettingsViewModel) {
         Column(modifier = Modifier.width(150.dp)) {
             Slider(
                 value = sliderPosition.doubleValue.toFloat(),
-                onValueChange = { sliderPosition.doubleValue = it.toDouble() },
+                onValueChange = {
+                    settingsChangesMade = true
+                    sliderPosition.doubleValue = it.toDouble() },
                 colors = SliderColors(
                     activeTickColor = filter0,
                     activeTrackColor = filter0,
@@ -160,6 +162,7 @@ fun SettingsCard(
             value = String.format("%.${numberOfDecimals}f", mutableValue.value),
             onValueChange = { input ->
                 val newValue = try {
+                    settingsChangesMade = true
                     val formatNewValue = formatNewValue(
                         input,
                         numberOfIntegers,

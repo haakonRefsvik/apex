@@ -21,6 +21,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
@@ -36,9 +37,22 @@ data class Params(
 )
 
 class GribDataSource{
-
+    /***
+     * GRIB-data is not for a single point, but for a whole area.
+     * That's why we can cache our files and reuse them when we need
+     * instead of bothering the API, considering the data is not 'too' old
+     * which is over 1 hour old in our case.
+     */
     val cachedFiles = LinkedHashMap<String, File>()
+    private var dateLastCalled: LocalDateTime? = null
     suspend fun getGrib(){
+        val now = LocalDateTime.now()
+        val lastCallExceedsHour = dateLastCalled?.isBefore(now.minusHours(1)) ?: true
+
+        if (!lastCallExceedsHour && cachedFiles.isNotEmpty()){
+            Log.d("grib", "GRIB-api was called within an hour and cache contains data. Using cache instead of calling API")
+            return
+        }
 
         val client = HttpClient(CIO){
 
@@ -57,6 +71,7 @@ class GribDataSource{
         }
         Log.d("APICALL", "Kaller på grib-apiet")
         val urlAvailable = "weatherapi/isobaricgrib/1.0/available.json?type=grib2"
+        dateLastCalled = now
 
         val latestGribs: List<Grib> = try {
             client.get(urlAvailable).body()

@@ -1,6 +1,8 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,10 +34,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -47,7 +51,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
@@ -61,21 +64,25 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 import kotlin.math.abs
 
 
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
     settingsViewModel: SettingsViewModel,
-    weatherRepository: WeatherRepository,
     homeScreenViewModel: HomeScreenViewModel,
     mapViewModel: MapViewModel,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val settings1check = settingsViewModel.weatherValueChosen
     val settings2check = settingsViewModel.rocketProfileChosen
-
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit){
+        settingsChangesMade = false
+    }
 
     Scaffold(modifier = Modifier.background(settings100),
         snackbarHost = {
@@ -417,12 +424,15 @@ fun SettingsScreen(
 
     DisposableEffect(Unit) {
         onDispose {                                         // Things to do after closing screen:
-            CoroutineScope(Dispatchers.IO).launch {
-                settingsViewModel.updateThresholdValues()   // update values in thresholdRepo
-                settingsViewModel.updateRocketSpecValues()
-                homeScreenViewModel.updateCardColors() // update status-colors in the weatherCards
-                if (mapViewModel.makeTrajectory.value) {
-                    mapViewModel.deleteTrajectory()         // delete eventual trajectory
+            if (settingsChangesMade) {
+                Toast.makeText(context, "Settings updated!", Toast.LENGTH_SHORT).show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    settingsViewModel.updateThresholdValues()   // update values in thresholdRepo
+                    settingsViewModel.updateRocketSpecValues()
+                    homeScreenViewModel.updateCardColors() // update status-colors in the weatherCards
+                    if (mapViewModel.makeTrajectory.value) {
+                        mapViewModel.deleteTrajectory()         // delete eventual trajectory
+                    }
                 }
             }
         }

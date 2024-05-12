@@ -31,6 +31,9 @@ class SettingsFactory(
     }
 }
 
+// is set to true if there is any onValueChange
+var settingsChangesMade = false
+
 class SettingsViewModel(
     repo: SettingsRepository,
 ) :

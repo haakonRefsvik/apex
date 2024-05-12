@@ -29,6 +29,10 @@ class FavoriteCardRepository(
         getFavoriteCards()
     }
 
+    fun getAllCards(): List<FavoriteCard> {
+        return _allFavoriteCards.value
+    }
+
     suspend fun deleteFavoriteCard(date: String, lat: String, lon: String){
         favoriteCardDao.deleteFavoriteCard(FavoriteCard(lat, lon, date))
         getFavoriteCards()

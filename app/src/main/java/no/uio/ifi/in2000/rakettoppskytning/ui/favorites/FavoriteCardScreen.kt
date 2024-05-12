@@ -57,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatter
@@ -85,9 +86,11 @@ fun FavoriteCardScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val favorites by favoriteCardViewModel.favoriteUiState.collectAsState()
     LaunchedEffect(Unit) {
-        favoriteCardViewModel.getFavoritesFromDatabase()
-        favoriteCardViewModel.removeExpiredCards()
-        favoriteCardViewModel.refreshWeatherData()
+        // get, remove and refresh favorite-cards
+        launch { favoriteCardViewModel.getFavoritesFromDatabase() }
+        launch { favoriteCardViewModel.removeExpiredCards() }
+        launch { favoriteCardViewModel.refreshWeatherData() }
+
     }
 
     Scaffold(modifier = Modifier.background(settings100),
