@@ -188,7 +188,7 @@ fun WeatherList(
                                             mapViewModel.lon.value = favorite.lon.toDouble()
 
                                             controller?.hide()
-                                            homeScreenViewModel.getWeatherByCord(lat, lon)
+                                            homeScreenViewModel.getWeatherByPos(lat, lon)
 
 
                                             scope.launch {

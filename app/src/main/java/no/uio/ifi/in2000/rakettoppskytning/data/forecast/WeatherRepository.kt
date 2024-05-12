@@ -1,9 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.forecast
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,9 +10,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import java.io.File
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.*
 import no.uio.ifi.in2000.rakettoppskytning.data.grib.makeVerticalProfilesFromGrib
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.errorCheckSoilForecast
@@ -22,8 +17,6 @@ import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getFirstSoilIndex
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.calculateHoursBetweenDates
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getHourFromDate
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
@@ -60,26 +53,13 @@ class WeatherRepository(
         }
 
     }
-
-    //TODO: THIS FUNCTION NEVER UPDATES CARD-COLORS BECAUSE weatherAtPos.value IS AN EMPTY LIST
-    suspend fun thresholdValuesUpdated() {
+    fun updateCardColors() {
         val weatherAtPos = _weatherAtPos.value
 
         val updatedWeatherList = weatherAtPos.weatherList.map { weather ->
-            val closenessMap =
-                settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile, weather.soilMoisture)
+            val closenessMap = settingsRepository.getValueClosenessMap(weather.series, weather.verticalProfile, weather.soilMoisture)
             val score = settingsRepository.getReadinessScore(closenessMap)
-            WeatherAtPosHour(
-                weather.date,
-                getHourFromDate(weather.date),
-                weather.lat,
-                weather.lon,
-                weather.series,
-                weather.verticalProfile,
-                weather.soilMoisture,
-                closenessMap,
-                score
-            )
+            weather.copy(valuesToLimitMap = closenessMap, closeToLimitScore = score)
         }
 
         val updatedWeatherAtPos = WeatherAtPos(updatedWeatherList)
