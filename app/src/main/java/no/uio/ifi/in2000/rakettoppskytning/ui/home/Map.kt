@@ -111,9 +111,7 @@ fun Map(
                 homeScreenViewModel,
                 settingsViewModel
             )
-        }
-
-        else {
+        } else {
             NewPointAnnotation(
                 "",
                 lat = lat,
@@ -156,11 +154,14 @@ fun Make3dtrajectory(
 
     ) {
     val SOURCE_ID1 = "source1"
+    val SOURCE_ID2 = "source2"
+    val paraId = "paraId"
     val redball = "asset://bigball.glb"
     val blueball = "asset://blueball.glb"
+    val parachute = "asset://parachute.glb"
     val MODEL_ID_KEY = "model-id-key"
     val MODEL_ID_2 = "model-id-2"
-    val SAMPLE_MODEL_URI_2 = "asset://portalrocketv3.glb"
+    val SAMPLE_MODEL_URI_2 = "asset://portalrocketSimpleMaterials.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
     val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
@@ -191,6 +192,12 @@ fun Make3dtrajectory(
     val tra = mapViewModel.trajectory.value
 
     val s = tra.find { it.z in 600.0..1000.0 }
+    var paraCord = tra.find { it.parachuted && (it.z in 2200.0..2500.0) }
+    if (paraCord == null) {
+        paraCord = tra.find { it.parachuted }
+    }
+
+
     val hep = tra.indexOf(s)
     var pitch = Pair(0.0, 0.0)
     if (s != null) {
@@ -314,6 +321,47 @@ fun Make3dtrajectory(
                         modelRoughness(0.1)
                     }
 
+                    if (paraCord != null) {
+                        +model(paraId) {
+                            uri(parachute)
+                        }
+
+
+                        +geoJsonSource(SOURCE_ID2) {
+                            featureCollection(
+                                FeatureCollection.fromFeatures(
+
+                                    listOf(
+
+                                        Feature.fromGeometry(cords)
+                                            .also {
+                                                it.addStringProperty(
+                                                    MODEL_ID_KEY,
+                                                    paraId,
+                                                )
+                                            },
+
+                                        )
+                                )
+                            )
+                        }
+
+                        +modelLayer(paraId, SOURCE_ID2) {
+                            modelId(get(MODEL_ID_KEY))
+                            modelType(ModelType.COMMON_3D)
+                            modelScale(listOf(50.0, 50.0, 50.0))
+                            modelTranslation(listOf(paraCord.x, paraCord.y * -1, paraCord.z))
+
+
+
+                            modelCastShadows(true)
+                            modelReceiveShadows(true)
+                            modelRoughness(0.1)
+                        }
+
+
+                    }
+
 
                 }
             )
@@ -325,21 +373,16 @@ fun Make3dtrajectory(
 
     if (mapViewModel.showTraDetails.value) {
         val lastPoint = tra.last()
-        val highestPoint = tra.maxBy { it.z }
+        val lastParaPoint = tra.find { it.z <= 10 && it.parachuted }
         val lastCord =
             offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
-        val highestCord =
-            offsetLatLon(
-                mapViewModel.lat.value,
-                mapViewModel.lon.value,
-                highestPoint.x,
-                highestPoint.y
-            )
+
 
         val linePoints = listOf(
             Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
-            Point.fromLngLat(lastCord.second, lastCord.first)
-        )
+            Point.fromLngLat(lastCord.second, lastCord.first),
+
+            )
         val cordStart = Coordinates(mapViewModel.lon.value, mapViewModel.lat.value)
         val cordEnd = Coordinates(lastCord.second, lastCord.first)
         val middleCord = calculateMidpoint(cordStart, cordEnd)
@@ -350,6 +393,50 @@ fun Make3dtrajectory(
                 cordEnd.latitude,
                 cordEnd.longitude
             )
+        Log.d("WTF", lastParaPoint.toString())
+        if (lastParaPoint != null) {
+            Log.d("WTF", "I AM NOT NULL")
+
+            val lastParaCord = offsetLatLon(
+                mapViewModel.lat.value,
+                mapViewModel.lon.value,
+                lastParaPoint.x,
+                lastParaPoint.y
+            )
+            val middleCordPara =
+                calculateMidpoint(cordStart, Coordinates(lastParaCord.second, lastParaCord.first))
+            val lastParaPoints = listOf(
+                Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
+                Point.fromLngLat(lastParaCord.second, lastParaCord.first),
+            )
+            Log.d("WTFS", lastParaPoints.toString())
+            PolylineAnnotation(points = lastParaPoints, lineWidth = 2.0, lineColorInt = Color.BLUE)
+            PolygonAnnotation(
+                points = listOf(
+                    generateCirclePoints(lastParaCord.first, lastParaCord.second, 150.0, 250)
+                ), fillColorInt = Color.BLUE, fillOpacity = 0.5,
+                onClick = {
+
+                    true
+                }
+
+            )
+            val paraDistance = calcDistance(
+                mapViewModel.lat.value,
+                mapViewModel.lon.value,
+                lastParaCord.first,
+                lastParaCord.second
+            )
+            PointAnnotation(
+                point = Point.fromLngLat(middleCordPara.latitude, middleCordPara.longitude),
+                textField = "${String.format("%.2f", paraDistance)} km",
+                textAnchor = TextAnchor.TOP_RIGHT,
+                textColorInt = Color.BLUE
+
+            )
+
+
+        }
         Log.d("Distance", distance.toString())
 
         PolygonAnnotation(
@@ -361,24 +448,16 @@ fun Make3dtrajectory(
                 true
             }
         )
-        PolygonAnnotation(
-            points = listOf(
-                generateCirclePoints(highestCord.first, highestCord.second, 150.0, 250)
-            ), fillColorInt = Color.GREEN, fillOpacity = 0.5,
-            onClick = {
-                Log.d("Clicked on", "Green")
-                true
-            }
 
-        )
 
-        PolylineAnnotation(points = linePoints, lineWidth = 2.0)
+        PolylineAnnotation(points = linePoints, lineWidth = 2.0, lineColorInt = Color.RED)
         PointAnnotation(
             point = Point.fromLngLat(middleCord.latitude, middleCord.longitude),
             textField = "${String.format("%.2f", distance)} km",
             textAnchor = TextAnchor.TOP_RIGHT,
+            textColorInt = Color.RED
 
-            )
+        )
 
     }
 
