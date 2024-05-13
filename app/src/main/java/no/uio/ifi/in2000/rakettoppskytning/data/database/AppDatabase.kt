@@ -9,6 +9,11 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 
+
+/**
+ * This code defines a database using Room in Android, specifying its entities and version.
+ * provides an instance of a database which allows access to different DAOs
+ * */
 @Database(
     entities = [Favorite::class, Thresholds::class, FavoriteCard::class, RocketSpecs::class],
     version = 7

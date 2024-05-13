@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.ballistic
 
-import android.util.Log
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import kotlin.math.abs
 import kotlin.math.cos

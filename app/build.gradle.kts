@@ -155,8 +155,8 @@ dependencies {
 
     //const val hilt_compiler = "com.google.dagger:hilt-compiler:${Versions.hilt}"
     ///const val room_compiler = "androidx.room:room-compiler:${Versions.room}"
-     implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
 
 }

@@ -34,6 +34,8 @@ suspend fun getThresholdValues(thresholdsDao: ThresholdsDao): ThresholdValues {
     }
 }
 
+/**
+This function generates and returns default threshold values using a predefined set of values.*/
 fun getDefaultThresholdValues(): ThresholdValues {
     val map = hashMapOf(
         ThresholdType.MAX_PRECIPITATION.name to 0.0,
@@ -46,12 +48,13 @@ fun getDefaultThresholdValues(): ThresholdValues {
     return ThresholdValues(map)
 }
 
+/** This function converts a ThresholdValues object to a Thresholds database object using a map of values.*/
 fun mapToDatabaseObject(values: ThresholdValues): Thresholds {
     val map = values.valueMap
 
     return Thresholds(
         percipitation = map[ThresholdType.MAX_PRECIPITATION.name].toString(),
-        humidity = map[ThresholdType.MAX_PRECIPITATION.name].toString(),
+        humidity = map[ThresholdType.MAX_HUMIDITY.name].toString(),
         wind = map[ThresholdType.MAX_WIND.name].toString(),
         shearWind = map[ThresholdType.MAX_SHEAR_WIND.name].toString(),
         dewpoint = map[ThresholdType.MAX_DEW_POINT.name].toString(),
