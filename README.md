@@ -23,23 +23,23 @@
     Hvis appen ikke kjører på grunnet mangel av nøkler eller forbbiden authorisation, 
     så prøv dette:
 
-### Privat nøkel:
+### Offentlig nøkkel:
 
-    Den offentlige nøkkelen burde ligge i 
-    res -> values -> strings.xml
+  
+    Gradle Scripts -> local.properties på denne måten: MAPBOX_DOWNLOADS_TOKEN = PRIVAT APINØKKEL
     Variablen burde hete MAPBOX_DOWNLOADS_TOKEN,
     eller ha et likt variabel navn som i settings.gradle.kt localProperties.getProperty("Variabel)
+    
 
-### Offentlig nøkel:
-
-    Under resources på denne måten:  <string name="mapbox_access_token" translatable="false" 
-    tools:ignore="UnusedResources">OFFENTLIG APINØKKEL</string>.
-    Hvis api nøkkel for å laste ned kartet ikke fungrer så skal den ligge i 
-    Gradle Scripts -> local.properties på denne måten: MAPBOX_DOWNLOADS_TOKEN = PRIVAT APINØKKEL
+### Privat nøkkel:
+    Den offentlige nøkkelen burde ligge i res -> values -> strings.xml
+    Under resources på denne måten:  
+    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">OFFENTLIG APINØKKEL</string>.
+   
 
 ### settings.gradle.kt:
 
-    Dette må ligge i settings.gradle.kts: 
+    Dette burde ligge i settings.gradle.kts: 
     dependencyResolutionManagement {
         repositories {
             google()
