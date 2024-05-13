@@ -2,10 +2,15 @@
 
 ## Mapbox:
 
+    Hvis appen ikke kjører på grunnet mangel av nøkler eller forbbiden authorisation, 
+    så prøv dette:
+
 ### Privalt nøkel:
 
-    Hvis appen ikke kjører på grunn av api nøklene mangler, så skal den offentlige nøkkelen ligge i 
+    Den offentlige nøkkelen burde ligge i 
     res -> values -> strings.xml
+    Variablen burde hete MAPBOX_DOWNLOADS_TOKEN,
+    eller endre til det samme som er settings.gradle.kt under getProperty
 
 ### Offentlig nøkel:
 
