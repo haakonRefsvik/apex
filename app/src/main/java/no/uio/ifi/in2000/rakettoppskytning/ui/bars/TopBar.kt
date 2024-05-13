@@ -1,22 +1,48 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.bars
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(navController: NavController) {
-    androidx.compose.material3.TopAppBar(
-        title = {}, modifier = Modifier
-            .background(Color.Transparent)
-            .height(0.dp)
-
+fun TopBar(navController: NavController) {
+    TopAppBar(
+        colors = TopAppBarColors(settings100, settings100, settings0, settings0, settings0),
+        navigationIcon = {
+            IconButton(onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = "ArrowBack",
+                    tint = settings0
+                )
+            }
+        },
+        title = {
+            ClickableText(
+                text = AnnotatedString(
+                    text = "",
+                    spanStyle = SpanStyle(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 15.sp
+                    )
+                ),
+                onClick = { navController.navigateUp() },
+            )
+        },
     )
 }

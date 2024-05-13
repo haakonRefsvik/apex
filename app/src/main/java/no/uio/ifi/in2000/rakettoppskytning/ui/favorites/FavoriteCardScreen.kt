@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
@@ -63,6 +64,7 @@ import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatter
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
+import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
@@ -99,30 +101,7 @@ fun FavoriteCardScreen(
         },
 
         topBar = {
-            TopAppBar(
-                colors = TopAppBarColors(settings100, settings100, settings0, settings0, settings0),
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowLeft,
-                            contentDescription = "ArrowBack",
-                            tint = settings0
-                        )
-                    }
-                },
-                title = {
-                    ClickableText(
-                        text = AnnotatedString(
-                            text = "",
-                            spanStyle = SpanStyle(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                fontSize = 15.sp
-                            )
-                        ),
-                        onClick = { navController.navigateUp() },
-                    )
-                },
-            )
+            TopBar(navController = navController)
         },
         bottomBar = {
             BottomBar(
