@@ -24,7 +24,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
 import androidx.compose.ui.graphics.lerp
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.iconButton50
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +47,9 @@ fun BottomBar(
     homeScreenViewModel: HomeScreenViewModel,
     currentScreen: String,
 ) {
-    val color = lerp(main100, Black, 0.3F)
+    val unChosenColor = iconButton50
+    val chosenColor = main0
+    val color = lerp(main100, Black, 0.2F)
     val scope = rememberCoroutineScope()
     BottomAppBar(
         containerColor = color,
@@ -79,9 +84,9 @@ fun BottomBar(
                     contentDescription = "Favorite",
                     tint =
                     if (currentScreen == Routes.favCards) {
-                        main0
+                        chosenColor
                     } else {
-                        secondButton0
+                        unChosenColor
                     },
                 )
 
@@ -102,9 +107,9 @@ fun BottomBar(
                     contentDescription = "Location",
                     tint =
                     if (currentScreen == Routes.home) {
-                        main0
+                        chosenColor
                     } else {
-                        secondButton0
+                        unChosenColor
                     }
                 )
             }
@@ -121,9 +126,9 @@ fun BottomBar(
                     contentDescription = "Settings",
                     tint =
                     if (currentScreen == Routes.settings) {
-                        main0
+                        chosenColor
                     } else {
-                        secondButton0
+                        unChosenColor
                     }
                 )
             }

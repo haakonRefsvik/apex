@@ -46,6 +46,8 @@ val time50 = Color(0xFF494B5E)// Mellom-datoer-markør
 val time35 = Color(0xFFFCA311) // "Todays date"-border
 val time0 = Color(0xFFFFFFFF) // Valgte datoer, generelt nummer+tekst, knapp, InputField-tall
 
+val iconButton50 = Color(0xFF7B7C8E)
+
 //------------------- CUSTOM DARK ---------------------
 
 val mainDark100 = Color(0xFF14213D)

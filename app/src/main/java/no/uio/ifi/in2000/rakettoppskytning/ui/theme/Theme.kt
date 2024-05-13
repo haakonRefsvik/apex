@@ -52,9 +52,9 @@ private val LightColorScheme = lightColorScheme(
     inversePrimary = time65,
     surfaceDim = time35,
     surfaceBright = time0,
+    surfaceContainerLowest = iconButton50,
 
     /*
-    surfaceContainerLowest = surfaceContainerLowestLight,
     surfaceContainerLow = surfaceContainerLowLight,
     surfaceContainer = surfaceContainerLight,
     surfaceContainerHigh = surfaceContainerHighLight,
