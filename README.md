@@ -1,6 +1,6 @@
-# team-25
+# Apex
 
-## Mapbox:
+# Mapbox:
 
     Hvis appen ikke kjører på grunnet mangel av nøkler eller forbbiden authorisation, 
     så prøv dette:
