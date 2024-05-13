@@ -239,3 +239,63 @@ Map-->>HomeScreen: Shows trajectory
 
 ```
 
+
+\
+\ 
+
+Sekvensdiagram:
+Legg til favoritt
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant HomeScreen
+    participant HomeScreenViewModel
+    participant FavoriteRepository
+    participant FavoriteDao
+ 
+   
+    User->>HomeScreen: Add card to favorites
+      alt name in usee
+
+    HomeScreen ->> HomeScreenViewModel: isNameAlreadyUsed
+    HomeScreenViewModel ->> FavoriteRepository: getFavoriteLocations()
+    FavoriteRepository-)+ FavoriteDao: getFavoriteLocation()
+
+   
+    FavoriteDao --)- FavoriteRepository: favorite locations
+    FavoriteRepository->>HomeScreenViewModel: getFavoriteLocations()
+
+    HomeScreenViewModel -->> HomeScreen: Name is already in use
+
+    end
+
+    alt location in use
+
+    HomeScreen ->> HomeScreenViewModel: checkForLocation(pos)
+        HomeScreenViewModel ->> FavoriteRepository: getFavoriteLocations()
+    FavoriteRepository-)+ FavoriteDao: getFavoriteLocation()
+
+   
+    FavoriteDao --)- FavoriteRepository: favorite locations
+    FavoriteRepository->>HomeScreenViewModel: getFavoriteLocations()
+    HomeScreenViewModel -->> HomeScreen: location is in use
+
+
+    end
+    HomeScreen ->> HomeScreenViewModel: AddFavoriteDialogCorrect(lat, lon)
+    HomeScreenViewModel ->> FavoriteRepository: addFavorite(lat, lon)
+    FavoriteRepository ->> FavoriteDao: insertFavoriteLocation(lat, lon)
+    
+    HomeScreenViewModel -)+ FavoriteRepository: getFavoriteLocations()
+    
+    FavoriteRepository --)- HomeScreenViewModel: favorite locations
+    HomeScreen -)+ HomeScreenViewModel: MakeFavoriteCard(favoriteLocations)
+    HomeScreenViewModel --)- HomeScreen: favorite location card
+
+  
+    
+   
+
+
+```
