@@ -8,13 +8,22 @@
     Jostein Jensen
     Suad Raage
     Håkon Refsvik
+    
+# IFI-Proxy:
+
+    Det følger ikke med en API-nøkkel til prosjektet som vi bruker for å hente værdatas. 
+    Dette har vi gjort av sikkerhetsmessige årsaker. 
+    API-nøkkelen skal ligge i 
+    res -> values -> strings.xml 
+    på formatet
+    <string name="in2000ProxyKey" translatable="false">DIN-API-NØKKEL-HER</string>
 
 # Mapbox:
 
     Hvis appen ikke kjører på grunnet mangel av nøkler eller forbbiden authorisation, 
     så prøv dette:
 
-### Privalt nøkel:
+### Privat nøkel:
 
     Den offentlige nøkkelen burde ligge i 
     res -> values -> strings.xml
