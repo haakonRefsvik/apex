@@ -36,7 +36,7 @@ An essential feature to our app is Mapbox, a location service, providing an inte
 ### 3.1.3 Room database
 The Room database serves as a timesaver in our app, and takes away a lot of the workload the app needs to uphold. By saving larger chunks of data, such as the GRIB-files, locally on the running device, the app saves a lot of time retrieving this data later. It also adds features to the app such as saving locations picked from the Mapbox-map, so that the user can have them stored instead of having to remember specifically where the desired point was.
 
-### 3.2 API, SDK and libraries
+## 3.2 API, SDK and libraries
 In our Android App, built on the principles of MVVM architecture, maintaining a clean and organized codebase is important for enabling seamless further development and ensuring ease of maintenance. While our app has a good consistency in class names, function names and folder organization, the app faces challenges with the management of libraries and dependencies as they age and newer versions are released.
 
 The app’s lowest SDK level is 26, because a number of reasons. Our app uses a variety of libraries and third party services. We see Mapbox as an essential part of our app, and removing Mapbox in favour of a lower SDK level would take away the apps “core” and main functionality. Mapbox minimum SDK is 21, but the graphs on the detail-screen and the Room database requires a SDK level of minimum 26.
