@@ -196,11 +196,9 @@ sequenceDiagram
 
 ```
 \
+Sekvensdiagram: Appen skal kunne regne ballistisk bane på et gitt tidspunkt
 \
-
-Sekvensdiagram:
-Appen skal kunne regne ballistisk bane ut i fra værforholdene på et gitt tidspunkt
-Pre betingelse: valgt et tidspunkt for en bestemt lat og lon.
+Pre betingelse: bruker har allerde valgt et tidspunkt for en bestemt lat og lon.
 
 ```mermaid
 sequenceDiagram
@@ -240,9 +238,9 @@ Map-->>HomeScreen: Shows trajectory
 ```
 
 
-\
-\ 
 
+\
+\
 Sekvensdiagram:
 Legg til favoritt
 
@@ -298,4 +296,31 @@ sequenceDiagram
    
 
 
+```
+
+\
+\
+Sekvensdiagram : Brukeren skal kunne tilpasse grenseverdiene for værdata til sin rakett
+\
+Pre betingelse: Bruker har skrevet inn oppdaterte verdier
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant SettingScreen
+    participant SettingsViewModel
+    participant SettingsRepository
+    participant ThresholdDatabase
+    User ->> SettingScreen: Interacts with settings
+    User ->> SettingScreen: Closes SettingScreen
+    SettingScreen ->> SettingsViewModel: updateThresholdValues()
+    SettingsViewModel ->> SettingsViewModel: theresholdValues
+    SettingsViewModel ->> SettingsRepository: updateThresholdValues(theresholdValues)
+    SettingsRepository ->> ThresholdDatabase: updateThresholdValues(theresholdValues)
+    SettingsViewModel -)+ SettingsRepository: getThresholdValue()
+    SettingsRepository ->> ThresholdDatabase: getThresholdValue()
+    ThresholdDatabase -->> SettingsRepository: Thresholds
+    SettingsRepository --)- SettingsViewModel: Thresholds
+    SettingsViewModel -->> SettingScreen: uses updated thresholds
+    SettingScreen -->> User: Shows confirmation of saved setting
 ```
