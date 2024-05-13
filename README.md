@@ -10,7 +10,7 @@
     Den offentlige nøkkelen burde ligge i 
     res -> values -> strings.xml
     Variablen burde hete MAPBOX_DOWNLOADS_TOKEN,
-    eller endre til det samme som er settings.gradle.kt under getProperty
+    eller ha et likt variabel navn som i settings.gradle.kt localProperties.getProperty("Variabel)
 
 ### Offentlig nøkel:
 
