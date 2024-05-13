@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
                     if (!isNetworkAvailable) {
                         NetworkSnackbar()
                     }
+
                 }
             }
         }
