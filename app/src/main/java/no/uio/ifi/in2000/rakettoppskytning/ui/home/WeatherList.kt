@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,6 +69,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -399,7 +402,7 @@ fun WeatherList(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            ElevatedCard(
+                            Card(
                                 modifier = Modifier
                                     .height(40.dp)
                                     .width(340.dp),

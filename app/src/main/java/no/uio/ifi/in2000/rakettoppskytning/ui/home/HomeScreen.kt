@@ -1,8 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +34,6 @@ import androidx.navigation.NavHostController
 import com.mapbox.maps.MapboxExperimental
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
-import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopAppBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
@@ -44,7 +41,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
-@OptIn(ExperimentalMaterial3Api::class, MapboxExperimental::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -61,10 +58,6 @@ fun HomeScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-
-        topBar = {
-            TopAppBar(navController)
         },
         bottomBar = {
             BottomBar(navController, homeScreenViewModel, Routes.home)
