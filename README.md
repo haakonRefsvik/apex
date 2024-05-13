@@ -20,7 +20,7 @@
 
 # Mapbox:
 
-    Hvis appen ikke kjører på grunnet mangel av nøkler eller forbbiden authorisation, 
+    Hvis appen ikke kjører grunnet mangel av nøkler eller forbbiden authorisation, 
     så prøv dette:
 
 ### Offentlig nøkkel:
