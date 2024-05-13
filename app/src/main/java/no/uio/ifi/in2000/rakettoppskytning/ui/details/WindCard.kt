@@ -267,6 +267,7 @@ fun WindCardAltitude(allLevels: List<LevelData>){
                                 ),
                             ),
                             modelProducer,
+                            zoomState = getDefaultGraphZoom()
                         )
                     }
                 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mapbox.maps.extension.style.expressions.dsl.generated.step
+import com.mapbox.maps.extension.style.expressions.dsl.generated.zoom
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberTopAxis
 import com.patrykandpatrick.vico.compose.axis.rememberAxisLabelComponent
@@ -44,6 +45,7 @@ import com.patrykandpatrick.vico.compose.chart.layer.rememberColumnCartesianLaye
 import com.patrykandpatrick.vico.compose.chart.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.chart.layer.rememberLineSpec
 import com.patrykandpatrick.vico.compose.chart.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.chart.zoom.VicoZoomState
 import com.patrykandpatrick.vico.compose.chart.zoom.rememberVicoZoomState
 import com.patrykandpatrick.vico.compose.component.rememberLineComponent
 import com.patrykandpatrick.vico.compose.component.rememberShapeComponent
@@ -65,6 +67,7 @@ import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.model.ExtraStore
 import com.patrykandpatrick.vico.core.model.columnSeries
 import com.patrykandpatrick.vico.core.model.lineSeries
+import com.patrykandpatrick.vico.core.zoom.Zoom
 import com.patrykandpatrick.vico.views.component.shape.shader.verticalGradient
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
@@ -74,6 +77,14 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
 
+fun getDefaultGraphZoom(): VicoZoomState {
+    return VicoZoomState(
+        true,
+        Zoom.static(2.0F),
+        Zoom.static(1.0F),
+        Zoom.static(3.0F)
+    )
+}
 @Composable
 fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
     ElevatedCard(
@@ -268,6 +279,7 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                                 ),
                             ),
                             modelProducer,
+                            zoomState = getDefaultGraphZoom()
                         )
                     }
                 }
@@ -381,11 +393,12 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                                     title = "altitude in meters",
                                     guideline = null,
                                     valueFormatter = { value, _, _ ->
-                                        "${shearList[value.toInt() % 2].altitude.roundToInt()} m"
+                                        "${shearList[value.toInt()].altitude.roundToInt()} m"
                                     },
                                 ),
                             ),
                             modelProducer,
+                            zoomState = getDefaultGraphZoom()
                         )
                     }
                 }
