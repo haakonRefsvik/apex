@@ -42,43 +42,11 @@ In our Android App, built on the principles of MVVM architecture, maintaining a 
 The app’s lowest SDK level is 26, because a number of reasons. Our app uses a variety of libraries and third party services. We see Mapbox as an essential part of our app, and removing Mapbox in favour of a lower SDK level would take away the apps “core” and main functionality. Mapbox minimum SDK is 21, but the graphs on the detail-screen and the Room database requires a SDK level of minimum 26.
 ### 3.2.1 Further development and maintenance
 
-<table>
-<tr>
-<th align="center">
-<img width="441" height="1">
-<p> 
-<small>
-Areas of concern
-</small>
-</p>
-</th>
-<th align="center">
-<img width="441" height="1">
-<p> 
-<small>
-Solutions
-</small>
-</p>
-</th>
-</tr>
-<tr>
-<td align="center">
-Compatability concerns: As our app evolves, libraries and dependencies may become outdated, leading to compatibility issues with newer Android versions or other libraries. Updating these dependencies is crucial to ensure that our app remains functional and performs optimally across various devices and platforms.
-</td>
-<td align="center">
-Compatability concerns: As our app evolves, libraries and dependencies may become outdated, leading to compatibility issues with newer Android versions or other libraries. Updating these dependencies is crucial to ensure that our app remains functional and performs optimally across various devices and platforms.
-</td>
-</tr>
-<td align="center">
-Feature maintenance: New versions of libraries often introduce additional features, bug fixes, and performance improvements. By keeping our dependencies up to date, we can leverage these enhancements to enhance the user experience and stay competitive in the ever-changing app landscape.
-</td>
-<td>
-Regular Audits and Updates: Establish a proactive approach to dependency management by conducting regular audits of our app's dependencies and staying informed about new releases and updates. Utilize tools like Gradle Dependency Updates Plugin to automate the process of identifying and applying available updates.
-</td>
-<td>
-Semantic Versioning: Follow semantic versioning guidelines when specifying dependencies in our app's build.gradle files. By adhering to semantic versioning conventions, we can ensure that updates are backward compatible and minimize the risk of introducing damaging changes and/or bugs.
-</td>
-<td>
-Continuous Integration and Testing: Integrate dependency updates into our continuous integration pipeline and automate testing to detect any regressions or compatibility issues introduced by updated dependencies.
-</td>
-</table>
+## Areas of Concern | Solutions
+| Areas of concern                | Solutions                                                  |
+|--------------------------------|------------------------------------------------------------|
+| Compatibility concerns         | Regular Audits and Updates: Establish a proactive approach to dependency management by conducting regular audits of our app's dependencies and staying informed about new releases and updates. Utilize tools like Gradle Dependency Updates Plugin to automate the process of identifying and applying available updates. |
+| Feature maintenance            | Feature maintenance: New versions of libraries often introduce additional features, bug fixes, and performance improvements. By keeping our dependencies up to date, we can leverage these enhancements to enhance the user experience and stay competitive in the ever-changing app landscape. |
+|                                |                                                            |
+| Semantic Versioning            | Semantic Versioning: Follow semantic versioning guidelines when specifying dependencies in our app's build.gradle files. By adhering to semantic versioning conventions, we can ensure that updates are backward compatible and minimize the risk of introducing damaging changes and/or bugs. |
+| Continuous Integration Testing | Continuous Integration and Testing: Integrate dependency updates into our continuous integration pipeline and automate testing to detect any regressions or compatibility issues introduced by updated dependencies. |
