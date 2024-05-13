@@ -50,7 +50,7 @@ class GribDataSource{
         val lastCallExceedsHour = dateLastCalled?.isBefore(now.minusHours(1)) ?: true
 
         if (!lastCallExceedsHour && cachedFiles.isNotEmpty()){
-            Log.d("grib", "GRIB-api was called within an hour and cache contains data. Using cache instead of calling API")
+            Log.d("APICALL", "GRIB-api was called within an hour and cache contains data. Using cache instead of calling API")
             return
         }
 
