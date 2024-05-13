@@ -195,4 +195,47 @@ sequenceDiagram
     FavoriteRepository->>-FavoriteRepository: update states
 
 ```
+\
+\
+
+Sekvensdiagram:
+Appen skal kunne regne ballistisk bane ut i fra værforholdene på et gitt tidspunkt
+Pre betingelse: valgt et tidspunkt for en bestemt lat og lon.
+
+```mermaid
+sequenceDiagram
+actor User
+participant HomeScreen
+participant DetailScreen
+participant Map
+participant MapViewModel
+participant Trajectory
+participant SettingsViewModel
+participant SettingsRepository
+participant RocketSpecsDatabase
+
+
+User->>DetailScreen: Clicked "Calculate Ballistic trajectory"
+DetailScreen-)+MapViewModel: deleteTrajectory()
+MapViewModel->>MapViewModel:makeTrajectory = false
+MapViewModel->>MapViewModel:trajectory = listOf()
+DetailScreen->>MapViewModel: makeTrajectory
+MapViewModel-->>Map: makeTrajectory = true 
+MapViewModel-->>Map: makeTrajectory
+Map-)+Map: Make3dtrajectory()
+Map-)+SettingsViewModel: getRocketSpec()
+SettingsViewModel-)+SettingsRepository: getRocketSpecValue()
+SettingsRepository-)+RocketSpecsDatabase: getRocketSpecValues()
+RocketSpecsDatabase--)-SettingsRepository: RocketSpecValues
+SettingsRepository--)-SettingsViewModel: RocketSpecValue
+SettingsViewModel--)-Map: RocketSpecs
+
+
+Map-)+MapViewModel: loadTrajectory(allLevels, rocketSpecs)
+MapViewModel->>Trajectory: simulateTrajectory(Rocketspecs)
+Trajectory-->>MapViewModel: trajectoryList
+MapViewModel--)-Map: trajectory
+Map-->>HomeScreen: Shows trajectory
+
+```
 
