@@ -1,5 +1,14 @@
 # Apex
 
+## Gruppemedlemmer:
+
+    Magnus Kleven
+    Julian Rubilar
+    Nasteeho Abdullahi Elmi
+    Jostein Jensen
+    Suad Raage
+    Håkon Refsvik
+
 # Mapbox:
 
     Hvis appen ikke kjører på grunnet mangel av nøkler eller forbbiden authorisation, 
