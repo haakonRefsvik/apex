@@ -366,18 +366,13 @@ Use case of various user stories
 
 Textual description: 
 \
-\
 “I want to see weather data at a give position”
-\
 \
 “I want to see the weather data at a specific hour”
 \
-\
 “I want to see a predicted tracjetory on a given position”
 \
-\
 “I want to save a weather data at a specific time and locaiton”
-\
 \
 
 ![./modellingDoc/uscase.png](./modellingDoc/usecase.png)
