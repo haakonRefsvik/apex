@@ -1,9 +1,9 @@
 # Modelling
 \
 \
-Klassestruktur -> For lagring av værdata:
+Class structure -> For storing weather data:
 
-Tekslig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
+Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
 ```mermaid
 
@@ -31,9 +31,9 @@ classDiagram
 ```
 \
 \
-Klassestruktur -> For VerticalProfile:
+Class structure -> For VerticalProfile:
 
-Tekstlig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
+Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
 ```mermaid
 
@@ -84,9 +84,9 @@ classDiagram
 ```
 \
 \
-Sekvensdiagram -> for at bruker trykker "Get Weatherdata":
+SequenceDiagram -> When user clicks "Get Weatherdata":
 
-Tekstlig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
+Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
 ```mermaid
 sequenceDiagram
@@ -109,9 +109,9 @@ sequenceDiagram
 ```
 \
 \
-Sekvensdiagram -> for at bruker velger et værkort:
+SequenceDiagram -> When user selects a weather-card:
 
-Tekstlig beskrivelse: “Jeg ønsker en tydelig oversikt over vind og shear wind, fart og retning, bakkefukt, temp, nedbør, tåke, duggpunkt, skydekke og sikt, fordi det er kritisk værdata for rakettoppskytningen”
+Textual description: “I want  a clear overview of wind and shear wind, speed, and direction, ground moisture, temperature, percipitation, fog, dew point, cloud coverage and visibility as these are critical weather data for rocket launchese”
 
 ```mermaid
 
@@ -142,9 +142,9 @@ sequenceDiagram
 ```
 \
 \
-Flytdiagram -> for at bruker lagrer et tidspunkt:
+Flowchart -> When user saves a weather-card at a specific time:
 
-Tekstlig beskrivelse: “Jeg vil kunne lagre et tidspunkt i appen slik at jeg raskt kan finne tilbake til vær-detaljer i et spesifikt sted på et spesifikt tidspunkt.”
+Textual description: “I want to be able to save a timestamp in the app so that i can quickly retrive weather details for a secific location at a specific time.”
 
 ```mermaid
 
@@ -168,9 +168,9 @@ flowchart TB
 ```
 \
 \
-Sekvensdiagram -> for at bruker lagrer et tidspunkt:
+SequenceDiagram -> When user saves a weather-card at a specific time:
 
-Tekstlig beskrivelse: “Jeg vil kunne lagre et tidspunkt i appen slik at jeg raskt kan finne tilbake til vær-detaljer i et spesifikt sted på et spesifikt tidspunkt.”
+Textual description: “I want to be able to save a timestamp in the app so that i can quickly retrive weather details for a secific location at a specific time.”
 
 ```mermaid
 sequenceDiagram
@@ -211,12 +211,11 @@ sequenceDiagram
 ```
 \
 \
-Sekvensdiagram -> Appen skal kunne regne ballistisk bane på et gitt tidspunkt:
+SequenceDiagram -> The app should be able to calculate the ballistic trajeectory at a given time i choose:
 
-Tekstilg beskrivelse: “Jeg vil kunne simulere banen til raketten min, for å vite hvor raketten lander"
+Textual description: "I want to simulate the trajectory of my rocket to know where it will land"
 
-Pre betingelse: bruker har allerde valgt et tidspunkt for en bestemt lat og lon.
-
+Precondtition: The user has alredy selected a timestamp for a specific latitude and longitude
 ```mermaid
 sequenceDiagram
 actor User
@@ -255,9 +254,9 @@ Map-->>HomeScreen: Shows trajectory
 ```
 \
 \
-Sekvensdiagram-> legg til favoritt:
+SequenceDiagram-> Add to favorites:
 
-Tekstlig beskrivelse: “Jeg vil kunne lagre et sted i appen slik at jeg raskt kan finne tilbake til oppskytningsstedet”
+Textual description: “I want to be able to save a location in the app so that I can quickly revisit the launch site”
 
 ```mermaid
 sequenceDiagram
@@ -314,11 +313,11 @@ sequenceDiagram
 ```
 \
 \
-Sekvensdiagram-> Brukeren skal kunne tilpasse grenseverdiene for værdata til sin rakett:
+SequenceDiagram-> When user customizes the treshold values for weather data to their rocket:
 
-Tekstlig beskrivelse: “Jeg vil kunne endre rakett verdier slik at appen bruker data fra min spesifikke rakett"
+Textual description: “I want to be able to adjust rocket values so that the app uses data specific to my rocket"
 
-Pre betingelse: Bruker har skrevet inn oppdaterte verdier
+Precondition:User has alredy updated threshold values
 
 ```mermaid
 sequenceDiagram
@@ -342,9 +341,9 @@ sequenceDiagram
 ```
 \
 \
-Flytdiagram -> Tilpasser grenseverdier for værdata:
+Flowchart -> customizing threshold values for weather data:
 
-Tekstlig beskrivelse: “Jeg vil kunne endre grenseverdier slik at appen bruker data som er tilpasset min rakett”
+Textual description: “I want to be able to adjust threshold values so that the app uses data tailored to my rocket”
 
 ```mermaid
 flowchart TB
