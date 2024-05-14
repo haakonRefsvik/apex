@@ -25,7 +25,7 @@
 
 # How to run the app:
     1. Clone this Github repository
-    2. Open the REpository in ANdroid Studio
+    2. Open the repository in Android Studio
     3. The recommended emulator is Resizable Experimental 33/34, since that is the emulator the code has been tested on.
     4. Follow the steps under IFI-Proxy and Mapbox to fix error caused by missing keys
     
