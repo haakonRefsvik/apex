@@ -13,8 +13,13 @@
 # Where to find more documentation:
 
 ## ARCHITECTURE.MD:
-   // Here you can find the 
-        
+    This file is intedned for readers who will work with the opreation, maintanance and further development of the solution. It explains the technologies and archiitecture used in the application. It also describes API level the aplication is intended for
+
+## README.MD:
+    This file is guides users on how use the app for the first time in case of an API-key error occures. It also explains the different libraries used.
+
+## The code itself:
+    The code is well documented and commented. Each function or file explains what it does. 
 
 # How to run the app:
 
@@ -75,14 +80,14 @@
         
 # Libraries:
 
-### Vico by Patryk Goworowski:
-    - Library for showing Graphs
+## Vico by Patryk Goworowski:
+    -> Library for showing Graphs
     
-### Unidata netcdf-java by Thredds:
-    - Library for parsing Grib-files
+## Unidata netcdf-java by Thredds:
+    -> Library for parsing Grib-files
     
-### Mapbox:
-    - For displaying map
+## Mapbox:
+    -> For displaying map
     
-### Room:
-    - Databases
+## Room:
+    -> Databases
