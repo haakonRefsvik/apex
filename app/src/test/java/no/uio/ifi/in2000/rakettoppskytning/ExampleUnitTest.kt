@@ -15,7 +15,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

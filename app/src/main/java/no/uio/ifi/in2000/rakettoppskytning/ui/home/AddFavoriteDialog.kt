@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite
+package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.content.Context
 import android.widget.Toast
@@ -35,7 +35,6 @@ import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 

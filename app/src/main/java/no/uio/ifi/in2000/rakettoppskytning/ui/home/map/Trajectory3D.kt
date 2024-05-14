@@ -27,7 +27,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -256,7 +255,7 @@ fun Make3Dtrajectory(
 @Composable
 fun ShowTraDetails(
     mapViewModel: MapViewModel,
-   tra: List< no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>)
+    tra: List< no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>)
 {
         val lastPoint = tra.last()
         val lastParaPoint = tra.find { it.z <= 10 && it.parachuted }
