@@ -89,12 +89,17 @@
 
 ## Vico by Patryk Goworowski:
     -> Library for showing Graphs
+    -> Link to website: https://patrykandpatrick.com/vico/wiki/
+    -> 
     
 ## Unidata netcdf-java by Thredds:
     -> Library for parsing Grib-files
+    -> Link to website: https://docs.unidata.ucar.edu/netcdf-java/current/userguide/grib_files_cdm.html
     
 ## Mapbox:
     -> For displaying map
+    -> Link to website: https://docs.mapbox.com/android/maps/guides/
     
 ## Room:
     -> For storing in local database
+    -> Link to website: https://developer.android.com/training/data-storage/room/
