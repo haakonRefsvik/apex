@@ -24,7 +24,12 @@
     The code is well documented and commented. Each function or file explains what it does. 
 
 # How to run the app:
-
+    1. Clone this Github repository
+    2. Open the REpository in ANdroid Studio
+    3. The recommended emulator is Resizable Experimental 33/34, since that is the emulator the code has been tested on.
+    4. Follow the steps under to fix error caused by missing keys
+    
+    
 ## IFI-Proxy:
 
     The API key for the project, which we use to retrive weather data, is not included. This is due to security reasons.
