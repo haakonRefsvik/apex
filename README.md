@@ -11,7 +11,7 @@
     
 # How to run the app:
 
-    <b># IFI-Proxy:</b>
+    ## IFI-Proxy:
 
         The API key for the project, which we use to retrive weather data, is not included. This is due to security reasons.
 
