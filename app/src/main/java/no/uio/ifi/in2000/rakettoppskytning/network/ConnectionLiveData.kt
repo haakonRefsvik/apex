@@ -10,24 +10,27 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-//
-
- /*Inspired by:
+/*Inspired by:
  * https://github.com/AlexSheva-mason/Rick-Morty-Database/blob/master/app/src/main/java/com/shevaalex/android/rickmortydatabase/utils/networking/ConnectionLiveData.kt
  */
+/**
+ * This classes manages the different network state changes, verifies internet connectivity and also updates the application based on our current network status.
+
+ * */
+
+
 class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
 
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
-    private val cm = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val validNetworks: MutableSet<Network> = HashSet()
+    private val connection = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val validNetworkConnection: MutableSet<Network> = HashSet()
 
     private fun checkValidNetworks() {
-        postValue(validNetworks.size > 0)
+        postValue(validNetworkConnection.size > 0)
     }
 
     override fun onActive() {
@@ -35,29 +38,26 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
         val networkRequest = NetworkRequest.Builder()
             .addCapability(NET_CAPABILITY_INTERNET)
             .build()
-        cm.registerNetworkCallback(networkRequest, networkCallback)
+        connection.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     override fun onInactive() {
-        cm.unregisterNetworkCallback(networkCallback)
+        connection.unregisterNetworkCallback(networkCallback)
     }
 
     private fun createNetworkCallback() = object : ConnectivityManager.NetworkCallback() {
 
 
         override fun onAvailable(network: Network) {
-            Log.d("", "onAvailable: ${network}")
-            val networkCapabilities = cm.getNetworkCapabilities(network)
+            val networkCapabilities = connection.getNetworkCapabilities(network)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
-            Log.d("", "onAvailable: ${network}, $hasInternetCapability")
             if (hasInternetCapability == true) {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
                     if(hasInternet){
                         withContext(Dispatchers.Main){
-                            Log.d("", "onAvailable: adding network. ${network}")
-                            validNetworks.add(network)
+                            validNetworkConnection.add(network)
                             checkValidNetworks()
                         }
                     }
@@ -67,8 +67,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
 
         override fun onLost(network: Network) {
-            Log.d("", "onLost: ${network}")
-            validNetworks.remove(network)
+            validNetworkConnection.remove(network)
             checkValidNetworks()
         }
 

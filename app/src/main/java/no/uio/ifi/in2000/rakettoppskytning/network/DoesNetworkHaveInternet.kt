@@ -14,18 +14,16 @@ import javax.net.SocketFactory
  */
 
 object DoesNetworkHaveInternet {
-
-    // Make sure to execute this on a background thread.
     suspend fun execute(socketFactory: SocketFactory): Boolean = withContext(Dispatchers.IO) {
         return@withContext try {
-            Log.d("", "PINGING google.")
+            Log.d("google", "PINGING google.")
             val socket = socketFactory.createSocket() ?: throw IOException("Socket is null.")
             socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
             socket.close()
-            Log.d("", "PING success.")
+            Log.d("success", "PING success.")
             true
         } catch (e: IOException) {
-            Log.e("", "No internet connection. $e")
+            Log.e("no internet", "No internet connection. $e")
             false
         }
     }

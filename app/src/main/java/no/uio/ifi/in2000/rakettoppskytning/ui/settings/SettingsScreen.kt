@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -39,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -54,6 +57,10 @@ import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
@@ -62,7 +69,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 import kotlin.math.abs
-
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -198,6 +206,7 @@ fun SettingsScreen(
             }
             Spacer(modifier = Modifier.height(20.dp))
 
+
             LazyColumn(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -287,7 +296,39 @@ fun SettingsScreen(
 
                     }
 
-                } else {
+                }
+
+
+            }
+
+            val listState = rememberLazyListState()
+
+            LazyColumnScrollbar(
+                listState = listState,
+                modifier = Modifier,
+                rightSide = true,
+                alwaysShowScrollBar = false,
+                thickness = 5.dp,
+                padding = 10.dp,
+                thumbMinHeight = 0.1f,
+                thumbColor = Color.White.copy(alpha = 0.4F),
+                thumbSelectedColor = Color.White,
+                thumbShape = CircleShape,
+                selectionMode = ScrollbarSelectionMode.Thumb,
+                selectionActionable = ScrollbarSelectionActionable.Always,
+                hideDelay = 400.toDuration(DurationUnit.MILLISECONDS),
+                showItemIndicator = ListIndicatorSettings.EnabledMirrored(
+                    100.dp,
+                    Color.Gray
+                ),
+                enabled = true,
+            ) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (settings2check.value)  {
                     item {
                         Spacer(modifier = Modifier.width(25.dp))
                         Column(
@@ -417,6 +458,8 @@ fun SettingsScreen(
                     item {
                         SliderCard(settingsViewModel)
                     }
+                }
+
                 }
             }
         }

@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -47,14 +46,20 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+/*
+This scrollbar was made by - Kerry Bisset: here is the link; https://blog.stackademic.com/jetpack-compose-multiplatform-scrollbar-scrolling-7c231a002ee1
+ */
+
+/**
+ * All these functions are making a customizable and interactive scrollbar for lazyColumn in jetpack compose.
+ * Making it easier for users to scroll through content easily.
+ */
 private const val oneHundredPercentDecimal = 1f
 
 private const val isEmpty = 0
 
-/*
-Kerry Bisset
-Jetpack Compose Multiplatform Scrollbar/Scrolling
- */
+
+
 
 @Composable
 fun LazyColumnScrollbar(

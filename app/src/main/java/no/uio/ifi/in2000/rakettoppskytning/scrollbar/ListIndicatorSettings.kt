@@ -5,7 +5,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 
+/*
+This scrollbar was made by - Kerry Bisset: here is the link; https://blog.stackademic.com/jetpack-compose-multiplatform-scrollbar-scrolling-7c231a002ee1
+ */
 
+/**
+ * Customizing the list indicator appearance and behavior.
+ */
 sealed class ListIndicatorSettings {
 
     data object Disabled : ListIndicatorSettings()
