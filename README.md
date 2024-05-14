@@ -74,4 +74,15 @@
         }
         
 # Libraries:
-   
+
+### Vico by Patryk Goworowski:
+    - Library for showing Graphs
+    
+### Unidata netcdf-java:
+    - Library for parsing Grib-files
+    
+### Mapbox:
+    - For displaying map
+    
+### Room:
+    - Databases
