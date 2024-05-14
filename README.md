@@ -13,8 +13,10 @@
 
     The API key for the project, which we use to retrive weather data, is not included. 
     This is due to security reasons.
+    
     The API key is placed in:
         res -> values -> strings.xml 
+        
     in the format:
         <string name="in2000ProxyKey" translatable="false">YOUR-API-KEY-HERE</string>
 
@@ -46,6 +48,7 @@
 ### settings.gradle.kt:
 
     This should be in settings.gradle.kts: 
+    
         dependencyResolutionManagement {
             repositories {
                 google()
