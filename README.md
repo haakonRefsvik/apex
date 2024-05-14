@@ -13,10 +13,12 @@
 # Where to find more documentation:
 
 ## ARCHITECTURE.MD:
-    This file is intedned for readers who will work with the opreation, maintanance and further development of the solution. It explains the technologies and archiitecture used in the application. It also describes API level the aplication is intended for
+    This file is intedned for readers who will work with the opreation, maintanance and further development of the solution. 
+    It explains the technologies and archiitecture used in the application. It also describes API level the aplication is intended for
 
 ## README.MD:
-    This file is guides users on how use the app for the first time in case of an API-key error occures. It also explains the different libraries used.
+    This file is guides users on how use the app for the first time in case of an API-key error occures.
+    It also explains the different libraries used.
 
 ## The code itself:
     The code is well documented and commented. Each function or file explains what it does. 
