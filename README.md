@@ -17,7 +17,7 @@
     It explains the technologies and archiitecture used in the application. It also describes API level the aplication is intended for
 
 ## README.MD:
-    This file is guides users on how use the app for the first time in case of an API-key error occures.
+    This file guides users on how use the app for the first time in case of an API-key error occures.
     It also explains the different libraries used.
 
 ## The code itself:
@@ -27,7 +27,7 @@
     1. Clone this Github repository
     2. Open the REpository in ANdroid Studio
     3. The recommended emulator is Resizable Experimental 33/34, since that is the emulator the code has been tested on.
-    4. Follow the steps under to fix error caused by missing keys
+    4. Follow the steps under IFI-Proxy and Mapbox to fix error caused by missing keys
     
     
 ## IFI-Proxy:
@@ -44,7 +44,7 @@
 
     If the app is not running due to lack of keys or fobidden authorization, try this:
 
-### Public key:
+#### Public key:
 
     Go to:
         -> Gradle Scripts -> local.properties
@@ -57,7 +57,7 @@
             -> localProperties.getProperty("Variabel)
 
 
-### Private key:
+#### Private key:
     The public key should be placed in:
         -> res -> values -> strings.xml
 
