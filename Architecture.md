@@ -7,6 +7,9 @@ The ViewModel is the connective tissue between the Model and the View. The ViewM
 
 Our application has gained a lot of benefits from choosing the MVVM-approach. Separating the code into different parts (model, view, viewmodel), making it more organised and easier to maintain. Splitting our code into smaller parts, it also makes testing each part more accessible. By using the ViewModel layer, the presentation logic can be reused across different views, which reduces duplication and makes the interface easier to use. Lastly the MVVM-model makes scaling the application easier, and with less risk of errors.
 
+![./modellingDoc/mvvm1.png](./modellingDoc/mvvm1.png)
+![./modellingDoc/mvvm2.png](./modellingDoc/mvvm2.png)
+
 # 2 HIGH COHESION & LOW COUPLING
 We have prioritized essential object-oriented principles, focusing on achieving low coupling and high cohesion in our project to ensure our code is easily maintainable and testable. By following the MVVM design pattern, we have effectively maintained a cohesive structure while minimizing dependencies between different components. This approach allows the passing of  ViewModels and Repositories between layers, resulting in a modular and adaptable architecture.
 
