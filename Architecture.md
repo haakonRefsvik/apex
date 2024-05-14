@@ -9,7 +9,7 @@ Our application has gained a lot of benefits from choosing the MVVM-approach. Se
 
 <p align="center">
   <img src="./modellingDoc/mvvm1.png" width="75%">
-  <img src="./modellingDoc/mvvm2.png" width="50%">
+  <img src="./modellingDoc/mvvm2.png" width="50%" height="75%">
 </p>
 
 # 2 HIGH COHESION & LOW COUPLING
