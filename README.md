@@ -9,59 +9,59 @@
     Suad Raage
     Håkon Refsvik
     
-How to run the app:
+# How to run the app:
 
-# IFI-Proxy:
+    # IFI-Proxy:
 
-    The API key for the project, which we use to retrive weather data, is not included. This is due to security reasons.
-    
-    The API key is placed in:
-        res -> values -> strings.xml 
-        
-    in the format:
-        <string name="in2000ProxyKey" translatable="false">YOUR-API-KEY-HERE</string>
+        The API key for the project, which we use to retrive weather data, is not included. This is due to security reasons.
 
-# Mapbox:
+        The API key is placed in:
+            res -> values -> strings.xml 
 
-    If the app is not running due to lack of keys or fobidden authorization, try this:
+        in the format:
+            <string name="in2000ProxyKey" translatable="false">YOUR-API-KEY-HERE</string>
 
-### Public key:
+    # Mapbox:
 
-    Go to:
-        -> Gradle Scripts -> local.properties
-       
-    Then find the variable:
-        -> MAPBOX_DOWNLOADS_TOKEN = PRIVATE KEY
-        
-    It should be named MAPBOX_DOWNLOADS_TOKEN, or have a similiar variable name as in:
-        -> settings.gradle.kt 
-            -> localProperties.getProperty("Variabel)
-    
+        If the app is not running due to lack of keys or fobidden authorization, try this:
 
-### Private key:
-    The public key should be placed in:
-        -> res -> values -> strings.xml
-        
-    Under resources like this:  
-        <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">PUBLIC API KEY</string>.
-   
+    ### Public key:
 
-### settings.gradle.kt:
+        Go to:
+            -> Gradle Scripts -> local.properties
 
-    This should be in settings.gradle.kts: 
-    
-        dependencyResolutionManagement {
-            repositories {
-                google()
-                mavenCentral()
-                maven { url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/") }
-                maven {
-                    url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+        Then find the variable:
+            -> MAPBOX_DOWNLOADS_TOKEN = PRIVATE KEY
 
-                    credentials.username = "mapbox"
-                    credentials.password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
-                    authentication.create<BasicAuthentication>("basic")
+        It should be named MAPBOX_DOWNLOADS_TOKEN, or have a similiar variable name as in:
+            -> settings.gradle.kt 
+                -> localProperties.getProperty("Variabel)
+
+
+    ### Private key:
+        The public key should be placed in:
+            -> res -> values -> strings.xml
+
+        Under resources like this:  
+            <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">PUBLIC API KEY</string>.
+
+
+    ### settings.gradle.kt:
+
+        This should be in settings.gradle.kts: 
+
+            dependencyResolutionManagement {
+                repositories {
+                    google()
+                    mavenCentral()
+                    maven { url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/") }
+                    maven {
+                        url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+
+                        credentials.username = "mapbox"
+                        credentials.password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
+                        authentication.create<BasicAuthentication>("basic")
+                    }
+
                 }
-
             }
-        }
