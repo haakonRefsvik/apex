@@ -359,3 +359,9 @@ flowchart TB
     f1 --> |No| h
     f --> h([End])
 ```
+
+
+## Use case
+
+
+![](/modellingDoc/useCase.pdf)
