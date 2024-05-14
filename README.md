@@ -92,4 +92,4 @@
     -> For displaying map
     
 ## Room:
-    -> Databases
+    -> For storing in local database
