@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.scrollbar
+package no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar
 
 /*
 This scrollbar was made by - Kerry Bisset: here is the link; https://blog.stackademic.com/jetpack-compose-multiplatform-scrollbar-scrolling-7c231a002ee1

@@ -1,8 +1,9 @@
 # Modelling
+\
+\
+Class structure -> For storing weather data:
 
-\
-\
-Klassestruktur for lagring av værdata
+Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
 ```mermaid
 
@@ -30,7 +31,10 @@ classDiagram
 ```
 \
 \
-Klassestruktur for VerticalProfile
+Class structure -> For VerticalProfile:
+
+Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
+
 ```mermaid
 
 classDiagram
@@ -80,7 +84,10 @@ classDiagram
 ```
 \
 \
-Sekvensdiagram for at bruker trykker "Get Weatherdata"
+SequenceDiagram -> When user clicks "Get Weatherdata":
+
+Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
+
 ```mermaid
 sequenceDiagram
     actor User
@@ -100,10 +107,12 @@ sequenceDiagram
     HomeViewModel-->>HomeScreen: Show cards with weatherdata
 
 ```
+\
+\
+SequenceDiagram -> When user selects a weather-card:
 
-\
-\
-Sekvensdiagram for at bruker velger et værkort
+Textual description: “I want  a clear overview of wind and shear wind, speed, and direction, ground moisture, temperature, percipitation, fog, dew point, cloud coverage and visibility as these are critical weather data for rocket launchese”
+
 ```mermaid
 
 sequenceDiagram
@@ -133,7 +142,9 @@ sequenceDiagram
 ```
 \
 \
-Flytdiagram
+Flowchart -> When user saves a weather-card at a specific time:
+
+Textual description: “I want to be able to save a timestamp in the app so that i can quickly retrive weather details for a secific location at a specific time.”
 
 ```mermaid
 
@@ -157,7 +168,10 @@ flowchart TB
 ```
 \
 \
-Sekvensdiagram
+SequenceDiagram -> When user saves a weather-card at a specific time:
+
+Textual description: “I want to be able to save a timestamp in the app so that i can quickly retrive weather details for a secific location at a specific time.”
+
 ```mermaid
 sequenceDiagram
     actor User
@@ -197,11 +211,11 @@ sequenceDiagram
 ```
 \
 \
+SequenceDiagram -> The app should be able to calculate the ballistic trajeectory at a given time i choose:
 
-Sekvensdiagram:
-Appen skal kunne regne ballistisk bane ut i fra værforholdene på et gitt tidspunkt
-Pre betingelse: valgt et tidspunkt for en bestemt lat og lon.
+Textual description: "I want to simulate the trajectory of my rocket to know where it will land"
 
+Precondtition: The user has alredy selected a timestamp for a specific latitude and longitude
 ```mermaid
 sequenceDiagram
 actor User
@@ -238,13 +252,11 @@ MapViewModel--)-Map: trajectory
 Map-->>HomeScreen: Shows trajectory
 
 ```
-
-
 \
-\ 
+\
+SequenceDiagram-> Add to favorites:
 
-Sekvensdiagram:
-Legg til favoritt
+Textual description: “I want to be able to save a location in the app so that I can quickly revisit the launch site”
 
 ```mermaid
 sequenceDiagram
@@ -299,3 +311,68 @@ sequenceDiagram
 
 
 ```
+\
+\
+SequenceDiagram-> When user customizes the treshold values for weather data to their rocket:
+
+Textual description: “I want to be able to adjust rocket values so that the app uses data specific to my rocket"
+
+Precondition:User has alredy updated threshold values
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant SettingScreen
+    participant SettingsViewModel
+    participant SettingsRepository
+    participant ThresholdDatabase
+    User ->> SettingScreen: Interacts with settings
+    User ->> SettingScreen: Closes SettingScreen
+    SettingScreen ->> SettingsViewModel: updateThresholdValues()
+    SettingsViewModel ->> SettingsViewModel: theresholdValues
+    SettingsViewModel ->> SettingsRepository: updateThresholdValues(theresholdValues)
+    SettingsRepository ->> ThresholdDatabase: updateThresholdValues(theresholdValues)
+    SettingsViewModel -)+ SettingsRepository: getThresholdValue()
+    SettingsRepository ->> ThresholdDatabase: getThresholdValue()
+    ThresholdDatabase -->> SettingsRepository: Thresholds
+    SettingsRepository --)- SettingsViewModel: Thresholds
+    SettingsViewModel -->> SettingScreen: uses updated thresholds
+    SettingScreen -->> User: Shows confirmation of saved setting
+```
+\
+\
+Flowchart -> customizing threshold values for weather data:
+
+Textual description: “I want to be able to adjust threshold values so that the app uses data tailored to my rocket”
+
+```mermaid
+flowchart TB
+    start([Start])
+    c1[HomeScreen]
+    c2[Presses SettingsScreen] -.-> j[(Gets data from ThresholdDatabase)]
+    start --> c1
+    c1 --> c2
+    c2 --> e[Shows settingsScreen]
+    e --> f[Change value]
+    f -.-> g[(Value is saved in ThresholdDatabase)]
+    f1[Change another value?] --> |Yes| f
+    f1 --> |No| h
+    f --> h([End])
+```
+
+
+## Use case
+Use case of various user stories
+
+Textual description: 
+\
+“I want to see weather data at a give position”
+\
+“I want to see the weather data at a specific hour”
+\
+“I want to see a predicted tracjetory on a given position”
+\
+“I want to save a weather data at a specific time and locaiton”
+
+
+![./modellingDoc/uscase.png](./modellingDoc/usecase.png)

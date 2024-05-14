@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.scrollbar
+package no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

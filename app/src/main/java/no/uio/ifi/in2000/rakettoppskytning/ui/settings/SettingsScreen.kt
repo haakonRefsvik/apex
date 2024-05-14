@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.settings
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,22 +53,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
+import no.uio.ifi.in2000.rakettoppskytning.model.formatting.findClosestDegree
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings25
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
-import kotlin.math.abs
+
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -86,7 +86,6 @@ fun SettingsScreen(
     val settings1check = settingsViewModel.weatherValueChosen
     val settings2check = settingsViewModel.rocketProfileChosen
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit){
         settingsChangesMade = false
@@ -256,7 +255,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_PRECIPITATION.ordinal],
                             title = "Max precipitation",
-                            drawableId = R.drawable.vann,
                             suffix = "mm",
                         )
                     }
@@ -265,7 +263,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_WIND.ordinal],
                             title = "Max wind speed",
-                            drawableId = R.drawable.vind2,
                             suffix = "m/s",
                         )
                     }
@@ -273,7 +270,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_SHEAR_WIND.ordinal],
                             title = "Max wind shear",
-                            drawableId = R.drawable.vind2,
                             suffix = "m/s",
                         )
                     }
@@ -281,7 +277,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_DEW_POINT.ordinal],
                             title = "Max dew point",
-                            drawableId = R.drawable.luftfuktighet,
                             suffix = "°C",
                         )
 
@@ -290,7 +285,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.thresholdMutableStates[ThresholdType.MAX_HUMIDITY.ordinal],
                             title = "Max humidity",
-                            drawableId = R.drawable.luftfuktighet,
                             suffix = "%",
                         )
 
@@ -370,7 +364,6 @@ fun SettingsScreen(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.APOGEE.ordinal],
                             title = "Apogee",
                             desc = "The rockets highest point",
-                            drawableId = R.drawable.rakett_pin2,
                             suffix = "m",
                             numberOfDecimals = 0,
                             numberOfIntegers = 6
@@ -380,7 +373,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_ANGLE.ordinal],
                             title = "Launch angle",
-                            drawableId = R.drawable.rakett_pin2,
                             suffix = "Deg",
                             numberOfDecimals = 1,
                             numberOfIntegers = 3,
@@ -393,11 +385,9 @@ fun SettingsScreen(
                             settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal].doubleValue
                         val string = findClosestDegree(deg)
 
-
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.LAUNCH_DIRECTION.ordinal],
                             title = "Launch direction",
-                            drawableId = R.drawable.rakett_pin2,
                             desc = "Currently $string",
                             suffix = "Deg",
                             numberOfDecimals = 1,
@@ -410,7 +400,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.THRUST_NEWTONS.ordinal],
                             title = "Thrust",
-                            drawableId = R.drawable.rakett_pin2,
                             desc = "Thrust in newtons",
                             suffix = "N",
                             numberOfDecimals = 0,
@@ -423,7 +412,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.BURN_TIME.ordinal],
                             title = "Burn time",
-                            drawableId = R.drawable.rakett_pin2,
                             desc = "Duration of engine burn",
                             suffix = "Sec",
                             numberOfDecimals = 0,
@@ -435,7 +423,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.DRY_WEIGHT.ordinal],
                             title = "Dry weight",
-                            drawableId = R.drawable.rakett_pin2,
                             desc = "",
                             suffix = "Kg",
                             numberOfDecimals = 0,
@@ -447,7 +434,6 @@ fun SettingsScreen(
                         SettingsCard(
                             mutableValue = settingsViewModel.rocketSpecMutableStates[RocketSpecType.WET_WEIGHT.ordinal],
                             title = "Wet weight",
-                            drawableId = R.drawable.rakett_pin2,
                             desc = "",
                             suffix = "Kg",
                             numberOfDecimals = 0,
@@ -483,10 +469,10 @@ fun SettingsScreen(
 }
 
 fun findPointSuffix(res: Int): String {
-    val result = when {
-        res == 1 -> ""
-        res == 2 -> "2nd "
-        res == 3 -> "3rd "
+    val result = when (res) {
+        1 -> ""
+        2 -> "2nd "
+        3 -> "3rd "
         else -> "${res}th "
     }
     return result
@@ -497,41 +483,9 @@ fun findPerformance(res: Int): String {
         res == 10 -> "Peak performance"
         res <= 2 -> "Low performance"
         res in 3..6 -> "Medium performace"
-        res > 6 -> "High performance"
+        res in 7..9 -> "High performance"
         else -> "unknown"
     }
 
     return result
-}
-
-fun findClosestDegree(degree: Double): String {
-    val degreeToString: Map<Double, String> =
-        mapOf(
-            Pair(0.0, "North"),
-            Pair(45.0, "North-East"),
-            Pair(90.0, "East"),
-            Pair(135.0, "South-East"),
-            Pair(180.0, "South"),
-            Pair(225.0, "South-West"),
-            Pair(270.0, "West"),
-            Pair(315.0, "North-West"),
-            Pair(360.0, "North"),
-        )
-
-    var closestString = ""
-    var shortestDistance = Double.MAX_VALUE
-
-    for ((key, value) in degreeToString) {
-        val distance = abs(degree - key)
-        if (distance < shortestDistance) {
-            shortestDistance = distance
-            closestString = value
-        }
-    }
-
-    if (shortestDistance != 0.0) {
-        return "$closestString (ish)"
-    }
-
-    return closestString
 }

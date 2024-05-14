@@ -2,8 +2,6 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,7 +27,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,12 +49,13 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterDialog
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
@@ -71,7 +69,6 @@ import kotlin.time.toDuration
 
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherList(
     navController: NavHostController,
@@ -118,7 +115,6 @@ fun WeatherList(
         openTimeDialog.value -> {
             TimeDialog(
                 onDismissRequest = { openTimeDialog.value = false },
-                onConfirmation = { },
                 homeScreenViewModel = homeScreenViewModel
             )
         }

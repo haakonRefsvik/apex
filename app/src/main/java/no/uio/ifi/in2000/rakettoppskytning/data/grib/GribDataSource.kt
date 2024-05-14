@@ -80,7 +80,7 @@ class GribDataSource{
         updateGribCache(client, latestGribs)
     }
 
-    suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
+    private suspend fun makeFile(client: HttpClient, grib: Grib, fileName: String) {
         try {
             val inputStream: InputStream = client.get(grib.uri).body()
             val file = File.createTempFile(fileName, ".grib2")
@@ -100,7 +100,7 @@ class GribDataSource{
      *  Grib-files can be stored in the cache.
      *  If a new grib-file is added, the oldest one will be deleted from cache
      * */
-    suspend fun updateGribCache(client: HttpClient, latestGribs: List<Grib>)= coroutineScope{
+    private suspend fun updateGribCache(client: HttpClient, latestGribs: List<Grib>)= coroutineScope{
         val asyncTasks = latestGribs.map {grib ->
             val fileName = grib.params.time
 
@@ -129,7 +129,7 @@ class GribDataSource{
         asyncTasks.filterNotNull().map { it.await() }
     }
 
-    fun getOldestDate(dates: List<String>): String{
+    private fun getOldestDate(dates: List<String>): String{
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
         var oldestDate = format.parse(dates[0])
 

@@ -107,7 +107,6 @@ fun SettingsCard(
     title: String,
     desc: String = "",
     suffix: String,
-    drawableId: Int,
     numberOfDecimals: Int = 1,
     numberOfIntegers: Int = 2,
     highestInput: Double = Double.POSITIVE_INFINITY,

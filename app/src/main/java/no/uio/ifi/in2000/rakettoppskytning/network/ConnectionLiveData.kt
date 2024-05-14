@@ -49,7 +49,9 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
 
         override fun onAvailable(network: Network) {
+
             val networkCapabilities = connection.getNetworkCapabilities(network)
+
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             if (hasInternetCapability == true) {
 

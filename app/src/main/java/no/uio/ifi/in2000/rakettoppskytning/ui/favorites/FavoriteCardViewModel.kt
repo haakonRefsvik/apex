@@ -16,12 +16,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getCurrentDate
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 data class FavoriteUiState(
     val favorites: List<FavoriteCard> = listOf()
@@ -39,13 +37,16 @@ class FavoriteFactory(
 
 
 
-class FavoriteCardViewModel(val repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
-    val lastUpdated = mutableStateOf("")
-    val lastFavoritesUpdates = mutableStateOf(listOf<FavoriteCard>())
+class FavoriteCardViewModel(
+    private val repo: WeatherRepository,
+    private val favoriteRepo: FavoriteCardRepository
+) : ViewModel() {
+    private val lastUpdated = mutableStateOf("")
+    private val lastFavoritesUpdates = mutableStateOf(listOf<FavoriteCard>())
     val isUpdatingWeatherData = mutableStateOf(false)
     val refreshKey = mutableIntStateOf(0)
 
-    val weatherDataUiState: StateFlow<WeatherUiState> =
+    private val weatherDataUiState: StateFlow<WeatherUiState> =
         repo.observeFavorites().map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
             started = SharingStarted.Eagerly,

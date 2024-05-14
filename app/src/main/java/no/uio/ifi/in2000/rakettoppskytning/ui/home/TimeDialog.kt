@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
@@ -42,12 +44,12 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time35
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time65
 import java.text.SimpleDateFormat
 
+@SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun TimeDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
     homeScreenViewModel: HomeScreenViewModel
 ) {
 
@@ -124,6 +126,7 @@ fun TimeDialog(
 
             }
         },
+
         colors = DatePickerColors(
             time100,
             time35,
@@ -199,10 +202,12 @@ fun TimeDialog(
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, content = {
             item {
                 DateRangePicker(
+                    title = { Text(text = "") },
+                    headline = { Text(text = "") },
+                    showModeToggle = false,
                     state = dtrpState, modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 400.dp),
-                    showModeToggle = false,
                     colors = DatePickerColors(
                         time100,
                         time0,
@@ -244,11 +249,8 @@ fun TimeDialog(
                             selectionColors = TextSelectionColors(time0, time0),
                             errorContainerColor = time100,
                             errorTextColor = time0
-
-
                         )
                     )
-
                 )
             }
             item {

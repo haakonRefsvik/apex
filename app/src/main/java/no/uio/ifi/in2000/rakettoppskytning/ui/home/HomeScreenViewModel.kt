@@ -19,9 +19,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
@@ -30,6 +30,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherData
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKmNumber
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.screenSize
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -53,7 +54,7 @@ class HomeViewModelFactory(
     }
 }
 
-class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
+class HomeScreenViewModel(repo: WeatherRepository, private val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     private val weatherRepo = repo
     private val gribRepo = weatherRepo.gribRepository
     val loading = mutableStateOf(false)
@@ -200,7 +201,6 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
 
     init{
         if(!isInitialized.value) {
-
             initialSelectedStartDateMillis.value.time = Date()
             initialSelectedEndDateMillis.value.time = Date()
             initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
@@ -229,10 +229,23 @@ class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCar
             yearRange = 2024..2024,
             initialSelectedStartDateMillis = initialSelectedStartDateMillis.value.timeInMillis,
             initialSelectedEndDateMillis = initialSelectedEndDateMillis.value.timeInMillis,
-            initialDisplayMode = DisplayMode.Picker
+            initialDisplayMode = chooseDisplayMode()
 
         )
     )
+
+    /** If screen is too small, change the Display-mode of the date-picker*/
+    @OptIn(ExperimentalMaterial3Api::class)
+    fun chooseDisplayMode(): DisplayMode{
+
+        Log.d("Pixels", "${screenSize.second}")
+        if(screenSize.second < 1200){
+            return DisplayMode.Input
+        }
+
+        return DisplayMode.Picker
+    }
+
     val favoriteUiState: StateFlow<FavoriteLocationUiState> =
         favoriteRepo.observeFavoriteLocations().map {
             FavoriteLocationUiState(

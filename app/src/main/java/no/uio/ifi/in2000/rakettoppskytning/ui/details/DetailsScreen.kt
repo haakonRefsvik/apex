@@ -55,15 +55,15 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilScore
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
@@ -122,7 +122,6 @@ fun DetailsScreen(
             context = context,
             isAddingFavorite = isAddingFavorite,
             onDismiss = { isAddingFavorite = false },
-
         )
     }
 
@@ -256,7 +255,9 @@ fun DetailsScreen(
                             onClick = {
                                 mapViewModel.deleteTrajectory()
                                 mapViewModel.makeTrajectory.value = true
-                                scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                                scope.launch {
+                                    homeScreenViewModel.scaffold.bottomSheetState.partialExpand()
+                                }
                                 navController.popBackStack("HomeScreen", false)
                             }
                         ){
@@ -331,7 +332,7 @@ fun DetailsScreen(
                             item {
                                 weatherNow.verticalProfile?.let {
                                     WindCardAltitude(
-                                        it.getAllLevelDatas()
+                                        it.getAllLevelData()
                                             .sortedBy { levelData -> levelData.getLevelHeightInMeters() }
                                     )
                                     Spacer(modifier = Modifier.height(30.dp))

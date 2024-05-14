@@ -14,6 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
+
+
 /**
  Show a snackbar if we dont have network connection.
  The snackbar might appear even if we have the internet/network on but it takes time for the device to get connection so the snackbar might pop first and then disappear when have gotten secure network connection.
@@ -27,11 +30,13 @@ fun NetworkSnackbar() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         SnackbarHost(
+
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomStart).
             padding(bottom = 46.dp),
             snackbar = { data ->
                 Snackbar(
+                    containerColor = filter50,
                     snackbarData = data
                 )
             }
