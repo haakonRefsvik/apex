@@ -1,6 +1,6 @@
 # Apex
 
-## Gruppemedlemmer:
+## Group members:
 
     Magnus Kleven
     Julian Rubilar
@@ -11,47 +11,53 @@
     
 # IFI-Proxy:
 
-    Det følger ikke med en API-nøkkel til prosjektet som vi bruker for å hente værdatas. 
-    Dette har vi gjort av sikkerhetsmessige årsaker. 
-    API-nøkkelen skal ligge i 
-    res -> values -> strings.xml 
-    på formatet
-    <string name="in2000ProxyKey" translatable="false">DIN-API-NØKKEL-HER</string>
+    The API key for the project, which we use to retrive weather data, is not included. 
+    This is due to security reasons.
+    The API key is placed in:
+        res -> values -> strings.xml 
+    in the format:
+        <string name="in2000ProxyKey" translatable="false">YOUR-API-KEY-HERE</string>
 
 # Mapbox:
 
-    Hvis appen ikke kjører grunnet mangel av nøkler eller forbbiden authorisation, 
-    så prøv dette:
+    If the app is not running due to lack of keys or fobidden authorization, try this:
 
-### Offentlig nøkkel:
+### Public key:
 
-  
-    Gradle Scripts -> local.properties på denne måten: MAPBOX_DOWNLOADS_TOKEN = PRIVAT APINØKKEL
-    Variablen burde hete MAPBOX_DOWNLOADS_TOKEN,
-    eller ha et likt variabel navn som i settings.gradle.kt localProperties.getProperty("Variabel)
+    Go to:
+        -> Gradle Scripts -> local.properties
+       
+    Then find the variable:
+        -> MAPBOX_DOWNLOADS_TOKEN = PRIVATE KEY
+        
+    It should be named MAPBOX_DOWNLOADS_TOKEN, or have a similiar variable name as in:
+        settings.gradle.kt 
+            -> localProperties.getProperty("Variabel)
     
 
-### Privat nøkkel:
-    Den offentlige nøkkelen burde ligge i res -> values -> strings.xml
-    Under resources på denne måten:  
-    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">OFFENTLIG APINØKKEL</string>.
+### Private key:
+    The public key should be placed in:
+        -> res -> values -> strings.xml
+        
+    Under resources like this:  
+        <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">PUBLIC API KEY</string>.
    
 
 ### settings.gradle.kt:
 
-    Dette burde ligge i settings.gradle.kts: 
-    dependencyResolutionManagement {
-        repositories {
-            google()
-            mavenCentral()
-            maven { url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/") }
-            maven {
-                url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
-    
-                credentials.username = "mapbox"
-                credentials.password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
-                authentication.create<BasicAuthentication>("basic")
+    This should be in settings.gradle.kts: 
+        dependencyResolutionManagement {
+            repositories {
+                google()
+                mavenCentral()
+                maven { url = uri("https://artifacts.unidata.ucar.edu/repository/unidata-all/") }
+                maven {
+                    url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+
+                    credentials.username = "mapbox"
+                    credentials.password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
+                    authentication.create<BasicAuthentication>("basic")
+                }
+
             }
-    
         }
-    }
