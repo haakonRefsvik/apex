@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite.AddFavoriteDialogCorrect
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.AddFavoriteDialogCorrect
 
 @Composable
 fun AddFavoriteLocationDialog(

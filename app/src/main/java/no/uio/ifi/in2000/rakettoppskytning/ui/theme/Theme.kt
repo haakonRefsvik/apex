@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.theme
 
+import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,9 +10,9 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
+
+lateinit var screenSize: Pair<Int, Int>
 
 private val LightColorScheme = lightColorScheme(
     primary = main100,
@@ -113,37 +114,19 @@ fun RakettoppskytningTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-/*
-@Composable
-fun RakettoppskytningTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
-    }
-
- */
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
         content = content
     )
+}
+
+
+// Function to get screen resolution in pixels
+fun getScreenResolution(context: Context): Pair<Int, Int> {
+    val screenWidthPx = context.resources.displayMetrics.widthPixels
+    val screenHeightPx = context.resources.displayMetrics.heightPixels
+
+    return Pair(screenWidthPx, screenHeightPx)
 }

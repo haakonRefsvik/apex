@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
@@ -125,6 +126,7 @@ fun TimeDialog(
 
             }
         },
+
         colors = DatePickerColors(
             time100,
             time35,
@@ -200,10 +202,12 @@ fun TimeDialog(
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, content = {
             item {
                 DateRangePicker(
+                    title = { Text(text = "") },
+                    headline = { Text(text = "") },
+                    showModeToggle = false,
                     state = dtrpState, modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 400.dp),
-                    showModeToggle = false,
                     colors = DatePickerColors(
                         time100,
                         time0,
@@ -245,11 +249,8 @@ fun TimeDialog(
                             selectionColors = TextSelectionColors(time0, time0),
                             errorContainerColor = time100,
                             errorTextColor = time0
-
-
                         )
                     )
-
                 )
             }
             item {

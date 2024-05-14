@@ -22,12 +22,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeViewModelFactory
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapFactory
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapFactory
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable

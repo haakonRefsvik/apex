@@ -1,4 +1,6 @@
-package no.uio.ifi.in2000.rakettoppskytning.model.savedInDB
+package no.uio.ifi.in2000.rakettoppskytning.data.database
+
+import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 
 data class RocketSpecState(
     val rocketSpecs: List<Thresholds> = emptyList(),

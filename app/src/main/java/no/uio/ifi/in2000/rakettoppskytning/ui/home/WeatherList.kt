@@ -2,8 +2,6 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
 import android.annotation.SuppressLint
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,6 +55,7 @@ import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionabl
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterDialog
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50

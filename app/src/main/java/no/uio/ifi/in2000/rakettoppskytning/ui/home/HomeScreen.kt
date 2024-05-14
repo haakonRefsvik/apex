@@ -41,6 +41,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.IppcSnackbar
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.Map
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
