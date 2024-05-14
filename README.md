@@ -21,7 +21,7 @@
     in the format:
         <string name="in2000ProxyKey" translatable="false">YOUR-API-KEY-HERE</string>
 
-# Mapbox:
+## Mapbox:
 
     If the app is not running due to lack of keys or fobidden authorization, try this:
 
