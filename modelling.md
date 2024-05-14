@@ -1,7 +1,6 @@
 # Modelling
 
 \
-\
 
 Tekslig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
 
@@ -143,8 +142,9 @@ sequenceDiagram
 ```
 \
 \
-Flytdiagram
+Tekstlig beskrivelse: “Jeg vil kunne lagre et tidspunkt i appen slik at jeg raskt kan finne tilbake til vær-detaljer i et spesifikt sted på et spesifikt tidspunkt.”
 
+Flytdiagram
 ```mermaid
 
 flowchart TB
@@ -207,10 +207,12 @@ sequenceDiagram
     FavoriteRepository->>-FavoriteRepository: update states
 
 ```
+\
+\
 Tekstilg beskrivelse: “Jeg vil kunne simulere banen til raketten min, for å vite hvor raketten lander"
-\
+
 Sekvensdiagram: Appen skal kunne regne ballistisk bane på et gitt tidspunkt
-\
+
 Pre betingelse: bruker har allerde valgt et tidspunkt for en bestemt lat og lon.
 
 ```mermaid
@@ -250,10 +252,10 @@ Map-->>HomeScreen: Shows trajectory
 
 ```
 
+\
+\
+Tekstlig beskrivelse: “Jeg vil kunne lagre et sted i appen slik at jeg raskt kan finne tilbake til oppskytningsstedet”
 
-“Jeg vil kunne lagre et sted i appen slik at jeg raskt kan finne tilbake til oppskytningsstedet”
-\
-\
 Sekvensdiagram: Legg til favoritt
 
 ```mermaid
@@ -309,11 +311,12 @@ sequenceDiagram
 
 
 ```
+\
+\
 Tekstlig beskrivelse: “Jeg vil kunne endre rakett verdier slik at appen bruker data fra min spesifikke rakett"
-\
-\
+
 Sekvensdiagram : Brukeren skal kunne tilpasse grenseverdiene for værdata til sin rakett
-\
+
 Pre betingelse: Bruker har skrevet inn oppdaterte verdier
 
 ```mermaid
@@ -339,9 +342,9 @@ sequenceDiagram
 \
 \
 Tekstlig beskrivelse: “Jeg vil kunne endre grenseverdier slik at appen bruker data som er tilpasset min rakett”
-\
+
 FlytDiagram: Tilpasser grenseverdier for værdata
-\
+
 ```mermaid
 flowchart TB
     start([Start])
