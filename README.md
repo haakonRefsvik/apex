@@ -9,6 +9,13 @@
     Suad Raage
     Håkon Refsvik
     
+
+# Where to find more documentation:
+
+## ARCHITECTURE.MD:
+   // Here you can find the 
+        
+
 # How to run the app:
 
 ## IFI-Proxy:
@@ -65,3 +72,6 @@
 
             }
         }
+        
+# Libraries:
+   
