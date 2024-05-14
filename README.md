@@ -65,7 +65,7 @@
         <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">PUBLIC API KEY</string>.
 
 
-### settings.gradle.kt:
+#### settings.gradle.kt:
 
     This should be in settings.gradle.kts: 
 
