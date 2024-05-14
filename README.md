@@ -78,7 +78,7 @@
 ### Vico by Patryk Goworowski:
     - Library for showing Graphs
     
-### Unidata netcdf-java:
+### Unidata netcdf-java by Thredds:
     - Library for parsing Grib-files
     
 ### Mapbox:
