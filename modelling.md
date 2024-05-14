@@ -1,10 +1,9 @@
 # Modelling
-
 \
+\
+Klassestruktur -> For lagring av værdata:
 
 Tekslig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
-
-Klassestruktur for lagring av værdata
 
 ```mermaid
 
@@ -32,9 +31,10 @@ classDiagram
 ```
 \
 \
+Klassestruktur -> For VerticalProfile:
+
 Tekstlig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
 
-Klassestruktur for VerticalProfile
 ```mermaid
 
 classDiagram
@@ -84,10 +84,10 @@ classDiagram
 ```
 \
 \
+Sekvensdiagram -> for at bruker trykker "Get Weatherdata":
 
 Tekstlig beskrivelse: “Jeg ønsker å se værdata for et punkt på kartet som jeg velger selv, for å kunne se om det er trygt å skyte opp en rakett på tidspunktet”
 
-Sekvensdiagram for at bruker trykker "Get Weatherdata"
 ```mermaid
 sequenceDiagram
     actor User
@@ -107,12 +107,12 @@ sequenceDiagram
     HomeViewModel-->>HomeScreen: Show cards with weatherdata
 
 ```
+\
+\
+Sekvensdiagram -> for at bruker velger et værkort:
 
-\
-\
 Tekstlig beskrivelse: “Jeg ønsker en tydelig oversikt over vind og shear wind, fart og retning, bakkefukt, temp, nedbør, tåke, duggpunkt, skydekke og sikt, fordi det er kritisk værdata for rakettoppskytningen”
 
-Sekvensdiagram for at bruker velger et værkort
 ```mermaid
 
 sequenceDiagram
@@ -142,9 +142,10 @@ sequenceDiagram
 ```
 \
 \
+Flytdiagram -> for at bruker lagrer et tidspunkt:
+
 Tekstlig beskrivelse: “Jeg vil kunne lagre et tidspunkt i appen slik at jeg raskt kan finne tilbake til vær-detaljer i et spesifikt sted på et spesifikt tidspunkt.”
 
-Flytdiagram
 ```mermaid
 
 flowchart TB
@@ -167,9 +168,10 @@ flowchart TB
 ```
 \
 \
+Sekvensdiagram -> for at bruker lagrer et tidspunkt:
+
 Tekstlig beskrivelse: “Jeg vil kunne lagre et tidspunkt i appen slik at jeg raskt kan finne tilbake til vær-detaljer i et spesifikt sted på et spesifikt tidspunkt.”
 
-Sekvensdiagram for at bruker lagrer et tidspunkt
 ```mermaid
 sequenceDiagram
     actor User
@@ -209,9 +211,9 @@ sequenceDiagram
 ```
 \
 \
-Tekstilg beskrivelse: “Jeg vil kunne simulere banen til raketten min, for å vite hvor raketten lander"
+Sekvensdiagram -> Appen skal kunne regne ballistisk bane på et gitt tidspunkt:
 
-Sekvensdiagram: Appen skal kunne regne ballistisk bane på et gitt tidspunkt
+Tekstilg beskrivelse: “Jeg vil kunne simulere banen til raketten min, for å vite hvor raketten lander"
 
 Pre betingelse: bruker har allerde valgt et tidspunkt for en bestemt lat og lon.
 
@@ -251,12 +253,11 @@ MapViewModel--)-Map: trajectory
 Map-->>HomeScreen: Shows trajectory
 
 ```
+\
+\
+Sekvensdiagram-> legg til favoritt:
 
-\
-\
 Tekstlig beskrivelse: “Jeg vil kunne lagre et sted i appen slik at jeg raskt kan finne tilbake til oppskytningsstedet”
-
-Sekvensdiagram: Legg til favoritt
 
 ```mermaid
 sequenceDiagram
@@ -313,9 +314,9 @@ sequenceDiagram
 ```
 \
 \
-Tekstlig beskrivelse: “Jeg vil kunne endre rakett verdier slik at appen bruker data fra min spesifikke rakett"
+Sekvensdiagram-> Brukeren skal kunne tilpasse grenseverdiene for værdata til sin rakett:
 
-Sekvensdiagram : Brukeren skal kunne tilpasse grenseverdiene for værdata til sin rakett
+Tekstlig beskrivelse: “Jeg vil kunne endre rakett verdier slik at appen bruker data fra min spesifikke rakett"
 
 Pre betingelse: Bruker har skrevet inn oppdaterte verdier
 
@@ -341,9 +342,9 @@ sequenceDiagram
 ```
 \
 \
-Tekstlig beskrivelse: “Jeg vil kunne endre grenseverdier slik at appen bruker data som er tilpasset min rakett”
+Flytdiagram -> Tilpasser grenseverdier for værdata:
 
-FlytDiagram: Tilpasser grenseverdier for værdata
+Tekstlig beskrivelse: “Jeg vil kunne endre grenseverdier slik at appen bruker data som er tilpasset min rakett”
 
 ```mermaid
 flowchart TB
