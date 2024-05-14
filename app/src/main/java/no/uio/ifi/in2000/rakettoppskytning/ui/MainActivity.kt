@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -68,8 +69,10 @@ class MainActivity : ComponentActivity() {
 
                     // Conditional display of NetworkSnackbar only when the network is unavailable
                     if (!isNetworkAvailable) {
+                        Log.d("networkSnack", "showing snackbar")
                         NetworkSnackbar()
                     }
+
                 }
             }
         }

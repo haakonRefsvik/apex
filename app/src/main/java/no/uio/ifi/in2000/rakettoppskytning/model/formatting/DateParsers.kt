@@ -26,7 +26,7 @@ fun calculateHoursBetweenDates(vpDate: String, fcDate: String): Int {
     }
 }
 
-val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT)
+val formatter: DateTimeFormatter? = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT)
 
 
 /** Returns current time to the nearest hour */
@@ -56,12 +56,7 @@ fun getNumberOfDaysAhead(dateString: String): Int {
 
 fun getDayAndMonth(dateString: String): String {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-
     val parsedDateTime = LocalDateTime.parse(dateString, formatter)
-
-    val day = parsedDateTime.dayOfMonth
-    val month = parsedDateTime.monthValue
-
     return parsedDateTime.format(DateTimeFormatter.ofPattern("dd.MM"))
 }
 

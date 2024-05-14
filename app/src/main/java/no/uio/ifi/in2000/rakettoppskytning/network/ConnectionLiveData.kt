@@ -10,7 +10,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -46,7 +45,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
 
         override fun onAvailable(network: Network) {
-            Log.d("", "onAvailable: ${network}")
+            Log.d("", "onAvailable: $network")
             val networkCapabilities = cm.getNetworkCapabilities(network)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             Log.d("", "onAvailable: ${network}, $hasInternetCapability")
@@ -56,7 +55,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
                     val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
                     if(hasInternet){
                         withContext(Dispatchers.Main){
-                            Log.d("", "onAvailable: adding network. ${network}")
+                            Log.d("", "onAvailable: adding network. $network")
                             validNetworks.add(network)
                             checkValidNetworks()
                         }
@@ -67,7 +66,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
 
         override fun onLost(network: Network) {
-            Log.d("", "onLost: ${network}")
+            Log.d("", "onLost: $network")
             validNetworks.remove(network)
             checkValidNetworks()
         }

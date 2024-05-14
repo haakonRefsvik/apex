@@ -122,7 +122,6 @@ fun DetailsScreen(
             context = context,
             isAddingFavorite = isAddingFavorite,
             onDismiss = { isAddingFavorite = false },
-
         )
     }
 
@@ -256,7 +255,9 @@ fun DetailsScreen(
                             onClick = {
                                 mapViewModel.deleteTrajectory()
                                 mapViewModel.makeTrajectory.value = true
-                                scope.launch { homeScreenViewModel.scaffold.bottomSheetState.partialExpand() }
+                                scope.launch {
+                                    homeScreenViewModel.scaffold.bottomSheetState.partialExpand()
+                                }
                                 navController.popBackStack("HomeScreen", false)
                             }
                         ){
@@ -331,7 +332,7 @@ fun DetailsScreen(
                             item {
                                 weatherNow.verticalProfile?.let {
                                     WindCardAltitude(
-                                        it.getAllLevelDatas()
+                                        it.getAllLevelData()
                                             .sortedBy { levelData -> levelData.getLevelHeightInMeters() }
                                     )
                                     Spacer(modifier = Modifier.height(30.dp))

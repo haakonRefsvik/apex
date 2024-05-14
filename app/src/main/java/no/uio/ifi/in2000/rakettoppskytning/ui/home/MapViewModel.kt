@@ -11,14 +11,11 @@ import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
-import java.util.logging.Level
 
-class MapFactory(): ViewModelProvider.Factory{
+class MapFactory: ViewModelProvider.Factory{
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MapViewModel() as T

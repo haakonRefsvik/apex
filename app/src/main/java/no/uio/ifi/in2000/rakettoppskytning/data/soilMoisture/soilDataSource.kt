@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -26,12 +25,12 @@ suspend fun getSoilForecast(lat: Double, lon: Double): List<SoilMoistureHourly> 
     val urlPrefix = "https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}"
     val soilUrl = "$urlPrefix&hourly=soil_moisture_0_to_1cm"
 
-    Log.d("APICALL", "SoilForecast blir kallt på")
+    println("APICALL IN SOILFORECAST")
 
     return try {
         listOf(client.get(soilUrl).body<SoilMoistureHourly>())
     }catch (e: Exception){
-        Log.d("feil i historisk-dataSource", e.toString())
+        println("feil i historisk-dataSource")
         listOf()
     }
 

@@ -12,32 +12,11 @@ import kotlinx.serialization.Serializable
  *
  * */
 
-fun getNearestPrecipitation(data: Data): Double?{
-    if(data.next1Hours!= null){
-        return data.next1Hours.details.precipitationAmount
-    }
-
-    if(data.next6Hours != null){
-        return data.next6Hours.details.precipitationAmount
-    }
-
-    return null
-}
-
 @Serializable
 data class LocationForecast(
     val type: String,
-    //val geometry: Geometry,
     val properties: Properties,
 )
-/*
-@Serializable
-data class Geometry(
-    val type: String,
-    val coordinates: List<Double>,
-)
-
- */
 @Serializable
 data class Properties(
     val meta: Meta,
@@ -51,62 +30,6 @@ data class Meta(
     val updatedAt: String,
     //val units: Units,
 )
-
-/*
-@Serializable
-data class Units(
-    @SerialName("air_pressure_at_sea_level")
-    val airPressureAtSeaLevel: String,
-    @SerialName("air_temperature")
-    val airTemperature: String,
-    @SerialName("air_temperature_max")
-    val airTemperatureMax: String,
-    @SerialName("air_temperature_min")
-    val airTemperatureMin: String,
-    @SerialName("air_temperature_percentile_10")
-    val airTemperaturePercentile10: String,
-    @SerialName("air_temperature_percentile_90")
-    val airTemperaturePercentile90: String,
-    @SerialName("cloud_area_fraction")
-    val cloudAreaFraction: String,
-    @SerialName("cloud_area_fraction_high")
-    val cloudAreaFractionHigh: String,
-    @SerialName("cloud_area_fraction_low")
-    val cloudAreaFractionLow: String,
-    @SerialName("cloud_area_fraction_medium")
-    val cloudAreaFractionMedium: String? = null,
-    @SerialName("dew_point_temperature")
-    val dewPointTemperature: String? = null,
-    @SerialName("fog_area_fraction")
-    val fogAreaFraction: String? = null,
-    @SerialName("precipitation_amount")
-    val precipitationAmount: String,
-    @SerialName("precipitation_amount_max")
-    val precipitationAmountMax: String,
-    @SerialName("precipitation_amount_min")
-    val precipitationAmountMin: String,
-    @SerialName("probability_of_precipitation")
-    val probabilityOfPrecipitation: String,
-    @SerialName("probability_of_thunder")
-    val probabilityOfThunder: String,
-    @SerialName("relative_humidity")
-    val relativeHumidity: String,
-    @SerialName("ultraviolet_index_clear_sky")
-    val ultravioletIndexClearSky: String,
-    @SerialName("wind_from_direction")
-    val windFromDirection: String,
-    @SerialName("wind_speed")
-    val windSpeed: String,
-    @SerialName("wind_speed_of_gust")
-    val windSpeedOfGust: String,
-    @SerialName("wind_speed_percentile_10")
-    val windSpeedPercentile10: String,
-    @SerialName("wind_speed_percentile_90")
-    val windSpeedPercentile90: String,
-)
-
- */
-
 @Serializable
 data class Series(
     /** Dato i ISO 8601-format; år-måned-dag(T)klokkeslett:tidssone(Z) */

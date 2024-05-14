@@ -8,23 +8,18 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getNearestLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getSigmoidRatios
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
-import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecsDao
-import no.uio.ifi.in2000.rakettoppskytning.data.database.ThresholdsDao
-import no.uio.ifi.in2000.rakettoppskytning.data.grib.GribRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.getCloseness
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getCurrentDate
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayAndMonth
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayName
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
-import java.io.File
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -65,43 +60,6 @@ class ExampleUnitTest {
 
         assertEquals(expected, result, 0.1)
     }
-
-    /*
-    @Test
-    fun testHoursBetweenDates(){
-        val repo = SettingsRepository(db.thresholdsDao)
-        val d1 = "2024-03-19T00:00:00Z"
-        val d2 = "2024-03-20T00:00:00Z"
-        val expected = 24
-        val result = calculateHoursBetweenDates(d1, d2)
-        assertEquals(expected, result)
-    }
-    @Test
-    fun testClosenessMinLimit(){
-        val repo = SettingsRepository(db.thresholdsDao)
-        val v = -1.4
-        val l = -2.0
-        val result = repo.getCloseness(v, l, max = false)
-        val expected = 0.7
-        assertEquals(expected, result, 0.01)
-    }
-    @Test
-    fun testClosenessMaxLimit(){
-        val repo = SettingsRepository(db.thresholdsDao)
-        val v = 2.2
-        val l = 0.0
-        val result = repo.getCloseness(v, l)
-        val expected = 1.0
-        assertEquals(expected, result, 0.01)
-    }
-    @Test
-    fun testDaysAHead(){
-        val result = getNumberOfDaysAhead("2024-03-20T18:00:00Z")
-        val expected = 1
-        assertEquals(result, expected)
-    }
-     */
-
     @Test
     fun testWeekDayName(){
         val result = getDayName("2024-04-10", 0)
@@ -118,46 +76,6 @@ class ExampleUnitTest {
 
         assertEquals(expected, result)
     }
-
-    /*
-    @RunWith(AndroidJUnit4::class)
-    class SimpleEntityReadWriteTest {
-        private lateinit var favoriteCardDao: FavoriteCardDao
-        private lateinit var favoriteDao: FavoriteDao
-        private lateinit var db: AppDatabase
-
-        @Before
-        fun createDb() {
-            val context = ApplicationProvider.getApplicationContext<Context>()
-            db = Room.inMemoryDatabaseBuilder(
-                context, AppDatabase::class.java).build()
-            favoriteCardDao = db.favoriteCardDao
-            favoriteDao = db.favoriteDao
-
-        }
-
-        @After
-        @Throws(IOException::class)
-        fun closeDb() {
-            db.close()
-        }
-
-        @Test
-        @Throws(Exception::class)
-        suspend fun writeUserAndReadInList() {
-            val card: FavoriteCard = FavoriteCard("59.0", "11.0", "Now")
-            val place: Favorite = Favorite("Blindern","59.0", "11.0", )
-
-            favoriteCardDao.insertFavoriteCard(card)
-            favoriteDao.upsertFavorite(place)
-
-            val byName = favoriteDao.getFavoriteByLatLon("59.0", "11.0")
-
-            assertEquals(byName.map { it?.name }.toString(), "Blindern")
-        }
-    }
-
-     */
 
     @Test
     fun testTri(){
@@ -370,19 +288,21 @@ class ExampleUnitTest {
         mapViewModel.updateCamera(lat, lon)
         assertEquals(lat.toString(), mapViewModel.cameraOptions.value.center!!.latitude().toString())
         assertEquals(lon.toString(), mapViewModel.cameraOptions.value.center!!.longitude().toString())
-
     }
 
-    /*
-    Does not work anymore because of changes to GribRepo made
     @Test
-    fun testGribRepository() {
-        val gribRepo = GribRepository()
-        val gribFiles: List<File> = runBlocking {
-            gribRepo.loadGribFiles()
-            gribRepo.getGribFiles()
-        }
-        assertTrue(gribFiles.isNotEmpty())
+    fun testLandingCalcDistance() {
+        val lat1 = 59.969208
+        val lon1 = 10.700232
+
+        val lat2 = 59.970523
+        val lon2 = 10.708425
+
+        // expected distance is fetched from Google-maps
+        val exp = 0.477
+        val result = calcDistance(lat1, lon1, lat2, lon2)
+
+        assertEquals(exp, result, 0.005)
     }
-*/
+
 }

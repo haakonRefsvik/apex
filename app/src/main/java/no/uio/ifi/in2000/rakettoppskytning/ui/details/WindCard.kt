@@ -1,8 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
-import android.graphics.Typeface
 import android.text.Layout
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +29,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.maps.plugin.logo.generated.LogoSettings
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.CartesianChartHost
@@ -42,7 +39,6 @@ import com.patrykandpatrick.vico.compose.component.rememberTextComponent
 import com.patrykandpatrick.vico.compose.component.shape.shader.color
 import com.patrykandpatrick.vico.compose.component.shape.shader.verticalGradient
 import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
-import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
 import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
@@ -50,7 +46,6 @@ import com.patrykandpatrick.vico.core.model.lineSeries
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.Details
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
-import no.uio.ifi.in2000.rakettoppskytning.model.grib.VerticalProfile
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue

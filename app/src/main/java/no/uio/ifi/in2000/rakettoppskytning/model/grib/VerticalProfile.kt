@@ -35,18 +35,15 @@ data class VerticalProfile(
     val time: String
 ) {
 
-    var groundLevel: LevelData? = null
-    var allShearWinds: List<ShearWind> = getAllSheerWinds()
-
-    /** Shows the the max altitude the VerticalProfile can reach (in meters) */
-    val actualHeight = getAllLevels().lastOrNull()?.let { findLevel(it).getLevelHeightInMeters() }
+    private var groundLevel: LevelData? = null
+    private var allShearWinds: List<ShearWind> = getAllSheerWinds()
 
     /** Gets all the levels of the profile in Pascal */
     private fun getAllLevels(): DoubleArray {
         return verticalProfileMap.keys.sortedDescending().toDoubleArray()
     }
 
-    fun getAllLevelDatas(): List<LevelData> {
+    fun getAllLevelData(): List<LevelData> {
         return verticalProfileMap.values.toList()
     }
 
@@ -237,7 +234,7 @@ fun getDataIndexFromLatLon(lat: Double, lon: Double, gds: Grib2Gds): Int {
     if (gridDef.scanMode != 64) {
         throw Exception("Scan-mode ${gridDef.scanMode} not supported")
     }
-    val numGridPoints = gridDef.gdsNumberPoints  // amount of grid-cells (same as nx * ny)
+    gridDef.gdsNumberPoints  // amount of grid-cells (same as nx * ny)
     val startX = formatLon(gridDef.startX)    // starting position of the grid-cell
     val startY = formatLat(gridDef.startY)
     val dx = gridDef.dx // space between each cell (in lon/lat)

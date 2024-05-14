@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,12 +43,12 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time35
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time65
 import java.text.SimpleDateFormat
 
+@SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun TimeDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
     homeScreenViewModel: HomeScreenViewModel
 ) {
 
