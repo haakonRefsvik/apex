@@ -11,8 +11,7 @@
     
 # IFI-Proxy:
 
-    The API key for the project, which we use to retrive weather data, is not included. 
-    This is due to security reasons.
+    The API key for the project, which we use to retrive weather data, is not included. This is due to security reasons.
     
     The API key is placed in:
         res -> values -> strings.xml 
@@ -33,7 +32,7 @@
         -> MAPBOX_DOWNLOADS_TOKEN = PRIVATE KEY
         
     It should be named MAPBOX_DOWNLOADS_TOKEN, or have a similiar variable name as in:
-        settings.gradle.kt 
+        -> settings.gradle.kt 
             -> localProperties.getProperty("Variabel)
     
 
