@@ -324,3 +324,21 @@ sequenceDiagram
     SettingsViewModel -->> SettingScreen: uses updated thresholds
     SettingScreen -->> User: Shows confirmation of saved setting
 ```
+\
+\
+Tilpasser grenseverdier for værdata
+\
+```mermaid
+flowchart TB
+    start([Start])
+    c1[HomeScreen]
+    c2[Presses SettingsScreen] -.-> j[(Gets data from ThresholdDatabase)]
+    start --> c1
+    c1 --> c2
+    c2 --> e[Shows settingsScreen]
+    e --> f[Change value]
+    f -.-> g[(Value is saved in ThresholdDatabase)]
+    f1[Change another value?] --> |Yes| f
+    f1 --> |No| h
+    f --> h([End])
+```
