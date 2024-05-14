@@ -10,6 +10,11 @@ import no.uio.ifi.in2000.rakettoppskytning.data.database.FavoriteDao
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 
+/**
+ * This repository interacts with Favorite and FavoriteCard database
+ * it preforms operations like insertion, deletion, and observation of favorite location and time
+ * it ensures real-time updates across the application
+ * */
 class FavoriteCardRepository(
     private val favoriteCardDao: FavoriteCardDao,
     private val favoriteDao: FavoriteDao

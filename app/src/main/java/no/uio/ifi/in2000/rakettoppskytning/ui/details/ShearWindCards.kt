@@ -92,7 +92,7 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
                             modifier = Modifier
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol"
+                            contentDescription = "WindSymbol"
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
@@ -166,8 +166,7 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                     .width(20.dp)
                     .fillMaxHeight()
             )
-            Row(
-            ) {
+            Row{
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
@@ -179,7 +178,7 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
                             modifier = Modifier
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol",
+                            contentDescription = "WindSymbol",
                             tint = details0
                         )
                         Spacer(modifier = Modifier.width(10.dp))
@@ -305,7 +304,7 @@ fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
                             modifier = Modifier
                                 .size(30.dp),
                             painter = painterResource(R.drawable.vind2),
-                            contentDescription = "VindSymbol",
+                            contentDescription = "WindSymbol",
                             tint = details0
                         )
                         Spacer(modifier = Modifier.width(10.dp))

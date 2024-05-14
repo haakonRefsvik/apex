@@ -2,6 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.data.database
 
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 
+/** This data class respresents the state of the rocket */
 data class RocketSpecState(
     val rocketSpecs: List<Thresholds> = emptyList(),
     val apogee: String = "",

@@ -31,16 +31,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.maps.MapboxExperimental
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
-//Lag funksjonen slik at den ikke leser inn mer enn 1 gang per lokasjon
-@OptIn(MapboxExperimental::class)
-
+/** This composable shows an AlertDialog that lets user write in a name for given lat and lon
+ * if name already exists in database it shows a text and will not save to database
+ * if the name is unique it saves lat, lon and name to database */
 @Composable
 fun AddFavoriteDialogCorrect(
     homeScreenViewModel: HomeScreenViewModel,
@@ -79,7 +78,7 @@ fun AddFavoriteDialogCorrect(
                     Text(text = displayText, color = favorite100.copy(0.7F))
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(
-                        value = inputName, // viser lat, verdien som maks 5 desimaler
+                        value = inputName,
                         onValueChange = {
                             inputName = it
                             isNameAlreadyUsed = favoriteLocations.favorites.any { favorite -> favorite.name == it }
@@ -193,7 +192,7 @@ fun AddFavoriteDialogCorrect(
 
 }
 
-
+/**This composable shows an AlertDialog which says to user that the location is already saved*/
 @Composable
 fun AddFavoriteDialogError(
     homeScreenViewModel: HomeScreenViewModel,
@@ -238,6 +237,9 @@ fun AddFavoriteDialogError(
     )
 }
 
+/** This composable checks if lat and lon is already in database
+ * If it exist in database is shows an Error dialog
+ * if its not in database it shows a dialog that lets user save to database*/
 @Composable
 fun AddFavoriteDialog(
     homeScreenViewModel: HomeScreenViewModel,

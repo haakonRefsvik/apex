@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.AddFavoriteDialogCorrect
 
+/** This composable shows a dialog
+ * if location is not in database it shows a dialog that user can save it to database if they want to */
 @Composable
 fun AddFavoriteLocationDialog(
     homeScreenViewModel: HomeScreenViewModel,
