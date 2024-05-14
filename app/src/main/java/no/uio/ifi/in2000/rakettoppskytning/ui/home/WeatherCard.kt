@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.mapbox.maps.plugin.logo.generated.LogoSettings
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.ForeCastSymbols
 import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour

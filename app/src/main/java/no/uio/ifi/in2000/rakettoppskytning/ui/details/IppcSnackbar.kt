@@ -2,7 +2,9 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.ColorSpace.Rgb
 import android.net.Uri
+import android.text.style.UnderlineSpan
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -18,10 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
-
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 @Composable
 fun IppcSnackbar(
@@ -31,8 +36,9 @@ fun IppcSnackbar(
 ) {
     SnackbarHost(
         hostState = snackbarHostState,
-        snackbar = { data ->
+        snackbar = { _ ->
             Snackbar(
+                containerColor = main100,
                 modifier = Modifier.padding(16.dp),
                 content = {
                     Text(
@@ -43,13 +49,14 @@ fun IppcSnackbar(
                 },
                 action = {
                     ClickableText(
+                        style = TextStyle(textDecoration = TextDecoration.Underline),
                         text = AnnotatedString(
+
                             text = "IPPC",
-                            spanStyle = SpanStyle(color = Color.White.copy(0.7F))
+                            spanStyle = SpanStyle(color = Color(38, 104, 245, 255))
                         ),
                         onClick = {
-                            val url = "https://www.ippc.no/ippc/"
-                            openWebBrowser(url, context)
+                            openWebBrowser(context = context)
                         }
                     )
                 }
@@ -61,7 +68,7 @@ fun IppcSnackbar(
     )
 }
 
-private fun openWebBrowser(url: String, context: Context) {
+private fun openWebBrowser(url: String = "https://www.ippc.no/ippc/", context: Context) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         data = Uri.parse(url)
     }

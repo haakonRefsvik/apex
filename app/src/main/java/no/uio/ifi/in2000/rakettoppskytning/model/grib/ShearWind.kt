@@ -8,8 +8,8 @@ import kotlin.math.sqrt
 
 /** Shear-wind between two isobaric layers */
 class ShearWind(
-    val lowerLayer: LevelData,
-    val upperLayer: LevelData,
+    private val lowerLayer: LevelData,
+    private val upperLayer: LevelData,
     /** Difference measured as wind-speed (m/s) */
     val windSpeed: Double,
     val direction: Double = getShearDirection(upperLayer, lowerLayer),

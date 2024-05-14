@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home.favorite
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,25 +26,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
-import com.mapbox.maps.dsl.cameraOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favorite100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
@@ -63,8 +53,6 @@ fun AddFavoriteDialogCorrect(
     displayText: String = "Add location to favorite",
     dismissText: String = "Dismiss"
 ) {
-    val controller = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -212,7 +200,6 @@ fun AddFavoriteDialogError(
     homeScreenViewModel: HomeScreenViewModel,
     lat: Double,
     lon: Double,
-    isAddingFavorite: Boolean,
     onDismiss: () -> Unit
 ) {
 
@@ -272,7 +259,6 @@ fun AddFavoriteDialog(
             homeScreenViewModel = homeScreenViewModel,
             lat = lat,
             lon = lon,
-            isAddingFavorite = isAddingFavorite,
             onDismiss = onDismiss
         )
     } else {

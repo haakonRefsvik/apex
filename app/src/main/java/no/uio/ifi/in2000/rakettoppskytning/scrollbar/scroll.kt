@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,8 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -83,32 +82,6 @@ fun LazyColumnScrollbar(
         content()
     } else {
         Box(modifier = modifier) {
-            val visibilityState = remember {
-                derivedStateOf {
-                    calculateVisibilityStates(listState, showItemIndicator)
-                }
-            }
-
-            // Use animateFloatAsState to smoothly transition the alpha value
-            val alphaAbove: Float by animateFloatAsState(
-                if (visibilityState.value.first != VisibilityState.CompletelyVisible) 1f else 0f,
-                animationSpec = tween(250)
-            )
-            val alphaBelow: Float by animateFloatAsState(
-                if (visibilityState.value.second != VisibilityState.CompletelyVisible) 1f else 0f,
-                animationSpec = tween(250)
-            )
-
-            val heightAbove: Float by animateFloatAsState(
-                if (visibilityState.value.first == VisibilityState.NotVisible) .8f else .25f,
-                animationSpec = tween(1000)
-            )
-
-            val heightBelow: Float by animateFloatAsState(
-                if (visibilityState.value.second == VisibilityState.NotVisible) 1f else .25f,
-                animationSpec = tween(1000)
-            )
-
             content()
             when(showItemIndicator){
                 ListIndicatorSettings.Disabled -> {
@@ -116,41 +89,20 @@ fun LazyColumnScrollbar(
                 }
                 is ListIndicatorSettings.EnabledIndividualControl -> {
                     DisplayIndicator(
-                        upIndication = true,
-                        indicatorHeight = showItemIndicator.upperIndicatorHeight * heightAbove,
-                        indicatorColor = showItemIndicator.upperIndicatorColor,
-                        alpha = alphaAbove,
-                        graphicIndicator = showItemIndicator.upperGraphicIndicator,
                         modifier = Modifier.align(Alignment.TopCenter).focusable(false)
                     )
 
                     DisplayIndicator(
-                        upIndication = false,
-                        indicatorHeight = showItemIndicator.lowerIndicatorHeight * heightBelow,
-                        indicatorColor = showItemIndicator.lowerIndicatorColor.copy(alpha = alphaBelow),
-                        alpha = alphaBelow,
-                        graphicIndicator = showItemIndicator.lowerGraphicIndicator,
                         modifier = Modifier.align(Alignment.BottomCenter).focusable(false)
                     )
                 }
                 is ListIndicatorSettings.EnabledMirrored -> {
                     DisplayIndicator(
-                        upIndication = true,
-                        indicatorHeight = showItemIndicator.indicatorHeight * heightAbove,
-                        indicatorColor = showItemIndicator.indicatorColor,
-                        alpha = alphaAbove,
-                        graphicIndicator = showItemIndicator.graphicIndicator,
                         modifier = Modifier.align(Alignment.TopCenter).focusable(false)
                     )
 
                     DisplayIndicator(
-                        upIndication = false,
-                        indicatorHeight = showItemIndicator.indicatorHeight * heightBelow,
-                        indicatorColor = showItemIndicator.indicatorColor.copy(alpha = alphaBelow),
-                        alpha = alphaBelow,
-                        graphicIndicator = showItemIndicator.graphicIndicator,
                         modifier = Modifier.align(Alignment.BottomCenter).focusable(false),
-                        graphicModifier = Modifier.rotate(180f)
                     )
                 }
             }
@@ -198,7 +150,7 @@ private fun InternalLazyColumnScrollbar(
 
     var isSelected by remember { mutableStateOf(false) }
 
-    var dragOffset by remember { mutableStateOf(0f) }
+    var dragOffset by remember { mutableFloatStateOf(0f) }
 
     val reverseLayout by remember { derivedStateOf { listState.layoutInfo.reverseLayout } }
 
@@ -441,78 +393,10 @@ private fun InternalLazyColumnScrollbar(
         }
     }
 }
-
-
-internal fun calculateVisibilityStates(
-    listState: LazyListState,
-    showItemIndicator: ListIndicatorSettings
-): Pair<VisibilityState, VisibilityState> {
-    val layoutInfo = listState.layoutInfo
-    val totalItemCount = layoutInfo.totalItemsCount
-    val visibleItems = layoutInfo.visibleItemsInfo
-    val firstVisibleItemIndex = listState.firstVisibleItemIndex
-    val firstItemVisibleOffset = listState.firstVisibleItemScrollOffset
-    val viewportSize = layoutInfo.viewportSize.height
-
-    if (layoutInfo.totalItemsCount == 0) {
-        return Pair(VisibilityState.NotVisible, VisibilityState.NotVisible)
-    }
-
-    if (showItemIndicator is ListIndicatorSettings.Disabled) {
-        return Pair(VisibilityState.CompletelyVisible, VisibilityState.CompletelyVisible)
-    }
-
-    // Calculate visibility for content above
-    val contentAboveState = when {
-        !layoutInfo.reverseLayout -> {
-            if (firstVisibleItemIndex == 0 && firstItemVisibleOffset == 0) VisibilityState.CompletelyVisible
-            else if (visibleItems.none { it.index == 0 }) VisibilityState.NotVisible
-            else VisibilityState.PartiallyVisible
-        }
-        else -> {
-            determineVisibilityState(visibleItems, totalItemCount, viewportSize)
-        }
-    }
-
-    // Calculate visibility for content below
-    val contentBelowState = when {
-        !layoutInfo.reverseLayout -> {
-            determineVisibilityState(visibleItems, totalItemCount, viewportSize)
-        }
-
-        else -> {
-            if (firstVisibleItemIndex == 0 && firstItemVisibleOffset == 0) VisibilityState.CompletelyVisible
-            else if (visibleItems.none { it.index == 0 }) VisibilityState.NotVisible
-            else VisibilityState.PartiallyVisible
-        }
-    }
-
-    return Pair(contentAboveState, contentBelowState)
-}
-
-private fun determineVisibilityState(
-    visibleItems: List<LazyListItemInfo>,
-    totalItemCount: Int,
-    viewportSize: Int
-): VisibilityState {
-    val lastItem = visibleItems.lastOrNull()
-    return if (lastItem != null && lastItem.index == totalItemCount - 1 && (lastItem.size + lastItem.offset) <= viewportSize) VisibilityState.CompletelyVisible
-    else if (visibleItems.none { it.index == totalItemCount - 1 }) VisibilityState.NotVisible
-    else VisibilityState.PartiallyVisible
-}
-
-
 @Composable
 internal fun DisplayIndicator(
-    upIndication: Boolean,
-    indicatorHeight: Dp,
-    indicatorColor: Color,
-    alpha: Float,
-    graphicIndicator: @Composable (modifier: Modifier, alpha: Float) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
-    graphicModifier: Modifier = Modifier
 ) {
-    val ratio = .5f
     Box(
         modifier = modifier
             .fillMaxWidth(1f)

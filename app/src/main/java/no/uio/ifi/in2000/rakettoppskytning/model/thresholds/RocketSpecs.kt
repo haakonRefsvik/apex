@@ -1,6 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.thresholds
 
-import androidx.room.PrimaryKey
+
 
 data class RocketSpecValues(
     /**K: parameter (type), V: Value*/

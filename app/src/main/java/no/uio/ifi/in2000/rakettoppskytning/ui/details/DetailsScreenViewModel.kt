@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
-import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
 class DetailsFactory(
     private val repo: WeatherRepository,
@@ -22,19 +20,12 @@ class DetailsFactory(
     }
 }
 
-class DetailsScreenViewModel(val repo: WeatherRepository) : ViewModel() {
+class DetailsScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     val time = mutableStateOf("")
     val favoriteUiState: StateFlow<WeatherUiState> =
         repo.observeFavorites().map { WeatherUiState(weatherAtPos = it) }.stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = WeatherUiState()
-        )
-
-    val weatherUiState: StateFlow<WeatherUiState> =
-        repo.observeWeather().map { WeatherUiState(weatherAtPos = it) }.stateIn(
-            viewModelScope,
-            started = SharingStarted.Eagerly,
             initialValue = WeatherUiState()
         )
 

@@ -2,6 +2,11 @@ package no.uio.ifi.in2000.rakettoppskytning.data.forecast
 
 import no.uio.ifi.in2000.rakettoppskytning.R
 
+/**
+ * classes might be considered unused because we get the symbol
+ * codes from an API
+ * */
+@Suppress("unused")
 enum class ForeCastSymbols(val id: Int) {
     CLEARSKY_DAY(R.drawable.clearsky_day),
     CLEARSKY_NIGHT(R.drawable.clearsky_night),

@@ -1,25 +1,16 @@
-package no.uio.ifi.in2000.rakettoppskytning.ui.home
+package no.uio.ifi.in2000.rakettoppskytning.ui.home.map
 
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
-import com.mapbox.maps.coroutine.styleDataLoadedEvents
 import com.mapbox.maps.extension.compose.MapEffect
-import com.mapbox.maps.extension.compose.MapboxMap
 import com.mapbox.maps.extension.compose.annotation.generated.PointAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PolygonAnnotation
 import com.mapbox.maps.extension.compose.annotation.generated.PolylineAnnotation
@@ -30,16 +21,14 @@ import com.mapbox.maps.extension.style.layers.properties.generated.TextAnchor
 import com.mapbox.maps.extension.style.model.model
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
-import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
-import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -47,121 +36,24 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-
 @OptIn(MapboxExperimental::class)
 @Composable
-fun NewPointAnnotation(
-    text: String,
-    lat: Double,
-    lon: Double,
-    drawableId: Int,
-    onClick: (PointAnnotation) -> Unit,
-    alt: Double = 0.0
-) {
-
-    PointAnnotation(
-        point = Point.fromLngLat(lon, lat, alt),
-        textField = text,
-        textAnchor = TextAnchor.BOTTOM,
-        textRadialOffset = 2.0,
-        textColorInt = Color.RED,
-        textEmissiveStrength = 20.0,
-        iconSize = 0.04,
-        iconImageBitmap = idToBitmap(id = drawableId),
-        onClick = {
-            onClick(it)
-            true
-        }
-    )
-}
-
-@Composable
-fun idToBitmap(id: Int): Bitmap {
-    val context = LocalContext.current
-    val myImage: Drawable = ResourcesCompat.getDrawable(context.resources, id, null)
-        ?: throw Exception("Drawable $id not found")
-    return drawableToBitmap(myImage)
-}
-
-@OptIn(MapboxExperimental::class)
-@Composable
-fun Map(
-    detailsScreenViewModel: DetailsScreenViewModel,
-    mapViewModel: MapViewModel,
-    settingsViewModel: SettingsViewModel,
-    homeScreenViewModel: HomeScreenViewModel
-) {
-    val lat by mapViewModel.lat
-    val lon by mapViewModel.lon
-    val cameraOptions by mapViewModel.cameraOptions
-    mapViewModel.updateCamera(lat, lon)
-    val mapViewportState = mapViewModel.mapViewportState
-    mapViewportState.setCameraOptions(cameraOptions)
-
-    MapboxMap(
-        modifier = Modifier.fillMaxSize(),
-        mapViewportState = mapViewModel.mapViewportState,
-    ) {
-
-
-        if (mapViewModel.makeTrajectory.value) {
-            Make3dtrajectory(
-                mapViewModel,
-                detailsScreenViewModel,
-                homeScreenViewModel,
-                settingsViewModel
-            )
-        } else {
-            NewPointAnnotation(
-                "",
-                lat = lat,
-                lon = lon,
-                drawableId = R.drawable.pin,
-                onClick = { }
-            )
-
-            MapEffect { mapView ->
-                mapView.mapboxMap.apply {
-
-                    loadStyle(
-                        style(Style.OUTDOORS) {}
-                    )
-                }
-                mapView.mapboxMap.styleDataLoadedEvents
-
-                mapView.mapboxMap.addOnMapClickListener {
-                    mapViewModel.lat.value = it.latitude()
-                    mapViewModel.lon.value = it.longitude()
-
-                    false
-                }
-
-            }
-
-
-        }
-
-    }
-}
-
-@OptIn(MapboxExperimental::class)
-@Composable
-fun Make3dtrajectory(
+fun Make3Dtrajectory(
     mapViewModel: MapViewModel,
     detailsScreenViewModel: DetailsScreenViewModel,
     homeScreenViewModel: HomeScreenViewModel,
     settingsViewModel: SettingsViewModel,
 
     ) {
-    val SOURCE_ID1 = "source1"
-    val SOURCE_ID2 = "source2"
+    val sourceId1 = "source1"
+    val sourceId2 = "source2"
     val paraId = "paraId"
-    val redball = "asset://bigball.glb"
-    val blueball = "asset://blueball.glb"
+    val redBall = "asset://bigball.glb"
+    val blueBall = "asset://blueball.glb"
     val parachute = "asset://parachute.glb"
-    val MODEL_ID_KEY = "model-id-key"
-    val MODEL_ID_2 = "model-id-2"
-    val SAMPLE_MODEL_URI_2 = "asset://portalrocketSimpleMaterials.glb"
+    val modelIdKey = "model-id-key"
+    val modelId2 = "model-id-2"
+    val sampleModelUri2 = "asset://portalrocketSimpleMaterials.glb"
     val cords = Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value)
     val weatherUiState by homeScreenViewModel.weatherUiState.collectAsState()
     val favoriteUiState by detailsScreenViewModel.favoriteUiState.collectAsState()
@@ -186,65 +78,62 @@ fun Make3dtrajectory(
 
 
     val allLevels: List<LevelData> =
-        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelDatas() ?: listOf()
+        weatherAtPosHour.firstOrNull()?.verticalProfile?.getAllLevelData() ?: listOf()
 
     mapViewModel.loadTrajectory(allLevels, rocketSpecs)
     val tra = mapViewModel.trajectory.value
 
-    val s = tra.find { it.z in 600.0..1000.0 }
+    val rocketPoint = tra.find { it.z in 600.0..1000.0 }
     var paraCord = tra.find { it.parachuted && (it.z in 2200.0..2500.0) }
     if (paraCord == null) {
         paraCord = tra.find { it.parachuted }
     }
 
 
-    val hep = tra.indexOf(s)
+    val rocketPointIndex = tra.indexOf(rocketPoint)
     var pitch = Pair(0.0, 0.0)
-    if (s != null) {
-        pitch = calculatePitch(s, tra[hep + 20])
+    if (rocketPoint != null) {
+        pitch = calculatePitch(rocketPoint, tra[rocketPointIndex + 20])
     }
 
-
-
-
+    if (mapViewModel.showTraDetails.value) {
+        ShowTraDetails(mapViewModel = mapViewModel, tra = tra)
+    }
 
     MapEffect { mapView ->
-        mapView.mapboxMap.removeOnMapClickListener() { false }
-
+        mapView.mapboxMap.removeOnMapClickListener { false }
         mapView.mapboxMap.apply {
-
-
             loadStyle(
                 style(Style.OUTDOORS) {
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
                         } else if ((index % settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal].doubleValue).toInt() == 0) {
-                            val MODEL_ID_1 = "model-id${index}"
-                            val SOURCE_ID = "source-id$${index}"
-                            val MODEL1_COORDINATES = Point.fromLngLat(
+                            val modelId1 = "model-id${index}"
+                            val sourceId = "source-id$${index}"
+                            val model1Pos = Point.fromLngLat(
                                 mapViewModel.lon.value, mapViewModel.lat.value
                             )
                             if (point.parachuted) {
-                                +model(MODEL_ID_1) {
-                                    uri(blueball)
+                                +model(modelId1) {
+                                    uri(blueBall)
                                 }
                             } else {
-                                +model(MODEL_ID_1) {
-                                    uri(redball)
+                                +model(modelId1) {
+                                    uri(redBall)
                                 }
                             }
 
-                            +geoJsonSource(SOURCE_ID) {
+                            +geoJsonSource(sourceId) {
                                 featureCollection(
                                     FeatureCollection.fromFeatures(
 
                                         listOf(
-                                            Feature.fromGeometry(MODEL1_COORDINATES)
+                                            Feature.fromGeometry(model1Pos)
                                                 .also {
                                                     it.addStringProperty(
-                                                        MODEL_ID_KEY,
-                                                        MODEL_ID_1
+                                                        modelIdKey,
+                                                        modelId1
                                                     )
                                                 },
 
@@ -252,8 +141,9 @@ fun Make3dtrajectory(
                                     )
                                 )
                             }
-                            +modelLayer(MODEL_ID_1, SOURCE_ID) {
-                                modelId(get(MODEL_ID_KEY))
+
+                            +modelLayer(modelId1, sourceId) {
+                                modelId(get(modelIdKey))
                                 modelType(ModelType.LOCATION_INDICATOR)
                                 val size = 2.0
                                 modelScale(listOf(size, size, size))
@@ -272,16 +162,14 @@ fun Make3dtrajectory(
                             }
 
                         }
-
-
                     }
 
-                    +model(MODEL_ID_2) {
-                        uri(SAMPLE_MODEL_URI_2)
+                    +model(modelId2) {
+                        uri(sampleModelUri2)
                     }
 
 
-                    +geoJsonSource(SOURCE_ID1) {
+                    +geoJsonSource(sourceId1) {
                         featureCollection(
                             FeatureCollection.fromFeatures(
 
@@ -290,8 +178,8 @@ fun Make3dtrajectory(
                                     Feature.fromGeometry(cords)
                                         .also {
                                             it.addStringProperty(
-                                                MODEL_ID_KEY,
-                                                MODEL_ID_2,
+                                                modelIdKey,
+                                                modelId2,
                                             )
                                         },
 
@@ -300,18 +188,18 @@ fun Make3dtrajectory(
                         )
                     }
 
-                    +modelLayer(MODEL_ID_2, SOURCE_ID1) {
-                        modelId(get(MODEL_ID_KEY))
+                    +modelLayer(modelId2, sourceId1) {
+                        modelId(get(modelIdKey))
                         modelType(ModelType.COMMON_3D)
                         modelScale(listOf(300.0, 300.0, 300.0))
-                        if (s != null) {
-                            modelTranslation(listOf(s.x, s.y * -1, s.z))
+                        if (rocketPoint != null) {
+                            modelTranslation(listOf(rocketPoint.x, rocketPoint.y * -1, rocketPoint.z))
                         }
 
                         modelRotation(
                             listOf(
-                                pitch.first * (rocketSpecs.launchAngle.toDouble() * yay(rocketSpecs.launchAngle.toDouble())) * -1,
-                                pitch.second * (rocketSpecs.launchAngle.toDouble() * yay(rocketSpecs.launchAngle.toDouble())),
+                                pitch.first * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(rocketSpecs.launchAngle.toDouble())) * -1,
+                                pitch.second * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(rocketSpecs.launchAngle.toDouble())),
                                 0.0
                             )
                         )
@@ -327,7 +215,7 @@ fun Make3dtrajectory(
                         }
 
 
-                        +geoJsonSource(SOURCE_ID2) {
+                        +geoJsonSource(sourceId2) {
                             featureCollection(
                                 FeatureCollection.fromFeatures(
 
@@ -336,7 +224,7 @@ fun Make3dtrajectory(
                                         Feature.fromGeometry(cords)
                                             .also {
                                                 it.addStringProperty(
-                                                    MODEL_ID_KEY,
+                                                    modelIdKey,
                                                     paraId,
                                                 )
                                             },
@@ -346,32 +234,30 @@ fun Make3dtrajectory(
                             )
                         }
 
-                        +modelLayer(paraId, SOURCE_ID2) {
-                            modelId(get(MODEL_ID_KEY))
+                        +modelLayer(paraId, sourceId2) {
+                            modelId(get(modelIdKey))
                             modelType(ModelType.COMMON_3D)
                             modelScale(listOf(50.0, 50.0, 50.0))
                             modelTranslation(listOf(paraCord.x, paraCord.y * -1, paraCord.z))
-
-
-
                             modelCastShadows(true)
                             modelReceiveShadows(true)
                             modelRoughness(0.1)
                         }
-
-
                     }
-
-
                 }
             )
-
         }
-
-
     }
+}
 
-    if (mapViewModel.showTraDetails.value) {
+
+
+@OptIn(MapboxExperimental::class)
+@Composable
+fun ShowTraDetails(
+    mapViewModel: MapViewModel,
+   tra: List< no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>)
+{
         val lastPoint = tra.last()
         val lastParaPoint = tra.find { it.z <= 10 && it.parachuted }
         val lastCord =
@@ -456,11 +342,8 @@ fun Make3dtrajectory(
 
         )
 
-    }
 
 }
-
-
 fun calculatePitch(
     start: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point,
     end: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
@@ -474,53 +357,41 @@ fun calculatePitch(
     return Pair(pitchX, pitchY)
 }
 
-fun yay(number: Double): Double {
-    if (number in 85.0..95.0) {
-        return -.68
-    } else if (number in 80.0..85.0) {
-        return -.73
-    } else if (number in 75.0..80.0) {
-        return -.81
-    } else if (number in 70.0..75.0) {
-        return -.8
-    } else if (number in 65.0..70.0) {
-        return -.888
-    } else if (number in 60.0..65.0) {
-        return -.96
-    } else if (number in 55.0..60.0) {
-        return -1.36
-    } else if (number in 50.0..55.0) {
-        return -1.4
-    } else if (number in 45.0..50.0) {
-        return -1.8
-    } else if (number in 40.0..45.0) {
-        return -2.15
-    } else if (number in 35.0..40.0) {
-        return -2.73
+fun getPitchRocketModel(number: Double): Double {
+    return when (number) {
+        in 85.0..95.0 -> -0.68
+        in 80.0..85.0 -> -0.73
+        in 75.0..80.0 -> -0.81
+        in 70.0..75.0 -> -0.8
+        in 65.0..70.0 -> -0.888
+        in 60.0..65.0 -> -0.96
+        in 55.0..60.0 -> -1.36
+        in 50.0..55.0 -> -1.4
+        in 45.0..50.0 -> -1.8
+        in 40.0..45.0 -> -2.15
+        in 35.0..40.0 -> -2.73
+        else -> 0.0
     }
-
-
-    return 0.0
 }
 
 fun offsetLatLon(
     lat: Double,
     lon: Double,
-    x_offset: Double,
-    y_offset: Double,
+    xOffset: Double,
+    yOffset: Double,
 ): Pair<Double, Double> {
     // Earth's radius in meters
-    val R = 6378137.0 // approximate radius of Earth in meters
+    val r = 6378137.0 // approximate radius of Earth in meters
 
     // Offset in radians
-    val lat_offset = y_offset / R
-    val lon_offset = x_offset / (R * cos(Math.PI * lat / 180))
+    val latOffset = yOffset / r
+    val lonOffset = xOffset / (r * cos(Math.PI * lat / 180))
 
     // New latitude and longitude
-    val new_lat = lat + (lat_offset * 180 / Math.PI)
-    val new_lon = lon + (lon_offset * 180 / Math.PI)
+    val newLat = lat + (latOffset * 180 / Math.PI)
+    val newLon = lon + (lonOffset * 180 / Math.PI)
 
-    return Pair(new_lat, new_lon)
+    return Pair(newLat, newLon)
 }
 
 data class Coordinates(val latitude: Double, val longitude: Double)
@@ -542,18 +413,14 @@ fun calculateMidpoint(coord1: Coordinates, coord2: Coordinates): Coordinates {
 }
 
 fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-    val R = 6371 // Earth radius in kilometers
+    val r = 6371 // Earth radius in kilometers
     val dLat = Math.toRadians(lat2 - lat1)
     val dLon = Math.toRadians(lon2 - lon1)
     val a = sin(dLat / 2) * sin(dLat / 2) +
             cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
             sin(dLon / 2) * sin(dLon / 2)
     val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    Log.d(
-        "Distance",
-        "Firstlat: $lat1, Firstlon: $lon1. SecondLat: $lat2, secondlon: $lon2. Distance: ${R * c}"
-    )
-    return R * c
+    return r * c
 }
 
 fun generateCirclePoints(lat: Double, lon: Double, radius: Double, numPoints: Int): List<Point> {

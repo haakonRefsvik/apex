@@ -29,7 +29,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -71,7 +70,6 @@ import kotlin.time.toDuration
 
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherList(
     navController: NavHostController,
@@ -118,7 +116,6 @@ fun WeatherList(
         openTimeDialog.value -> {
             TimeDialog(
                 onDismissRequest = { openTimeDialog.value = false },
-                onConfirmation = { },
                 homeScreenViewModel = homeScreenViewModel
             )
         }

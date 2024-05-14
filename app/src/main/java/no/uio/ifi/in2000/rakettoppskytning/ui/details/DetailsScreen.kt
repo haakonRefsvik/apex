@@ -55,7 +55,6 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilScore
-import no.uio.ifi.in2000.rakettoppskytning.network.NetworkSnackbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
 import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
@@ -333,7 +332,7 @@ fun DetailsScreen(
                             item {
                                 weatherNow.verticalProfile?.let {
                                     WindCardAltitude(
-                                        it.getAllLevelDatas()
+                                        it.getAllLevelData()
                                             .sortedBy { levelData -> levelData.getLevelHeightInMeters() }
                                     )
                                     Spacer(modifier = Modifier.height(30.dp))

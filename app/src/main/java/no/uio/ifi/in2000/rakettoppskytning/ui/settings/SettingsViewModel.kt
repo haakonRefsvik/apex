@@ -5,22 +5,10 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import no.uio.ifi.in2000.rakettoppskytning.data.favoriteCards.FavoriteCardRepository
-import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.SettingsRepository
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.RocketSpecs
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.ThresholdState
-import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Thresholds
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
-import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 
 class SettingsFactory(
     private val repo: SettingsRepository,

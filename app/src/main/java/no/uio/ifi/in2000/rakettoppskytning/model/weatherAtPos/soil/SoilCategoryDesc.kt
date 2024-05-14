@@ -1,8 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil
 
-import no.uio.ifi.in2000.rakettoppskytning.R
-
-
 /**
  * From chat-GPT:
  * In general, soil moisture levels are often categorized into different ranges:
@@ -28,17 +25,6 @@ fun getSoilDescription(soilPercentage: Int): String{
         soilPercentage < 60 -> "Lower fire risk"
         soilPercentage < 90 -> "Low fire risk"
         soilPercentage >= 90 -> "Very low fire risk"
-        else -> ""
-    }
-}
-
-fun getSoilCategory(soilPercentage: Int): String{
-    return when {
-        soilPercentage < 10 -> "The ground is very dry"
-        soilPercentage < 30 -> "The ground is dry"
-        soilPercentage < 60 -> "The ground is moderately dry"
-        soilPercentage < 90 -> "The ground is pretty moist"
-        soilPercentage >= 90 -> "The ground is very moist"
         else -> ""
     }
 }

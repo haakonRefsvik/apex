@@ -9,19 +9,21 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+const val SeaLevelRho = 1.225
+
 class Point(
     val x: Double,
     val y: Double,
     val z: Double,
-    val timeS: Double,
+    private val timeSeconds: Double,
     val parachuted: Boolean = false
 ) {
     override fun toString(): String {
-        return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeS.toInt()}, parachuted: $parachuted)"
+        return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeSeconds.toInt()}, parachuted: $parachuted)"
     }
 }
 
-/**Considered alt(itude) is between lower and upperlayer, calculate the ratio between the two.
+/**Considered altitude is between lower and upperlayer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
 fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>? {
     val altBetweenLayers = upperAlt - lowerAlt
@@ -36,7 +38,11 @@ fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Doubl
     return Pair(1 - p1, p1)
 }
 
-
+/**
+ * Get a ratio from a upper/lower altitude based on a sigmoid curve.
+ * This is used in contrast of a linear function to only make
+ * data merge when your altitude is very near two layers meeting.
+ * */
 fun getSigmoidRatios(
     lowerAlt: Double,
     upperAlt: Double,
@@ -181,7 +187,7 @@ fun simulateTrajectory(
 ): List<Point>{
 
     val g = 9.81
-    var rho = 1.225
+    var rho = SeaLevelRho
     val cd = 0.5
     val launchAngleRad = Math.toRadians(launchAngle)
     val launchDirRad = Math.toRadians(launchDir)
@@ -210,7 +216,6 @@ fun simulateTrajectory(
 
     var xWind = 0.0
     var yWind = 0.0
-    var currLowerUpper: Pair<LevelData, LevelData>?
     var lastZ = -100.0
 
     while (z >= altitude) {
@@ -218,29 +223,11 @@ fun simulateTrajectory(
         list.add(p)
 
         if (abs(lastZ - z) > 100) {
-            // Update ratios each 100 meters altitude
-            currLowerUpper = findLowerUpperLevel(allLevels, z)
             lastZ = z
-
-            if (currLowerUpper != null) {
-                val lowLevel = currLowerUpper.first
-                val uppLevel = currLowerUpper.second
-                rho = getAirDensityLinear(lowLevel, uppLevel, z, rho)
-                xWind = getWindSigmoid(
-                    lowLevel,
-                    uppLevel,
-                    z,
-                    lowLevel.vComponentValue,
-                    uppLevel.vComponentValue
-                )
-                yWind = getWindSigmoid(
-                    lowLevel,
-                    uppLevel,
-                    z,
-                    lowLevel.uComponentValue,
-                    uppLevel.uComponentValue
-                )
-            }
+            val triple = updateParameters(z, allLevels)
+            rho = triple.first
+            xWind = triple.second
+            yWind = triple.third
         }
 
         if (burnTimeLeft >= 0 && z <= apogee) {
@@ -299,6 +286,39 @@ fun simulateTrajectory(
     return list
 }
 
+/**
+ * Returns updated parameters based on weatherdata (airDensity, xWind, yWind)
+ * */
+fun updateParameters(alt: Double, allLevels: List<LevelData>):
+    Triple<Double, Double, Double>
+{
+    val currLowerUpper = findLowerUpperLevel(allLevels, alt)
+        ?: return Triple(SeaLevelRho, 0.0, 0.0)
+
+    val lowLevel = currLowerUpper.first
+    val uppLevel = currLowerUpper.second
+
+    val xWind = getWindSigmoid(
+        lowLevel,
+        uppLevel,
+        alt,
+        lowLevel.vComponentValue,
+        uppLevel.vComponentValue
+    )
+
+    val yWind  = getWindSigmoid(
+        lowLevel,
+        uppLevel,
+        alt,
+        lowLevel.uComponentValue,
+        uppLevel.uComponentValue
+    )
+
+    val rho = getAirDensityLinear(lowLevel, uppLevel, alt, SeaLevelRho)
+
+    return Triple(rho, xWind, yWind)
+}
+
 
 fun simulateParachute(
     xInit: Double,
@@ -319,7 +339,6 @@ fun simulateParachute(
 
     var xWind = 0.0
     var yWind = 0.0
-    var currLowerUpper: Pair<LevelData, LevelData>?
     var lastZ = -100.0
     var secondsUsed = s
 
@@ -330,27 +349,10 @@ fun simulateParachute(
         list.add(p)
         // Update ratios each 100 meters altitude
         if (abs(lastZ - z) > 100) {
-            currLowerUpper = findLowerUpperLevel(allLevels, z)
             lastZ = z
-
-            if (currLowerUpper != null) {
-                val lowLevel = currLowerUpper.first
-                val uppLevel = currLowerUpper.second
-                xWind = getWindSigmoid(
-                    lowLevel,
-                    uppLevel,
-                    z,
-                    lowLevel.vComponentValue,
-                    uppLevel.vComponentValue
-                )
-                yWind = getWindSigmoid(
-                    lowLevel,
-                    uppLevel,
-                    z,
-                    lowLevel.uComponentValue,
-                    uppLevel.uComponentValue
-                )
-            }
+            val triple = updateParameters(z, allLevels)
+            xWind = triple.second
+            yWind = triple.third
         }
 
         vz = (-parachuteVelocityDown) * timeStep

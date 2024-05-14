@@ -53,7 +53,7 @@ class HomeViewModelFactory(
     }
 }
 
-class HomeScreenViewModel(repo: WeatherRepository, val favoriteRepo: FavoriteCardRepository) : ViewModel() {
+class HomeScreenViewModel(repo: WeatherRepository, private val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     private val weatherRepo = repo
     private val gribRepo = weatherRepo.gribRepository
     val loading = mutableStateOf(false)
