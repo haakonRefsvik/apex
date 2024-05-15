@@ -17,6 +17,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
+import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calculatePitchAndYaw
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -303,6 +304,36 @@ class ExampleUnitTest {
         val result = calcDistance(lat1, lon1, lat2, lon2)
 
         assertEquals(exp, result, 0.005)
+    }
+
+    @Test
+    fun testCalculatePitch(){
+        val p1 = Point(
+            x = 0.0,
+            y = 0.0,
+            timeSeconds = 0.0,
+            z= 0.0
+        )
+
+        val p2 = Point(
+            x = 1.0,
+            y = 1.0,
+            timeSeconds = 0.0,
+            z= 1.0
+        )
+
+        val result = calculatePitchAndYaw(p1, p2)
+        val pitchDeg = Math.toDegrees(result.first)
+        val yawDeg = Math.toDegrees(result.second)
+
+        val exp = 45.0
+
+        assertEquals(exp, yawDeg, 0.0)
+
+        val exp2 = 35.0
+        assertEquals(exp2, pitchDeg, 1.0)
+
+
     }
 
 }

@@ -28,8 +28,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.details.DetailsScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import kotlin.math.PI
+import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -81,18 +83,19 @@ fun Make3Dtrajectory(
 
     mapViewModel.loadTrajectory(allLevels, rocketSpecs)
     val tra = mapViewModel.trajectory.value
-
-    val rocketPoint = tra.find { it.z in 600.0..1000.0 }
-    var paraCord = tra.find { it.parachuted && (it.z in 2200.0..2500.0) }
+    val topPoint = tra.firstOrNull { it.parachuted }?: tra[0]
+    val topPointIndex = tra.indexOf(topPoint)
+    val rocketPointIndex = (topPointIndex / 3)
+    val rocketPoint = tra[rocketPointIndex]
+    var paraCord = tra.find { it.parachuted && (it.z < topPoint.z / 2) }
     if (paraCord == null) {
         paraCord = tra.find { it.parachuted }
     }
 
-
-    val rocketPointIndex = tra.indexOf(rocketPoint)
-    var pitch = Pair(0.0, 0.0)
-    if (rocketPoint != null) {
-        pitch = calculatePitch(rocketPoint, tra[rocketPointIndex + 20])
+    val pitch = try{
+        calculatePitchAndYaw(rocketPoint, tra[rocketPointIndex + 10])
+    }catch (_: Exception){
+        Pair(0.0, 0.0)
     }
 
     if (mapViewModel.showTraDetails.value) {
@@ -201,14 +204,15 @@ fun Make3Dtrajectory(
                             )
                         }
 
+                        val eulerAngle = convertPitchYawToEuler(
+                            pitch = pitch.first,
+                            yaw = pitch.second
+                        )
+
                         modelRotation(
                             listOf(
-                                pitch.first * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(
-                                    rocketSpecs.launchAngle.toDouble()
-                                )) * -1,
-                                pitch.second * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(
-                                    rocketSpecs.launchAngle.toDouble()
-                                )),
+                                eulerAngle.lon,
+                                eulerAngle.lat * -1,
                                 0.0
                             )
                         )
@@ -257,6 +261,17 @@ fun Make3Dtrajectory(
             )
         }
     }
+}
+
+/**
+ * This is a function from Chat-GPT to convert
+ * pitch and yaw radiant to Euler-angles for the rocket-model
+ * */
+data class EulerAngle(val lon: Double, val lat: Double)
+fun convertPitchYawToEuler(pitch: Double, yaw: Double): EulerAngle {
+    val lon = atan2(cos(pitch) * sin(yaw), sin(pitch))
+    val lat = asin(-cos(pitch) * cos(yaw))
+    return EulerAngle(Math.toDegrees(lon), Math.toDegrees(lat))
 }
 
 /**Shows a line from the start point to the landing coordinates and shows the distance**/
@@ -324,69 +339,32 @@ fun ShowTraDetails(
             textAnchor = TextAnchor.TOP_RIGHT,
             textColorInt = Color.BLUE,
         )
-
-
-    }
-    PolygonAnnotation(
-        points = listOf(
-            generateCirclePoints(cordEnd.latitude, cordEnd.longitude, 150.0, 250)
-        ), fillColorInt = Color.RED, fillOpacity = 0.5,
-        onClick = {
-            true
-        }
-    )
-
-
-    PolylineAnnotation(points = linePoints, lineWidth = 2.0, lineColorInt = Color.RED)
-    PointAnnotation(
-        point = Point.fromLngLat(middleCord.longitude, middleCord.latitude),
-        textField = "${String.format("%.2f", distance)} km",
-        textAnchor = TextAnchor.TOP_RIGHT,
-        textColorInt = Color.RED
-
-    )
-
-
 }
 
-/**Function that tries to calcualte how much the rocket needs to be rotated on the x and y axis
- *  based on a start point and end point
- *  This algorithm is made with the help of ChatGPT**/
-fun calculatePitch(
+/**
+ * This is a function from Chat-GPT to get the correct pitch and
+ * yaw for the rocket-model.
+ * */
+fun calculatePitchAndYaw(
     start: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point,
     end: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 ): Pair<Double, Double> {
     val dx = end.x - start.x
     val dy = end.y - start.y
     val dz = end.z - start.z
-    val distance = sqrt(dx * dx + dy * dy + dz * dz)
-    val pitchX = atan2(dy, distance)
-    val pitchY = atan2(-dx, dz)
-    return Pair(pitchX, pitchY)
+
+    val distanceXY = hypot(dx, dy)
+    val pitch = atan2(dz, distanceXY)
+
+    val yaw = atan2(dy, dx)
+
+    return Pair(pitch, yaw)
 }
 
-/**This function is to offest the calculatePitch, and the eye has been used to get these numbers,
- * so its not accurate, the input is the launch angle of the rocket**/
-fun getPitchRocketModel(number: Double): Double {
-    return when (number) {
-        in 85.0..95.0 -> -0.68
-        in 80.0..85.0 -> -0.73
-        in 75.0..80.0 -> -0.81
-        in 70.0..75.0 -> -0.8
-        in 65.0..70.0 -> -0.888
-        in 60.0..65.0 -> -0.96
-        in 55.0..60.0 -> -1.36
-        in 50.0..55.0 -> -1.4
-        in 45.0..50.0 -> -1.8
-        in 40.0..45.0 -> -2.15
-        in 35.0..40.0 -> -2.73
-        else -> 0.0
-    }
-}
-
-/**The algortihm takes in lat and lon, with how many meters an offest has been set in meters. it then
- * returns the the lat and lon based on how many meters the x and y offset is
- * This algorithm is made with the help of ChatGPT**/
+/**
+ * This is a function from Chat-GPT to get a lat and lon from
+ * a starting-position and offset in meters
+ * */
 fun offsetLatLon(
     lat: Double,
     lon: Double,
