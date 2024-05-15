@@ -24,7 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 
 class MainActivity : ComponentActivity() {
-    val context = this;
+    val context = this
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager

@@ -85,7 +85,7 @@ fun HomeScreen(
                 containerColor = main100,
                 contentColor = main100,
                 scaffoldState = bottomSheetScaffoldState,
-                sheetPeekHeight = 180.dp,       // Høyden til inputfeltet
+                sheetPeekHeight = 180.dp,
                 sheetContent = {
                     Column(
                         modifier = Modifier
@@ -135,7 +135,7 @@ fun HomeScreen(
 
                     if (trajectory.value) {
 
-                        Box() {
+                        Box {
                             Column {
                                 LaunchedEffect(trajectory.value) {
                                     scaffoldState.snackbarHostState.showSnackbar("")

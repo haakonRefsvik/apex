@@ -172,6 +172,9 @@ fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double,
     )
 }
 
+/** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
+ * This algorithm is made with the help of ChatGPT
+ * */
 fun simulateTrajectory(
     burnTime: Double,
     launchAngle: Double,

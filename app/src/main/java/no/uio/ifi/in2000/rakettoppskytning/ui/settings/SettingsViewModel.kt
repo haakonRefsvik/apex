@@ -10,6 +10,10 @@ import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecState
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 
+/** SettingsFactory implements the ViewModelProvider.Factory interface to generate instances of SettingsViewModel with given repositories.
+ * This is used to provide a custom mechanism for creating instances of SettingsViewModel, allowing dependency injection of repositories into the view model
+ *
+ * */
 class SettingsFactory(
     private val repo: SettingsRepository,
 ): ViewModelProvider.Factory{
@@ -21,6 +25,13 @@ class SettingsFactory(
 
 // is set to true if there is any onValueChange
 var settingsChangesMade = false
+
+
+/**
+
+ * SettingsViewModel manages threshold and rocketSpecs data.
+ * It interacts with SettingsRepository where it fetches and updates Thresholds and RocketSpecs from database.
+ * */
 
 class SettingsViewModel(
     repo: SettingsRepository,

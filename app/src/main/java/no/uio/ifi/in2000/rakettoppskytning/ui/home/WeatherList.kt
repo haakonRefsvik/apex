@@ -40,10 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel

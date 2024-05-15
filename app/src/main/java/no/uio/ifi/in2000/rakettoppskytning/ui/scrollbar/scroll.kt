@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.scrollbar
+package no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -46,14 +46,20 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+/*
+This scrollbar was made by - Kerry Bisset: here is the link; https://blog.stackademic.com/jetpack-compose-multiplatform-scrollbar-scrolling-7c231a002ee1
+ */
+
+/**
+ * All these functions are making a customizable and interactive scrollbar for lazyColumn in jetpack compose.
+ * Making it easier for users to scroll through content easily.
+ */
 private const val oneHundredPercentDecimal = 1f
 
 private const val isEmpty = 0
 
-/*
-Kerry Bisset
-Jetpack Compose Multiplatform Scrollbar/Scrolling
- */
+
+
 
 @Composable
 fun LazyColumnScrollbar(

@@ -21,10 +21,15 @@ import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 
+/** FavoriteUiState is a data class representing the UI state for favorite weather data, containing a list of FavoriteCard objects.*/
 data class FavoriteUiState(
     val favorites: List<FavoriteCard> = listOf()
 )
 
+/** FavoriteFactory implements the ViewModelProvider.Factory interface to generate instances of FavoriteCardViewModel with given repositories.
+ * This is used to provide a custom mechanism for creating instances of FavoriteCardViewModel, allowing dependency injection of repositories into the view model
+ *
+ * */
 class FavoriteFactory(
     private val repo: WeatherRepository,
     private val favoriteRepo: FavoriteCardRepository,
@@ -36,6 +41,13 @@ class FavoriteFactory(
 }
 
 
+/**
+
+ * FavoriteCardViewModel manages favorite weather data.
+ * It interacts with WeatherRepository and FavoriteCardRepository where it fetches, deletes, adds and refreshes favoriteCards from database and
+ * weather data. It also handles logic for updating and removing expired weather data
+ *
+ * */
 
 class FavoriteCardViewModel(
     private val repo: WeatherRepository,
@@ -141,5 +153,4 @@ class FavoriteCardViewModel(
             favoriteRepo.removeExpiredCards(getCurrentDate(1))
         }
     }
-
 }

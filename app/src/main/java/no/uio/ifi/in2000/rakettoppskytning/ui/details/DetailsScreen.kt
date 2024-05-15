@@ -55,10 +55,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.getVerticalSightKm
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilDescription
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.soil.getSoilScore
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.LazyColumnScrollbar
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ListIndicatorSettings
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionActionable
-import no.uio.ifi.in2000.rakettoppskytning.scrollbar.ScrollbarSelectionMode
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ListIndicatorSettings
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionActionable
+import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.favorites.FavoriteCardViewModel

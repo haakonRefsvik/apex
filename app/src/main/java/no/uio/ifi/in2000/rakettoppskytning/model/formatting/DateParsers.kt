@@ -94,9 +94,8 @@ fun formatDate(date: String): String {
 
 fun extractHourAndMinutes(dateString: String): String {
     return try {
-        val hourAndMinutes = dateString.substring(11, 16)
-        return hourAndMinutes
-    }catch (e: Exception){
+        return dateString.substring(11, 16)
+    } catch (e: Exception) {
         dateString
     }
 }
