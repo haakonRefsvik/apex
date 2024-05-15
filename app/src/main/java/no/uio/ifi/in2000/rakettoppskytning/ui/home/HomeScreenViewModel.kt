@@ -201,6 +201,8 @@ class HomeScreenViewModel(repo: WeatherRepository, private val favoriteRepo: Fav
 
     init{
         if(!isInitialized.value) {
+
+            /** Get the initial time for the date-picker */
             initialSelectedStartDateMillis.value.time = Date()
             initialSelectedEndDateMillis.value.time = Date()
             initialSelectedEndDateMillis.value.add(Calendar.HOUR_OF_DAY, 24)
@@ -212,7 +214,7 @@ class HomeScreenViewModel(repo: WeatherRepository, private val favoriteRepo: Fav
             startHour.value = startISOtime.substring(11, 13)
             endHour.value = startISOtime.substring(11, 13)
 
-            /**Getting GRIB-data as soon as possible to save time*/
+            /** Getting GRIB-data as soon as possible to save time*/
 
             viewModelScope.launch {
                 gribRepo.loadGribFiles()

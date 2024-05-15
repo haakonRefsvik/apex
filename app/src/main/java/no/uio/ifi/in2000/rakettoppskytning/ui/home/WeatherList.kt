@@ -2,35 +2,27 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,11 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar
 import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ListIndicatorSettings
@@ -56,9 +47,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.ScrollbarSelectionMode
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterCategory
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.filter.FilterDialog
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.secondButton0
@@ -79,14 +67,7 @@ fun WeatherList(
     val favoriteLocations by homeScreenViewModel.favoriteUiState.collectAsState()
     val openFilterDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
-
-
-    val lat by mapViewModel.lat
-    val lon by mapViewModel.lon
-
-
     val controller = LocalSoftwareKeyboardController.current
-
     val scope = rememberCoroutineScope()
     val scaffoldState by homeScreenViewModel.bottomSheetScaffoldState
 
@@ -155,10 +136,10 @@ fun WeatherList(
                         if (favoriteLocations.favorites.isNotEmpty()) {
                             Row(modifier = Modifier.width(340.dp)) {
                                 if (favoriteLocations.favorites.size == 1) {
-                                    Text("Favorite location:", fontSize = 14.sp, color = main50)
+                                    Text("Favorite location:", fontSize = 14.sp, color = main50.copy(0.8F))
 
                                 } else {
-                                    Text("Favorite locations:", fontSize = 14.sp, color = main50)
+                                    Text("Favorite locations:", fontSize = 14.sp, color = main50.copy(0.8F))
                                 }
                             }
 
@@ -171,82 +152,14 @@ fun WeatherList(
 
                             favoriteLocations.favorites.reversed().forEach { favorite ->
                                 item {
-                                    OutlinedCard(
-                                        modifier = Modifier
-                                            .height(55.dp)
-                                            .width(200.dp),
-                                        colors = CardColors(
-                                            containerColor = favoriteCard50,
-                                            contentColor = favoriteCard0,
-                                            disabledContentColor = favoriteCard50,
-                                            disabledContainerColor = favoriteCard0
-                                        ),
-                                        border = BorderStroke(1.dp, color = favoriteCard100),
-                                        onClick = {
-                                            mapViewModel.lat.value = favorite.lat.toDouble()
-                                            mapViewModel.lon.value = favorite.lon.toDouble()
-
-                                            controller?.hide()
-                                            homeScreenViewModel.getWeatherByPos(lat, lon)
-
-
-                                            scope.launch {
-                                                delay(200)
-                                                scaffoldState.bottomSheetState.expand()
-                                            }
-
-                                        }
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.fillMaxSize()
-
-
-                                        ) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .width(175.dp),
-                                                verticalAlignment = Alignment.CenterVertically
-
-                                            ) {
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                Icon(
-                                                    modifier = Modifier.size(25.dp),
-                                                    imageVector = Icons.Default.Place,
-                                                    contentDescription = "Location",
-                                                    tint = Color(216, 64, 64, 255)
-                                                )
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                Text(
-                                                    favorite.name,
-                                                    fontSize = 18.sp,
-                                                    color = favoriteCard100
-                                                )
-
-                                            }
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.End
-                                            )
-
-                                            {
-                                                IconButton(modifier = Modifier
-                                                    .size(30.dp)
-                                                    .padding(end = 5.dp),
-                                                    onClick = {
-                                                        homeScreenViewModel.deleteFavoriteLocation(favorite.name, favorite.lat, favorite.lon)
-                                                    }) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Close,
-                                                        contentDescription = "Delete favorite",
-                                                        tint = favoriteCard100
-
-                                                    )
-
-                                                }
-                                            }
-                                        }
-                                    }
+                                    FavoriteLocationCard(
+                                        mapViewModel = mapViewModel,
+                                        homeScreenViewModel = homeScreenViewModel,
+                                        favorite = favorite,
+                                        controller = controller,
+                                        scope = scope,
+                                        scaffoldState = scaffoldState
+                                    )
                                     Spacer(modifier = Modifier.width(20.dp))
                                 }
 
@@ -389,7 +302,6 @@ fun WeatherList(
                             }
 
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
                     }
 
                     item {
@@ -400,7 +312,7 @@ fun WeatherList(
                         ) {
                             Card(
                                 modifier = Modifier
-                                    .height(40.dp)
+                                    .height(30.dp)
                                     .width(340.dp),
                                 colors = CardColors(
                                     containerColor = main100,
@@ -412,7 +324,6 @@ fun WeatherList(
                             {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Row {
-
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalAlignment = Alignment.Start,
@@ -420,8 +331,8 @@ fun WeatherList(
                                         if(homeScreenViewModel.markedCardIndex.value != FilterCategory.UNFILTERED)
                                         Text(
                                             "Sorted by ${homeScreenViewModel.markedCardIndex.value.string}",
-                                            fontSize = 16.sp,
-                                            color = weatherCard0.copy(0.7F)
+                                            fontSize = 14.sp,
+                                            color = weatherCard0.copy(0.8F),
                                         )
                                     }
                                 }

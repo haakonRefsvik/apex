@@ -30,6 +30,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getTextFieldColors
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 import kotlin.math.roundToInt
 
@@ -190,6 +191,7 @@ fun SettingsCard(
                 }
             ),
             singleLine = true,
+            colors = getTextFieldColors()
         )
 
     }
