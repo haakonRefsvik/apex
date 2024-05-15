@@ -25,6 +25,10 @@ class GribRepository {
     }
 }
 
+/**
+ * Makes VerticalProfile-objects from a list of GRIB-files.
+ * Is done asynchronously in a Thread-pool on a separate thread for each file.
+ * */
 suspend fun makeVerticalProfilesFromGrib(
     gribFiles: List<File>,
     lat: Double,

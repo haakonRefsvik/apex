@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning
 import kotlinx.coroutines.runBlocking
-import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getLinearRatios
@@ -15,6 +14,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
+import no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calculatePitchAndYaw

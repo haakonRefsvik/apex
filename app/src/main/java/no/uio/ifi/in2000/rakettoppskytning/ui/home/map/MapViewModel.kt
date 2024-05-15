@@ -41,7 +41,7 @@ class MapViewModel : ViewModel() {
     val makeTrajectory = mutableStateOf(false)
     val showTraDetails = mutableStateOf(false)
     val trajectory =
-        mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>())
+        mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point>())
     val threeD = mutableStateOf(true)
 
     fun loadTrajectory(allLevels: List<LevelData>, rocketSpecs: RocketSpecState) {

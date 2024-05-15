@@ -1,6 +1,7 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.ballistic
 
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.exp
@@ -11,18 +12,6 @@ import kotlin.math.sqrt
 
 const val SeaLevelRho = 1.225
 
-class Point(
-    val x: Double,
-    val y: Double,
-    val z: Double,
-    val velocity: Double,
-    private val timeSeconds: Double,
-    val parachuted: Boolean = false
-) {
-    override fun toString(): String {
-        return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeSeconds.toInt()}, parachuted: $parachuted)"
-    }
-}
 
 /**Considered altitude is between lower and upperlayer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
@@ -178,7 +167,8 @@ fun getSpeed(vx: Double, vy: Double, vz: Double): Double {
 }
 
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
- * This algorithm is made with the help of ChatGPT
+ * This algorithm is made with the help of ChatGPT and from PortalSpace.
+ *
  * */
 fun simulateTrajectory(
     burnTime: Double,
@@ -353,7 +343,6 @@ fun simulateParachute(
     val list= mutableListOf<Point>()
 
     while (z >= 0) {
-        // Update ratios each 100 meters altitude
         if (abs(lastZ - z) > 100) {
             lastZ = z
             val triple = updateParameters(z, allLevels)
