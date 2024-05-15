@@ -15,6 +15,7 @@ class Point(
     val x: Double,
     val y: Double,
     val z: Double,
+    val velocity: Double,
     private val timeSeconds: Double,
     val parachuted: Boolean = false
 ) {
@@ -172,6 +173,10 @@ fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double,
     )
 }
 
+fun getSpeed(vx: Double, vy: Double, vz: Double): Double {
+    return sqrt(vx * vx + vy * vy + vz * vz)
+}
+
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
  * This algorithm is made with the help of ChatGPT
  * */
@@ -222,7 +227,7 @@ fun simulateTrajectory(
     var lastZ = -100.0
 
     while (z >= altitude) {
-        val p = Point(x, y, z, secondsUsed, false)
+        val p = Point(x, y, z, velocity = getSpeed(vx, vy, vz), secondsUsed)
         list.add(p)
 
         if (abs(lastZ - z) > 100) {
@@ -348,8 +353,6 @@ fun simulateParachute(
     val list= mutableListOf<Point>()
 
     while (z >= 0) {
-        val p = Point(x, y, z, secondsUsed, true)
-        list.add(p)
         // Update ratios each 100 meters altitude
         if (abs(lastZ - z) > 100) {
             lastZ = z
@@ -366,6 +369,8 @@ fun simulateParachute(
         y += vy * timeStep
         z += vz * timeStep
         secondsUsed += timeStep
+        val p = Point(x, y, z, velocity = -parachuteVelocityDown, secondsUsed, true)
+        list.add(p)
     }
 
     return list

@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -35,7 +34,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import no.uio.ifi.in2000.rakettoppskytning.R
+import no.uio.ifi.in2000.rakettoppskytning.model.filter.FilterCard
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.StatusColor
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
@@ -54,8 +53,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getTextFieldColors
 import kotlin.math.roundToInt
-
-data class Filtercard(val icon: Int, val text: String, val type: FilterCategory)
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,13 +73,13 @@ fun FilterDialog(
     var expanded by remember { mutableStateOf(false) }
     val text = homeScreenViewModel.text
     val markedCardIndex = homeScreenViewModel.markedCardIndex
-    val gridItems: List<Filtercard> = listOf(
-        Filtercard(R.drawable.vind2, "Wind strength", FilterCategory.WIND_STRENGTH),
-        Filtercard(R.drawable.vind2, "Wind direction", FilterCategory.WIND_DIR),
-        Filtercard(R.drawable.vann, "Rainfall", FilterCategory.RAIN),
-        Filtercard(R.drawable.eye, "View distance", FilterCategory.VIEW_DIST),
-        Filtercard(R.drawable.luftfuktighet, "Air humidity", FilterCategory.AIR_HUMID),
-        Filtercard(R.drawable.dewpoint, "Dew point", FilterCategory.DEW_POINT),
+    val gridItems: List<FilterCard> = listOf(
+        FilterCard(R.drawable.vind2, "Wind strength", FilterCategory.WIND_STRENGTH),
+        FilterCard(R.drawable.vind2, "Wind direction", FilterCategory.WIND_DIR),
+        FilterCard(R.drawable.vann, "Rainfall", FilterCategory.RAIN),
+        FilterCard(R.drawable.eye, "View distance", FilterCategory.VIEW_DIST),
+        FilterCard(R.drawable.luftfuktighet, "Air humidity", FilterCategory.AIR_HUMID),
+        FilterCard(R.drawable.dewpoint, "Dew point", FilterCategory.DEW_POINT),
 
         )
 
