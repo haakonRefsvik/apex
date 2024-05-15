@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home.map
 
 import android.graphics.Color
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +34,7 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+/**Adds the simulated trajectory to the map**/
 @OptIn(MapboxExperimental::class)
 @Composable
 fun Make3Dtrajectory(
@@ -98,12 +98,12 @@ fun Make3Dtrajectory(
     if (mapViewModel.showTraDetails.value) {
         ShowTraDetails(mapViewModel = mapViewModel, tra = tra)
     }
-
     MapEffect { mapView ->
         mapView.mapboxMap.removeOnMapClickListener { false }
         mapView.mapboxMap.apply {
             loadStyle(
                 style(Style.OUTDOORS) {
+                    /**Goes thorugh the list of xyz points and based on the parachuted value, plots a ball on the given xyz on tha map**/
                     tra.forEachIndexed { index, point ->
                         if (point.z < 0) {
                             return@forEachIndexed
@@ -143,7 +143,7 @@ fun Make3Dtrajectory(
 
                             +modelLayer(modelId1, sourceId) {
                                 modelId(get(modelIdKey))
-                                modelType(ModelType.LOCATION_INDICATOR)
+                                modelType(ModelType.COMMON_3D)
                                 val size = 2.0
                                 modelScale(listOf(size, size, size))
                                 modelTranslation(
@@ -192,13 +192,23 @@ fun Make3Dtrajectory(
                         modelType(ModelType.COMMON_3D)
                         modelScale(listOf(300.0, 300.0, 300.0))
                         if (rocketPoint != null) {
-                            modelTranslation(listOf(rocketPoint.x, rocketPoint.y * -1, rocketPoint.z))
+                            modelTranslation(
+                                listOf(
+                                    rocketPoint.x,
+                                    rocketPoint.y * -1,
+                                    rocketPoint.z
+                                )
+                            )
                         }
 
                         modelRotation(
                             listOf(
-                                pitch.first * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(rocketSpecs.launchAngle.toDouble())) * -1,
-                                pitch.second * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(rocketSpecs.launchAngle.toDouble())),
+                                pitch.first * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(
+                                    rocketSpecs.launchAngle.toDouble()
+                                )) * -1,
+                                pitch.second * (rocketSpecs.launchAngle.toDouble() * getPitchRocketModel(
+                                    rocketSpecs.launchAngle.toDouble()
+                                )),
                                 0.0
                             )
                         )
@@ -249,100 +259,99 @@ fun Make3Dtrajectory(
     }
 }
 
-
-
+/**Shows a line from the start point to the landing coordinates and shows the distance**/
 @OptIn(MapboxExperimental::class)
 @Composable
 fun ShowTraDetails(
     mapViewModel: MapViewModel,
-    tra: List< no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>)
-{
-        val lastPoint = tra.last()
-        val lastParaPoint = tra.find { it.z <= 10 && it.parachuted }
-        val lastCord =
-            offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
+    tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>
+) {
+    val lastPoint = tra.last()
+    val lastParaPoint = tra.find { it.z <= 10 && it.parachuted }
+    val lastCord =
+        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
 
 
-        val linePoints = listOf(
+    val linePoints = listOf(
+        Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
+        Point.fromLngLat(lastCord.second, lastCord.first),
+
+        )
+    val cordStart = Coordinates(mapViewModel.lat.value, mapViewModel.lon.value)
+    val cordEnd = Coordinates(lastCord.first, lastCord.second)
+    val middleCord = calculateMidpoint(cordStart, cordEnd)
+    val distance =
+        calcDistance(
+            cordStart.latitude,
+            cordStart.longitude,
+            cordEnd.latitude,
+            cordEnd.longitude
+        )
+    if (lastParaPoint != null) {
+
+        val lastParaCord = offsetLatLon(
+            mapViewModel.lat.value,
+            mapViewModel.lon.value,
+            lastParaPoint.x,
+            lastParaPoint.y
+        )
+        val middleCordPara =
+            calculateMidpoint(cordStart, Coordinates(lastParaCord.first, lastParaCord.second))
+        val lastParaPoints = listOf(
             Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
-            Point.fromLngLat(lastCord.second, lastCord.first),
-
-            )
-        val cordStart = Coordinates(mapViewModel.lat.value, mapViewModel.lon.value)
-        val cordEnd = Coordinates(lastCord.first, lastCord.second)
-        val middleCord = calculateMidpoint(cordStart, cordEnd)
-        val distance =
-            calcDistance(
-                cordStart.latitude,
-                cordStart.longitude,
-                cordEnd.latitude,
-                cordEnd.longitude
-            )
-        if (lastParaPoint != null) {
-
-            val lastParaCord = offsetLatLon(
-                mapViewModel.lat.value,
-                mapViewModel.lon.value,
-                lastParaPoint.x,
-                lastParaPoint.y
-            )
-            val middleCordPara =
-                calculateMidpoint(cordStart, Coordinates(lastParaCord.first, lastParaCord.second))
-            val lastParaPoints = listOf(
-                Point.fromLngLat(mapViewModel.lon.value, mapViewModel.lat.value),
-                Point.fromLngLat(lastParaCord.second, lastParaCord.first),
-            )
-            PolylineAnnotation(points = lastParaPoints, lineWidth = 2.0, lineColorInt = Color.BLUE)
-            PolygonAnnotation(
-                points = listOf(
-                    generateCirclePoints(lastParaCord.first, lastParaCord.second, 150.0, 250)
-                ), fillColorInt = Color.BLUE, fillOpacity = 0.5,
-                onClick = {
-
-                    true
-                }
-
-            )
-            val paraDistance = calcDistance(
-                mapViewModel.lat.value,
-                mapViewModel.lon.value,
-                lastParaCord.first,
-                lastParaCord.second
-            )
-            PointAnnotation(
-                point = Point.fromLngLat(middleCordPara.longitude, middleCordPara.latitude),
-                textField = "${String.format("%.2f", paraDistance)} km",
-                textAnchor = TextAnchor.TOP_RIGHT,
-                textColorInt = Color.BLUE
-
-            )
-
-
-        }
-        Log.d("Distance", distance.toString())
-
+            Point.fromLngLat(lastParaCord.second, lastParaCord.first),
+        )
+        PolylineAnnotation(points = lastParaPoints, lineWidth = 2.0, lineColorInt = Color.BLUE)
         PolygonAnnotation(
             points = listOf(
-                generateCirclePoints(cordEnd.latitude, cordEnd.longitude, 150.0, 250)
-            ), fillColorInt = Color.RED, fillOpacity = 0.5,
+                generateCirclePoints(lastParaCord.first, lastParaCord.second, 150.0, 250)
+            ), fillColorInt = Color.BLUE, fillOpacity = 0.5,
             onClick = {
-                Log.d("Clicked on", "Red")
+
                 true
             }
+
         )
-
-
-        PolylineAnnotation(points = linePoints, lineWidth = 2.0, lineColorInt = Color.RED)
+        val paraDistance = calcDistance(
+            mapViewModel.lat.value,
+            mapViewModel.lon.value,
+            lastParaCord.first,
+            lastParaCord.second
+        )
         PointAnnotation(
-            point = Point.fromLngLat(middleCord.longitude, middleCord.latitude),
-            textField = "${String.format("%.2f", distance)} km",
+            point = Point.fromLngLat(middleCordPara.longitude, middleCordPara.latitude),
+            textField = "${String.format("%.2f", paraDistance)} km",
             textAnchor = TextAnchor.TOP_RIGHT,
-            textColorInt = Color.RED
-
+            textColorInt = Color.BLUE,
         )
+
+
+    }
+    PolygonAnnotation(
+        points = listOf(
+            generateCirclePoints(cordEnd.latitude, cordEnd.longitude, 150.0, 250)
+        ), fillColorInt = Color.RED, fillOpacity = 0.5,
+        onClick = {
+            true
+        }
+    )
+
+
+    PolylineAnnotation(points = linePoints, lineWidth = 2.0, lineColorInt = Color.RED)
+    PointAnnotation(
+        point = Point.fromLngLat(middleCord.longitude, middleCord.latitude),
+        textField = "${String.format("%.2f", distance)} km",
+        textAnchor = TextAnchor.TOP_RIGHT,
+        textColorInt = Color.RED
+
+    )
 
 
 }
+
+/**Function that tries to calcualte how much the rocket needs to be rotated on the x and y axis
+ *  based on a start point and end point
+ *  This algorithm is made with the help of ChatGPT**/
 fun calculatePitch(
     start: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point,
     end: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
@@ -356,6 +365,8 @@ fun calculatePitch(
     return Pair(pitchX, pitchY)
 }
 
+/**This function is to offest the calculatePitch, and the eye has been used to get these numbers,
+ * so its not accurate, the input is the launch angle of the rocket**/
 fun getPitchRocketModel(number: Double): Double {
     return when (number) {
         in 85.0..95.0 -> -0.68
@@ -373,6 +384,9 @@ fun getPitchRocketModel(number: Double): Double {
     }
 }
 
+/**The algortihm takes in lat and lon, with how many meters an offest has been set in meters. it then
+ * returns the the lat and lon based on how many meters the x and y offset is
+ * This algorithm is made with the help of ChatGPT**/
 fun offsetLatLon(
     lat: Double,
     lon: Double,
@@ -395,6 +409,9 @@ fun offsetLatLon(
 
 data class Coordinates(val latitude: Double, val longitude: Double)
 
+/**This algorithm takes in two coordiantes, and calculates what the coordinate in the middle of the input
+ * coordinates are, this is only being used to know where to put a pointannotion with text
+ * This algorithm is made with the help of ChatGPT**/
 fun calculateMidpoint(coord1: Coordinates, coord2: Coordinates): Coordinates {
     val x1 = Math.toRadians(coord1.latitude)
     val x2 = Math.toRadians(coord2.latitude)
@@ -411,6 +428,8 @@ fun calculateMidpoint(coord1: Coordinates, coord2: Coordinates): Coordinates {
     return Coordinates(latitude, longitude)
 }
 
+/**This function calculates the distance between two lat lon pairs in kilometrs
+ * This algorithm is made with the help of ChatGPT**/
 fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val r = 6371 // Earth radius in kilometers
     val dLat = Math.toRadians(lat2 - lat1)
@@ -422,6 +441,9 @@ fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double
     return r * c
 }
 
+/**This algorthim has the only purpose of generating a circle of lat-lon points around a given lat lon.
+ * Mapbox has circleannotions, but when you pitch the camera it doesnt stay flat on the map.
+ * This algorithm is made with the help of ChatGPT**/
 fun generateCirclePoints(lat: Double, lon: Double, radius: Double, numPoints: Int): List<Point> {
     val circlePoints = mutableListOf<Point>()
     for (i in 0..numPoints) {

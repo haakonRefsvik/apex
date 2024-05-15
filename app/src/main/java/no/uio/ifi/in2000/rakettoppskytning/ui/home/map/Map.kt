@@ -1,5 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home.map
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.res.ResourcesCompat
 import com.mapbox.geojson.Point
+import com.mapbox.maps.MapInitOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.Style
 import com.mapbox.maps.coroutine.styleDataLoadedEvents
@@ -26,7 +28,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.HomeScreenViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.drawableToBitmap
 
-
+/**Creates a PointAnnotation on the given lat long**/
 @OptIn(MapboxExperimental::class)
 @Composable
 fun NewPointAnnotation(
@@ -54,6 +56,7 @@ fun NewPointAnnotation(
     )
 }
 
+/**Converts an id to bitmap, used in NewPointAnnotation**/
 @Composable
 fun idToBitmap(id: Int): Bitmap {
     val context = LocalContext.current
@@ -62,13 +65,14 @@ fun idToBitmap(id: Int): Bitmap {
     return drawableToBitmap(myImage)
 }
 
+/**Creates a MapboxMap, based on the mapviewmodel values **/
 @OptIn(MapboxExperimental::class)
 @Composable
 fun Map(
     detailsScreenViewModel: DetailsScreenViewModel,
     mapViewModel: MapViewModel,
     settingsViewModel: SettingsViewModel,
-    homeScreenViewModel: HomeScreenViewModel
+    homeScreenViewModel: HomeScreenViewModel,
 ) {
     val lat by mapViewModel.lat
     val lon by mapViewModel.lon
@@ -76,6 +80,7 @@ fun Map(
     mapViewModel.updateCamera(lat, lon)
     val mapViewportState = mapViewModel.mapViewportState
     mapViewportState.setCameraOptions(cameraOptions)
+
 
     MapboxMap(
         modifier = Modifier.fillMaxSize(),
@@ -106,8 +111,6 @@ fun Map(
                         style(Style.OUTDOORS) {}
                     )
                 }
-                mapView.mapboxMap.styleDataLoadedEvents
-
                 mapView.mapboxMap.addOnMapClickListener {
                     mapViewModel.lat.value = it.latitude()
                     mapViewModel.lon.value = it.longitude()

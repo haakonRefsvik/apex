@@ -15,7 +15,7 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecState
 
-class MapFactory: ViewModelProvider.Factory{
+class MapFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MapViewModel() as T
@@ -56,7 +56,6 @@ class MapViewModel : ViewModel() {
                     massDry = rocketSpecs.wetWeight.toDouble()
                 )
         }
-        Log.d("tra", "loading trajectory of ${trajectory.value.size} points")
     }
 
     fun deleteTrajectory() {

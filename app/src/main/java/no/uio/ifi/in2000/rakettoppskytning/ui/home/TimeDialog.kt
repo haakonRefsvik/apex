@@ -1,7 +1,6 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -116,7 +115,6 @@ fun TimeDialog(
                             )
 
                     }
-                    Log.d("what is going on", homeScreenViewModel.startISOtime)
 
                     homeScreenViewModel.filterList()
                     onDismissRequest()
