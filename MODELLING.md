@@ -1,7 +1,7 @@
 # Modelling
-\
-\
-Class structure -> For storing weather data:
+
+
+## Class structure -> For storing weather data:
 
 Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
@@ -29,9 +29,9 @@ classDiagram
 
 
 ```
-\
-\
-Class structure -> For VerticalProfile:
+
+
+## Class structure -> For VerticalProfile:
 
 Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
@@ -82,9 +82,9 @@ classDiagram
     }
 
 ```
-\
-\
-SequenceDiagram -> When user clicks "Get Weatherdata":
+
+
+## SequenceDiagram -> When user clicks "Get Weatherdata":
 
 Textual description: “I want to view weather data for a point on the map that I select, to determine if its safe to launch a rocket at that time”
 
@@ -107,9 +107,9 @@ sequenceDiagram
     HomeViewModel-->>HomeScreen: Show cards with weatherdata
 
 ```
-\
-\
-SequenceDiagram -> When user selects a weather-card:
+
+
+## SequenceDiagram -> When user selects a weather-card:
 
 Textual description: “I want  a clear overview of wind and shear wind, speed, and direction, ground moisture, temperature, percipitation, fog, dew point, cloud coverage and visibility as these are critical weather data for rocket launchese”
 
@@ -140,9 +140,9 @@ sequenceDiagram
     DetailScreen->>DetailScreen: showCard(date)
 
 ```
-\
-\
-Flowchart -> When user saves a weather-card at a specific time:
+
+
+## Flowchart -> When user saves a weather-card at a specific time:
 
 Textual description: “I want to be able to save a timestamp in the app so that i can quickly retrive weather details for a secific location at a specific time.”
 
@@ -166,9 +166,9 @@ flowchart TB
     c5 --> |No| c6
     c6 --> c9[End]
 ```
-\
-\
-SequenceDiagram -> When user saves a weather-card at a specific time:
+
+
+## SequenceDiagram -> When user saves a weather-card at a specific time:
 
 Textual description: “I want to be able to save a timestamp in the app so that i can quickly retrive weather details for a secific location at a specific time.”
 
@@ -209,9 +209,9 @@ sequenceDiagram
     FavoriteRepository->>-FavoriteRepository: update states
 
 ```
-\
-\
-SequenceDiagram -> The app should be able to calculate the ballistic trajeectory at a given time i choose:
+
+
+## SequenceDiagram -> The app should be able to calculate the ballistic trajeectory at a given time i choose:
 
 Textual description: "I want to simulate the trajectory of my rocket to know where it will land"
 
@@ -252,9 +252,9 @@ MapViewModel--)-Map: trajectory
 Map-->>HomeScreen: Shows trajectory
 
 ```
-\
-\
-SequenceDiagram-> Add to favorites:
+
+
+## SequenceDiagram-> Add to favorites:
 
 Textual description: “I want to be able to save a location in the app so that I can quickly revisit the launch site”
 
@@ -311,9 +311,9 @@ sequenceDiagram
 
 
 ```
-\
-\
-SequenceDiagram-> When user customizes the treshold values for weather data to their rocket:
+
+
+## SequenceDiagram-> When user customizes the treshold values for weather data to their rocket:
 
 Textual description: “I want to be able to adjust rocket values so that the app uses data specific to my rocket"
 
@@ -339,9 +339,9 @@ sequenceDiagram
     SettingsViewModel -->> SettingScreen: uses updated thresholds
     SettingScreen -->> User: Shows confirmation of saved setting
 ```
-\
-\
-Flowchart -> customizing threshold values for weather data:
+
+
+## Flowchart -> customizing threshold values for weather data:
 
 Textual description: “I want to be able to adjust threshold values so that the app uses data tailored to my rocket”
 
@@ -364,15 +364,15 @@ flowchart TB
 ## Use case
 Use case of various user stories
 
-Textual description: 
+Textual descriptions: 
 \
-“I want to see weather data at a give position”
+    -> “I want to see weather data at a give position”
 \
-“I want to see the weather data at a specific hour”
+    -> “I want to see the weather data at a specific hour”
 \
-“I want to see a predicted tracjetory on a given position”
+    -> “I want to see a predicted tracjetory on a given position”
 \
-“I want to save a weather data at a specific time and locaiton”
+    -> “I want to save a weather data at a specific time and locaiton”
 
 
 ![./modellingDoc/uscase.png](./modellingDoc/usecase.png)
