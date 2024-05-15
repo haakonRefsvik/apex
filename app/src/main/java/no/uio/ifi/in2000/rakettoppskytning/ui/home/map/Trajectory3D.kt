@@ -339,6 +339,7 @@ fun ShowTraDetails(
             textAnchor = TextAnchor.TOP_RIGHT,
             textColorInt = Color.BLUE,
         )
+    }
 }
 
 /**
