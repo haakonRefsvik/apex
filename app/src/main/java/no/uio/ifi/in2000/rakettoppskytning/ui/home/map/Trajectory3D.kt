@@ -83,6 +83,9 @@ fun Make3Dtrajectory(
 
     mapViewModel.loadTrajectory(allLevels, rocketSpecs)
     val tra = mapViewModel.trajectory.value
+
+    if (tra.isEmpty()) return
+
     val topPoint = tra.firstOrNull { it.parachuted }?: tra[0]
     val topPointIndex = tra.indexOf(topPoint)
     val rocketPointIndex = (topPointIndex / 3)
@@ -194,15 +197,13 @@ fun Make3Dtrajectory(
                         modelId(get(modelIdKey))
                         modelType(ModelType.COMMON_3D)
                         modelScale(listOf(300.0, 300.0, 300.0))
-                        if (rocketPoint != null) {
-                            modelTranslation(
-                                listOf(
-                                    rocketPoint.x,
-                                    rocketPoint.y * -1,
-                                    rocketPoint.z
-                                )
+                        modelTranslation(
+                            listOf(
+                                rocketPoint.x,
+                                rocketPoint.y * -1,
+                                rocketPoint.z
                             )
-                        }
+                        )
 
                         val eulerAngle = convertPitchYawToEuler(
                             pitch = pitch.first,
@@ -340,6 +341,26 @@ fun ShowTraDetails(
             textColorInt = Color.BLUE,
         )
     }
+
+    PolygonAnnotation(
+        points = listOf(
+            generateCirclePoints(cordEnd.latitude, cordEnd.longitude, 150.0, 250)
+        ), fillColorInt = Color.RED, fillOpacity = 0.5,
+        onClick = {
+            true
+        }
+    )
+
+
+    PolylineAnnotation(points = linePoints, lineWidth = 2.0, lineColorInt = Color.RED)
+    PointAnnotation(
+        point = Point.fromLngLat(middleCord.longitude, middleCord.latitude),
+        textField = "${String.format("%.2f", distance)} km",
+        textAnchor = TextAnchor.TOP_RIGHT,
+        textColorInt = Color.RED
+
+    )
+
 }
 
 /**

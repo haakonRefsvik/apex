@@ -253,12 +253,14 @@ fun DetailsScreen(
                                 disabledContentColor = firstButton100
                             ),
                             onClick = {
-                                mapViewModel.deleteTrajectory()
-                                mapViewModel.makeTrajectory.value = true
+
                                 scope.launch {
+                                    mapViewModel.deleteTrajectory()
+                                    mapViewModel.makeTrajectory.value = true
                                     homeScreenViewModel.scaffold.bottomSheetState.partialExpand()
+                                    navController.popBackStack("HomeScreen", false)
+
                                 }
-                                navController.popBackStack("HomeScreen", false)
                             }
                         ){
                             if(mapViewModel.makeTrajectory.value && mapViewModel.trajectory.value.isEmpty()){
