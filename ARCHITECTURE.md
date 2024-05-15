@@ -1,21 +1,24 @@
 # 1 MVVM
+
 MVVM, known as Model-View-ViewModel, is a design pattern used in software engineering, often found in applications with a user interface. Model refers to the data itself, and handles data from databases, websites or other sources, and can also contain the logic to manipulate this data.
 
-The View is where the user interacts with the application. It lets the user see data from the model, but also lets them input data to the application. It could be a window, a page or other elements, depending on the platform and the technologies used.
+<img src="./modellingDoc/mvvm1.png" align="right" width="60%" height="60%"/>
 
+The View is where the user interacts with the application. It lets the user see data from the model, but also lets them input data to the application. It could be a window, a page or other elements, depending on the platform and the technologies used.
+                                                        
 The ViewModel is the connective tissue between the Model and the View. The ViewModel is an abstraction of what is being shown, and also contains logic for presentation. It receives data from the model, formats it into a way that is more suited for visual presentation, and gives methods and abilities that the view can bind to. It also allows for the View to send requests, and change data in the Model-layer.
 
+\
 Our application has gained a lot of benefits from choosing the MVVM-approach. Separating the code into different parts (model, view, viewmodel), making it more organised and easier to maintain. Splitting our code into smaller parts, it also makes testing each part more accessible. By using the ViewModel layer, the presentation logic can be reused across different views, which reduces duplication and makes the interface easier to use. Lastly the MVVM-model makes scaling the application easier, and with less risk of errors.
 
-<p align="left">
-  <img src="./modellingDoc/mvvm1.png" width="65%" height="55%>
-  <img src="./modellingDoc/mvvm2.png" width="50%" height="75%">
-</p>
 
 # 2 HIGH COHESION & LOW COUPLING
 We have prioritized essential object-oriented principles, focusing on achieving low coupling and high cohesion in our project to ensure our code is easily maintainable and testable. By following the MVVM design pattern, we have effectively maintained a cohesive structure while minimizing dependencies between different components. This approach allows the passing of  ViewModels and Repositories between layers, resulting in a modular and adaptable architecture.
 
 ## 2.1 High Cohesion
+
+<img src="./modellingDoc/mvvm2.png" align="right" width="20%" height="5%"/>
+
 In our code we have emphasized the importance of high cohesion. Each function and file has a specific role, ensuring that our code remains easy to understand and maintain. For instance, in the Trajectory file, we have separated the calculation into smaller and more manageable tasks, which further helps with readability and maintainability. Additionally, we have adopted a modular approach by implementing MVVM architecture for each screen. This separation allows for a distinct layer for each screen, such as SettingScreen having its own ViewModel and Repository, helping with the code organization.
 
 Our components are built with clear scopes. In the database section of the project, each function within classes serves a well defined purpose, facilitating interactions with different parts of the database. The database is separating entities handling different data. Despite similarities between entities like FavoriteCard and Favorite, we have opted to maintain separate entities to uphold high cohesion.
