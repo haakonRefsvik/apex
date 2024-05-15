@@ -101,7 +101,7 @@ fun FilterDialog(
 
                 }
 
-                Row() {
+                Row {
                     IconButton(modifier = Modifier
                         .size(30.dp), onClick = { onDismissRequest() }) {
                         Icon(
@@ -364,11 +364,7 @@ fun FilterDialog(
                                                 },
                                                 onClick = {
                                                     isReversed.value =
-                                                        if (option == "Highest to lowest") {
-                                                            true
-                                                        } else {
-                                                            false
-                                                        }
+                                                        option == "Highest to lowest"
                                                     text.value = option
                                                     expanded = false
                                                 },

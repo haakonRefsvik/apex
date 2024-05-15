@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.R
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.extractHourAndMinutes
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatDate
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.extractHourAndMinutes
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.formatDate
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50

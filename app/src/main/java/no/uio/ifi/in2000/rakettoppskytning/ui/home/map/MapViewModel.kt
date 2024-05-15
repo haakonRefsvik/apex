@@ -1,18 +1,15 @@
 package no.uio.ifi.in2000.rakettoppskytning.ui.home.map
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.test.core.app.ActivityScenario.launch
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapboxExperimental
 import com.mapbox.maps.extension.compose.animation.viewport.MapViewportState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
@@ -41,7 +38,7 @@ class MapViewModel : ViewModel() {
     val makeTrajectory = mutableStateOf(false)
     val showTraDetails = mutableStateOf(false)
     val trajectory =
-        mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>())
+        mutableStateOf(listOf<no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point>())
     val threeD = mutableStateOf(true)
 
     fun loadTrajectory(allLevels: List<LevelData>, rocketSpecs: RocketSpecState) {

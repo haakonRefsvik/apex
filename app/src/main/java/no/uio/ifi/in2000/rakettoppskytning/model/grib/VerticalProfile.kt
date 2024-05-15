@@ -11,7 +11,10 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-/** This function extracts and returns the time from a GRIB file. */
+
+/**
+ * Returns the date of a given GRIB-file
+ * */
 fun getTime(file: File): String {
     return try {
         val raf = RandomAccessFile(file.absolutePath, "r")

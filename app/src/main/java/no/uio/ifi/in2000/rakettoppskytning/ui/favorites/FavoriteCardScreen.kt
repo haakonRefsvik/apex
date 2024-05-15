@@ -31,8 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatter
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.formatter
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.BottomBar
 import no.uio.ifi.in2000.rakettoppskytning.ui.bars.TopBar

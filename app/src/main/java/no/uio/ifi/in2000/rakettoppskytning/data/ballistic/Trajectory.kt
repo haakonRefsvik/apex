@@ -1,30 +1,15 @@
 package no.uio.ifi.in2000.rakettoppskytning.data.ballistic
 
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
+import no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.exp
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
 const val SeaLevelRho = 1.225
-
-/**
- * Class to hold trajectory points
- * */
-class Point(
-    val x: Double,
-    val y: Double,
-    val z: Double,
-    private val timeSeconds: Double,
-    val parachuted: Boolean = false
-) {
-    override fun toString(): String {
-        return "(x: ${x.roundToInt()}, y: ${y.roundToInt()}, z: ${z.roundToInt()}, time: ${timeSeconds.toInt()}, parachuted: $parachuted)"
-    }
-}
 
 /**Considered altitude is between lower and upper-layer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
@@ -154,7 +139,7 @@ fun calculateAirDensity(pressure: Double, temperature: Double): Double {
 fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double, rho: Double): Double {
     val altL = low.getLevelHeightInMeters()
     val altU = upp.getLevelHeightInMeters()
-    
+
     return try {
         calculateAirDensity(
             pressure = mergeLevelData(
@@ -168,7 +153,6 @@ fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double, rho: Double
     }catch (e: Exception){
         rho     // return just the standard air-density if anything fails
     }
-
 }
 /**
  * This function takes in the two isobaric layers you are between (in altitude) and
@@ -187,8 +171,18 @@ fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double,
     )
 }
 
+/**
+ *
+ * This function calculates the magnitude of velocity in 3D space
+ * */
+fun getSpeed(vx: Double, vy: Double, vz: Double): Double {
+    return sqrt(vx * vx + vy * vy + vz * vz)
+}
+
+
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
- * This algorithm is made with the help of ChatGPT
+ * This algorithm is made with the help of ChatGPT and from PortalSpace.
+ *
  * */
 fun simulateTrajectory(
     burnTime: Double,
@@ -305,10 +299,10 @@ fun simulateTrajectory(
 }
 
 /**
- * Returns updated parameters based on weatherdata (airDensity, xWind, yWind)
+ * Returns updated parameters based on weather-data (airDensity, xWind, yWind)
  * */
 fun updateParameters(alt: Double, allLevels: List<LevelData>):
-    Triple<Double, Double, Double>
+        Triple<Double, Double, Double>
 {
     val currLowerUpper = findLowerUpperLevel(allLevels, alt)
         ?: return Triple(SeaLevelRho, 0.0, 0.0)
@@ -336,6 +330,7 @@ fun updateParameters(alt: Double, allLevels: List<LevelData>):
 
     return Triple(rho, xWind, yWind)
 }
+
 
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory with a parachute
  * This algorithm is made with the help of ChatGPT
@@ -365,7 +360,6 @@ fun simulateParachute(
     val list= mutableListOf<Point>()
 
     while (z >= 0) {
-        // Update ratios each 100 meters altitude
         if (abs(lastZ - z) > 100) {
             lastZ = z
             val triple = updateParameters(z, allLevels)

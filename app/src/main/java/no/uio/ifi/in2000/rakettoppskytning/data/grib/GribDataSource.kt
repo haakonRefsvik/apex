@@ -129,6 +129,9 @@ class GribDataSource{
         asyncTasks.filterNotNull().map { it.await() }
     }
 
+    /**
+     * Returns the oldest date from a list of dates
+     * */
     private fun getOldestDate(dates: List<String>): String{
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
         var oldestDate = format.parse(dates[0])

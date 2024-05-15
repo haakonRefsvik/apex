@@ -1,4 +1,4 @@
-package no.uio.ifi.in2000.rakettoppskytning.model.formatting
+package no.uio.ifi.in2000.rakettoppskytning.data.formatting
 
 import android.util.Log
 import kotlin.math.abs

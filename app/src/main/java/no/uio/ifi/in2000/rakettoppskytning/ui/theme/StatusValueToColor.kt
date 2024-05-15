@@ -20,5 +20,4 @@ fun getColorFromStatusValue(statusCode: Double): Color {
 enum class StatusColor(val color: Color){
     GREEN(Color(58, 175, 37, 255)),
     RED(Color(216, 64, 64, 255)),
-    YELLOW(Color(233, 189, 33, 255))
 }

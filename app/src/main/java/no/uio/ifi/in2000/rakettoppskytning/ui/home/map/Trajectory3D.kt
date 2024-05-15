@@ -86,13 +86,13 @@ fun Make3Dtrajectory(
 
     if (tra.isEmpty()) return
 
-    val topPoint = tra.firstOrNull { it.parachuted }?: tra[0]
+    val topPoint = tra.firstOrNull { it.isParachuted() }?: tra[0]
     val topPointIndex = tra.indexOf(topPoint)
     val rocketPointIndex = (topPointIndex / 3)
     val rocketPoint = tra[rocketPointIndex]
-    var paraCord = tra.find { it.parachuted && (it.z < topPoint.z / 2) }
+    var paraCord = tra.find { it.isParachuted() && (it.getZ() < topPoint.getZ() / 2) }
     if (paraCord == null) {
-        paraCord = tra.find { it.parachuted }
+        paraCord = tra.find { it.isParachuted() }
     }
 
     val pitch = try{
@@ -109,9 +109,9 @@ fun Make3Dtrajectory(
         mapView.mapboxMap.apply {
             loadStyle(
                 style(Style.OUTDOORS) {
-                    /**Goes thorugh the list of xyz points and based on the parachuted value, plots a ball on the given xyz on tha map**/
+                    /**Goes through the list of xyz points and based on the parachuted value, plots a ball on the given xyz on tha map**/
                     tra.forEachIndexed { index, point ->
-                        if (point.z < 0) {
+                        if (point.getZ() < 0) {
                             return@forEachIndexed
                         } else if ((index % settingsViewModel.rocketSpecMutableStates[RocketSpecType.RESOLUTION.ordinal].doubleValue).toInt() == 0) {
                             val modelId1 = "model-id${index}"
@@ -119,7 +119,7 @@ fun Make3Dtrajectory(
                             val model1Pos = Point.fromLngLat(
                                 mapViewModel.lon.value, mapViewModel.lat.value
                             )
-                            if (point.parachuted) {
+                            if (point.isParachuted()) {
                                 +model(modelId1) {
                                     uri(blueBall)
                                 }
@@ -154,9 +154,9 @@ fun Make3Dtrajectory(
                                 modelScale(listOf(size, size, size))
                                 modelTranslation(
                                     listOf(
-                                        point.x,
-                                        point.y * -1,
-                                        point.z
+                                        point.getX(),
+                                        point.getY() * -1,
+                                        point.getZ()
                                     )
                                 )
                                 modelRotation(listOf(0.0, 0.0, 0.0))
@@ -199,9 +199,9 @@ fun Make3Dtrajectory(
                         modelScale(listOf(300.0, 300.0, 300.0))
                         modelTranslation(
                             listOf(
-                                rocketPoint.x,
-                                rocketPoint.y * -1,
-                                rocketPoint.z
+                                rocketPoint.getX(),
+                                rocketPoint.getY() * -1,
+                                rocketPoint.getZ()
                             )
                         )
 
@@ -252,7 +252,7 @@ fun Make3Dtrajectory(
                             modelId(get(modelIdKey))
                             modelType(ModelType.COMMON_3D)
                             modelScale(listOf(50.0, 50.0, 50.0))
-                            modelTranslation(listOf(paraCord.x, paraCord.y * -1, paraCord.z))
+                            modelTranslation(listOf(paraCord.getX(), paraCord.getY() * -1, paraCord.getZ()))
                             modelCastShadows(true)
                             modelReceiveShadows(true)
                             modelRoughness(0.1)
@@ -280,12 +280,12 @@ fun convertPitchYawToEuler(pitch: Double, yaw: Double): EulerAngle {
 @Composable
 fun ShowTraDetails(
     mapViewModel: MapViewModel,
-    tra: List<no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point>
+    tra: List<no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point>
 ) {
     val lastPoint = tra.last()
-    val lastParaPoint = tra.find { it.z <= 10 && it.parachuted }
+    val lastParaPoint = tra.find { it.getZ() <= 10 && it.isParachuted() }
     val lastCord =
-        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.x, lastPoint.y)
+        offsetLatLon(mapViewModel.lat.value, mapViewModel.lon.value, lastPoint.getX(), lastPoint.getY())
 
 
     val linePoints = listOf(
@@ -308,8 +308,8 @@ fun ShowTraDetails(
         val lastParaCord = offsetLatLon(
             mapViewModel.lat.value,
             mapViewModel.lon.value,
-            lastParaPoint.x,
-            lastParaPoint.y
+            lastParaPoint.getX(),
+            lastParaPoint.getY()
         )
         val middleCordPara =
             calculateMidpoint(cordStart, Coordinates(lastParaCord.first, lastParaCord.second))
@@ -368,12 +368,12 @@ fun ShowTraDetails(
  * yaw for the rocket-model.
  * */
 fun calculatePitchAndYaw(
-    start: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point,
-    end: no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
+    start: no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point,
+    end: no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point
 ): Pair<Double, Double> {
-    val dx = end.x - start.x
-    val dy = end.y - start.y
-    val dz = end.z - start.z
+    val dx = end.getX() - start.getX()
+    val dy = end.getY() - start.getY()
+    val dz = end.getZ() - start.getZ()
 
     val distanceXY = hypot(dx, dy)
     val pitch = atan2(dz, distanceXY)
@@ -428,7 +428,7 @@ fun calculateMidpoint(coord1: Coordinates, coord2: Coordinates): Coordinates {
     return Coordinates(latitude, longitude)
 }
 
-/**This function calculates the distance between two lat lon pairs in kilometrs
+/**This function calculates the distance between two lat lon pairs in kilometres
  * This algorithm is made with the help of ChatGPT**/
 fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val r = 6371 // Earth radius in kilometers
@@ -441,8 +441,8 @@ fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double
     return r * c
 }
 
-/**This algorthim has the only purpose of generating a circle of lat-lon points around a given lat lon.
- * Mapbox has circleannotions, but when you pitch the camera it doesnt stay flat on the map.
+/**This algorithm has the only purpose of generating a circle of lat-lon points around a given lat lon.
+ * Mapbox has circle-annotations, but when you pitch the camera it doesn't stay flat on the map.
  * This algorithm is made with the help of ChatGPT**/
 fun generateCirclePoints(lat: Double, lon: Double, radius: Double, numPoints: Int): List<Point> {
     val circlePoints = mutableListOf<Point>()

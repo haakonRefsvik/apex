@@ -1,6 +1,5 @@
 package no.uio.ifi.in2000.rakettoppskytning
 import kotlinx.coroutines.runBlocking
-import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.Point
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.calculateAirDensity
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.findLowerUpperLevel
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.getLinearRatios
@@ -10,11 +9,12 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.getCloseness
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayAndMonth
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayName
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.getDayAndMonth
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
+import no.uio.ifi.in2000.rakettoppskytning.model.trajectory.Point
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calculatePitchAndYaw
@@ -311,15 +311,15 @@ class ExampleUnitTest {
         val p1 = Point(
             x = 0.0,
             y = 0.0,
+            z= 0.0,
             timeSeconds = 0.0,
-            z= 0.0
         )
 
         val p2 = Point(
             x = 1.0,
             y = 1.0,
+            z= 1.0,
             timeSeconds = 0.0,
-            z= 1.0
         )
 
         val result = calculatePitchAndYaw(p1, p2)
