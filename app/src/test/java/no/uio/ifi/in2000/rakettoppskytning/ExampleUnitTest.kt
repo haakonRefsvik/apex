@@ -311,15 +311,17 @@ class ExampleUnitTest {
         val p1 = Point(
             x = 0.0,
             y = 0.0,
+            z= 0.0,
             timeSeconds = 0.0,
-            z= 0.0
+            velocity = 0.0,
         )
 
         val p2 = Point(
             x = 1.0,
             y = 1.0,
+            z= 1.0,
             timeSeconds = 0.0,
-            z= 1.0
+            velocity = 0.0,
         )
 
         val result = calculatePitchAndYaw(p1, p2)
