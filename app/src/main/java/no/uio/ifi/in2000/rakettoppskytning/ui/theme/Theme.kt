@@ -3,13 +3,19 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.theme
 import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 lateinit var screenSize: Pair<Int, Int>
@@ -129,4 +135,102 @@ fun getScreenResolution(context: Context): Pair<Int, Int> {
     val screenHeightPx = context.resources.displayMetrics.heightPixels
 
     return Pair(screenWidthPx, screenHeightPx)
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun getDatePickerColors(): DatePickerColors {
+    return DatePickerColors(
+        time100,
+        time0,
+        time35,
+        time0,
+        time0,
+        time0,
+        time0,
+        time100,
+        time100,
+        time100,
+        time100,
+        time100,
+        time100,
+        time0,
+        time100,
+        time100, // selectedDayContentColo
+        time100,
+        time35,
+        time100,
+        time35,
+        time35,
+        time65,
+        time100,
+        Color.Transparent,
+        TextFieldDefaults.colors(
+            unfocusedTextColor = time0,
+            unfocusedContainerColor = time100,
+            focusedContainerColor = time100,
+            focusedIndicatorColor = time35,
+            unfocusedLabelColor = time0,
+            unfocusedIndicatorColor = time0,
+            unfocusedPlaceholderColor = time0,
+            focusedTextColor = time0,
+            focusedTrailingIconColor = time0,
+            focusedLeadingIconColor = time0,
+            focusedLabelColor = time35,
+            cursorColor = time0,
+            selectionColors = TextSelectionColors(time0, time0),
+            errorContainerColor = time100,
+            errorTextColor = time0
+        )
+
+    )
+}
+
+// factored out the custom TextFieldColors because its got too many parameters
+fun getTextFieldColors(): TextFieldColors {
+    return TextFieldColors(
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter100,
+        filter100,
+        filter100,
+        filter100,
+        filter0,
+        filter0,
+        TextSelectionColors(filter0, filter0),
+        filter0,
+        iconButton50, // the border
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0,
+        filter0
+    )
 }

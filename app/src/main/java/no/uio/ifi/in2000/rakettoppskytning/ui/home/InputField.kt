@@ -48,6 +48,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton50
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getTextFieldColors
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 
@@ -145,6 +146,9 @@ fun InputField(
                 ),
                 label = { Text("Latitude", color = firstButton50) },
                 singleLine = true,
+                colors = getTextFieldColors(),
+                // don't make user change input while in 3D-mode
+                readOnly = mapViewModel.makeTrajectory.value
             )
             Spacer(modifier = Modifier.width(50.dp))
             OutlinedTextField(
@@ -187,8 +191,11 @@ fun InputField(
                         mapViewModel.lon.value = placeholderLon.doubleValue
                     }
                 ),
+                colors = getTextFieldColors(),
                 label = { Text("Longitude", color = firstButton50) },
-                singleLine = true
+                singleLine = true,
+                // don't make user change input while in 3D-mode
+                readOnly = mapViewModel.makeTrajectory.value
             )
 
         }

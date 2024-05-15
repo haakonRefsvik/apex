@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getDatePickerColors
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time100
@@ -116,8 +117,6 @@ fun TimeDialog(
                             )
 
                     }
-                    Log.d("what is going on", homeScreenViewModel.startISOtime)
-
                     homeScreenViewModel.filterList()
                     onDismissRequest()
                 }) {
@@ -125,78 +124,7 @@ fun TimeDialog(
 
             }
         },
-
-        colors = DatePickerColors(
-            time100,
-            time35,
-            time35, // title/headline
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            Color.Transparent,
-            time65, // todayContentColor
-            time35,
-            time100,
-            Color.Transparent,
-            Color.Transparent,
-            TextFieldColors(
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                time65,
-                Color.Transparent,
-                Color.Transparent,
-                TextSelectionColors(time0, time100),
-                time65,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent,
-                Color.Transparent
-            )
-        )
+        colors = getDatePickerColors()
     ) {
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, content = {
             item {
@@ -231,7 +159,7 @@ fun TimeDialog(
                         time35,
                         time65,
                         time100,
-                        time0,
+                        Color.Transparent,
                         TextFieldDefaults.colors(
                             unfocusedTextColor = time0,
                             unfocusedContainerColor = time100,
@@ -249,6 +177,7 @@ fun TimeDialog(
                             errorContainerColor = time100,
                             errorTextColor = time0
                         )
+
                     )
                 )
             }
