@@ -12,6 +12,6 @@ data class Thresholds(
     val wind: String,
     val shearWind: String,
     val dewpoint: String,
-    @PrimaryKey(autoGenerate = true) //sett true
+    @PrimaryKey(autoGenerate = true)
     val id: Int = 1
 )

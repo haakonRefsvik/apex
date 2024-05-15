@@ -3,6 +3,11 @@ package no.uio.ifi.in2000.rakettoppskytning.model.formatting
 import android.util.Log
 import kotlin.math.abs
 
+/**
+ *
+ * This function formats a numerical input string, limiting the number of integers
+ * and decimals and ensuring the value falls within a specified range.
+ * */
 fun formatNewValue(
     input: String,
     numberOfIntegers: Int,
@@ -11,8 +16,6 @@ fun formatNewValue(
     lowestInput: Double = Double.NEGATIVE_INFINITY,
     oldValue: String = ""
 ): Double {
-
-    Log.d("inputFormatter", "input: $input")
 
     if (input == "") {
         return 0.0
@@ -29,7 +32,6 @@ fun formatNewValue(
     }
 
     if (decimalParts.size > 1 && decimalParts[1] == "") {
-        Log.d("inputFormatter", "decimal part gone, returning x.0")
         return ("$integerPart.0").toDouble()
     }
 
@@ -37,7 +39,6 @@ fun formatNewValue(
     var formattedIntegerValue = integerPart
 
     while (formattedIntegerValue.filter { it.isDigit() }.length > numberOfIntegers) {
-        Log.d("inputFormatter", "Too many integers, dropping the last integer")
         formattedIntegerValue = formattedIntegerValue.dropLast(1)
     }
 
@@ -51,7 +52,6 @@ fun formatNewValue(
     try {
         Log.d("inputFormatter", "old: ${oldValueIntegers}, num-ints: $numberOfIntegers")
         if(oldValueIntegers < numberOfIntegers && (input.toDouble() > highestInput || input.toDouble() < lowestInput)){
-            Log.d("inputFormatter", "Not changing the last integer, dropping the last because total is over the limit")
             formattedIntegerValue = formattedIntegerValue.dropLast(1)
         }
     }catch (e: Exception){
@@ -60,12 +60,10 @@ fun formatNewValue(
 
 
     while (decimalPart.length > numberOfDecimals + 1) {
-        Log.d("inputFormatter", "Dropping the last number in the decimal-part")
         decimalPart = decimalPart.dropLast(1)
     }
 
     var r = (formattedIntegerValue + decimalPart)
-    Log.d("inputFormatter", "output: $r")
 
 
     if (r.toDouble() > highestInput){
@@ -76,10 +74,12 @@ fun formatNewValue(
         r = lowestInput.toString()
     }
 
-    Log.d("inputFormatter", "output2: $r")
     return (r).toDouble()
 }
 
+/**
+ * This function finds the closest cardinal direction to a given degree, with a slight approximation.
+ * */
 fun findClosestDegree(degree: Double): String {
     val degreeToString: Map<Double, String> =
         mapOf(

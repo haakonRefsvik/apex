@@ -11,6 +11,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
 import java.io.File
 
+/**
+The GribRepository class manages the loading and retrieval of GRIB files from the GribDataSource.
+ */
 class GribRepository {
     private val dataSource = GribDataSource()
     suspend fun loadGribFiles(){
@@ -25,6 +28,10 @@ class GribRepository {
     }
 }
 
+/**
+ * This function creates vertical profiles from GRIB files asynchronously, processing each file on a separate thread.
+ * It limits the height of each profile and returns a list of completed profiles once all threads are done.
+ * */
 suspend fun makeVerticalProfilesFromGrib(
     gribFiles: List<File>,
     lat: Double,

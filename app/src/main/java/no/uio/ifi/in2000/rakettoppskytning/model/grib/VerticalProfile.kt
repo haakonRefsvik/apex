@@ -11,7 +11,7 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-
+/** This function extracts and returns the time from a GRIB file. */
 fun getTime(file: File): String {
     return try {
         val raf = RandomAccessFile(file.absolutePath, "r")
@@ -19,14 +19,14 @@ fun getTime(file: File): String {
         val record: Grib2Record = scan.next()
         val referenceDate = record.id.referenceDate
         val hourOffset = CalendarPeriod.Hour.multiply(record.pds.forecastTime)
-        referenceDate.add(hourOffset).toString() // leverer riktig forecast tid
+        referenceDate.add(hourOffset).toString()
     } catch (e: Exception) {
         ""
     }
 
 }
 
-/** Temperature, windspeed and wind-direction for a given isobaric layer*/
+/** Temperature, wind-speed and wind-direction for a given isobaric layer*/
 data class VerticalProfile(
     val heightLimitMeters: Int = Int.MAX_VALUE,
     val lat: Double,
@@ -43,14 +43,17 @@ data class VerticalProfile(
         return verticalProfileMap.keys.sortedDescending().toDoubleArray()
     }
 
+    /** This function collects all level data and returns them as a list.*/
     fun getAllLevelData(): List<LevelData> {
         return verticalProfileMap.values.toList()
     }
 
+    /** This function finds level data by level value or throws an exception if not found. */
     private fun findLevel(level: Double): LevelData {
         return verticalProfileMap[level] ?: throw Exception("Level not found")
     }
 
+    /** This function adds ground information to the vertical profile if not already present. */
     fun addGroundInfo(series: Series) {
         if (groundLevel != null) {
             return
@@ -101,10 +104,14 @@ data class VerticalProfile(
         return shearWindList
     }
 
+    /**
+    This function returns the maximum shear wind.
+     */
     fun getMaxSheerWind(): ShearWind {
         return getAllSheerWinds().maxBy { it.windSpeed }
     }
 
+    /** This function creates a string summarizing a vertical profile's data. */
     override fun toString(): String {
 
         var r = "---    Vertical profile for lat: $lat, lon: $lon     ---\n"
@@ -203,6 +210,8 @@ fun getVerticalProfileMap(
     return verticalMap
 }
 
+/** This function formats longitude values to be within the range [-180, 180].
+ * */
 fun formatLon(lon: Double): Double {
     if (lon > 180) {
         return lon - 360
@@ -213,6 +222,9 @@ fun formatLon(lon: Double): Double {
     return lon
 }
 
+/**
+ * This function formats latitude values to be within the range [-90, 90].
+ * */
 fun formatLat(lat: Double): Double {
     if (lat > 90) {
         return lat - 180

@@ -28,13 +28,12 @@ data class Properties(
 data class Meta(
     @SerialName("updated_at")
     val updatedAt: String,
-    //val units: Units,
 )
 @Serializable
 data class Series(
-    /** Dato i ISO 8601-format; år-måned-dag(T)klokkeslett:tidssone(Z) */
+    /** Date in ISO 8601-format; year-month-day(T)time:timezone(Z) */
     val time: String,
-    /** Værdata for det gitte tidspunktet */
+    /** Weather-data for the chosen timestamp */
     val data: Data,
 )
 @Serializable
@@ -85,7 +84,7 @@ data class Details (
     @SerialName("cloud_area_fraction_medium")
     val cloudAreaFractionMedium: Double,
 
-    /** Temperatur det begynner å dugge */
+    /** Temperature it starts to dew */
     @SerialName("dew_point_temperature")
     val dewPointTemperature: Double,
 
@@ -109,7 +108,7 @@ data class Details (
     @SerialName("wind_speed")
     val windSpeed: Double,
 
-    /** Vindkast max m/s. Vindkastene er målt over 3s*/
+    /** Wind speed of gust max m/s. Its measured in over 3s*/
     @SerialName("wind_speed_of_gust")
     val windSpeedOfGust: Double?=null,
 
@@ -160,15 +159,15 @@ data class Summary2(
 @Serializable
 data class Details3(
     @SerialName("precipitation_amount")
-    /** Expected precipitation (nedbør) amount for period*/
+    /** Expected precipitation amount for period*/
     val precipitationAmount: Double,
-    /** Max expected precipitation (nedbør) amount for period*/
+    /** Max expected precipitation amount for period*/
     @SerialName("precipitation_amount_max")
     val precipitationAmountMax: Double,
-    /** Min expected precipitation (nedbør) amount for period*/
+    /** Min expected precipitation amount for period*/
     @SerialName("precipitation_amount_min")
     val precipitationAmountMin: Double,
-    /** Probability of precipitation (nedbør) amount for period*/
+    /** Probability of precipitation amount for period*/
     @SerialName("probability_of_precipitation")
     val probabilityOfPrecipitation: Double,
     @SerialName("probability_of_thunder")
@@ -191,15 +190,15 @@ data class Details4(
     @SerialName("air_temperature_min")
     val airTemperatureMin: Double,
     @SerialName("precipitation_amount")
-    /** Expected precipitation (nedbør) amount for period in mm*/
+    /** Expected precipitation amount for period in mm*/
     val precipitationAmount: Double,
-    /** Max expected precipitation (nedbør) amount for period*/
+    /** Max expected precipitation amount for period*/
     @SerialName("precipitation_amount_max")
     val precipitationAmountMax: Double,
-    /** Min expected precipitation (nedbør) amount for period*/
+    /** Min expected precipitation amount for period*/
     @SerialName("precipitation_amount_min")
     val precipitationAmountMin: Double,
-    /** Probability of precipitation (nedbør) amount for period*/
+    /** Probability of precipitation amount for period*/
     @SerialName("probability_of_precipitation")
     val probabilityOfPrecipitation: Double,
 )

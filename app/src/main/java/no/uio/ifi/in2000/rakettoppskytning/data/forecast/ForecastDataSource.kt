@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 import no.uio.ifi.in2000.rakettoppskytning.data.ApiKeyHolder
 import no.uio.ifi.in2000.rakettoppskytning.model.forecast.LocationForecast
 
-
+/** data source to get forecast from API */
 suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
     if(ApiKeyHolder.in2000ProxyKey == ""){
         throw Exception("Api-key not found")
@@ -35,7 +35,7 @@ suspend fun getForecast(lat: Double, lon: Double): List<LocationForecast> {
 
 
     val url = "https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}"
-    Log.d("APICALL", "Forecast blir kalt på")
+    Log.d("APICALL", "Forecast is called")
 
     return try {
         listOf(client.get(url).body<LocationForecast>())

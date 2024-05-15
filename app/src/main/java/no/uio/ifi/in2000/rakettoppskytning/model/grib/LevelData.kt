@@ -29,6 +29,10 @@ class LevelData(val pressurePascal: Double){
         return kelvin - 273.15
     }
 
+    /**
+     *
+     * This function calculates the height in meters of a specific atmospheric level based on given temperature, pressure, and constants.
+     * */
     fun getLevelHeightInMeters(): Double{
         var standardSeaPressure = 101325.5
 
@@ -51,10 +55,12 @@ class LevelData(val pressurePascal: Double){
         return c * a
     }
 
+    /** Returns calculated wind-speed */
     private fun calculateWindSpeed(uComponent: Double, vComponent: Double): Double {
         return sqrt(uComponent.pow(2) + vComponent.pow(2))
     }
 
+    /** This function calculates the wind direction in degrees and ensures the result falls within the range [0, 360) degrees.*/
     private fun calculateWindDirection(uComponent: Double, vComponent: Double): Double {
         var windDirInDegrees = Math.toDegrees(atan2(uComponent, vComponent))
         if (windDirInDegrees < 0) {
@@ -63,6 +69,7 @@ class LevelData(val pressurePascal: Double){
         return windDirInDegrees
     }
 
+    /** Returns celsius from kelvin*/
     fun getTemperatureCelsius(): Double {
         return convertKelvinToCelsius(tempValueKelvin)
     }
@@ -75,6 +82,10 @@ class LevelData(val pressurePascal: Double){
         return calculateWindDirection(uComponentValue, vComponentValue)
     }
 
+    /**
+     * This function updates variables based on the provided parameter number,
+     * assigning values to temperature, u-component, or v-component.
+     * */
     fun addValue(parameterNumber: Int, value: Double){
         when (parameterNumber) {
             0 -> tempValueKelvin = value

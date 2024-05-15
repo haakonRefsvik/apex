@@ -18,8 +18,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 
 
 /**
- Show a snackbar if we dont have network connection.
- The snackbar might appear even if we have the internet/network on but it takes time for the device to get connection so the snackbar might pop first and then disappear when have gotten secure network connection.
+ Show a snack-bar if we don't have network connection.
+ The snack-bar might appear even if we have the internet/network on but it takes time for the device to get connection so the snack-bar might pop first and then disappear when have gotten secure network connection.
 
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

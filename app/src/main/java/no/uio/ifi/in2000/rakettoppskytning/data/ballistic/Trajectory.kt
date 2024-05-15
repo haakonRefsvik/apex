@@ -11,11 +11,13 @@ import kotlin.math.sqrt
 
 const val SeaLevelRho = 1.225
 
+/**
+ * Class to hold trajectory points
+ * */
 class Point(
     val x: Double,
     val y: Double,
     val z: Double,
-    val velocity: Double,
     private val timeSeconds: Double,
     val parachuted: Boolean = false
 ) {
@@ -24,7 +26,7 @@ class Point(
     }
 }
 
-/**Considered altitude is between lower and upperlayer, calculate the ratio between the two.
+/**Considered altitude is between lower and upper-layer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
 fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>? {
     val altBetweenLayers = upperAlt - lowerAlt
@@ -79,10 +81,16 @@ fun getSigmoidRatios(
     return Pair(lowerRatio, upperRatio)
 }
 
+/**
+ * Function to merge level data
+ * */
 fun mergeLevelData(ratios: Pair<Double, Double>, lowerData: Double, upperData: Double): Double {
     return (ratios.first * lowerData) + (ratios.second * upperData)
 }
 
+/**
+ * Function to find the lower and upper level from a list of level data
+ * */
 fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<LevelData, LevelData>? {
     val sortedLevels = allLevels.sortedByDescending { it.pressurePascal }
 
@@ -101,6 +109,9 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
     return null
 }
 
+/**
+ * Function to get the nearest level data
+ * */
 fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData{
     var nearest: LevelData = allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
 
@@ -126,6 +137,9 @@ fun isCloseToZero(number: Double, threshold: Double = 1e-10): Boolean {
     return abs(number) < threshold
 }
 
+/**
+ * Function to calculate air density
+ * */
 fun calculateAirDensity(pressure: Double, temperature: Double): Double {
     val gasConstant = 287.058 // Specific gas constant for dry air in J/kg·K
     val kelvinTemperature = temperature + 273.15 // Convert temperature from Celsius to Kelvin
@@ -171,10 +185,6 @@ fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double,
         windLow,
         windHigh
     )
-}
-
-fun getSpeed(vx: Double, vy: Double, vz: Double): Double {
-    return sqrt(vx * vx + vy * vy + vz * vz)
 }
 
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
@@ -227,7 +237,7 @@ fun simulateTrajectory(
     var lastZ = -100.0
 
     while (z >= altitude) {
-        val p = Point(x, y, z, velocity = getSpeed(vx, vy, vz), secondsUsed)
+        val p = Point(x, y, z, secondsUsed)
         list.add(p)
 
         if (abs(lastZ - z) > 100) {
@@ -327,7 +337,9 @@ fun updateParameters(alt: Double, allLevels: List<LevelData>):
     return Triple(rho, xWind, yWind)
 }
 
-
+/** This function takes in the isobaric layers and rocket values to make a list of points for trajectory with a parachute
+ * This algorithm is made with the help of ChatGPT
+ * */
 fun simulateParachute(
     xInit: Double,
     yInit: Double,
@@ -369,7 +381,7 @@ fun simulateParachute(
         y += vy * timeStep
         z += vz * timeStep
         secondsUsed += timeStep
-        val p = Point(x, y, z, velocity = -parachuteVelocityDown, secondsUsed, true)
+        val p = Point(x, y, z, secondsUsed, true)
         list.add(p)
     }
 

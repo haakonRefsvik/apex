@@ -13,7 +13,7 @@ class ShearWind(
     /** Difference measured as wind-speed (m/s) */
     val windSpeed: Double,
     val direction: Double = getShearDirection(upperLayer, lowerLayer),
-    /** Avarage altitude between the upper and lower layer*/
+    /** Average altitude between the upper and lower layer*/
     val altitude: Double = (lowerLayer.getLevelHeightInMeters() + upperLayer.getLevelHeightInMeters() ) / 2
 ){
     override fun toString(): String{
@@ -35,6 +35,9 @@ fun getShearWind(upperLayer: LevelData, lowerLayer: LevelData): Double{
     return abs(windSpeed)
 }
 
+/**
+ * This function calculates the direction of wind shear between two atmospheric layers.
+ * */
 fun getShearDirection(upperLayer: LevelData, lowerLayer: LevelData): Double {
     val deltaU = upperLayer.uComponentValue - lowerLayer.uComponentValue
     val deltaV = upperLayer.vComponentValue - lowerLayer.vComponentValue

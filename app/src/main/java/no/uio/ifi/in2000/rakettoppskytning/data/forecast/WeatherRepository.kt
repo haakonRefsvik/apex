@@ -25,7 +25,12 @@ import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherAtPosHour
 import no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos.WeatherFavorites
 import kotlin.math.roundToInt
 
-
+/**
+ *
+ * This class manages weather data retrieval, storage, and updates, including observing weather data and favorite locations.
+ * It interacts with repositories for weather, forecast, and favorite card data, and handles functions such as:
+ * toggling favorites, updating weather cards, and loading weather data.
+ * */
 class WeatherRepository(
     private val settingsRepository: SettingsRepository,
     val gribRepository: GribRepository,

@@ -2,9 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.ColorSpace.Rgb
 import android.net.Uri
-import android.text.style.UnderlineSpan
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -24,8 +22,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 @Composable
