@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.firstButton100

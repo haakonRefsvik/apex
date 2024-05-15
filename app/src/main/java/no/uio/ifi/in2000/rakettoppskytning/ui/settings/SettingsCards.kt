@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.formatNewValue
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.formatNewValue
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50

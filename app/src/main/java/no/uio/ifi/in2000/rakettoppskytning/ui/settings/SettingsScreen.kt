@@ -53,7 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.uio.ifi.in2000.rakettoppskytning.R
 import no.uio.ifi.in2000.rakettoppskytning.data.navigation.Routes
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.findClosestDegree
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.findClosestDegree
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.RocketSpecType
 import no.uio.ifi.in2000.rakettoppskytning.model.thresholds.ThresholdType
 import no.uio.ifi.in2000.rakettoppskytning.ui.scrollbar.LazyColumnScrollbar

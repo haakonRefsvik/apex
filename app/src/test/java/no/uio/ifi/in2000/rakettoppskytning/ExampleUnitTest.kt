@@ -9,8 +9,8 @@ import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.mergeLevelData
 import no.uio.ifi.in2000.rakettoppskytning.data.ballistic.simulateTrajectory
 import no.uio.ifi.in2000.rakettoppskytning.data.settings.getCloseness
 import no.uio.ifi.in2000.rakettoppskytning.data.soilMoisture.getSoilForecast
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayAndMonth
-import no.uio.ifi.in2000.rakettoppskytning.model.formatting.getDayName
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.getDayAndMonth
+import no.uio.ifi.in2000.rakettoppskytning.data.formatting.getDayName
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getShearWind
 import no.uio.ifi.in2000.rakettoppskytning.model.soilMoisture.SoilMoistureHourly
