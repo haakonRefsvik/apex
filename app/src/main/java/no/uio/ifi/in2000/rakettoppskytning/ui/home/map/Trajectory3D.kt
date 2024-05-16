@@ -49,7 +49,7 @@ fun Make3Dtrajectory(
     val sourceId1 = "source1"
     val sourceId2 = "source2"
     val paraId = "paraId"
-    val redBall = "asset://bigball.glb"
+    val redBall = "asset://redball.glb"
     val blueBall = "asset://blueball.glb"
     val parachute = "asset://parachute.glb"
     val modelIdKey = "model-id-key"

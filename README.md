@@ -47,14 +47,14 @@
 #### Public key:
 
     Go to:
-        -> Gradle Scripts -> local.properties
+        -> Gradle Scripts -> gradle.properties
 
     Then find the variable:
         -> MAPBOX_DOWNLOADS_TOKEN = PRIVATE KEY
 
     It should be named MAPBOX_DOWNLOADS_TOKEN, or have a similiar variable name as in:
         -> settings.gradle.kt 
-            -> localProperties.getProperty("Variabel)
+            -> credentials.password = providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN").get()
 
 
 #### Private key:
@@ -78,7 +78,7 @@
                     url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
 
                     credentials.username = "mapbox"
-                    credentials.password = localProperties.getProperty("MAPBOX_DOWNLOADS_TOKEN")
+                    credentials.password = providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN").get()
                     authentication.create<BasicAuthentication>("basic")
                 }
 
