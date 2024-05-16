@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -226,18 +226,21 @@ fun WeatherList(
                                     Text("Filter")
                                 }
                             }
+                            LazyColumn (modifier = Modifier.heightIn(max = 500.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            Image(
-                                modifier = Modifier.fillMaxSize(0.5f),
+                                item { Spacer(modifier = Modifier.height(50.dp)) }
+                                item { Image(
+                                    modifier = Modifier.fillMaxWidth(0.7f),
 
-                                painter = painterResource(R.drawable.data_not_found),
-                                contentDescription = "Filter"
-                            )
-                            Text(
-                                text = "We are not able to show the desired data ",
-                                fontSize = 18.sp, color = main50
-                            )
-
+                                    painter = painterResource(R.drawable.data_not_found),
+                                    contentDescription = "Filter"
+                                ) }
+                                item { Spacer(modifier = Modifier.height(50.dp)) }
+                                item { Text(
+                                    text = "We are not able to show the desired data ",
+                                    fontSize = 18.sp, color = main50
+                                ) }
+                            }
                         }
                     }
 
