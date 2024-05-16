@@ -171,14 +171,6 @@ fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double,
     )
 }
 
-/**
- *
- * This function calculates the magnitude of velocity in 3D space
- * */
-fun getSpeed(vx: Double, vy: Double, vz: Double): Double {
-    return sqrt(vx * vx + vy * vy + vz * vz)
-}
-
 
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
  * This algorithm is made with the help of ChatGPT and from PortalSpace.
