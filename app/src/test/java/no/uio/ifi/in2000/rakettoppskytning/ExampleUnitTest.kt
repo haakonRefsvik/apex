@@ -19,7 +19,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calculatePitchAndYaw
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -28,10 +27,6 @@ import org.junit.Test
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertTrue(true)
-    }
 
     @Test
     fun altitudeTest(){
