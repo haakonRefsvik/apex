@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -55,6 +54,9 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+/**
+ * The WeatherList composable displays a list of weather data, allowing users to filter and adjust time settings.
+ * */
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -5,6 +5,11 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 
+/**
+ *
+ * This function converts a drawable to a bitmap,
+ * handling cases where the drawable is already a bitmap or needs to be drawn onto a new bitmap.
+ * */
 fun drawableToBitmap(drawable: Drawable): Bitmap {
     if (drawable is BitmapDrawable) {
         return drawable.bitmap

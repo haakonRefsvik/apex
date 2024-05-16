@@ -2,9 +2,7 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.details
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.ColorSpace.Rgb
 import android.net.Uri
-import android.text.style.UnderlineSpan
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -24,10 +22,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter0
-import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
+/**
+ * This Composable function creates a custom snackbar to notify users about possible controlled airspace,
+ * featuring a clickable link ("IPPC") to open a web browser for more information.
+ * */
 @Composable
 fun IppcSnackbar(
     snackbarHostState: SnackbarHostState,
@@ -68,6 +68,9 @@ fun IppcSnackbar(
     )
 }
 
+/**
+ * This function opens web browser for IPPC website
+ * */
 private fun openWebBrowser(url: String = "https://www.ippc.no/ippc/", context: Context) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         data = Uri.parse(url)

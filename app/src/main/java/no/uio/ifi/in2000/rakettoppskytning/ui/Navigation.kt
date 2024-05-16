@@ -28,6 +28,9 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsFactory
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsScreen
 import no.uio.ifi.in2000.rakettoppskytning.ui.settings.SettingsViewModel
 
+/**
+Sets up navigation and view models for the app's screens using Jetpack Compose's NavHost.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun Navigation( context: MainActivity) {

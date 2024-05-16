@@ -31,8 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,6 +50,12 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+
+/**
+ *
+ * It's a Composable function called FavoriteCardScreen used to display a screen containing favorite weather location cards.
+ * It includes functionality to update, remove, and display favorite cards, along with a top and bottom navigation bar
+ * */
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

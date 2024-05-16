@@ -66,7 +66,7 @@ class GribDataSource{
 
             }
         }
-        Log.d("APICALL", "Kaller på grib-apiet")
+        Log.d("APICALL", "call on the grib-API")
         val urlAvailable = "weatherapi/isobaricgrib/1.0/available.json?type=grib2"
         dateLastCalled = now
 
@@ -91,7 +91,7 @@ class GribDataSource{
 
             cachedFiles[fileName] = file
         }catch (e: Exception){
-            Log.d("Grib", "Klarte ikke å laste ned gribfil ${grib.uri}")
+            Log.d("Grib", "Could not load grib-file ${grib.uri}")
         }
 
     }

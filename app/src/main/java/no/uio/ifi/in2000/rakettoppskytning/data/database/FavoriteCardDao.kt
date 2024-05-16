@@ -9,7 +9,7 @@ import androidx.room.Query
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.FavoriteCard
 
 /**
- * Declares a function for database acces operation on FavoriteCard entity
+ * Declares a function for database access operation on FavoriteCard entity
  */
 @Dao
 interface FavoriteCardDao {

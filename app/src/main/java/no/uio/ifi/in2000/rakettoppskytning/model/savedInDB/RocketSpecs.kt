@@ -15,6 +15,6 @@ data class RocketSpecs(
     val dryWeight: String,
     val wetWeight: String,
     val resolution: String,
-    @PrimaryKey(autoGenerate = true) //sett true
+    @PrimaryKey(autoGenerate = true)
     val id: Int = 1
 )

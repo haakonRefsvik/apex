@@ -2,12 +2,16 @@ package no.uio.ifi.in2000.rakettoppskytning.model.weatherAtPos
 
 import kotlin.math.roundToInt
 
-
+/**
+ *This function rounds the input number to the nearest hundred.
+ * */
 fun roundToNearestHundred(number: Double): Int {
     return (number * 10).toInt() * 100
 }
 
-
+/**
+ * This function calculates vertical visibility in kilometers based on fog and cloud cover.
+ * */
 fun getVerticalSightKmNumber(
     fogGround: Double,
     cloudLow: Double,
@@ -27,6 +31,9 @@ fun getVerticalSightKmNumber(
     return m1 + m2 + m3 + m4
 }
 
+/***
+ * This function calculates vertical visibility based on fog and cloud cover percentages, returning a string representation.
+ */
 fun getVerticalSightKm(
     fogGround: Double,
     cloudLow: Double,

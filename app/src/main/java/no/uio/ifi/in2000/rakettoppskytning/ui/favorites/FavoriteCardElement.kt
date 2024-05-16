@@ -36,6 +36,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 
+/**
+ * It's a Composable function that creates a card displaying information about a favorite weather location, including name, coordinates, date, and weather data.
+ * It allows navigation to a detail screen and deletion of the favorite location.
+ * */
 @Composable
 fun FavoriteCardElement(
     name: String,

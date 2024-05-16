@@ -52,7 +52,8 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
-
+/**
+It's a function that gives default zoom settings for a graph. */
 fun getDefaultGraphZoom(): VicoZoomState {
     return VicoZoomState(
         true,
@@ -61,6 +62,11 @@ fun getDefaultGraphZoom(): VicoZoomState {
         Zoom.static(3.0F)
     )
 }
+
+/**
+ *
+ * It's a Composable function that displays information about wind shear using Jetpack Compose elements.
+ * */
 @Composable
 fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
     ElevatedCard(
@@ -133,6 +139,11 @@ fun ShearWindCard(verticalProfile: VerticalProfile, statusCode: Double = 0.0) {
 
     }
 }
+
+/**
+ *
+ * It's a Composable function that shows a chart of wind shear directions using data from verticalProfile.
+ * */
 @Composable
 fun ShearWindDirCard(verticalProfile: VerticalProfile){
     val shearList = verticalProfile.getAllSheerWinds()
@@ -265,6 +276,9 @@ fun ShearWindDirCard(verticalProfile: VerticalProfile){
     }
 }
 
+/**
+ * It's a Composable function displaying a chart of wind shear speeds using data from verticalProfile with Jetpack Compose.
+ * */
 @Composable
 fun ShearWindSpeedCard(verticalProfile: VerticalProfile){
     val shearList = verticalProfile.getAllSheerWinds()

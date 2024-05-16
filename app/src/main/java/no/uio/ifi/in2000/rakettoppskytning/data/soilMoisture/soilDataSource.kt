@@ -30,13 +30,15 @@ suspend fun getSoilForecast(lat: Double, lon: Double): List<SoilMoistureHourly> 
     return try {
         listOf(client.get(soilUrl).body<SoilMoistureHourly>())
     }catch (e: Exception){
-        println("feil i historisk-dataSource")
+        println("error in historical-dataSource")
         listOf()
     }
 
 }
 
 
+/** This function checks and returns the rounded soil moisture percentage for a given hour if valid, otherwise null.
+ * */
 fun errorCheckSoilForecast(soilForecast: SoilMoistureHourly?, soilIndex: Int, hour: Int): Int? {
     if(soilForecast == null || soilIndex == -1){
         return null     // check if it exists
@@ -57,6 +59,9 @@ fun errorCheckSoilForecast(soilForecast: SoilMoistureHourly?, soilIndex: Int, ho
     return (fraction * 100).roundToInt()
 }
 
+/**
+ * This function returns the index of the first forecasted soil moisture data corresponding to the provided date, or -1 if not found or invalid.
+ * */
 fun getFirstSoilIndex(firstForecastDate: String?, soilForecast: SoilMoistureHourly?): Int{
     if (firstForecastDate == null || soilForecast == null){
         return -1

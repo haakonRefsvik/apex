@@ -19,7 +19,6 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.MapViewModel
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calcDistance
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.map.calculatePitchAndYaw
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
@@ -28,10 +27,6 @@ import org.junit.Test
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertTrue(true)
-    }
 
     @Test
     fun altitudeTest(){
@@ -313,7 +308,6 @@ class ExampleUnitTest {
             y = 0.0,
             z= 0.0,
             timeSeconds = 0.0,
-            velocity = 0.0,
         )
 
         val p2 = Point(
@@ -321,7 +315,6 @@ class ExampleUnitTest {
             y = 1.0,
             z= 1.0,
             timeSeconds = 0.0,
-            velocity = 0.0,
         )
 
         val result = calculatePitchAndYaw(p1, p2)

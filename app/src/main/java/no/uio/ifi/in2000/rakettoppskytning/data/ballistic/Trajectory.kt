@@ -6,14 +6,12 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.exp
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
 const val SeaLevelRho = 1.225
 
-
-/**Considered altitude is between lower and upperlayer, calculate the ratio between the two.
+/**Considered altitude is between lower and upper-layer, calculate the ratio between the two.
  * The returning pair consists of two doubles that add up to 1 like (lower, upper) */
 fun getLinearRatios(lowerAlt: Double, upperAlt: Double, alt: Double): Pair<Double, Double>? {
     val altBetweenLayers = upperAlt - lowerAlt
@@ -68,10 +66,16 @@ fun getSigmoidRatios(
     return Pair(lowerRatio, upperRatio)
 }
 
+/**
+ * Function to merge level data
+ * */
 fun mergeLevelData(ratios: Pair<Double, Double>, lowerData: Double, upperData: Double): Double {
     return (ratios.first * lowerData) + (ratios.second * upperData)
 }
 
+/**
+ * Function to find the lower and upper level from a list of level data
+ * */
 fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<LevelData, LevelData>? {
     val sortedLevels = allLevels.sortedByDescending { it.pressurePascal }
 
@@ -90,6 +94,9 @@ fun findLowerUpperLevel(allLevels: List<LevelData>, altitude: Double): Pair<Leve
     return null
 }
 
+/**
+ * Function to get the nearest level data
+ * */
 fun getNearestLevelData(allLevels: List<LevelData>, altitudeMeters: Double): LevelData{
     var nearest: LevelData = allLevels.maxBy { it.pressurePascal }  // Gets the highest level as nearest
 
@@ -115,6 +122,9 @@ fun isCloseToZero(number: Double, threshold: Double = 1e-10): Boolean {
     return abs(number) < threshold
 }
 
+/**
+ * Function to calculate air density
+ * */
 fun calculateAirDensity(pressure: Double, temperature: Double): Double {
     val gasConstant = 287.058 // Specific gas constant for dry air in J/kg·K
     val kelvinTemperature = temperature + 273.15 // Convert temperature from Celsius to Kelvin
@@ -129,7 +139,7 @@ fun calculateAirDensity(pressure: Double, temperature: Double): Double {
 fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double, rho: Double): Double {
     val altL = low.getLevelHeightInMeters()
     val altU = upp.getLevelHeightInMeters()
-    
+
     return try {
         calculateAirDensity(
             pressure = mergeLevelData(
@@ -143,7 +153,6 @@ fun getAirDensityLinear(low: LevelData, upp: LevelData, alt: Double, rho: Double
     }catch (e: Exception){
         rho     // return just the standard air-density if anything fails
     }
-
 }
 /**
  * This function takes in the two isobaric layers you are between (in altitude) and
@@ -162,9 +171,6 @@ fun getWindSigmoid(low: LevelData, upp: LevelData, alt: Double, windLow: Double,
     )
 }
 
-fun getSpeed(vx: Double, vy: Double, vz: Double): Double {
-    return sqrt(vx * vx + vy * vy + vz * vz)
-}
 
 /** This function takes in the isobaric layers and rocket values to make a list of points for trajectory
  * This algorithm is made with the help of ChatGPT and from PortalSpace.
@@ -217,7 +223,7 @@ fun simulateTrajectory(
     var lastZ = -100.0
 
     while (z >= altitude) {
-        val p = Point(x, y, z, velocity = getSpeed(vx, vy, vz), secondsUsed)
+        val p = Point(x, y, z, secondsUsed)
         list.add(p)
 
         if (abs(lastZ - z) > 100) {
@@ -285,10 +291,10 @@ fun simulateTrajectory(
 }
 
 /**
- * Returns updated parameters based on weatherdata (airDensity, xWind, yWind)
+ * Returns updated parameters based on weather-data (airDensity, xWind, yWind)
  * */
 fun updateParameters(alt: Double, allLevels: List<LevelData>):
-    Triple<Double, Double, Double>
+        Triple<Double, Double, Double>
 {
     val currLowerUpper = findLowerUpperLevel(allLevels, alt)
         ?: return Triple(SeaLevelRho, 0.0, 0.0)
@@ -318,6 +324,9 @@ fun updateParameters(alt: Double, allLevels: List<LevelData>):
 }
 
 
+/** This function takes in the isobaric layers and rocket values to make a list of points for trajectory with a parachute
+ * This algorithm is made with the help of ChatGPT
+ * */
 fun simulateParachute(
     xInit: Double,
     yInit: Double,
@@ -358,7 +367,7 @@ fun simulateParachute(
         y += vy * timeStep
         z += vz * timeStep
         secondsUsed += timeStep
-        val p = Point(x, y, z, velocity = -parachuteVelocityDown, secondsUsed, true)
+        val p = Point(x, y, z, secondsUsed, true)
         list.add(p)
     }
 

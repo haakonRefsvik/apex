@@ -109,7 +109,7 @@ fun Make3Dtrajectory(
         mapView.mapboxMap.apply {
             loadStyle(
                 style(Style.OUTDOORS) {
-                    /**Goes thorugh the list of xyz points and based on the parachuted value, plots a ball on the given xyz on tha map**/
+                    /**Goes through the list of xyz points and based on the parachuted value, plots a ball on the given xyz on tha map**/
                     tra.forEachIndexed { index, point ->
                         if (point.getZ() < 0) {
                             return@forEachIndexed
@@ -428,7 +428,7 @@ fun calculateMidpoint(coord1: Coordinates, coord2: Coordinates): Coordinates {
     return Coordinates(latitude, longitude)
 }
 
-/**This function calculates the distance between two lat lon pairs in kilometrs
+/**This function calculates the distance between two lat lon pairs in kilometres
  * This algorithm is made with the help of ChatGPT**/
 fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val r = 6371 // Earth radius in kilometers
@@ -441,8 +441,8 @@ fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double
     return r * c
 }
 
-/**This algorthim has the only purpose of generating a circle of lat-lon points around a given lat lon.
- * Mapbox has circleannotions, but when you pitch the camera it doesnt stay flat on the map.
+/**This algorithm has the only purpose of generating a circle of lat-lon points around a given lat lon.
+ * Mapbox has circle-annotations, but when you pitch the camera it doesn't stay flat on the map.
  * This algorithm is made with the help of ChatGPT**/
 fun generateCirclePoints(lat: Double, lon: Double, radius: Double, numPoints: Int): List<Point> {
     val circlePoints = mutableListOf<Point>()

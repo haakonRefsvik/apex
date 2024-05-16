@@ -11,6 +11,9 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.getTime
 import no.uio.ifi.in2000.rakettoppskytning.model.grib.getVerticalProfileMap
 import java.io.File
 
+/**
+The GribRepository class manages the loading and retrieval of GRIB files from the GribDataSource.
+ */
 class GribRepository {
     private val dataSource = GribDataSource()
     suspend fun loadGribFiles(){
@@ -38,7 +41,6 @@ suspend fun makeVerticalProfilesFromGrib(
     val deferredList = mutableListOf<Deferred<VerticalProfile>>()
     try {
         for (file in gribFiles) {
-            Log.d("gribThread", "Making verticalProfile on new thread up to $maxHeight m")
             val deferred = async(Dispatchers.IO) {
                 VerticalProfile(
                     heightLimitMeters = maxHeight,
@@ -48,8 +50,6 @@ suspend fun makeVerticalProfilesFromGrib(
                 )
             }
             deferredList.add(deferred)
-            Log.d("gribThread", "Thread done")
-
         }
 
         deferredList.awaitAll()

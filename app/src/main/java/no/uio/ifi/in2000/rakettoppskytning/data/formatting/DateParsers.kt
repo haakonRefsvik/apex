@@ -37,7 +37,7 @@ fun getCurrentDate(minusHours: Int = 0): String {
     return "${str.substring(0, 13)}:00:00Z"
 }
 
-
+/** Returns hour from the date */
 fun getHourFromDate(date: String): Int {
     return try {
         ZonedDateTime.parse(date).hour
@@ -46,6 +46,7 @@ fun getHourFromDate(date: String): Int {
     }
 }
 
+/** This function calculates the number of days between the current date and a given date string. */
 fun getNumberOfDaysAhead(dateString: String): Int {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val currentDate = LocalDate.now()
@@ -54,12 +55,14 @@ fun getNumberOfDaysAhead(dateString: String): Int {
     return period.days
 }
 
+/** Returns day and month from the date */
 fun getDayAndMonth(dateString: String): String {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val parsedDateTime = LocalDateTime.parse(dateString, formatter)
     return parsedDateTime.format(DateTimeFormatter.ofPattern("dd.MM"))
 }
 
+/** Returns name of day from the date */
 fun getDayName(dateString: String, dayOffset: Int): String{
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
     val date = sdf.parse(dateString)
@@ -92,6 +95,7 @@ fun formatDate(date: String): String {
 
 }
 
+/** Returns hour and minute from the date */
 fun extractHourAndMinutes(dateString: String): String {
     return try {
         return dateString.substring(11, 16)
