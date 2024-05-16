@@ -182,7 +182,6 @@ fun simulateTrajectory(
     launchDir: Double,
     altitude: Double,
     thrust: Double,
-    apogee: Double,
     mass: Double,
     massDry: Double,
     dt: Double,
