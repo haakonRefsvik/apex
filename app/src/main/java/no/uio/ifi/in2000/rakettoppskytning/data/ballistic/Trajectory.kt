@@ -228,7 +228,7 @@ fun simulateTrajectory(
             yWind = triple.third
         }
 
-        if (burnTimeLeft >= 0 && z <= apogee) {
+        if (burnTimeLeft >= 0) {
             ax = thrust * cos(launchAngleRad) * sin(launchDirRad) / currentMass
             if (isCloseToZero(ax)) {
                 ax = 0.0
