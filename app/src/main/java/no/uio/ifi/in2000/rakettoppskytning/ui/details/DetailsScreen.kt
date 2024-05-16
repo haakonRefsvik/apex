@@ -74,6 +74,13 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 
+/**
+ * This Kotlin function presents a detailed weather screen, dynamically adapting its content based on fetched data.
+ * It includes components for weather details like temperature and precipitation,
+ * supports user interactions such as favoriting locations and trajectory calculation,
+ * and integrates with other parts of the app for navigation and data management.
+ *
+ * */
 @androidx.annotation.OptIn(UnstableApi::class)
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -482,6 +489,4 @@ fun DetailsScreen(
             }
         }
     }
-
-
 }

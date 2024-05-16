@@ -51,6 +51,9 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import kotlin.math.roundToInt
 
+/**
+ * It's a Composable function that creates a card displaying wind information, including speed, gust speed, and direction, with optional status code.
+ * */
 @Composable
 fun WindCard(details: Details, statusCode: Double = 0.0) {
     ElevatedCard(
@@ -158,6 +161,10 @@ fun WindCard(details: Details, statusCode: Double = 0.0) {
     }
 }
 
+/**
+ *
+ * It's a Composable function that displays a chart representing wind profiles at different altitudes using data from allLevels
+ * */
 @Composable
 fun WindCardAltitude(allLevels: List<LevelData>){
     val lineColor: Int = Color.Black.copy(alpha = 0.2f).toArgb()

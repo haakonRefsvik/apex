@@ -2,6 +2,8 @@ package no.uio.ifi.in2000.rakettoppskytning.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+/** Custom color palette */
+
 val main100 = Color(0xFF14213D) //Header on DetailScreen, BottomSheetScaffold-container
 val main50 = Color(0xFFF1ECE4) // BottomAppBar
 val main0 =

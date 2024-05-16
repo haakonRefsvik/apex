@@ -39,6 +39,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard50
 
+/**
+ * WeatherCard is a Composable function for weather data display.
+ * It handles navigation to details and adjusts content based on filtering criteria from HomeScreenViewModel.
+ */
 @Composable
 fun WeatherCard(
     weatherAtPosHour: WeatherAtPosHour,

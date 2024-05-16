@@ -38,6 +38,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard100
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.favoriteCard50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.iconButton50
 
+/**
+ * FavoriteLocationCard composable renders a card for favorite locations.
+ * It allows users to select a favorite location by clicking on the card,
+ * and also provides an option to delete the favorite location by clicking the delete icon.
+ * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteLocationCard(

@@ -22,7 +22,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.details50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getColorFromStatusValue
 
-
+/**
+ *WeatherCard that displays weather information.
+ * It includes a value, an icon, a description, additional information, and a status code.
+ * */
 @Composable
 fun WeatherCard(
     value: String,

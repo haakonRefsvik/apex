@@ -33,6 +33,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.iconButton50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
+/**
+ * This Kotlin function sets up a BottomAppBar with icon buttons for navigation,
+ * adjusting icon colors based on the current screen,
+ * and uses a NavController for navigation in a Jetpack Compose UI.
+ * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBar(

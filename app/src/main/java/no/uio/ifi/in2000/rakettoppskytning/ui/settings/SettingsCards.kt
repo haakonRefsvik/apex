@@ -35,6 +35,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings50
 import kotlin.math.roundToInt
 
 
+/**
+ * This Composable function, SliderCard, displays a card with a slider used to adjust the trajectory resolution.
+ * It includes text displaying the current settings and the slider itself, allowing users to interact with it to change the resolution.
+ * */
 @Composable
 fun SliderCard(settingsViewModel: SettingsViewModel) {
     val sliderPosition =
@@ -101,6 +105,11 @@ fun SliderCard(settingsViewModel: SettingsViewModel) {
     Spacer(modifier = Modifier.height(27.dp))
 }
 
+/**
+ *
+ * SettingsCard creates a card for adjusting settings with a title, optional description, and an input field for users to input values.
+ * It formats the displayed value based on specified decimals and integers.
+ * */
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun SettingsCard(

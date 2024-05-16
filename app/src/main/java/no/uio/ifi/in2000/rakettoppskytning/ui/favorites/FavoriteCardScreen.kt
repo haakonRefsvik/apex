@@ -51,6 +51,12 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
+/**
+ *
+ * It's a Composable function called FavoriteCardScreen used to display a screen containing favorite weather location cards.
+ * It includes functionality to update, remove, and display favorite cards, along with a top and bottom navigation bar
+ * */
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FavoriteCardScreen(

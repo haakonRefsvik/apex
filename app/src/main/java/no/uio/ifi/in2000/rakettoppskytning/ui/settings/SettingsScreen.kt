@@ -73,6 +73,10 @@ import kotlin.time.toDuration
 
 
 
+/**
+ * This is a Composable function called SettingsScreen, used to display a screen where users can adjust various settings related to weather values and rocket profiles.
+ * It includes segmented buttons for switching between weather values and rocket profile settings, along with sliders and cards for adjusting specific parameters.
+ * */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -468,6 +472,7 @@ fun SettingsScreen(
     }
 }
 
+/** findPointSuffix adds position suffixes like "1st", "2nd", "3rd", or "${res}th". */
 fun findPointSuffix(res: Int): String {
     val result = when (res) {
         1 -> ""
@@ -478,6 +483,7 @@ fun findPointSuffix(res: Int): String {
     return result
 }
 
+/** findPerformance categorizes performance levels based on input integers.*/
 fun findPerformance(res: Int): String {
     val result = when {
         res == 10 -> "Peak performance"

@@ -54,6 +54,9 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.weatherCard0
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
+/**
+ * The WeatherList composable displays a list of weather data, allowing users to filter and adjust time settings.
+ * */
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

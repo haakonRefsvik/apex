@@ -35,15 +35,22 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
+/** WeatherUiState contains weather data for a specific position. */
 data class WeatherUiState(
     val weatherAtPos: WeatherData = WeatherAtPos()
 )
+
+/** FavoriteLocationUiState holds a list of favorite locations. */
 data class FavoriteLocationUiState(
     val favorites: List<Favorite> = emptyList()
 )
 
 var isInitialized = mutableStateOf(false)
 
+/** HomeViewModelFactory implements the ViewModelProvider.Factory interface to generate instances of HomeScreenViewModel with given repositories.
+ * This is used to provide a custom mechanism for creating instances of HomeScreenViewModel, allowing dependency injection of repositories into the view model
+ *
+ * */
 class HomeViewModelFactory(
     private val repo: WeatherRepository,
     private val favoriteRepo: FavoriteCardRepository
@@ -54,6 +61,11 @@ class HomeViewModelFactory(
     }
 }
 
+/**
+ * HomeScreenViewModel manages data and logic related to the home screen of the application.
+ * It handles fetching weather data, filtering weather lists, managing favorite locations, and controlling the bottom sheet scaffold state.
+ * The view model also initializes necessary data and provides functionality for resetting filters and lists, and adding/deleting favorite locations.
+ * */
 class HomeScreenViewModel(repo: WeatherRepository, private val favoriteRepo: FavoriteCardRepository) : ViewModel() {
     private val weatherRepo = repo
     private val gribRepo = weatherRepo.gribRepository

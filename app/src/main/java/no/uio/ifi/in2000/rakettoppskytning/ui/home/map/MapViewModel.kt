@@ -16,6 +16,10 @@ import no.uio.ifi.in2000.rakettoppskytning.model.grib.LevelData
 import no.uio.ifi.in2000.rakettoppskytning.model.savedInDB.Favorite
 import no.uio.ifi.in2000.rakettoppskytning.data.database.RocketSpecState
 
+/** MapFactory implements the ViewModelProvider.Factory interface to generate instances of MapViewModel with given repositories.
+ * This is used to provide a custom mechanism for creating instances of MapViewModel, allowing dependency injection of repositories into the view model
+ *
+ * */
 class MapFactory : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -23,6 +27,11 @@ class MapFactory : ViewModelProvider.Factory {
     }
 }
 
+/**
+ * MapViewModel handles map-related data and interactions.
+ * It includes properties for latitude, longitude, trajectory simulation, camera options, and more.
+ * Methods are provided for loading and deleting trajectory data, as well as updating the camera position on the map.
+ * */
 class MapViewModel : ViewModel() {
 
     private val initLat = 59.94363

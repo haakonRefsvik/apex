@@ -17,7 +17,11 @@ import androidx.navigation.NavController
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.settings100
 
-
+/**
+ * This Kotlin function defines a TopAppBar with a navigation icon and title,
+ * enabling navigation via a NavController in Jetpack Compose UI,
+ * and applies theme-based color settings.
+ * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(navController: NavController) {

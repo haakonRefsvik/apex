@@ -42,9 +42,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time35
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.time65
 import java.text.SimpleDateFormat
 
+
+/** TimeDialog function used to display a dialog for selecting time.
+ * It includes a date range picker and options to set start and end hours. */
 @SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun TimeDialog(
     onDismissRequest: () -> Unit,
@@ -193,10 +195,12 @@ fun TimeDialog(
 
 
     }
-
-
 }
 
+/**
+ * InputField is a Composable function for entering hours.
+ * It adjusts based on the provided label ("Start hour" or "End hour") and interacts with the HomeScreenViewModel.
+ * */
 @Composable
 fun InputFiled(
     homeScreenViewModel: HomeScreenViewModel,

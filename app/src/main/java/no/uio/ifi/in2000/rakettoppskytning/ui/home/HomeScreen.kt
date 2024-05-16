@@ -48,6 +48,11 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main0
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
+/**
+ * HomeScreen composable displays the main screen of the application.
+ * It includes a bottom bar for navigation, a map view, and a bottom sheet for displaying weather details and input fields.
+ * Users can interact with the map, view weather details, and switch between 2D and 3D views.
+ * */
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

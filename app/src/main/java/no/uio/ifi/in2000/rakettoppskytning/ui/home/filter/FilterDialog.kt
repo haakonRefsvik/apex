@@ -54,7 +54,10 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.filter50
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getTextFieldColors
 import kotlin.math.roundToInt
 
-
+/**
+ *  Creates a filter dialog UI for selecting filter options such as wind strength, wind direction, rainfall, etc., in an app.
+ *  It includes interactive elements like switches, sliders, and dropdown menus for user selection.
+ * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterDialog(

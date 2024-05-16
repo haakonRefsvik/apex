@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.stateIn
 import no.uio.ifi.in2000.rakettoppskytning.data.forecast.WeatherRepository
 import no.uio.ifi.in2000.rakettoppskytning.ui.home.WeatherUiState
 
+/** DetailsFactory implements the ViewModelProvider.Factory interface to generate instances of DetailsScreenViewModel with given repositories.
+ * This is used to provide a custom mechanism for creating instances of DetailsScreenViewModel, allowing dependency injection of repositories into the view model
+ *
+ * */
 class DetailsFactory(
     private val repo: WeatherRepository,
 ): ViewModelProvider.Factory{
@@ -20,6 +24,10 @@ class DetailsFactory(
     }
 }
 
+/**
+ * DetailsScreenViewModel manages the UI's interaction with weather data,
+ * observing favorites and toggling their status through the provided WeatherRepository.
+ * */
 class DetailsScreenViewModel(private val repo: WeatherRepository) : ViewModel() {
     val time = mutableStateOf("")
     val favoriteUiState: StateFlow<WeatherUiState> =

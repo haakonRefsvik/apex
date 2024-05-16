@@ -52,7 +52,7 @@ import no.uio.ifi.in2000.rakettoppskytning.ui.theme.getTextFieldColors
 import no.uio.ifi.in2000.rakettoppskytning.ui.theme.main100
 
 
-/** The inputfield where you can search for the weather at a spesific lat/lon */
+/** The input-field where you can search for the weather at a specific lat/lon */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +113,7 @@ fun InputField(
                 value = String.format(
                     "%.${showDecimals}f",
                     placeholderLat.doubleValue
-                ), // viser lat, verdien som maks 5 desimaler
+                ), // shows lat value with maximum 5 decimals.
                 onValueChange = { input ->
                     try {
                         placeholderLat.doubleValue = formatNewValue(
@@ -155,7 +155,7 @@ fun InputField(
                 value = String.format(
                     "%.${showDecimals}f",
                     placeholderLon.doubleValue
-                ), // viser lat, verdien som maks 5 desimaler
+                ), // shows lon value with maximum 5 decimals
                 onValueChange = { input ->
                     try {
                         placeholderLon.doubleValue = formatNewValue(
