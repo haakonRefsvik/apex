@@ -60,7 +60,6 @@ class MapViewModel : ViewModel() {
                         launchDir = rocketSpecs.launchDirection.toDouble(),
                         altitude = 0.0,
                         thrust = rocketSpecs.thrust.toDouble(),
-                        apogee = rocketSpecs.apogee.toDouble(),
                         mass = rocketSpecs.dryWeight.toDouble(),
                         dt = 0.1,
                         allLevels = allLevels,

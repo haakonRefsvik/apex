@@ -96,7 +96,6 @@ class ExampleUnitTest {
             launchDir = 0.0,
             altitude = 0.0,
             thrust = 4500.0,
-            apogee = 3500.0,
             mass = 130.0,
             massDry = 100.0,
             dt = 0.1,
