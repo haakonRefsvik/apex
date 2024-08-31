@@ -8,7 +8,11 @@
     Jostein Jensen
     Suad Raage
     Håkon Refsvik
-    
+
+
+# Demo
+
+https://github.com/user-attachments/assets/1d96ee52-0461-4b69-9cc7-ac2e4dd2d427
 
 # Where to find more documentation:
 
